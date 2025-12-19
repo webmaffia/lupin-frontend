@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import OurStory from '@/components/OurStory';
 import OurPurpose from '@/components/OurPurpose';
+import Overview from '@/components/Overview';
 
 export default async function Home() {
   return (
@@ -11,6 +12,7 @@ export default async function Home() {
       <main>
         <OurStory />
         <OurPurpose />
+        <Overview />
       </main>
     </>
   );
