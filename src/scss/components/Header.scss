@@ -1,0 +1,329 @@
+// Header Component Styles (from Figma design)
+// Strapi-ready data structure:
+// {
+//   logo: { url: string, alt: string },
+//   navigation: [{ label: string, href: string, active: boolean }],
+//   contact: { label: string, href: string }
+// }
+
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: #1b6b59; // Dark green from Figma
+  z-index: z('sticky');
+  
+  // Container
+  &__container {
+    @include flex(row, space-between, center);
+    max-width: 100%;
+    padding: vw(20) vw(60);
+    gap: vw(136);
+    
+    @include media('wide') {
+      padding: vw(20, 1440) vw(60, 1440);
+      gap: vw(100, 1440);
+    }
+    
+    @include media('desktop') {
+      gap: vw(60);
+      padding: vw(16) vw(40);
+    }
+    
+    @include media('tablet') {
+      gap: vw(40);
+      padding: vw(16) vw(30);
+    }
+    
+    @include media('mobile') {
+      padding: vw-mobile(16, 414) vw-mobile(20, 414);
+      gap: vw-mobile(20, 414);
+    }
+  }
+  
+  // Logo
+  &__logo-link {
+    display: block;
+    flex-shrink: 0;
+    width: vw(87);
+    height: vw(106);
+    
+    @include media('desktop') {
+      width: vw(70);
+      height: vw(85);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(60, 414);
+      height: vw-mobile(73, 414);
+    }
+  }
+  
+  &__logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  // Navigation
+  &__nav {
+    @include flex(row, center, center);
+    gap: vw(45);
+    flex-shrink: 0;
+    
+    @include media('desktop') {
+      gap: vw(32);
+    }
+    
+    @include media('tablet') {
+      // Mobile menu
+      position: fixed;
+      top: 0;
+      right: 0;
+      height: 100vh;
+      width: 80vw;
+      max-width: vw(400);
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      gap: 0;
+      background: #1b6b59;
+      padding: vw(120) vw(40) vw(40);
+      box-shadow: vw(-4) 0 vw(20) rgba(0, 0, 0, 0.3);
+      transform: translateX(100%);
+      transition: transform $transition-base;
+      z-index: z('modal');
+      
+      &.is-open {
+        transform: translateX(0);
+      }
+    }
+    
+    @include media('mobile') {
+      width: 85vw;
+      padding: vw-mobile(100, 414) vw-mobile(20, 414) vw-mobile(40, 414);
+    }
+  }
+  
+  &__nav-item {
+    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    font-size: vw(21);
+    line-height: vw(50);
+    letter-spacing: vw(1.05);
+    text-transform: capitalize;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    transition: color $transition-fast, opacity $transition-fast;
+    position: relative;
+    
+    @include media('desktop') {
+      font-size: vw(18);
+      line-height: vw(40);
+    }
+    
+    @include media('tablet') {
+      font-size: vw(24);
+      line-height: vw(60);
+      padding: vw(16) vw(20);
+      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(20, 414);
+      line-height: vw-mobile(50, 414);
+      padding: vw-mobile(16, 414) vw-mobile(20, 414);
+    }
+    
+    &:hover {
+      color: #e7ff00;
+      opacity: 1;
+    }
+    
+    &--active {
+      color: #e7ff00;
+      opacity: 1;
+    }
+  }
+  
+  // Actions
+  &__actions {
+    @include flex(row, center, center);
+    gap: vw(13);
+    flex-shrink: 0;
+    
+    @include media('tablet') {
+      gap: vw(16);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(12, 414);
+    }
+  }
+  
+  &__contact {
+    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    font-size: vw(16);
+    line-height: vw(50);
+    letter-spacing: vw(0.8);
+    text-transform: capitalize;
+    color: #ffffff;
+    white-space: nowrap;
+    transition: color $transition-fast;
+    
+    @include media('desktop') {
+      font-size: vw(14);
+    }
+    
+    @include media('tablet') {
+      display: none; // Hide on mobile
+    }
+    
+    &:hover {
+      color: #e7ff00;
+    }
+  }
+  
+  &__divider {
+    width: vw(1);
+    height: vw(36);
+    flex-shrink: 0;
+    opacity: 0.5;
+    
+    @include media('tablet') {
+      display: none; // Hide on mobile
+    }
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  
+  &__icon-btn {
+    width: vw(26);
+    height: vw(26);
+    @include flex(row, center, center);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: opacity $transition-fast, transform $transition-fast;
+    flex-shrink: 0;
+    
+    @include media('tablet') {
+      display: none; // Hide on mobile
+    }
+    
+    &:hover {
+      opacity: 0.8;
+      transform: scale(1.1);
+    }
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+  }
+  
+  // Menu Button
+  &__menu-btn {
+    @include flex(row, center, center);
+    gap: vw(10);
+    padding: vw(20);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: vw(50);
+    cursor: pointer;
+    transition: all $transition-fast;
+    flex-shrink: 0;
+    
+    @include media('desktop') {
+      padding: vw(16);
+      gap: vw(8);
+      border-radius: vw(40);
+    }
+    
+    @include media('mobile') {
+      padding: vw-mobile(14, 414);
+      gap: vw-mobile(8, 414);
+      border-radius: vw-mobile(40, 414);
+    }
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    &.is-open {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: #e7ff00;
+      
+      @include media('tablet') {
+        position: fixed;
+        top: vw(20);
+        right: vw(20);
+        z-index: z('modal') + 1;
+      }
+      
+      @include media('mobile') {
+        top: vw-mobile(16, 414);
+        right: vw-mobile(16, 414);
+      }
+    }
+  }
+  
+  &__menu-icon {
+    width: vw(24);
+    height: vw(14);
+    object-fit: contain;
+    
+    @include media('mobile') {
+      width: vw-mobile(20, 414);
+      height: vw-mobile(12, 414);
+    }
+  }
+  
+  &__menu-text {
+    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-weight: 400;
+    font-size: vw(20);
+    line-height: 1.5;
+    letter-spacing: vw(1);
+    text-transform: capitalize;
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    
+    @include media('desktop') {
+      font-size: vw(18);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+    }
+  }
+  
+  // Mobile Overlay
+  &__overlay {
+    display: none;
+    
+    @include media('tablet') {
+      display: block;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: z('modal') - 1;
+    }
+  }
+}
+
