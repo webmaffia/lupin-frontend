@@ -21,9 +21,91 @@
     height: 100%;
   }
   
-  &__bg-image {
-    object-fit: cover;
-    object-position: 50% 50%;
+  // Base green color from Figma
+  &__bg-base {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #08a240;
+    z-index: 0;
+  }
+  
+  // Gradient texture with color-dodge blend mode
+  &__bg-texture {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 99.69%;
+    height: 100%;
+    mix-blend-mode: color-dodge;
+    z-index: 1;
+    overflow: hidden;
+    
+    img {
+      position: absolute;
+      top: -0.1%;
+      left: 0;
+      width: 100.11%;
+      height: 191.85%;
+      object-fit: cover;
+    }
+  }
+  
+  // Diagonal gradient overlay from Figma
+  &__bg-gradient-diagonal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(88.9751deg, rgba(11, 84, 89, 0.7) 5.5424%, rgba(8, 162, 64, 0) 66.8%);
+    z-index: 2;
+  }
+  
+  // Top gradient with multiply blend mode
+  &__bg-gradient-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, rgba(6, 51, 54, 0.77) 0%, rgba(8, 162, 64, 0) 37.537%);
+    mix-blend-mode: multiply;
+    z-index: 3;
+  }
+  
+  // Petals decoration
+  &__bg-petals {
+    position: absolute;
+    left: vw(806.09);
+    top: vw(142.54);
+    width: vw(708.686);
+    height: vw(726.081);
+    z-index: 4;
+    animation: rotate-petals 60s linear infinite;
+    
+    @include media('desktop') {
+      left: vw(606, 1440);
+      top: vw(107, 1440);
+      width: vw(531, 1440);
+      height: vw(545, 1440);
+    }
+    
+    @include media('mobile') {
+      left: vw-mobile(250, 414);
+      top: vw-mobile(80, 414);
+      width: vw-mobile(300, 414);
+      height: vw-mobile(308, 414);
+    }
+    
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
   }
   
   // Hero Image
@@ -34,6 +116,8 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    z-index: 5;
+    pointer-events: none;
   }
   
   &__image {
@@ -60,6 +144,7 @@
     left: vw(83);
     right: vw(83);
     @include flex(row, space-between, flex-end);
+    z-index: 10;
     
     @include media('wide') {
       bottom: vw(69, 1440);
@@ -439,3 +524,12 @@
   }
 }
 
+// Keyframe animation for petals rotation
+@keyframes rotate-petals {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

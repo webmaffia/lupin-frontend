@@ -32,17 +32,38 @@ export default function Hero({ data }) {
 
   return (
     <section className="hero">
-      {/* Background */}
+      {/* Background with Gradients */}
       <div className="hero__bg">
-        <Image
-          src="/assets/hero-bg.png"
-          alt=""
-          width={1920}
-          height={969}
-          className="hero__bg-image"
-          priority
-          quality={100}
-        />
+        {/* Base green background */}
+        <div className="hero__bg-base"></div>
+        
+        {/* Gradient texture with color dodge blend */}
+        <div className="hero__bg-texture">
+          <Image
+            src="/assets/gradient-texture.png"
+            alt=""
+            width={1914}
+            height={1860}
+            quality={100}
+          />
+        </div>
+        
+        {/* Diagonal gradient overlay */}
+        <div className="hero__bg-gradient-diagonal"></div>
+        
+        {/* Top gradient overlay with multiply blend */}
+        <div className="hero__bg-gradient-top"></div>
+        
+        {/* Petals decoration */}
+        <div className="hero__bg-petals">
+          <Image
+            src="/assets/petals-decoration.svg"
+            alt=""
+            width={709}
+            height={726}
+            quality={100}
+          />
+        </div>
       </div>
 
       {/* Hero Image */}
