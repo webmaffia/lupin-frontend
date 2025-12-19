@@ -4,6 +4,7 @@ import OurStory from '@/components/OurStory';
 import OurPurpose from '@/components/OurPurpose';
 import Overview from '@/components/Overview';
 import OurBusiness from '@/components/OurBusiness';
+import Investors from '@/components/Investors';
 
 export default async function Home() {
   return (
@@ -15,6 +16,7 @@ export default async function Home() {
         <OurPurpose />
         <Overview />
         <OurBusiness />
+        <Investors />
       </main>
     </>
   );
