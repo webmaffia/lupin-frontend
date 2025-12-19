@@ -1,5 +1,7 @@
 import Header from '@/components/Header';
 import Hero from '@/components/Hero';
+import OurStory from '@/components/OurStory';
+import OurPurpose from '@/components/OurPurpose';
 
 export default async function Home() {
   return (
@@ -7,7 +9,8 @@ export default async function Home() {
       <Header />
       <Hero />
       <main>
-        {/* Your content here */}
+        <OurStory />
+        <OurPurpose />
       </main>
     </>
   );
