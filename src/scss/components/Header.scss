@@ -11,17 +11,17 @@
 @import '../utils/mixins';
 
 .header {
-  position: sticky;
+  position: absolute;
   top: 0;
   width: 100%;
-  background: #1b6b59; // Dark green from Figma
+  background: transparent;
   z-index: z('sticky');
   
   // Container
   &__container {
     @include flex(row, space-between, center);
     max-width: 100%;
-    padding: vw(20) vw(60);
+    padding: vw(50) vw(60);
     gap: vw(136);
     
     @include media('wide') {
@@ -91,7 +91,8 @@
       justify-content: flex-start;
       align-items: stretch;
       gap: 0;
-      background: #1b6b59;
+      background: rgba(27, 107, 89, 0.98);
+      backdrop-filter: blur(10px);
       padding: vw(120) vw(40) vw(40);
       box-shadow: vw(-4) 0 vw(20) rgba(0, 0, 0, 0.3);
       transform: translateX(100%);
@@ -237,24 +238,27 @@
   &__menu-btn {
     @include flex(row, center, center);
     gap: vw(10);
-    padding: vw(20);
+    height: vw(54);
+    padding: 0 vw(20);
     background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: vw(50);
+    border-radius: vw(27);
     cursor: pointer;
     transition: all $transition-fast;
     flex-shrink: 0;
     
     @include media('desktop') {
-      padding: vw(16);
+      height: vw(50);
+      padding: 0 vw(18);
       gap: vw(8);
-      border-radius: vw(40);
+      border-radius: vw(25);
     }
     
     @include media('mobile') {
-      padding: vw-mobile(14, 414);
+      height: vw-mobile(46, 414);
+      padding: 0 vw-mobile(16, 414);
       gap: vw-mobile(8, 414);
-      border-radius: vw-mobile(40, 414);
+      border-radius: vw-mobile(23, 414);
     }
     
     &:hover {
@@ -271,6 +275,7 @@
         top: vw(20);
         right: vw(20);
         z-index: z('modal') + 1;
+        background: #1b6b59;
       }
       
       @include media('mobile') {

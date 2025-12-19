@@ -3,6 +3,14 @@ const nextConfig = {
   // Add empty turbopack config to silence the warning
   turbopack: {},
   
+  // Image optimization settings
+  images: {
+    formats: ['image/webp'],
+    deviceSizes: [414, 768, 1024, 1440, 1920],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    minimumCacheTTL: 60,
+  },
+  
   // Disable CSS modules for .scss files
   webpack(config) {
     // Find the rule that handles CSS modules

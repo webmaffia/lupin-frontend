@@ -40,6 +40,7 @@ export default function Header({ data }) {
             height={106}
             className="header__logo"
             priority
+            quality={95}
           />
         </Link>
 
@@ -71,6 +72,7 @@ export default function Header({ data }) {
               alt=""
               width={1}
               height={36}
+              quality={95}
             />
           </div>
 
@@ -81,6 +83,7 @@ export default function Header({ data }) {
               alt="Globe"
               width={26}
               height={26}
+              quality={95}
             />
           </button>
 
@@ -91,6 +94,7 @@ export default function Header({ data }) {
               alt=""
               width={1}
               height={36}
+              quality={95}
             />
           </div>
 
@@ -101,6 +105,7 @@ export default function Header({ data }) {
               alt="Search"
               width={28}
               height={28}
+              quality={95}
             />
           </button>
         </div>
@@ -117,6 +122,7 @@ export default function Header({ data }) {
             width={24}
             height={14}
             className="header__menu-icon"
+            quality={95}
           />
           <span className="header__menu-text">Menu</span>
         </button>
