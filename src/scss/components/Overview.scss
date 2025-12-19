@@ -189,11 +189,23 @@
       height: vw-mobile(256, 414);
       margin-bottom: vw-mobile(-30, 414);
     }
+  }
+  
+  // Inline SVG for petals
+  &__petals-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  
+  // Individual petal paths
+  &__petal-path {
+    fill: transparent;
+    transition: fill 0.3s ease;
     
-    img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+    // Active state - white fill
+    &--active {
+      fill: white;
     }
   }
   
@@ -258,6 +270,8 @@
     position: relative;
     height: vw(142);
     color: #ffffff;
+    cursor: pointer;
+    transition: opacity $transition-base, transform $transition-base;
     
     @include media('desktop') {
       height: auto;
@@ -269,6 +283,10 @@
     
     &--dim {
       opacity: 0.4;
+    }
+    
+    &:hover {
+      transform: translateY(vw(-5));
     }
   }
   
