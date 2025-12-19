@@ -5,6 +5,8 @@ import OurPurpose from '@/components/OurPurpose';
 import Overview from '@/components/Overview';
 import OurBusiness from '@/components/OurBusiness';
 import Investors from '@/components/Investors';
+import Sustainability from '@/components/Sustainability';
+import CSR from '@/components/CSR';
 
 export default async function Home() {
   return (
@@ -17,6 +19,8 @@ export default async function Home() {
         <Overview />
         <OurBusiness />
         <Investors />
+        <Sustainability />
+        <CSR />
       </main>
     </>
   );

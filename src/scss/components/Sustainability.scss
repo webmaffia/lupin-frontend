@@ -1,0 +1,289 @@
+// Sustainability Section Component (from Figma design)
+// https://www.figma.com/design/QNIbuokNouJSBEY7GUGsEI/Jash---Final-Home-page-auto-layout--Copy-?node-id=22-3301
+
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
+.sustainability {
+  position: relative;
+  width: 100%;
+  height: vw(1065);
+  @include flex(column, center, flex-end);
+  padding: vw(193) vw(52);
+  overflow: hidden;
+  
+  @include media('desktop') {
+    height: auto;
+    min-height: vw(800);
+    padding: vw(150) vw(50);
+  }
+  
+  @include media('mobile') {
+    min-height: vw-mobile(700, 414);
+    padding: vw-mobile(100, 414) vw-mobile(20, 414);
+    align-items: center;
+  }
+  
+  // Background Image
+  &__bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: vw(1920);
+    height: vw(1065);
+    z-index: 0;
+    
+    @include media('desktop') {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  
+  &__bg-image {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: vw(1920);
+    height: vw(1065);
+    
+    @include media('desktop') {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  
+  &__bg-img {
+    width: 100%;
+    height: 101.76%;
+    object-fit: cover;
+    object-position: center;
+  }
+  
+  // Content
+  &__content {
+    position: relative;
+    @include flex(column, flex-start, flex-start);
+    gap: vw(30);
+    width: vw(517.301);
+    z-index: 10;
+    
+    @include media('desktop') {
+      width: vw(450);
+      gap: vw(26);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      max-width: vw-mobile(350, 414);
+      gap: vw-mobile(24, 414);
+    }
+  }
+  
+  &__text {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(30);
+    width: 100%;
+    
+    @include media('desktop') {
+      gap: vw(26);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(24, 414);
+    }
+  }
+  
+  &__header {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(20);
+    width: vw(495);
+    
+    @include media('desktop') {
+      width: 100%;
+      gap: vw(18);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(16, 414);
+    }
+  }
+  
+  &__eyebrow {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(30);
+    line-height: vw(26);
+    letter-spacing: vw(0.9);
+    text-transform: capitalize;
+    color: #FFFFFF;
+    margin: 0;
+    
+    @include media('desktop') {
+      font-size: vw(26);
+      line-height: vw(22);
+      letter-spacing: vw(0.8);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(22, 414);
+      line-height: vw-mobile(20, 414);
+      letter-spacing: vw-mobile(0.7, 414);
+    }
+  }
+  
+  &__heading {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(90);
+    line-height: vw(79);
+    text-transform: uppercase;
+    color: #FFFFFF;
+    width: 100%;
+    
+    p {
+      margin: 0;
+    }
+    
+    @include media('desktop') {
+      font-size: vw(72);
+      line-height: vw(66);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(48, 414);
+      line-height: vw-mobile(44, 414);
+    }
+  }
+  
+  &__description {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(20);
+    line-height: vw(30);
+    text-transform: capitalize;
+    color: #FFFFFF;
+    min-width: 100%;
+    
+    p {
+      margin: 0;
+    }
+    
+    @include media('desktop') {
+      font-size: vw(18);
+      line-height: vw(26);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(24, 414);
+    }
+  }
+  
+  // CTA Button
+  &__cta {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(1);
+    width: vw(213.454);
+    height: vw(49.967);
+    padding: vw(12.98) vw(32.9) vw(12.98) vw(21.16);
+    background: #FFFFFF;
+    border-radius: vw(47.168);
+    text-decoration: none;
+    transition: transform $transition-base, box-shadow $transition-base;
+    
+    @include media('desktop') {
+      width: vw(180);
+      height: vw(42);
+      padding: vw(11) vw(28) vw(11) vw(18);
+      border-radius: vw(40);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(160, 414);
+      height: vw-mobile(38, 414);
+      padding: vw-mobile(10, 414) vw-mobile(24, 414) vw-mobile(10, 414) vw-mobile(16, 414);
+      border-radius: vw-mobile(34, 414);
+    }
+    
+    &:hover {
+      transform: translateY(vw(-4));
+      box-shadow: 0 vw(4) vw(12) rgba(0, 0, 0, 0.15);
+      
+      @include media('desktop') {
+        transform: translateY(vw(-3));
+      }
+      
+      @include media('mobile') {
+        transform: translateY(vw-mobile(-2, 414));
+      }
+    }
+  }
+  
+  &__cta-inner {
+    @include flex(row, flex-start, center);
+    gap: vw(7);
+    
+    @include media('desktop') {
+      gap: vw(6);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(5, 414);
+    }
+  }
+  
+  &__cta-dot {
+    width: vw(3.959);
+    height: vw(3.959);
+    background: #363732;
+    border-radius: 50%;
+    flex-shrink: 0;
+    
+    @include media('desktop') {
+      width: vw(3.5);
+      height: vw(3.5);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(3, 414);
+      height: vw-mobile(3, 414);
+    }
+  }
+  
+  &__cta-text {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(20);
+    line-height: vw(23.43);
+    color: #363732;
+    white-space: nowrap;
+    
+    @include media('desktop') {
+      font-size: vw(17);
+      line-height: vw(20);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(15, 414);
+      line-height: vw-mobile(18, 414);
+    }
+  }
+  
+  &__cta-underline {
+    display: block;
+    width: 100%;
+    height: vw(0.5);
+    background: #363732;
+    
+    @include media('desktop') {
+      height: vw(0.4);
+    }
+    
+    @include media('mobile') {
+      height: vw-mobile(0.3, 414);
+    }
+  }
+}
+

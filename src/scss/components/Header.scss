@@ -111,7 +111,7 @@
   }
   
   &__nav-item {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(21);
     line-height: vw(50);
@@ -168,7 +168,7 @@
   }
   
   &__contact {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(16);
     line-height: vw(50);
@@ -297,7 +297,7 @@
   }
   
   &__menu-text {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 400;
     font-size: vw(20);
     line-height: 1.5;

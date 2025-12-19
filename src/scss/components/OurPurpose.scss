@@ -78,7 +78,7 @@
   }
   
   &__eyebrow {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 400;
     font-size: vw(30);
     line-height: vw(26);
@@ -332,7 +332,7 @@
   }
   
   &__card-title {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(40);
     line-height: vw(40);
@@ -360,7 +360,7 @@
   }
   
   &__card-description {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 400;
     font-size: vw(15.624);
     line-height: vw(19.53);
@@ -428,7 +428,7 @@
     
     // Link style (Cards 2 & 3)
     &--link {
-      font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+      font-family: $font-family-base;
       font-weight: 700;
       font-size: vw(19.53);
       line-height: vw(16.926);
@@ -485,7 +485,7 @@
     position: absolute;
     left: vw(32.9);
     top: vw(12.98);
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(20);
     line-height: vw(23.43);

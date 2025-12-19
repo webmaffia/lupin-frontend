@@ -327,7 +327,7 @@
   }
   
   &__cta-text {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(27.22);
     line-height: vw(31.888);
@@ -437,7 +437,7 @@
   
   &__note-text {
     position: absolute;
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(16.746);
     line-height: normal;

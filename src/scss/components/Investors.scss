@@ -92,7 +92,7 @@
     position: absolute;
     left: vw(530.07);
     top: vw(126.22); // 11.69% of 1080
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     color: #FFFFFF;
     text-transform: uppercase;
     
@@ -323,7 +323,7 @@
   }
   
   &__circle-title {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(38.104);
     line-height: vw(68.587);
@@ -343,7 +343,7 @@
   }
   
   &__circle-subtitle {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(28.578);
     line-height: vw(35);
@@ -369,7 +369,7 @@
   }
   
   &__circle-description {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(28.578);
     line-height: vw(35.246);
@@ -429,7 +429,7 @@
   }
   
   &__download-label {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 400;
     font-size: vw(28.578);
     line-height: vw(68.587);
@@ -454,7 +454,7 @@
     width: vw(87.033);
     height: vw(21.69);
     border-radius: vw(19.577);
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(12.725);
     line-height: vw(30.521);
@@ -571,7 +571,7 @@
   }
   
   &__cta-text {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(19.052);
     line-height: vw(22.319);

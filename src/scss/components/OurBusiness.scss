@@ -165,7 +165,7 @@
   }
   
   &__heading {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(72);
     line-height: vw(72);
@@ -187,7 +187,7 @@
   }
   
   &__description {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 400;
     font-size: vw(24);
     line-height: vw(30);
@@ -279,7 +279,7 @@
   }
   
   &__cta-text {
-    font-family: 'D-DIN', 'Arial Narrow', sans-serif;
+    font-family: $font-family-base;
     font-weight: 700;
     font-size: vw(19.052);
     line-height: vw(22.319);
