@@ -34,7 +34,7 @@ export default function Investors({ data }) {
         line3: "June 30, 2025"
       },
       cta: {
-        text: "More releases",
+        text: "View investor reports",
         href: "#releases"
       }
     }
@@ -79,7 +79,7 @@ export default function Investors({ data }) {
           </div>
           
           <div className="investors__stock-item investors__stock-item--2">
-            <p className="investors__stock-value">NSE: {investorsData.stockQuotes.bse}</p>
+            <p className="investors__stock-value investors__stock-value--small">BSE: {investorsData.stockQuotes.bse}</p>
             <p className="investors__stock-meta">
               {investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}
             </p>
@@ -126,7 +126,9 @@ export default function Investors({ data }) {
             <Link href={investorsData.exchangeReleases.cta.href} className="investors__cta">
               <div className="investors__cta-inner">
                 <span className="investors__cta-dot"></span>
-                <span className="investors__cta-text">{investorsData.exchangeReleases.cta.text}</span>
+                <span className="investors__cta-text">
+                  View investor<br />reports 
+                </span>
               </div>
               <span className="investors__cta-underline"></span>
             </Link>

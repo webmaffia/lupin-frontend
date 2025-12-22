@@ -26,6 +26,7 @@
     position: absolute;
     inset: 0;
     z-index: 0;
+    background: #8EB621;
   }
   
   &__bg-base {
@@ -290,7 +291,7 @@
   &__title-group {
     @include flex(column, flex-start, flex-start);
     gap: vw(20);
-    width: vw(468);
+    width: vw(508);
     
     @include media('desktop') {
       width: 100%;
@@ -327,7 +328,7 @@
     font-weight: 700;
     font-size: vw(100);
     line-height: vw(86);
-    text-transform: uppercase;
+   
     width: 100%;
     
     p {
@@ -350,9 +351,9 @@
     font-weight: 700;
     font-size: vw(40);
     line-height: vw(41);
-    text-transform: uppercase;
+ 
     margin: 0;
-    width: 100%;
+    width: 93%;
     
     @include media('desktop') {
       font-size: vw(32);

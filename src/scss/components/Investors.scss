@@ -94,7 +94,6 @@
     top: vw(126.22); // 11.69% of 1080
     font-family: $font-family-base;
     color: #FFFFFF;
-    text-transform: uppercase;
     
     @include media('desktop') {
       position: relative;
@@ -113,35 +112,38 @@
     left: vw(225.04);
     top: 0;
     font-weight: 700;
-    font-size: vw(24);
-    line-height: vw(36);
+    font-size: vw(30);
+    line-height: vw(75);
     text-align: right;
+    text-transform: capitalize;
     margin: 0;
     
     @include media('desktop') {
       position: relative;
       left: 0;
       text-align: left;
-      font-size: vw(20);
-      line-height: vw(30);
+      font-size: vw(24);
+      line-height: vw(60);
       margin-bottom: vw(30);
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(18, 414);
-      line-height: vw-mobile(27, 414);
+      font-size: vw-mobile(20, 414);
+      line-height: vw-mobile(50, 414);
     }
   }
   
   &__stock-header {
     position: absolute;
     right: vw(1154.93);
-    top: vw(69.5); // 18.12% from top relative to container
+    top: vw(195.696); // 18.12% of 1080
     text-align: right;
+    z-index: 11;
     
     @include media('desktop') {
       position: relative;
       right: 0;
+      top: 0;
       text-align: left;
       margin-bottom: vw(40);
     }
@@ -152,10 +154,14 @@
   }
   
   &__stock-title {
+    font-family: $font-family-base;
     font-weight: 700;
-    font-size: vw(40);
+    font-size: vw(36);
     line-height: vw(36);
     opacity: 0.8;
+    text-transform: uppercase;
+    text-align: right;
+    width: vw(185.019);
     margin: 0;
     
     p {
@@ -163,13 +169,15 @@
     }
     
     @include media('desktop') {
-      font-size: vw(32);
-      line-height: vw(32);
+      font-size: vw(30);
+      line-height: vw(30);
+      text-align: left;
+      width: auto;
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(28, 414);
-      line-height: vw-mobile(28, 414);
+      font-size: vw-mobile(26, 414);
+      line-height: vw-mobile(26, 414);
     }
   }
   
@@ -222,20 +230,39 @@
   }
   
   &__stock-value {
+    font-family: 'D-DIN', 'DIN-Bold', $font-family-base;
     font-weight: 700;
     font-size: vw(76);
     line-height: vw(72);
     opacity: 0.95;
+    text-transform: uppercase;
     margin: 0;
+    
+    &--small {
+      font-family: $font-family-base;
+      font-weight: 700;
+      font-size: vw(60);
+      line-height: vw(72);
+    }
     
     @include media('desktop') {
       font-size: vw(60);
       line-height: vw(60);
+      
+      &--small {
+        font-size: vw(50);
+        line-height: vw(60);
+      }
     }
     
     @include media('mobile') {
       font-size: vw-mobile(40, 414);
       line-height: vw-mobile(40, 414);
+      
+      &--small {
+        font-size: vw-mobile(32, 414);
+        line-height: vw-mobile(32, 414);
+      }
     }
   }
   
@@ -431,7 +458,7 @@
   &__download-label {
     font-family: $font-family-base;
     font-weight: 400;
-    font-size: vw(28.578);
+    font-size: vw(26);
     line-height: vw(68.587);
     text-transform: capitalize;
     color: #FFFFFF;
@@ -439,7 +466,7 @@
     margin: 0;
     
     @include media('desktop') {
-      font-size: vw(24);
+      font-size: vw(22);
       line-height: vw(56);
     }
     
@@ -572,11 +599,11 @@
   
   &__cta-text {
     font-family: $font-family-base;
-    font-weight: 700;
+    font-weight: 600;
     font-size: vw(19.052);
     line-height: vw(22.319);
     color: #033943;
-    white-space: nowrap;
+    white-space: pre-wrap;
     
     @include media('desktop') {
       font-size: vw(16);

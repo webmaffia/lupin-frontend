@@ -23,39 +23,7 @@ export default function CSR({ data }) {
     <section className="csr" data-node-id="22:3315">
       {/* Background */}
       <div className="csr__bg" data-node-id="22:3316">
-        <div className="csr__bg-base" data-node-id="22:3317"></div>
-        <div className="csr__bg-union" data-node-id="22:3318">
-          <Image
-            src="/assets/1b91d2c85dd337d6d5ea9575c33ab6ef64c4b452.svg"
-            alt=""
-            fill
-            quality={100}
-          />
-        </div>
-        <div className="csr__bg-texture-1" data-node-id="22:3327">
-          <Image
-            src="/assets/5e3a6a4572297329400cef2d9c947031ad98359d.png"
-            alt=""
-            fill
-            quality={100}
-          />
-        </div>
-        <div className="csr__bg-texture-2" data-node-id="22:3328">
-          <Image
-            src="/assets/08b3e84f633ab405a9e8e5bdb8176f182fcbac3d.png"
-            alt=""
-            fill
-            quality={100}
-          />
-        </div>
-        <div className="csr__bg-texture-3" data-node-id="22:3330">
-          <Image
-            src="/assets/2126f721e2a5d22fb8c82c636d19e2076f6a00b2.png"
-            alt=""
-            fill
-            quality={100}
-          />
-        </div>
+        
       </div>
 
       {/* Content Container */}
@@ -97,7 +65,7 @@ export default function CSR({ data }) {
           </div>
 
           {/* CTA Button */}
-          <Link href={csrData.cta.href} className="csr__cta" data-node-id="22:3342">
+          <Link href={csrData.cta.href} className="our-story__cta" data-node-id="22:3342">
             <div className="csr__cta-inner">
               <span className="csr__cta-dot" data-node-id="22:3345"></span>
               <span className="csr__cta-text" data-node-id="22:3344">
