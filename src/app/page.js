@@ -10,10 +10,12 @@ import CSR from '@/components/CSR';
 import Life from '@/components/Life';
 import NewsInsights from '@/components/NewsInsights';
 import Footer from '@/components/Footer';
+import GoldenLine from '@/components/GoldenLine';
 
 export default async function Home() {
   return (
-    <>
+    <div style={{ position: 'relative' }}>
+      <GoldenLine />
       <Header />
       <Hero />
       <main>
@@ -28,6 +30,6 @@ export default async function Home() {
         <NewsInsights />
       </main>
       <Footer />
-    </>
+    </div>
   );
 }

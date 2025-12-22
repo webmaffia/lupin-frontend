@@ -1,0 +1,41 @@
+@import '../utils/variables';
+@import '../utils/mixins';
+@import '../utils/functions';
+
+.golden-line {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+ 
+  pointer-events: none;
+  z-index: 9999;
+  
+  &__svg {
+   
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    
+    path, line {
+      stroke: #D4AF37 !important;
+      stroke-width: 3px !important;
+      fill: none !important;
+    }
+    
+    @include media('desktop') {
+      width: 100vw;
+      height: 100vh;
+    }
+    
+    @include media('mobile') {
+      width: 100vw;
+      height: 100vh;
+      
+      path, line {
+        stroke-width: 2px !important;
+      }
+    }
+  }
+}
+
