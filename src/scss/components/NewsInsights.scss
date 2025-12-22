@@ -95,6 +95,24 @@
       width: 100%;
       gap: vw-mobile(20, 414);
     }
+    
+    // Show button and overlay on hover
+    &:hover {
+      .news-insights__circle-overlay {
+        opacity: 1;
+      }
+      
+      .news-insights__button {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        
+        &:hover {
+          transform: translateY(vw(-2));
+          box-shadow: 0 vw(8) vw(20) rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
   }
   
   // Circular Image Container
@@ -156,9 +174,29 @@
       width: vw-mobile(400, 414);
       height: vw-mobile(400, 414);
     }
+  }
+  
+  // Hover Overlay
+  &__circle-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: vw(626.508);
+    height: vw(626.508);
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 5;
+    opacity: 0;
+    transition: opacity $transition-base;
     
-    &--opacity {
-      opacity: 0.5;
+    @include media('desktop') {
+      width: vw(550, 1440);
+      height: vw(550, 1440);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(400, 414);
+      height: vw-mobile(400, 414);
     }
   }
   
@@ -178,7 +216,10 @@
     width: vw(274.611);
     text-decoration: none;
     z-index: 10;
-    transition: transform $transition-base, box-shadow $transition-base;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(vw(10));
+    transition: opacity $transition-base, visibility $transition-base, transform $transition-base, box-shadow $transition-base;
     
     @include media('desktop') {
       border-radius: vw(55, 1440);
@@ -192,11 +233,6 @@
       padding: vw-mobile(12, 414) vw-mobile(20, 414);
       height: vw-mobile(50, 414);
       width: vw-mobile(200, 414);
-    }
-    
-    &:hover {
-      transform: translateY(vw(-2));
-      box-shadow: 0 vw(8) vw(20) rgba(0, 0, 0, 0.15);
     }
   }
   

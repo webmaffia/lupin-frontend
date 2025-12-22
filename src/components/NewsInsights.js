@@ -13,7 +13,6 @@ export default function NewsInsights({ data }) {
         headline: "Ramesh Swaminathan's interview with ET CFO on GST, US tariffs, M&A, biosimilars, and tech in finance.",
         circleOuter: "/assets/news-circle-outer-1.svg",
         circleInner: "/assets/news-circle-inner-1.png",
-        showButton: true,
         href: "#news-1"
       },
       {
@@ -22,7 +21,6 @@ export default function NewsInsights({ data }) {
         headline: "Lupin champions women's empowerment through equal opportunities, leadership development, and inclusive growth.",
         circleOuter: "/assets/news-circle-outer-2.svg",
         circleInner: "/assets/news-circle-inner-2.png",
-        showButton: false,
         href: "#news-2"
       }
     ]
@@ -42,21 +40,9 @@ export default function NewsInsights({ data }) {
             <div key={item.id} className="news-insights__item" data-node-id={`22:${3381 + (item.id - 1) * 14}`}>
               {/* Circular Image Container */}
               <div className="news-insights__circle" data-node-id={`22:${3382 + (item.id - 1) * 14}`}>
-                {/* Outer Circle Image */}
-                <div className="news-insights__circle-outer" data-node-id={`22:${3383 + (item.id - 1) * 14}`}>
-                  <Image
-                    src={item.circleOuter}
-                    alt=""
-                    width={626.508}
-                    height={626.508}
-                    className="news-insights__circle-img"
-                    quality={100}
-                  />
-                </div>
-                
-                {/* Inner Circle Image (with opacity for first item) */}
+                {/* Inner Circle Image */}
                 <div 
-                  className={`news-insights__circle-inner ${item.id === 1 ? 'news-insights__circle-inner--opacity' : ''}`}
+                  className="news-insights__circle-inner"
                   data-node-id={`22:${3384 + (item.id - 1) * 14}`}
                 >
                   <Image
@@ -69,20 +55,21 @@ export default function NewsInsights({ data }) {
                   />
                 </div>
 
-                {/* Know More Button (only for first item) */}
-                {item.showButton && (
-                  <Link href={item.href} className="news-insights__button" data-node-id="22:3386">
-                    <div className="news-insights__button-inner" data-node-id="22:3387">
-                      <div className="news-insights__button-content" data-node-id="22:3388">
-                        <span className="news-insights__button-dot" data-node-id="22:3389"></span>
-                        <span className="news-insights__button-text" data-node-id="22:3390">
-                          know more
-                        </span>
-                      </div>
-                      <span className="news-insights__button-underline" data-node-id="22:3391"></span>
+                {/* Hover Overlay */}
+                <div className="news-insights__circle-overlay"></div>
+
+                {/* Know More Button (appears on hover) */}
+                <Link href={item.href} className="news-insights__button" data-node-id="22:3386">
+                  <div className="news-insights__button-inner" data-node-id="22:3387">
+                    <div className="news-insights__button-content" data-node-id="22:3388">
+                      <span className="news-insights__button-dot" data-node-id="22:3389"></span>
+                      <span className="news-insights__button-text" data-node-id="22:3390">
+                        know more
+                      </span>
                     </div>
-                  </Link>
-                )}
+                    <span className="news-insights__button-underline" data-node-id="22:3391"></span>
+                  </div>
+                </Link>
               </div>
 
               {/* Text Content */}
