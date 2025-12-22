@@ -14,24 +14,21 @@ export default function OurPurpose({ data }) {
         title: "Relief from disease",
         description: "Delivering meaningful treatments for today and tomorrow",
         ctaText: "know more",
-        ctaHref: "#relief",
-        hasButton: true
+        ctaHref: "#relief"
       },
       {
         id: 2,
         title: "Innovation to unlock access at scale",
         description: "Making complex, cutting-edge healthcare solutions accessible to all",
-        ctaText: "Know more",
-        ctaHref: "#innovation",
-        hasButton: false
+        ctaText: "know more",
+        ctaHref: "#innovation"
       },
       {
         id: 3,
         title: "Solutions for underserved communities",
         description: "Serving markets and patients overlooked by others",
-        ctaText: "Know more",
-        ctaHref: "#solutions",
-        hasButton: false
+        ctaText: "know more",
+        ctaHref: "#solutions"
       }
     ]
   };
@@ -92,8 +89,10 @@ export default function OurPurpose({ data }) {
                 <h3 className="our-purpose__card-title">{purposeData.cards[1].title}</h3>
                 <p className="our-purpose__card-description">{purposeData.cards[1].description}</p>
               </div>
-              <Link href={purposeData.cards[1].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--link">
-                {purposeData.cards[1].ctaText}
+              <Link href={purposeData.cards[1].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
+                <span className="our-purpose__card-cta-dot"></span>
+                <span className="our-purpose__card-cta-text">{purposeData.cards[1].ctaText}</span>
+                <span className="our-purpose__card-cta-underline"></span>
               </Link>
             </div>
           </div>
@@ -113,8 +112,10 @@ export default function OurPurpose({ data }) {
                 <h3 className="our-purpose__card-title">{purposeData.cards[2].title}</h3>
                 <p className="our-purpose__card-description">{purposeData.cards[2].description}</p>
               </div>
-              <Link href={purposeData.cards[2].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--link">
-                {purposeData.cards[2].ctaText}
+              <Link href={purposeData.cards[2].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
+                <span className="our-purpose__card-cta-dot"></span>
+                <span className="our-purpose__card-cta-text">{purposeData.cards[2].ctaText}</span>
+                <span className="our-purpose__card-cta-underline"></span>
               </Link>
             </div>
           </div>
