@@ -1,0 +1,334 @@
+// Life Section Component (from Figma design)
+// https://www.figma.com/design/QNIbuokNouJSBEY7GUGsEI/Jash---Final-Home-page-auto-layout--Copy-?node-id=22-3347
+
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
+.life {
+  position: relative;
+  width: 100%;
+  height: vw(1071);
+  overflow: hidden;
+  padding: vw(172) vw(120);
+  
+  @include media('desktop') {
+    height: auto;
+    min-height: vw(900);
+    padding: vw(150) vw(80);
+  }
+  
+  @include media('mobile') {
+    height: auto;
+    min-height: vw-mobile(800, 414);
+    padding: vw-mobile(100, 414) vw-mobile(30, 414);
+  }
+  
+  // Background
+  &__bg {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+  }
+  
+  // Gradient Background
+  &__bg-gradient {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: vw(1920);
+    height: vw(1080);
+    background: linear-gradient(90deg, rgba(32, 80, 148, 1) 0%, rgba(26, 116, 150, 1) 20.673%, rgba(7, 111, 103, 1) 59.135%, rgba(12, 165, 139, 1) 89.334%);
+    z-index: 1;
+    
+    @include media('desktop') {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  
+  // Background Image
+  &__bg-image {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 2;
+    
+    @include media('desktop') {
+      width: 45%;
+    }
+    
+    @include media('mobile') {
+      display: none;
+    }
+  }
+  
+  &__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center right;
+  }
+  
+  // Content Container
+  &__container {
+    position: relative;
+    z-index: 10;
+    @include flex(column, flex-start, flex-start);
+    gap: vw(30);
+    width: vw(423.75);
+    
+    @include media('desktop') {
+      width: vw(500, 1440);
+      gap: vw(25);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      gap: vw-mobile(25, 414);
+    }
+  }
+  
+  // Content Section
+  &__content {
+    @include flex(column, flex-start, center);
+    gap: vw(30);
+    width: 100%;
+    
+    @include media('desktop') {
+      gap: vw(25);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(20, 414);
+    }
+  }
+  
+  // Heading Wrapper
+  &__heading-wrapper {
+    @include flex(column, flex-start, center);
+    gap: vw(28);
+    width: 100%;
+    
+    @include media('desktop') {
+      gap: vw(24);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(20, 414);
+    }
+  }
+  
+  // Heading
+  &__heading {
+    @include flex(column, flex-start, flex-start);
+  
+    width: 100%;
+    font-family: $font-family-base;
+    font-weight: 700;
+    color: #FFFFFF;
+    
+    @include media('desktop') {
+      gap: vw(22);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(18, 414);
+    }
+  }
+  
+  // Large Heading "LIFE"
+  &__heading-large {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(230);
+    line-height: vw(86);
+    text-transform: uppercase;
+    margin: 0;
+    height: vw(152.634);
+    
+    @include media('desktop') {
+      font-size: vw(180, 1440);
+      line-height: vw(70, 1440);
+      height: vw(120, 1440);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(120, 414);
+      line-height: vw-mobile(50, 414);
+      height: vw-mobile(100, 414);
+    }
+  }
+  
+  // Small Heading "at Lupin World"
+  &__heading-small {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(46);
+    line-height: vw(41);
+    margin: 0;
+    height: vw(30.719);
+    
+    @include media('desktop') {
+      font-size: vw(38, 1440);
+      line-height: vw(35, 1440);
+      height: auto;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(32, 414);
+      line-height: vw-mobile(30, 414);
+    }
+  }
+  
+  // Underline
+  &__underline {
+    width: 100%;
+    height: vw(1);
+    background: linear-gradient(90deg, #FFF 48.08%, rgba(255, 255, 255, 0.00) 100%);
+    
+    @include media('desktop') {
+      height: vw(0.8, 1440);
+    }
+    
+    @include media('mobile') {
+      height: vw-mobile(0.6, 414);
+    }
+  }
+  
+  // Description
+  &__description {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(20);
+    line-height: vw(30);
+    text-transform: capitalize;
+    color: #FFFFFF;
+    margin: 0;
+    width: 100%;
+    
+    @include media('desktop') {
+      font-size: vw(18, 1440);
+      line-height: vw(28, 1440);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(24, 414);
+    }
+  }
+  
+  // CTA Button
+  &__cta {
+    background: #FFFFFF;
+    border-radius: vw(64.947);
+    padding: vw(17) vw(29);
+    height: vw(68);
+    width: vw(366);
+    text-decoration: none;
+    transition: transform $transition-base, box-shadow $transition-base;
+    
+    @include media('desktop') {
+      border-radius: vw(55, 1440);
+      padding: vw(14) vw(24, 1440);
+      height: vw(58, 1440);
+      width: vw(320, 1440);
+    }
+    
+    @include media('mobile') {
+      border-radius: vw-mobile(45, 414);
+      padding: vw-mobile(12, 414) vw-mobile(20, 414);
+      height: vw-mobile(50, 414);
+      width: 100%;
+    }
+    
+    &:hover {
+      transform: translateY(vw(-2));
+      box-shadow: 0 vw(8) vw(20) rgba(0, 0, 0, 0.15);
+    }
+  }
+  
+  &__cta-inner {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(1);
+    width: 100%;
+    height: 100%;
+  }
+  
+  &__cta-content {
+    @include flex(row, flex-start, center);
+    gap: vw(11);
+    width: 100%;
+    
+    @include media('desktop') {
+      gap: vw(9, 1440);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(8, 414);
+    }
+  }
+  
+  &__cta-dot {
+    width: vw(5.451);
+    height: vw(5.451);
+    background: #363732;
+    border-radius: 50%;
+    flex-shrink: 0;
+    
+    @include media('desktop') {
+      width: vw(4.5, 1440);
+      height: vw(4.5, 1440);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(4, 414);
+      height: vw-mobile(4, 414);
+    }
+  }
+  
+  &__cta-text {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(27.539);
+    line-height: vw(32.261);
+    text-transform: capitalize;
+    color: #363732;
+    margin: 0;
+    height: vw(33);
+    
+    @include media('desktop') {
+      font-size: vw(24, 1440);
+      line-height: vw(28, 1440);
+      height: auto;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(20, 414);
+      line-height: vw-mobile(24, 414);
+    }
+  }
+  
+  &__cta-underline {
+    display: block;
+    width: 100%;
+    height: vw(0.69);
+    background: #363732;
+    
+    @include media('desktop') {
+      height: vw(0.6, 1440);
+    }
+    
+    @include media('mobile') {
+      height: vw-mobile(0.5, 414);
+    }
+  }
+}
+

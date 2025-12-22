@@ -7,6 +7,8 @@ import OurBusiness from '@/components/OurBusiness';
 import Investors from '@/components/Investors';
 import Sustainability from '@/components/Sustainability';
 import CSR from '@/components/CSR';
+import Life from '@/components/Life';
+import NewsInsights from '@/components/NewsInsights';
 
 export default async function Home() {
   return (
@@ -21,6 +23,8 @@ export default async function Home() {
         <Investors />
         <Sustainability />
         <CSR />
+        <Life />
+        <NewsInsights />
       </main>
     </>
   );
