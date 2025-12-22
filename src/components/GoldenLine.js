@@ -21,15 +21,21 @@ export default function GoldenLine() {
 
     // Function to update the path drawing based on scroll
     const handleScroll = () => {
-      // Get current scroll position and total scrollable height
-      const scrollTop = window.scrollY;
-      const containerHeight = container.offsetHeight;
+      // Get the container's position relative to the viewport
+      const containerRect = container.getBoundingClientRect();
+      const containerTop = containerRect.top;
+      const containerHeight = containerRect.height;
       const windowHeight = window.innerHeight;
       
-      // Calculate scroll progress through the container
-      // The path should complete drawing as we scroll through the entire container
-      const maxScroll = containerHeight - windowHeight;
-      const scrollProgress = scrollTop / maxScroll;
+      // Calculate how much of the container has been scrolled through
+      // Start drawing when container enters viewport from bottom
+      // Complete when container exits viewport from top
+      const scrollStart = containerTop - windowHeight;
+      const scrollEnd = containerTop + containerHeight;
+      const scrollRange = scrollEnd - scrollStart;
+      
+      // Calculate progress (0 when container enters bottom, 1 when it exits top)
+      const scrollProgress = -scrollStart / scrollRange;
       
       // Clamp between 0 and 1
       const percentage = Math.min(Math.max(scrollProgress, 0), 1);
@@ -86,7 +92,7 @@ export default function GoldenLine() {
       }
 
       .cls-2, .cls-3 {
-        stroke-width: 2px;
+        stroke-width: 1px;
       }
       
       `}
