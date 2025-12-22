@@ -23,7 +23,7 @@ export default function Investors({ data }) {
       },
       downloads: [
         { label: "Earnings Release", href: "#earnings", available: true },
-        { label: "Analyst Presentation", href: "#analyst", available: false }
+        { label: "Analyst Presentation", href: "#analyst", available: true }
       ]
     },
     exchangeReleases: {
@@ -60,9 +60,13 @@ export default function Investors({ data }) {
       {/* Content Container */}
       <div className="investors__container">
         {/* Top Text Section */}
+        <p className="investors__eyebrow">{investorsData.eyebrow}</p>
         <div className="investors__top">
-          <p className="investors__eyebrow">{investorsData.eyebrow}</p>
           
+          
+       
+          
+          <div className="pricewrapper">
           <div className="investors__stock-header">
             <div className="investors__stock-title">
               <p>Stock</p>
@@ -70,19 +74,17 @@ export default function Investors({ data }) {
             </div>
             <p className="investors__stock-updated">{investorsData.stockQuotes.lastUpdated}</p>
           </div>
-          
-          <div className="investors__stock-item investors__stock-item--1">
-            <p className="investors__stock-value">NSE: {investorsData.stockQuotes.nse}</p>
-            <p className="investors__stock-meta">
-              {investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}
-            </p>
-          </div>
-          
-          <div className="investors__stock-item investors__stock-item--2">
-            <p className="investors__stock-value investors__stock-value--small">BSE: {investorsData.stockQuotes.bse}</p>
-            <p className="investors__stock-meta">
-              {investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}
-            </p>
+            <div className="investors__stock-item investors__stock-item--1">
+              <p className="investors__stock-value">
+                NSE: {investorsData.stockQuotes.nse} <span className="investors__stock-meta">{investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}</span>
+              </p>
+            </div>
+            
+            <div className="investors__stock-item investors__stock-item--2">
+              <p className="investors__stock-value investors__stock-value--small">
+                BSE: {investorsData.stockQuotes.bse} <span className="investors__stock-meta">{investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}</span>
+              </p>
+            </div>
           </div>
         </div>
 
@@ -105,7 +107,7 @@ export default function Investors({ data }) {
                       download
                     </Link>
                   ) : (
-                    <span className="investors__download-btn investors__download-btn--disabled">
+                    <span className="investors__download-btn investors__download-btn--active">
                       download
                     </span>
                   )}
@@ -123,11 +125,11 @@ export default function Investors({ data }) {
               <p>{investorsData.exchangeReleases.description.line3}</p>
             </div>
             
-            <Link href={investorsData.exchangeReleases.cta.href} className="investors__cta">
+            <Link href={investorsData.exchangeReleases.cta.href} className="our-story__cta">
               <div className="investors__cta-inner">
                 <span className="investors__cta-dot"></span>
                 <span className="investors__cta-text">
-                  View investor<br />reports 
+                  View investor reports 
                 </span>
               </div>
               <span className="investors__cta-underline"></span>
