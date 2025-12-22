@@ -169,10 +169,10 @@
     font-weight: 700;
     font-size: vw(72);
     line-height: vw(72);
-    text-transform: uppercase;
+   
     color: #FFFFFF;
     margin: 0;
-    width: vw(460);
+    width: vw(470);
     
     @include media('desktop') {
       font-size: vw(60);
@@ -210,6 +210,10 @@
   
   &__description-line {
     display: inline;
+    &:last-child{
+      margin-top: vw(30);
+      display: block;
+    }
   }
   
   // CTA Button (matching OurStory style)

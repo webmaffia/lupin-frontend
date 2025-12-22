@@ -37,7 +37,7 @@
     left: 0;
     width: vw(1919.822);
     height: vw(971);
-    background: linear-gradient(270deg, rgb(1, 56, 66) 0%, rgba(1, 56, 66, 0.94) 32.212%, rgb(7, 111, 103) 67.788%, rgb(12, 165, 139) 100%);
+    background: linear-gradient(270deg, rgba(20, 58, 103, 1) 0%, rgba(20, 58, 105, 1) 32.212%, rgba(7, 111, 103, 1) 67.788%, rgba(12, 165, 139, 1) 100%);
     z-index: 1;
     
     @include media('desktop') {
@@ -232,7 +232,7 @@
   &__heading-wrapper {
     @include flex(column, flex-start, flex-start);
     gap: vw(20);
-    width: vw(425);
+    width: vw(693);
     
     @include media('desktop') {
       gap: vw(16);
@@ -272,7 +272,7 @@
     font-weight: 700;
     font-size: vw(72);
     line-height: vw(72);
-    text-transform: uppercase;
+    text-transform: none;
     color: #ffffff;
     margin: 0;
     
@@ -299,22 +299,24 @@
     line-height: vw(30);
     text-transform: capitalize;
     color: #ffffff;
-    width: 100%;
+    width: vw(575);
     
     @include media('desktop') {
       font-size: vw(20);
       line-height: vw(26);
+      width: vw(500, 1440);
     }
     
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
       line-height: vw-mobile(22, 414);
+      width: 100%;
     }
   }
   
   &__paragraph {
     margin: 0;
-    display: inline;
+    display: block;
   }
   
   // CTA Button

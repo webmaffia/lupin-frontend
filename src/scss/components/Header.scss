@@ -21,16 +21,16 @@
   &__container {
     @include flex(row, space-between, center);
     max-width: 100%;
-    padding: vw(50) vw(60);
-    gap: vw(136);
+    padding: vw(50) vw(100);
+   
     
     @include media('wide') {
       padding: vw(20, 1440) vw(60, 1440);
-      gap: vw(100, 1440);
+     
     }
     
     @include media('desktop') {
-      gap: vw(60);
+    
       padding: vw(16) vw(40);
     }
     

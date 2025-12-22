@@ -7,7 +7,7 @@ export default function OurPurpose({ data }) {
   const purposeData = data || {
     eyebrow: "Our Purpose",
     heading: "We Catalyze Treatments That Transform Hope Into Healing",
-    description: "A purpose-driven journey of over five decades – improving lives, building sustainability, and delivering long-term value to our stakeholders.",
+    description: "Ours is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders",
     cards: [
       {
         id: 1,

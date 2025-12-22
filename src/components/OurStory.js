@@ -5,14 +5,18 @@ import '../scss/components/OurStory.scss';
 export default function OurStory({ data }) {
   // Default data (will be replaced by Strapi)
   const storyData = data || {
-    eyebrow: "Our Story",
+    eyebrow: "The Lupin Story",
     heading: {
-      line1: "The Promise",
-      line2: "of Caring"
+      line1: "Built on ",
+      line2: "Purpose... ",
+      line3: "Driven by Precision"
     },
     paragraphs: [
-      "Science can be a potent catalyst for change and transformation. This conviction in the power of science to improve health outcomes and uplift communities served as the guiding light for our founder, Dr. Desh Bandhu Gupta, and for Lupin,",
-      "the company he founded in 1968."
+      "Founded by Dr. Desh Bandhu Gupta in 1968, Lupin",
+      "aimed to improve access to essential",
+      "medicines. Today we stand tall as a globally",
+      "trusted pharmaceutical company guided by",
+      "science, quality, and a patient-first mindset"
     ],
     cta: {
       text: "know more",
@@ -77,14 +81,22 @@ export default function OurStory({ data }) {
               <h2 className="our-story__heading">
                 <span className="our-story__heading-line">{storyData.heading.line1}</span>
                 <span className="our-story__heading-line">{storyData.heading.line2}</span>
+                {storyData.heading.line3 && (
+                  <span className="our-story__heading-line">{storyData.heading.line3}</span>
+                )}
               </h2>
             </div>
             
             {/* Description */}
             <div className="our-story__description">
-              {storyData.paragraphs.map((paragraph, index) => (
-                <p key={index} className="our-story__paragraph">{paragraph}</p>
-              ))}
+              <p className="our-story__paragraph">
+                {storyData.paragraphs.map((paragraph, index) => (
+                  <span key={index}>
+                    {paragraph}
+                    {index < storyData.paragraphs.length - 1 && <br />}
+                  </span>
+                ))}
+              </p>
             </div>
           </div>
 

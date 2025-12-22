@@ -28,7 +28,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background: #08a240;
+    background: #A6CE39;
     z-index: 0;
   }
   
@@ -262,14 +262,14 @@
     .our-purpose__card--1 & {
       left: vw(132.74);
       top: vw(168.28);
-      width: vw(234);
-      gap: vw(36);
+      width: vw(270);
+     
       
       @include media('desktop') {
         left: vw(94);
         top: vw(119);
         width: vw(166);
-        gap: vw(25);
+    
       }
       
       @include media('mobile') {
@@ -296,6 +296,7 @@
     .our-purpose__card--3 & {
       inset: 35.26% 18.3% auto 41.19%;
       gap: 0;
+      width: vw(295);
       
       @include media('desktop') {
         inset: 35% 10% auto 15%;
@@ -334,7 +335,7 @@
   &__card-title {
     font-family: $font-family-base;
     font-weight: 700;
-    font-size: vw(40);
+    font-size: vw(36);
     line-height: vw(40);
     text-transform: uppercase;
     color: #08a240;
