@@ -232,7 +232,7 @@
   &__heading-wrapper {
     @include flex(column, flex-start, flex-start);
     gap: vw(20);
-    width: vw(693);
+    width: vw(712);
     
     @include media('desktop') {
       gap: vw(16);
