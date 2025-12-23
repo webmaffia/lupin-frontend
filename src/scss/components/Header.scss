@@ -122,6 +122,27 @@
     transition: color $transition-fast, opacity $transition-fast;
     position: relative;
     
+    // Animated underline
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: vw(7);
+      left: 0;
+      width: 0;
+      height: vw(2);
+      background-color: #e7ff00;
+      transition: width $transition-base;
+      
+      @include media('desktop') {
+        height: vw(2);
+        bottom: vw(7);
+      }
+      
+      @include media('tablet') {
+        display: none; // Hide animated line on mobile menu
+      }
+    }
+    
     @include media('desktop') {
       font-size: vw(18);
       line-height: vw(40);
@@ -144,11 +165,19 @@
     &:hover {
       color: #e7ff00;
       opacity: 1;
+      
+      &::after {
+        width: 100%;
+      }
     }
     
     &--active {
       color: #e7ff00;
       opacity: 1;
+      
+      &::after {
+        width: 100%;
+      }
     }
   }
   
