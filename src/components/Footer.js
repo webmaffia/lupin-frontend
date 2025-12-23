@@ -10,8 +10,8 @@ export default function Footer({ data }) {
       alt: "Lupin Logo"
     },
     contact: {
-      email: "lmsinfo@lupin.com",
-      phone: "+91 22 4018 9999"
+      email: "info@lupin.com",
+      phone: "+91 22 6640 2323"
     },
     links: {
       aboutUs: [
