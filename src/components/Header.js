@@ -22,6 +22,10 @@ export default function Header({ data }) {
       { label: "Community", href: "/community", active: false },
       { label: "Media", href: "/media", active: false }
     ],
+    career: {
+      label: "Careers",
+      href: "/careers"
+    },
     contact: {
       label: "Contact",
       href: "/contact"
@@ -60,6 +64,21 @@ export default function Header({ data }) {
 
         {/* Action CTA */}
         <div className="header__actions">
+          {/* Career */}
+          <Link href={headerData.career.href} className="header__career">
+            {headerData.career.label}
+          </Link>
+
+          <div className="header__divider">
+            <Image
+              src="/assets/divider-vertical.svg"
+              alt=""
+              width={1}
+              height={36}
+              quality={95}
+            />
+          </div>
+
           {/* Contact */}
           <Link href={headerData.contact.href} className="header__contact">
             {headerData.contact.label}

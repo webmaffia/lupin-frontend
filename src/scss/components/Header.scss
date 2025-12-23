@@ -112,7 +112,7 @@
   
   &__nav-item {
     font-family: $font-family-base;
-    font-weight: 700;
+    font-weight: 400;
     font-size: vw(21);
     line-height: vw(50);
     letter-spacing: vw(1.05);
@@ -196,9 +196,33 @@
     }
   }
   
+  &__career {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(16);
+    line-height: vw(50);
+    letter-spacing: vw(0.8);
+    text-transform: capitalize;
+    color: #ffffff;
+    white-space: nowrap;
+    transition: color $transition-fast;
+    
+    @include media('desktop') {
+      font-size: vw(14);
+    }
+    
+    @include media('tablet') {
+      display: none; // Hide on mobile
+    }
+    
+    &:hover {
+      color: #e7ff00;
+    }
+  }
+
   &__contact {
     font-family: $font-family-base;
-    font-weight: 700;
+    font-weight: 400;
     font-size: vw(16);
     line-height: vw(50);
     letter-spacing: vw(0.8);
