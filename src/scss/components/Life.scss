@@ -12,12 +12,6 @@
   overflow: hidden;
   padding: vw(172) vw(120);
   
-  @include media('desktop') {
-    height: auto;
-    min-height: vw(900);
-    padding: vw(150) vw(80);
-  }
-  
   @include media('mobile') {
     height: auto;
     min-height: vw-mobile(800, 414);
@@ -44,11 +38,6 @@
     height: vw(1080);
     background: linear-gradient(90deg, rgba(32, 80, 148, 1) 0%, rgba(26, 116, 150, 1) 20.673%, rgba(7, 111, 103, 1) 59.135%, rgba(12, 165, 139, 1) 89.334%);
     z-index: 1;
-    
-    @include media('desktop') {
-      width: 100%;
-      height: 100%;
-    }
   }
   
   // Background Image
@@ -60,10 +49,6 @@
     height: 100%;
     overflow: hidden;
     z-index: 2;
-    
-    @include media('desktop') {
-      width: 45%;
-    }
     
     @include media('mobile') {
       display: none;
@@ -85,11 +70,6 @@
     gap: vw(30);
     width: vw(423.75);
     
-    @include media('desktop') {
-      width: vw(500, 1440);
-      gap: vw(25);
-    }
-    
     @include media('mobile') {
       width: 100%;
       gap: vw-mobile(25, 414);
@@ -102,10 +82,6 @@
     gap: vw(30);
     width: 100%;
     
-    @include media('desktop') {
-      gap: vw(25);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(20, 414);
     }
@@ -116,10 +92,6 @@
     @include flex(column, flex-start, center);
     gap: vw(28);
     width: 100%;
-    
-    @include media('desktop') {
-      gap: vw(24);
-    }
     
     @include media('mobile') {
       gap: vw-mobile(20, 414);
@@ -135,10 +107,6 @@
     font-weight: 700;
     color: #FFFFFF;
     
-    @include media('desktop') {
-      gap: vw(22);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(18, 414);
     }
@@ -153,12 +121,6 @@
     text-transform: uppercase;
     margin: 0;
     height: vw(152.634);
-    
-    @include media('desktop') {
-      font-size: vw(180, 1440);
-      line-height: vw(70, 1440);
-      height: vw(120, 1440);
-    }
     
     @include media('mobile') {
       font-size: vw-mobile(120, 414);
@@ -176,12 +138,6 @@
     margin: 0;
     height: vw(30.719);
     
-    @include media('desktop') {
-      font-size: vw(38, 1440);
-      line-height: vw(35, 1440);
-      height: auto;
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(32, 414);
       line-height: vw-mobile(30, 414);
@@ -193,10 +149,6 @@
     width: 100%;
     height: vw(1);
     background: linear-gradient(90deg, #FFF 48.08%, rgba(255, 255, 255, 0.00) 100%);
-    
-    @include media('desktop') {
-      height: vw(0.8, 1440);
-    }
     
     @include media('mobile') {
       height: vw-mobile(0.6, 414);
@@ -214,11 +166,6 @@
     margin: 0;
     width: 100%;
     
-    @include media('desktop') {
-      font-size: vw(18, 1440);
-      line-height: vw(28, 1440);
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
       line-height: vw-mobile(24, 414);
@@ -234,13 +181,6 @@
     width: vw(366);
     text-decoration: none;
     transition: transform $transition-base, box-shadow $transition-base;
-    
-    @include media('desktop') {
-      border-radius: vw(55, 1440);
-      padding: vw(14) vw(24, 1440);
-      height: vw(58, 1440);
-      width: vw(320, 1440);
-    }
     
     @include media('mobile') {
       border-radius: vw-mobile(45, 414);
@@ -267,10 +207,6 @@
     gap: vw(11);
     width: 100%;
     
-    @include media('desktop') {
-      gap: vw(9, 1440);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(8, 414);
     }
@@ -282,11 +218,6 @@
     background: #363732;
     border-radius: 50%;
     flex-shrink: 0;
-    
-    @include media('desktop') {
-      width: vw(4.5, 1440);
-      height: vw(4.5, 1440);
-    }
     
     @include media('mobile') {
       width: vw-mobile(4, 414);
@@ -304,12 +235,6 @@
     margin: 0;
     height: vw(33);
     
-    @include media('desktop') {
-      font-size: vw(24, 1440);
-      line-height: vw(28, 1440);
-      height: auto;
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(20, 414);
       line-height: vw-mobile(24, 414);
@@ -321,10 +246,6 @@
     width: 100%;
     height: vw(0.69);
     background: #363732;
-    
-    @include media('desktop') {
-      height: vw(0.6, 1440);
-    }
     
     @include media('mobile') {
       height: vw-mobile(0.5, 414);

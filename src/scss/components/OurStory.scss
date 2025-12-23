@@ -11,10 +11,6 @@
   height: vw(971);
   overflow: hidden;
   
-  @include media('desktop') {
-    height: vw(900);
-  }
-  
   @include media('mobile') {
     height: auto;
     min-height: vw-mobile(800, 414);
@@ -40,11 +36,6 @@
     background: linear-gradient(270deg, rgba(20, 58, 103, 1) 0%, rgba(20, 58, 105, 1) 32.212%, rgba(7, 111, 103, 1) 67.788%, rgba(12, 165, 139, 1) 100%);
     z-index: 1;
     
-    @include media('desktop') {
-      width: 100%;
-      height: 100%;
-    }
-    
     @include media('mobile') {
       width: 100%;
       height: 100%;
@@ -63,14 +54,6 @@
     border-radius: 50%;
     filter: blur(vw(40));
     z-index: 2;
-    
-    @include media('desktop') {
-      left: vw(80, 1440);
-      top: vw(50, 1440);
-      width: vw(650, 1440);
-      height: vw(650, 1440);
-      filter: blur(vw(30, 1440));
-    }
     
     @include media('mobile') {
       left: vw-mobile(-100, 414);
@@ -91,11 +74,6 @@
     height: vw(971);
     opacity: 0.44;
     z-index: 3;
-    
-    @include media('desktop') {
-      width: 100%;
-      height: 100%;
-    }
     
     @include media('mobile') {
       width: 100%;
@@ -119,13 +97,6 @@
     height: vw(715.963);
     z-index: 4;
     
-    @include media('desktop') {
-      left: vw(960, 1440);
-      top: 0;
-      width: vw(486, 1440);
-      height: vw(537, 1440);
-    }
-    
     @include media('mobile') {
       display: none; // Hide pattern on mobile
     }
@@ -147,11 +118,6 @@
     padding-left: vw(158);
     padding-top: vw(195);
     
-    @include media('desktop') {
-      padding-left: vw(100);
-      padding-top: vw(150);
-    }
-    
     @include media('mobile') {
       flex-direction: column;
       padding: vw-mobile(60, 414) vw-mobile(20, 414);
@@ -167,12 +133,6 @@
     flex-shrink: 0;
     overflow: hidden;
     margin-right: vw(45); // Space between image and content (1005 - 158 - 802)
-    
-    @include media('desktop') {
-      width: vw(600);
-      height: vw(580);
-      margin-right: vw(40);
-    }
     
     @include media('mobile') {
       width: 100%;
@@ -202,11 +162,6 @@
     width: vw(674.328);
     flex-shrink: 0;
     
-    @include media('desktop') {
-      width: vw(550);
-      gap: vw(30);
-    }
-    
     @include media('mobile') {
       width: 100%;
       gap: vw-mobile(30, 414);
@@ -219,10 +174,6 @@
     gap: vw(30);
     width: 100%;
     
-    @include media('desktop') {
-      gap: vw(25);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(20, 414);
     }
@@ -233,10 +184,6 @@
     @include flex(column, flex-start, flex-start);
     gap: vw(20);
     width: vw(712);
-    
-    @include media('desktop') {
-      gap: vw(16);
-    }
     
     @include media('mobile') {
       width: 100%;
@@ -255,11 +202,6 @@
     color: #ffffff;
     margin: 0;
     
-    @include media('desktop') {
-      font-size: vw(24);
-      line-height: vw(21);
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(20, 414);
       line-height: vw-mobile(18, 414);
@@ -275,11 +217,6 @@
     text-transform: none;
     color: #ffffff;
     margin: 0;
-    
-    @include media('desktop') {
-      font-size: vw(60);
-      line-height: vw(60);
-    }
     
     @include media('mobile') {
       font-size: vw-mobile(40, 414);
@@ -300,12 +237,6 @@
     text-transform: capitalize;
     color: #ffffff;
     width: vw(575);
-    
-    @include media('desktop') {
-      font-size: vw(20);
-      line-height: vw(26);
-      width: vw(500, 1440);
-    }
     
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
@@ -330,11 +261,6 @@
     flex-shrink: 0;
     transition: transform $transition-base, box-shadow $transition-base;
     
-    @include media('desktop') {
-      padding: vw(14) vw(60) vw(14) vw(18);
-      border-radius: vw(25);
-    }
-    
     @include media('mobile') {
       padding: vw-mobile(12, 414) vw-mobile(50, 414) vw-mobile(12, 414) vw-mobile(16, 414);
       border-radius: vw-mobile(20, 414);
@@ -350,10 +276,6 @@
     @include flex(row, flex-start, center);
     gap: vw(7);
     
-    @include media('desktop') {
-      gap: vw(6);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(5, 414);
     }
@@ -365,11 +287,6 @@
     background: #033943;
     border-radius: 50%;
     flex-shrink: 0;
-    
-    @include media('desktop') {
-      width: vw(3.5);
-      height: vw(3.5);
-    }
     
     @include media('mobile') {
       width: vw-mobile(3, 414);
@@ -384,11 +301,6 @@
     line-height: vw(22.319);
     color: #033943;
     white-space: nowrap;
-    
-    @include media('desktop') {
-      font-size: vw(16);
-      line-height: vw(19);
-    }
     
     @include media('mobile') {
       font-size: vw-mobile(14, 414);
@@ -405,10 +317,6 @@
     width: 100%;
     height: vw(0.48);
     background: #033943;
-    
-    @include media('desktop') {
-      height: vw(0.4);
-    }
     
     @include media('mobile') {
       height: vw-mobile(0.3, 414);

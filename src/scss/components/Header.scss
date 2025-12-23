@@ -23,17 +23,6 @@
     @include flex(row, space-between, center);
     max-width: 100%;
     padding: vw(50) vw(100);
-   
-    
-    @include media('wide') {
-      padding: vw(20, 1440) vw(60, 1440);
-     
-    }
-    
-    @include media('desktop') {
-    
-      padding: vw(16) vw(40);
-    }
     
     @include media('tablet') {
       gap: vw(40);
@@ -53,11 +42,6 @@
     width: vw(87);
     height: vw(106);
     
-    @include media('desktop') {
-      width: vw(70);
-      height: vw(85);
-    }
-    
     @include media('mobile') {
       width: vw-mobile(60, 414);
       height: vw-mobile(73, 414);
@@ -75,10 +59,6 @@
     @include flex(row, center, center);
     gap: vw(45);
     flex-shrink: 0;
-    
-    @include media('desktop') {
-      gap: vw(32);
-    }
     
     @include media('tablet') {
       // Mobile menu
@@ -134,19 +114,9 @@
       background-color: #e7ff00;
       transition: width $transition-base;
       
-      @include media('desktop') {
-        height: vw(2);
-        bottom: vw(7);
-      }
-      
       @include media('tablet') {
         display: none; // Hide animated line on mobile menu
       }
-    }
-    
-    @include media('desktop') {
-      font-size: vw(18);
-      line-height: vw(40);
     }
     
     @include media('tablet') {
@@ -208,10 +178,6 @@
     white-space: nowrap;
     transition: color $transition-fast;
     
-    @include media('desktop') {
-      font-size: vw(14);
-    }
-    
     @include media('tablet') {
       display: none; // Hide on mobile
     }
@@ -231,10 +197,6 @@
     color: #ffffff;
     white-space: nowrap;
     transition: color $transition-fast;
-    
-    @include media('desktop') {
-      font-size: vw(14);
-    }
     
     @include media('tablet') {
       display: none; // Hide on mobile
@@ -301,13 +263,6 @@
     transition: all $transition-fast;
     flex-shrink: 0;
     
-    @include media('desktop') {
-      height: vw(50);
-      padding: 0 vw(18);
-      gap: vw(8);
-      border-radius: vw(25);
-    }
-    
     @include media('mobile') {
       height: vw-mobile(46, 414);
       padding: 0 vw-mobile(16, 414);
@@ -359,10 +314,6 @@
     text-transform: capitalize;
     color: rgba(255, 255, 255, 0.8);
     white-space: nowrap;
-    
-    @include media('desktop') {
-      font-size: vw(18);
-    }
     
     @include media('mobile') {
       font-size: vw-mobile(16, 414);

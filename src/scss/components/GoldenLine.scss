@@ -27,11 +27,6 @@ body{
       fill: none !important;
     }
     
-    @include media('desktop') {
-      width: 100vw;
-      height: 100vh;
-    }
-    
     @include media('mobile') {
       width: 100vw;
       height: 100vh;

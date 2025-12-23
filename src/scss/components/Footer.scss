@@ -11,10 +11,6 @@
   background: #033f4b;
   padding: vw(90) vw(102);
   
-  @include media('desktop') {
-    padding: vw(70, 1440) vw(80, 1440);
-  }
-  
   @include media('mobile') {
     padding: vw-mobile(50, 414) vw-mobile(30, 414);
   }
@@ -25,14 +21,6 @@
     width: vw(1635);
     height: vw(649.8);
     max-width: 100%;
-    
-    @include media('desktop') {
-      width: 100%;
-      height: auto;
-      display: flex;
-      flex-direction: column;
-      gap: vw(50, 1440);
-    }
     
     @include media('mobile') {
       width: 100%;
@@ -52,12 +40,6 @@
     @include flex(column, flex-start, flex-start);
     gap: vw(106);
     
-    @include media('desktop') {
-      position: relative;
-      width: 100%;
-      gap: vw(60, 1440);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(40, 414);
     }
@@ -67,11 +49,6 @@
   &__logo {
     width: vw(142);
     height: vw(173);
-    
-    @include media('desktop') {
-      width: vw(120, 1440);
-      height: vw(150, 1440);
-    }
     
     @include media('mobile') {
       width: vw-mobile(100, 414);
@@ -92,11 +69,6 @@
     gap: vw(30);
     width: vw(183);
     
-    @include media('desktop') {
-      gap: vw(25, 1440);
-      width: 100%;
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(20, 414);
     }
@@ -105,10 +77,6 @@
   &__contact-item {
     @include flex(row, flex-start, center);
     gap: vw(22);
-    
-    @include media('desktop') {
-      gap: vw(18, 1440);
-    }
     
     @include media('mobile') {
       gap: vw-mobile(15, 414);
@@ -120,11 +88,6 @@
     width: vw(22);
     height: vw(19.474);
     @include flex(row, center, center);
-    
-    @include media('desktop') {
-      width: vw(20, 1440);
-      height: vw(18, 1440);
-    }
     
     @include media('mobile') {
       width: vw-mobile(18, 414);
@@ -147,10 +110,6 @@
     opacity: 0.8;
     margin: 0;
     
-    @include media('desktop') {
-      font-size: vw(14, 1440);
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(13, 414);
     }
@@ -170,11 +129,6 @@
     line-height: 1.86;
     color: #FFFFFF;
     
-    @include media('desktop') {
-      gap: vw(20, 1440);
-      font-size: vw(14, 1440);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(18, 414);
       font-size: vw-mobile(13, 414);
@@ -186,10 +140,6 @@
     margin: 0;
     width: vw(306);
     white-space: pre-wrap;
-    
-    @include media('desktop') {
-      width: 100%;
-    }
   }
   
   &__legal-links {
@@ -197,10 +147,6 @@
     margin: 0;
     width: vw(272);
     white-space: pre-wrap;
-    
-    @include media('desktop') {
-      width: 100%;
-    }
   }
   
   &__legal-link {
@@ -226,14 +172,6 @@
     justify-content: space-between;
     gap: vw(131) vw(37);
     
-    @include media('desktop') {
-      position: relative;
-      left: 0;
-      width: 100%;
-      height: auto;
-      gap: vw(80, 1440) vw(30, 1440);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(50, 414) vw-mobile(20, 414);
     }
@@ -245,11 +183,6 @@
     gap: vw(14);
     width: vw(191);
     flex-shrink: 0;
-    
-    @include media('desktop') {
-      width: vw(180, 1440);
-      gap: vw(12, 1440);
-    }
     
     @include media('mobile') {
       width: 100%;
@@ -268,11 +201,6 @@
     height: vw(32);
     white-space: pre-wrap;
     
-    @include media('desktop') {
-      font-size: vw(18, 1440);
-      height: auto;
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
     }
@@ -288,11 +216,6 @@
     line-height: 2;
     color: #FFFFFF;
     white-space: pre-wrap;
-    
-    @include media('desktop') {
-      font-size: vw(13, 1440);
-      line-height: 1.8;
-    }
     
     @include media('mobile') {
       font-size: vw-mobile(12, 414);
@@ -323,15 +246,6 @@
     @include flex(column, center, center);
     gap: vw(30);
     
-    @include media('desktop') {
-      position: relative;
-      left: 0;
-      top: 0;
-      width: 100%;
-      gap: vw(25, 1440);
-      margin-top: vw(40, 1440);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(20, 414);
       margin-top: vw-mobile(30, 414);
@@ -343,10 +257,6 @@
     height: 1px;
     background: rgba(255, 255, 255, 0.3);
     flex-shrink: 0;
-    
-    @include media('desktop') {
-      width: 100%;
-    }
   }
   
   &__social-icons {
@@ -354,10 +264,6 @@
     gap: vw(58);
     opacity: 0.5;
     width: 100%;
-    
-    @include media('desktop') {
-      gap: vw(40, 1440);
-    }
     
     @include media('mobile') {
       gap: vw-mobile(30, 414);

@@ -4,8 +4,6 @@
 $breakpoints: (
   'mobile': 414px,
   'tablet': 768px,
-  'desktop': '',
-  'wide': '',
   'ultra-wide': 1920px
 );
 
@@ -60,7 +58,7 @@ $breakpoints: (
   @if $mobile-size {
     font-size: vw-mobile($mobile-size, $mobile-base);
     
-    @include media('desktop', 'min') {
+    @include media('tablet', 'min') {
       font-size: vw($desktop-size, $desktop-base);
     }
   } @else {

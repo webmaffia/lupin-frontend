@@ -11,11 +11,6 @@
   height: vw(1080);
   overflow: hidden;
   
-  @include media('desktop') {
-    height: auto;
-    min-height: vw(900);
-  }
-  
   @include media('mobile') {
     height: auto;
     min-height: vw-mobile(800, 414);
@@ -28,13 +23,6 @@
     gap: vw(75);
     height: vw(1080);
     padding: vw(84) 0;
-    
-    @include media('desktop') {
-      height: auto;
-      min-height: vw(900);
-      gap: vw(60);
-      padding: vw(70) vw(50);
-    }
     
     @include media('mobile') {
       gap: vw-mobile(50, 414);
@@ -52,11 +40,6 @@
     color: #FFFFFF;
     margin: 0;
     
-    @include media('desktop') {
-      font-size: vw(40, 1440);
-      line-height: vw(36, 1440);
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(32, 414);
       line-height: vw-mobile(30, 414);
@@ -70,11 +53,6 @@
     width: 100%;
     max-width: vw(1400);
     
-    @include media('desktop') {
-      gap: vw(60);
-      flex-wrap: wrap;
-    }
-    
     @include media('mobile') {
       flex-direction: column;
       gap: vw-mobile(50, 414);
@@ -86,10 +64,6 @@
     @include flex(column, flex-start, flex-start);
     gap: vw(10);
     width: vw(626.508);
-    
-    @include media('desktop') {
-      width: vw(550, 1440);
-    }
     
     @include media('mobile') {
       width: 100%;
@@ -123,12 +97,6 @@
     @include flex(column, center, center);
     padding: vw(279) vw(176);
     
-    @include media('desktop') {
-      width: vw(550, 1440);
-      height: vw(550, 1440);
-      padding: vw(240, 1440) vw(150, 1440);
-    }
-    
     @include media('mobile') {
       width: vw-mobile(400, 414);
       height: vw-mobile(400, 414);
@@ -145,11 +113,6 @@
     height: vw(626.508);
     z-index: 1;
     
-    @include media('desktop') {
-      width: vw(550, 1440);
-      height: vw(550, 1440);
-    }
-    
     @include media('mobile') {
       width: vw-mobile(400, 414);
       height: vw-mobile(400, 414);
@@ -164,11 +127,6 @@
     width: vw(626.508);
     height: vw(626.508);
     z-index: 2;
-    
-    @include media('desktop') {
-      width: vw(550, 1440);
-      height: vw(550, 1440);
-    }
     
     @include media('mobile') {
       width: vw-mobile(400, 414);
@@ -188,11 +146,6 @@
     z-index: 5;
     opacity: 0;
     transition: opacity $transition-base;
-    
-    @include media('desktop') {
-      width: vw(550, 1440);
-      height: vw(550, 1440);
-    }
     
     @include media('mobile') {
       width: vw-mobile(400, 414);
@@ -221,13 +174,6 @@
     transform: translateY(vw(10));
     transition: opacity $transition-base, visibility $transition-base, transform $transition-base, box-shadow $transition-base;
     
-    @include media('desktop') {
-      border-radius: vw(55, 1440);
-      padding: vw(14) vw(24, 1440);
-      height: vw(58, 1440);
-      width: vw(240, 1440);
-    }
-    
     @include media('mobile') {
       border-radius: vw-mobile(45, 414);
       padding: vw-mobile(12, 414) vw-mobile(20, 414);
@@ -248,10 +194,6 @@
     gap: vw(11);
     width: 100%;
     
-    @include media('desktop') {
-      gap: vw(9, 1440);
-    }
-    
     @include media('mobile') {
       gap: vw-mobile(8, 414);
     }
@@ -263,11 +205,6 @@
     background: #363732;
     border-radius: 50%;
     flex-shrink: 0;
-    
-    @include media('desktop') {
-      width: vw(4.5, 1440);
-      height: vw(4.5, 1440);
-    }
     
     @include media('mobile') {
       width: vw-mobile(4, 414);
@@ -285,12 +222,6 @@
     margin: 0;
     height: vw(33);
     
-    @include media('desktop') {
-      font-size: vw(24, 1440);
-      line-height: vw(28, 1440);
-      height: auto;
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(20, 414);
       line-height: vw-mobile(24, 414);
@@ -303,10 +234,6 @@
     height: vw(0.69);
     background: #363732;
     
-    @include media('desktop') {
-      height: vw(0.6, 1440);
-    }
-    
     @include media('mobile') {
       height: vw-mobile(0.5, 414);
     }
@@ -318,11 +245,6 @@
     gap: vw(25);
     width: vw(518.952);
     text-transform: capitalize;
-    
-    @include media('desktop') {
-      width: 100%;
-      gap: vw(20, 1440);
-    }
     
     @include media('mobile') {
       width: 100%;
@@ -339,11 +261,6 @@
     color: #FFFFFF;
     margin: 0;
     
-    @include media('desktop') {
-      font-size: vw(18, 1440);
-      line-height: vw(20, 1440);
-    }
-    
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
       line-height: vw-mobile(18, 414);
@@ -358,11 +275,6 @@
     line-height: vw(31);
     color: #FFFFFF;
     margin: 0;
-    
-    @include media('desktop') {
-      font-size: vw(22, 1440);
-      line-height: vw(28, 1440);
-    }
     
     @include media('mobile') {
       font-size: vw-mobile(18, 414);
