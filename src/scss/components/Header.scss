@@ -16,6 +16,7 @@
   width: 100%;
   background: transparent;
   z-index: z('sticky');
+  z-index: 99999;
   
   // Container
   &__container {

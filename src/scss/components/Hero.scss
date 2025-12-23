@@ -11,6 +11,7 @@
   height: 100vh;
   overflow: hidden;
   padding-top: 0; // Header overlaps, no padding needed
+  z-index: 9999;
   
   // Background
   &__bg {
