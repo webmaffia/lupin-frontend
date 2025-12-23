@@ -1,5 +1,6 @@
 import { Inter } from "next/font/google";
 import "../scss/main.scss";
+import { generateMetadata as generateSEOMetadata, defaultSEO } from "@/lib/seo";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -8,14 +9,22 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-export const metadata = {
-  title: "Lupin Frontend",
-  description: "Lupin Frontend with Next.js and SCSS",
-};
+// Generate metadata for the root layout
+export const metadata = generateSEOMetadata({
+  title: defaultSEO.title,
+  description: defaultSEO.description,
+  canonicalUrl: defaultSEO.siteUrl,
+});
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        {/* Favicon and App Icons */}
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={`${inter.variable}`}>
         {children}
       </body>
