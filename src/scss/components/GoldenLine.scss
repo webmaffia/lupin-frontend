@@ -2,12 +2,16 @@
 @import '../utils/mixins';
 @import '../utils/functions';
 
+body{
+  overflow-x: hidden;
+}
+
 .golden-line {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: vw(5);
+  top: vw(-63);
   width: 100%;
- 
+ overflow: hidden;
   pointer-events: none;
   z-index: 9999;
   
