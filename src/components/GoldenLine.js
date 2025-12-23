@@ -5,12 +5,14 @@ import { useEffect, useRef } from 'react';
 export default function GoldenLine() {
   const pathRef = useRef(null);
   const containerRef = useRef(null);
+  const dnaRef = useRef(null);
 
   useEffect(() => {
     const path = pathRef.current;
     const container = containerRef.current;
+    const dna = dnaRef.current;
     
-    if (!path || !container) return;
+    if (!path || !container || !dna) return;
 
     // Get the total length of the path
     const pathLength = path.getTotalLength();
@@ -19,6 +21,10 @@ export default function GoldenLine() {
     path.style.strokeDasharray = `${pathLength} ${pathLength}`;
     path.style.strokeDashoffset = `${pathLength}`;
     path.style.transition = 'none'; // Remove any CSS transitions
+    
+    // Initially hide DNA group
+    dna.style.opacity = '0';
+    dna.style.transition = 'opacity 0.5s ease';
 
     // Function to update the path drawing based on scroll
     const handleScroll = () => {
@@ -77,6 +83,13 @@ export default function GoldenLine() {
       
       // Update stroke-dashoffset
       path.style.strokeDashoffset = `${offset}`;
+      
+      // Show/hide DNA group based on offset value
+      if (offset <= 27183.7) {
+        dna.style.opacity = '1';
+      } else {
+        dna.style.opacity = '0';
+      }
     };
 
     // Use requestAnimationFrame for smoother animation
@@ -144,7 +157,7 @@ export default function GoldenLine() {
     }
     </style>
   </defs>
-  <g id="DNA">
+  <g id="DNA" ref={dnaRef}>
     <circle class="cls-1" cx="330.93" cy="4765.91" r="14.35"/>
     <circle class="cls-1" cx="398.32" cy="5060.81" r="9.63"/>
     <circle class="cls-1" cx="44.25" cy="4657.51" r="9.63"/>
