@@ -11,6 +11,11 @@
   height: vw(971);
   overflow: hidden;
   
+  @include media('tablet') {
+    height: auto;
+    min-height: 100vh;
+  }
+  
   @include media('mobile') {
     height: auto;
     min-height: vw-mobile(800, 414);
@@ -117,6 +122,13 @@
     @include flex(row, flex-start, center);
     padding-left: vw(158);
     padding-top: vw(195);
+    
+    @include media('tablet') {
+      flex-direction: column;
+      padding: vw(80, 768) vw(40, 768);
+      gap: vw(50, 768);
+      justify-content: center;
+    }
     
     @include media('mobile') {
       flex-direction: column;

@@ -11,6 +11,11 @@
   height: vw(1080);
   overflow: hidden;
   
+  @include media('tablet') {
+    height: auto;
+    min-height: 100vh;
+  }
+  
   @include media('mobile') {
     height: auto;
     min-height: vw-mobile(1000, 414);
@@ -34,6 +39,12 @@
     height: vw(1080);
     margin: 0 auto;
     z-index: 1;
+    
+    @include media('tablet') {
+      width: 100%;
+      height: auto;
+      padding: vw(80, 768) vw(40, 768);
+    }
     
     @include media('mobile') {
       width: 100%;

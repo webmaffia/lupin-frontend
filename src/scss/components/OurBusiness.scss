@@ -11,6 +11,11 @@
   height: vw(1080);
   overflow: hidden;
   
+  @include media('tablet') {
+    height: 100vh;
+    min-height: vw(600, 768);
+  }
+  
   @include media('mobile') {
     height: auto;
     min-height: vw-mobile(800, 414);
@@ -120,6 +125,16 @@
     @include flex(row, flex-start, center);
     z-index: 10;
     
+    @include media('tablet') {
+      width: 100%;
+      height: 100%;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: vw(60, 768) vw(40, 768);
+      gap: vw(40, 768);
+    }
+    
     @include media('mobile') {
       padding: vw-mobile(60, 414) vw-mobile(20, 414);
       gap: vw-mobile(40, 414);
@@ -134,6 +149,17 @@
     width: vw(701);
     @include flex(column, flex-start, flex-start);
     gap: vw(25);
+    
+    @include media('tablet') {
+      position: relative;
+      left: vw(0, 768);
+      top: vw(0, 768);
+      width: 100%;
+      max-width: vw(600, 768);
+      gap: vw(20, 768);
+      align-items: center;
+      text-align: center;
+    }
     
     @include media('mobile') {
       max-width: 100%;
@@ -151,6 +177,12 @@
     margin: 0;
     width: vw(470);
     
+    @include media('tablet') {
+      font-size: vw(48, 768);
+      line-height: vw(52, 768);
+      width: 100%;
+    }
+    
     @include media('mobile') {
       font-size: vw-mobile(40, 414);
       line-height: vw-mobile(40, 414);
@@ -166,6 +198,12 @@
     color: #FFFFFF;
     margin: 0;
     width: vw(480);
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      line-height: vw(26, 768);
+      width: 100%;
+    }
     
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
@@ -192,6 +230,11 @@
     flex-shrink: 0;
     transition: transform $transition-base, box-shadow $transition-base;
     
+    @include media('tablet') {
+      padding: vw(14, 768) vw(60, 768) vw(14, 768) vw(18, 768);
+      border-radius: vw(28, 768);
+    }
+    
     @include media('mobile') {
       padding: vw-mobile(12, 414) vw-mobile(50, 414) vw-mobile(12, 414) vw-mobile(16, 414);
       border-radius: vw-mobile(20, 414);
@@ -200,6 +243,10 @@
     &:hover {
       transform: translateY(vw(-4));
       box-shadow: 0 vw(4) vw(12) rgba(0, 0, 0, 0.15);
+      
+      @include media('tablet') {
+        transform: translateY(vw(-3, 768));
+      }
       
       @include media('mobile') {
         transform: translateY(vw-mobile(-2, 414));
@@ -210,6 +257,10 @@
   &__cta-inner {
     @include flex(row, flex-start, center);
     gap: vw(7);
+    
+    @include media('tablet') {
+      gap: vw(6, 768);
+    }
     
     @include media('mobile') {
       gap: vw-mobile(5, 414);
@@ -222,6 +273,11 @@
     background: #08a240;
     border-radius: 50%;
     flex-shrink: 0;
+    
+    @include media('tablet') {
+      width: vw(3.5, 768);
+      height: vw(3.5, 768);
+    }
     
     @include media('mobile') {
       width: vw-mobile(3, 414);
@@ -237,6 +293,11 @@
     color: #08a240;
     white-space: nowrap;
     
+    @include media('tablet') {
+      font-size: vw(16, 768);
+      line-height: vw(20, 768);
+    }
+    
     @include media('mobile') {
       font-size: vw-mobile(14, 414);
       line-height: vw-mobile(16, 414);
@@ -248,6 +309,10 @@
     width: 100%;
     height: vw(0.48);
     background: #08a240;
+    
+    @include media('tablet') {
+      height: vw(0.4, 768);
+    }
     
     @include media('mobile') {
       height: vw-mobile(0.3, 414);
@@ -261,6 +326,14 @@
     top: vw(123);
     width: vw(832);
     height: vw(834);
+    
+    @include media('tablet') {
+      position: relative;
+      right: vw(0, 768);
+      top: vw(0, 768);
+      width: vw(400, 768);
+      height: vw(400, 768);
+    }
     
     @include media('mobile') {
       width: vw-mobile(350, 414);
