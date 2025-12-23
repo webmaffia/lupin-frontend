@@ -330,7 +330,7 @@
   
   &__cta-text {
     font-family: $font-family-base;
-    font-weight: 700;
+    font-weight: 500;
     font-size: vw(27.22);
     line-height: vw(31.888);
     text-transform: capitalize;
@@ -385,6 +385,7 @@
   &__sticky-notes {
     @include flex(column, flex-start, flex-end);
     gap: vw(22);
+    margin-right: vw(60);
     
     @include media('mobile') {
       flex-direction: row;
