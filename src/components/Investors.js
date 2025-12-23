@@ -75,7 +75,7 @@ export default function Investors({ data }) {
             <p className="investors__stock-updated">{investorsData.stockQuotes.lastUpdated}</p>
           </div>
             <div className="investors__stock-item investors__stock-item--1">
-              <p className="investors__stock-value">
+              <p className="investors__stock-value investors__stock-value--small">
                 NSE: {investorsData.stockQuotes.nse} <span className="investors__stock-meta">{investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}</span>
               </p>
             </div>
