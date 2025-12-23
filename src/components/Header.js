@@ -16,10 +16,10 @@ export default function Header({ data }) {
     },
     navigation: [
       { label: "About Us", href: "/about", active: true },
-      { label: "Key Therapeutic Areas", href: "/therapeutic-areas", active: false },
-      { label: "Our Offerings", href: "/offerings", active: false },
+      { label: "Our Business", href: "/business", active: false },
       { label: "Investors", href: "/investors", active: false },
-      { label: "Responsibility", href: "/responsibility", active: false },
+      { label: "Sustainability", href: "/sustainability", active: false },
+      { label: "Community", href: "/community", active: false },
       { label: "Media", href: "/media", active: false }
     ],
     contact: {
