@@ -142,8 +142,8 @@
   &__content {
     position: absolute;
     bottom: vw(145);
-    left: vw(83);
-    right: vw(83);
+    left: vw(100);
+    right: vw(100);
     @include flex(row, space-between, flex-end);
     z-index: 10;
     
