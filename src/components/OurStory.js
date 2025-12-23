@@ -7,9 +7,9 @@ export default function OurStory({ data }) {
   const storyData = data || {
     eyebrow: "The Lupin Story",
     heading: {
-      line1: "Built on ",
-      line2: "Purpose... ",
-      line3: "Driven by Precision"
+      line1: "Driven by ",
+      line2: "Science... ",
+      line3: "Inspired by Patients"
     },
     paragraphs: [
       "Founded by Dr. Desh Bandhu Gupta in 1968, Lupin",

@@ -7,10 +7,9 @@ export default function Sustainability({ data }) {
   const sustainabilityData = data || {
     eyebrow: "Sustainability",
     heading: {
-      line1: "Healing",
-      line2: "the Planet",
-      line3: "Nurturing",
-      line4: "the Future"
+      line1: "Caring",
+      line2: "for People",
+      line3: "and Planet",
     },
     description: {
       line1: "Our mission extends beyond medicine – we invest",
