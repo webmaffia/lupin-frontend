@@ -1,10 +1,13 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import '../scss/components/Overview.scss';
 
 export default function Overview({ data }) {
   const [hoveredStat, setHoveredStat] = useState(1); // Default to index 1 (Employees)
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [animatedNumbers, setAnimatedNumbers] = useState([0, 0, 0, 0]);
+  const sectionRef = useRef(null);
 
   // Default data (will be replaced by Strapi)
   const overviewData = data || {
@@ -21,8 +24,66 @@ export default function Overview({ data }) {
     ]
   };
 
+  // Animated counting effect
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasAnimated) {
+            setHasAnimated(true);
+            
+            // Animate each number
+            overviewData.stats.forEach((stat, index) => {
+              const targetNumber = parseInt(stat.number.replace(/,/g, ''));
+              const duration = 2000; // 2 seconds
+              const steps = 60;
+              const increment = targetNumber / steps;
+              const stepDuration = duration / steps;
+              
+              let currentStep = 0;
+              
+              const timer = setInterval(() => {
+                currentStep++;
+                const currentValue = Math.min(
+                  Math.floor(increment * currentStep),
+                  targetNumber
+                );
+                
+                setAnimatedNumbers((prev) => {
+                  const newNumbers = [...prev];
+                  newNumbers[index] = currentValue;
+                  return newNumbers;
+                });
+                
+                if (currentStep >= steps) {
+                  clearInterval(timer);
+                }
+              }, stepDuration);
+            });
+          }
+        });
+      },
+      { threshold: 0.3 } // Trigger when 30% of the section is visible
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => {
+      if (sectionRef.current) {
+        observer.unobserve(sectionRef.current);
+      }
+    };
+  }, [hasAnimated, overviewData.stats]);
+
+  // Format number with commas
+  const formatNumber = (num) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
+
   return (
-    <section className="overview">
+    <section className="overview" ref={sectionRef}>
       {/* Background with Gradients */}
       <div className="overview__bg">
         <div className="overview__bg-gradient"></div>
@@ -124,7 +185,7 @@ export default function Overview({ data }) {
                 onMouseEnter={() => setHoveredStat(0)}
               >
                 <div className="overview__stat-number">
-                  <span className="overview__stat-value">{overviewData.stats[0].number}</span>
+                  <span className="overview__stat-value">{formatNumber(animatedNumbers[0])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[0].suffix}</span>
                 </div>
                 <p className="overview__stat-label">{overviewData.stats[0].label}</p>
@@ -135,7 +196,7 @@ export default function Overview({ data }) {
                 onMouseEnter={() => setHoveredStat(2)}
               >
                 <div className="overview__stat-number">
-                  <span className="overview__stat-value">{overviewData.stats[2].number}</span>
+                  <span className="overview__stat-value">{formatNumber(animatedNumbers[2])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[2].suffix}</span>
                 </div>
                 <p className="overview__stat-label">{overviewData.stats[2].label}</p>
@@ -149,7 +210,7 @@ export default function Overview({ data }) {
                 onMouseEnter={() => setHoveredStat(1)}
               >
                 <div className="overview__stat-number">
-                  <span className="overview__stat-value">{overviewData.stats[1].number}</span>
+                  <span className="overview__stat-value">{formatNumber(animatedNumbers[1])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[1].suffix}</span>
                 </div>
                 <p className="overview__stat-label">{overviewData.stats[1].label}</p>
@@ -160,7 +221,7 @@ export default function Overview({ data }) {
                 onMouseEnter={() => setHoveredStat(3)}
               >
                 <div className="overview__stat-number">
-                  <span className="overview__stat-value">{overviewData.stats[3].number}</span>
+                  <span className="overview__stat-value">{formatNumber(animatedNumbers[3])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[3].suffix}</span>
                 </div>
                 <p className="overview__stat-label">{overviewData.stats[3].label}</p>
