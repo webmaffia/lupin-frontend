@@ -234,6 +234,7 @@
     text-shadow: 0px vw(4) vw(9.2) rgba(0, 0, 0, 0.42);
     margin: 0;
     max-width: vw(470);
+    text-align: left;
     
     @include media('wide') {
       font-size: vw(20, 1440);

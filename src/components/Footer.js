@@ -95,9 +95,9 @@ export default function Footer({ data }) {
                   quality={100}
                 />
               </div>
-              <p className="footer__contact-text" data-node-id="2018:9">
+              <a href={`mailto:${footerData.contact.email}`} className="footer__contact-text" data-node-id="2018:9">
                 {footerData.contact.email}
-              </p>
+              </a>
             </div>
             
             <div className="footer__contact-item" data-node-id="2018:10">
@@ -110,9 +110,9 @@ export default function Footer({ data }) {
                   quality={100}
                 />
               </div>
-              <p className="footer__contact-text" data-node-id="2018:13">
+              <a href={`tel:${footerData.contact.phone}`} className="footer__contact-text" data-node-id="2018:13">
                 {footerData.contact.phone}
-              </p>
+              </a>
             </div>
           </div>
 
