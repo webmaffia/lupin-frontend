@@ -123,7 +123,7 @@
     }
     
     @include media('mobile') {
-      gap: vw-mobile(16, 414);
+      gap: vw-mobile(10, 414);
     }
   }
   
