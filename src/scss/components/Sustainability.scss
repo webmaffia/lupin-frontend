@@ -21,9 +21,12 @@
   }
   
   @include media('mobile') {
-    min-height: vw-mobile(700, 414);
+    min-height: auto;
     padding: vw-mobile(100, 414) vw-mobile(20, 414);
-    align-items: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+    height: 75vh;
+    padding-top: vw-mobile(20, 414);
   }
   
   // Background Image
@@ -60,6 +63,18 @@
     height: 101.76%;
     object-fit: cover;
     object-position: center;
+  }
+  
+  &__overlay {
+    display: none;
+    
+    @include media('mobile') {
+      display: block;
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 5;
+    }
   }
   
   // Content

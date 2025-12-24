@@ -18,7 +18,8 @@
   
   @include media('mobile') {
     height: auto;
-    min-height: vw-mobile(800, 414);
+    min-height: auto;
+    padding-bottom: vw-mobile(40, 414);
   }
   
   // Background Layers
@@ -58,6 +59,12 @@
     mix-blend-mode: multiply;
     opacity: 0.34;
     z-index: 2;
+
+    @include media('mobile') {
+      left:0;
+    
+    width: 100%;
+    }
     
     img {
       width: 100%;
@@ -74,6 +81,9 @@
     height: 126.88%;
     opacity: 0.42;
     z-index: 3;
+    @include media('mobile') {
+      left:0;
+    }
     
     img {
       width: 100%;
@@ -108,6 +118,10 @@
     mix-blend-mode: overlay;
     opacity: 0.66; // 0.79 * 0.84
     z-index: 5;
+    @include media('mobile') {
+      left:0;
+
+    }
     
     img {
       width: 100%;
@@ -136,7 +150,7 @@
     }
     
     @include media('mobile') {
-      padding: vw-mobile(60, 414) vw-mobile(20, 414);
+      padding: vw-mobile(20, 414) vw-mobile(20, 414) 0;
       gap: vw-mobile(40, 414);
     }
   }
@@ -157,13 +171,13 @@
       width: 100%;
       max-width: vw(600, 768);
       gap: vw(20, 768);
-      align-items: center;
-      text-align: center;
+      align-items: left;
+      text-align: left;
     }
     
     @include media('mobile') {
       max-width: 100%;
-      gap: vw-mobile(20, 414);
+      gap: vw-mobile(10, 414);
     }
   }
   
@@ -348,6 +362,10 @@
     width: vw(831.984);
     height: vw(831.984);
     z-index: 1;
+    @include media('mobile') {
+      width: 100%;
+      height:100%;
+    }
     
     img {
       width: 100%;
@@ -365,6 +383,10 @@
     border-radius: 50%;
     overflow: hidden;
     z-index: 2;
+    @include media('mobile') {
+      width: 100%;
+      height:100%;
+    }
   }
   
   &__image {

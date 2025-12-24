@@ -35,6 +35,7 @@ export default function Sustainability({ data }) {
             className="sustainability__bg-img"
           />
         </div>
+        <div className="sustainability__overlay"></div>
       </div>
 
       {/* Content */}

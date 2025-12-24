@@ -18,8 +18,8 @@
   
   @include media('mobile') {
     height: auto;
-    min-height: 100vh;
-    padding: vw-mobile(60, 414) 0;
+    min-height: auto;
+    padding: vw-mobile(20, 414) vw-mobile(20, 414) 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -84,8 +84,8 @@
     }
     
     @include media('mobile') {
-      padding: 0 vw-mobile(20, 414);
-      gap: vw-mobile(50, 414);
+      padding: 0 vw-mobile(0, 414);
+      gap: vw-mobile(0, 414);
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -111,7 +111,7 @@
       gap: vw-mobile(12, 414);
       margin-bottom: 0;
       align-items: flex-start;
-      padding-left: vw-mobile(20, 414);
+      max-width: 100%;
     }
   }
   
@@ -154,7 +154,7 @@
     @include media('mobile') {
       font-size: vw-mobile(30, 414);
       line-height: vw-mobile(32, 414);
-      text-transform: uppercase;
+ 
     }
   }
   
@@ -204,7 +204,7 @@
     
     @include media('mobile') {
       position: absolute;
-      right: vw-mobile(-90, 414);
+      right: vw-mobile(-185, 414);
       top: 50%;
       transform: translateY(-50%);
       width: vw-mobile(320, 414);
