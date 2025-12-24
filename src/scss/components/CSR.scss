@@ -234,8 +234,8 @@
     margin: 0;
     
     @include media('mobile') {
-      font-size: vw-mobile(22, 414);
-      line-height: vw-mobile(20, 414);
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(18, 414);
     }
   }
   
@@ -252,8 +252,8 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(50, 414);
-      line-height: vw-mobile(46, 414);
+      font-size: vw-mobile(30, 414);
+      line-height: vw-mobile(30, 414);
     }
   }
   
@@ -282,8 +282,8 @@
     width: 100%;
     
     @include media('mobile') {
-      font-size: vw-mobile(16, 414);
-      line-height: vw-mobile(24, 414);
+      font-size: vw-mobile(12, 414);
+      line-height: vw-mobile(18, 414);
     }
   }
   

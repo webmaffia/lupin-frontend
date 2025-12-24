@@ -103,8 +103,8 @@
     padding-top: vw(85);
     
     @include media('mobile') {
-      font-size: vw-mobile(20, 414);
-      line-height: vw-mobile(50, 414);
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(18, 414);
     }
   }
   

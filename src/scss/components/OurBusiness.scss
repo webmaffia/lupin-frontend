@@ -184,8 +184,8 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(40, 414);
-      line-height: vw-mobile(40, 414);
+      font-size: vw-mobile(30, 414);
+      line-height: vw-mobile(30, 414);
     }
   }
   
@@ -206,8 +206,8 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(16, 414);
-      line-height: vw-mobile(24, 414);
+      font-size: vw-mobile(12, 414);
+      line-height: vw-mobile(18, 414);
     }
   }
   

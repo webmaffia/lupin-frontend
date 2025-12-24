@@ -13,7 +13,7 @@
   padding-top: 0; // Header overlaps, no padding needed
   z-index: 9999;
   @include media('mobile') { 
-    height: 75vh;
+    height: 100vh;
   }
 
   

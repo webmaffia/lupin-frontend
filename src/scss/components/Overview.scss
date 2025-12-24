@@ -99,7 +99,7 @@
     }
     
     @include media('mobile') {
-      gap: vw-mobile(15, 414);
+      gap: vw-mobile(10, 414);
     }
   }
   
@@ -120,7 +120,7 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(20, 414);
+      font-size: vw-mobile(16, 414);
       line-height: vw-mobile(18, 414);
     }
   }
@@ -140,8 +140,8 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(40, 414);
-      line-height: vw-mobile(40, 414);
+      font-size: vw-mobile(30, 414);
+      line-height: vw-mobile(30, 414);
     }
   }
   
