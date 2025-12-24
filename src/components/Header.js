@@ -60,6 +60,23 @@ export default function Header({ data }) {
               {item.label}
             </Link>
           ))}
+          
+          {/* Mobile-only: Career and Contact */}
+          <Link 
+            href={headerData.career.href} 
+            className="header__nav-item header__nav-item--mobile-only"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {headerData.career.label}
+          </Link>
+          
+          <Link 
+            href={headerData.contact.href} 
+            className="header__nav-item header__nav-item--mobile-only"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {headerData.contact.label}
+          </Link>
         </nav>
 
         {/* Action CTA */}

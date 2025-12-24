@@ -23,15 +23,19 @@
     @include flex(row, space-between, center);
     max-width: 100%;
     padding: vw(50) vw(100);
+    position: relative;
+    z-index: 1;
     
     @include media('tablet') {
       gap: vw(40);
       padding: vw(16) vw(30);
+      z-index: z('modal') + 2;
     }
     
     @include media('mobile') {
       padding: vw-mobile(16, 414) vw-mobile(20, 414);
       gap: vw-mobile(20, 414);
+      z-index: z('modal') + 2;
     }
   }
   
@@ -41,10 +45,17 @@
     flex-shrink: 0;
     width: vw(87);
     height: vw(106);
+    position: relative;
+    z-index: 1;
+    
+    @include media('tablet') {
+      z-index: z('modal') + 2;
+    }
     
     @include media('mobile') {
       width: vw-mobile(60, 414);
       height: vw-mobile(73, 414);
+      z-index: z('modal') + 2;
     }
   }
   
@@ -86,7 +97,8 @@
     }
     
     @include media('mobile') {
-      width: 85vw;
+      width: 100vw;
+      max-width: 100%;
       padding: vw-mobile(100, 414) vw-mobile(20, 414) vw-mobile(40, 414);
     }
   }
@@ -148,6 +160,19 @@
       
       &::after {
         width: 100%;
+      }
+    }
+    
+    // Mobile-only items (Career and Contact)
+    &--mobile-only {
+      display: none;
+      
+      @include media('tablet') {
+        display: block;
+      }
+      
+      @include media('mobile') {
+        display: block;
       }
     }
   }
