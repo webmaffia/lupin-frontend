@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import '../scss/components/Overview.scss';
 
 export default function Overview({ data }) {
-  const [hoveredStat, setHoveredStat] = useState(1); // Default to index 1 (Employees)
+  const [hoveredStat, setHoveredStat] = useState(1); // Default to index 1 (24000+ Employees)
   const [hasAnimated, setHasAnimated] = useState(false);
   const [animatedNumbers, setAnimatedNumbers] = useState([0, 0, 0, 0]);
   const sectionRef = useRef(null);
@@ -181,7 +181,7 @@ export default function Overview({ data }) {
             {/* Column 1 */}
             <div className="overview__stats-col overview__stats-col--1">
               <div 
-                className={`overview__stat ${hoveredStat === 0 ? '' : 'overview__stat--dim'}`}
+                className={`overview__stat overview__stat--0 ${hoveredStat === 0 ? '' : 'overview__stat--dim'}`}
                 onMouseEnter={() => setHoveredStat(0)}
               >
                 <div className="overview__stat-number">
@@ -192,7 +192,7 @@ export default function Overview({ data }) {
               </div>
 
               <div 
-                className={`overview__stat ${hoveredStat === 2 ? '' : 'overview__stat--dim'}`}
+                className={`overview__stat overview__stat--2 ${hoveredStat === 2 ? '' : 'overview__stat--dim'}`}
                 onMouseEnter={() => setHoveredStat(2)}
               >
                 <div className="overview__stat-number">
@@ -206,7 +206,7 @@ export default function Overview({ data }) {
             {/* Column 2 */}
             <div className="overview__stats-col overview__stats-col--2">
               <div 
-                className={`overview__stat ${hoveredStat === 1 ? '' : 'overview__stat--dim'}`}
+                className={`overview__stat overview__stat--1 ${hoveredStat === 1 ? '' : 'overview__stat--dim'}`}
                 onMouseEnter={() => setHoveredStat(1)}
               >
                 <div className="overview__stat-number">
@@ -217,7 +217,7 @@ export default function Overview({ data }) {
               </div>
 
               <div 
-                className={`overview__stat ${hoveredStat === 3 ? '' : 'overview__stat--dim'}`}
+                className={`overview__stat overview__stat--3 ${hoveredStat === 3 ? '' : 'overview__stat--dim'}`}
                 onMouseEnter={() => setHoveredStat(3)}
               >
                 <div className="overview__stat-number">
