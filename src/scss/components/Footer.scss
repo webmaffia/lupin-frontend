@@ -16,7 +16,7 @@
   }
   
   @include media('mobile') {
-    padding: vw-mobile(50, 414) vw-mobile(30, 414);
+    padding: vw-mobile(40, 414) vw-mobile(20, 414);
   }
   
   // Container
@@ -39,7 +39,8 @@
       height: auto;
       display: flex;
       flex-direction: column;
-      gap: vw-mobile(40, 414);
+      gap: vw-mobile(30, 414);
+      position: relative;
     }
   }
   
@@ -59,7 +60,10 @@
     }
     
     @include media('mobile') {
-      gap: vw-mobile(40, 414);
+      position: static;
+      width: 100%;
+      gap: vw-mobile(20, 414);
+      display: contents;
     }
   }
   
@@ -74,8 +78,9 @@
     }
     
     @include media('mobile') {
-      width: vw-mobile(100, 414);
-      height: vw-mobile(120, 414);
+      width: vw-mobile(80, 414);
+      height: vw-mobile(97, 414);
+      order: 1;
     }
   }
   
@@ -93,7 +98,10 @@
     width: vw(183);
     
     @include media('mobile') {
-      gap: vw-mobile(20, 414);
+      order: 3;
+      gap: vw-mobile(15, 414);
+      width: 100%;
+      margin-top: vw-mobile(10, 414);
     }
   }
   
@@ -102,7 +110,7 @@
     gap: vw(22);
     
     @include media('mobile') {
-      gap: vw-mobile(15, 414);
+      gap: vw-mobile(10, 414);
     }
   }
   
@@ -113,8 +121,8 @@
     @include flex(row, center, center);
     
     @include media('mobile') {
-      width: vw-mobile(18, 414);
-      height: vw-mobile(16, 414);
+      width: vw-mobile(14, 414);
+      height: vw-mobile(14, 414);
     }
     
     img {
@@ -134,13 +142,18 @@
     margin: 0;
     
     @include media('mobile') {
-      font-size: vw-mobile(13, 414);
+      font-size: vw-mobile(11, 414);
+      line-height: 1.5;
     }
   }
   
   // Legal Section
   &__legal {
     width: 100%;
+    
+    @include media('mobile') {
+      order: 4;
+    }
   }
   
   &__legal-content {
@@ -153,8 +166,8 @@
     color: #FFFFFF;
     
     @include media('mobile') {
-      gap: vw-mobile(18, 414);
-      font-size: vw-mobile(13, 414);
+      gap: vw-mobile(10, 414);
+      font-size: vw-mobile(10, 414);
     }
   }
   
@@ -163,6 +176,12 @@
     margin: 0;
     width: vw(306);
     white-space: pre-wrap;
+    
+    @include media('mobile') {
+      width: 100%;
+      opacity: 0.6;
+      line-height: 1.5;
+    }
   }
   
   &__legal-links {
@@ -170,6 +189,12 @@
     margin: 0;
     width: vw(272);
     white-space: pre-wrap;
+    
+    @include media('mobile') {
+      width: 100%;
+      opacity: 0.6;
+      line-height: 1.5;
+    }
   }
   
   &__legal-link {
@@ -196,7 +221,13 @@
     gap: vw(131) vw(37);
     
     @include media('mobile') {
-      gap: vw-mobile(50, 414) vw-mobile(20, 414);
+      position: static;
+      width: 100%;
+      height: auto;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw-mobile(25, 414) vw-mobile(20, 414);
+      order: 2;
     }
   }
   
@@ -209,7 +240,7 @@
     
     @include media('mobile') {
       width: 100%;
-      gap: vw-mobile(12, 414);
+      gap: vw-mobile(10, 414);
     }
   }
   
@@ -225,7 +256,10 @@
     white-space: pre-wrap;
     
     @include media('mobile') {
-      font-size: vw-mobile(16, 414);
+      font-size: vw-mobile(13, 414);
+      line-height: 1.3;
+      height: auto;
+      font-weight: 600;
     }
   }
   
@@ -242,7 +276,8 @@
     
     @include media('mobile') {
       font-size: vw-mobile(12, 414);
-      line-height: 1.6;
+      line-height: 1.8;
+      font-weight: 300;
     }
     
     li {
@@ -254,6 +289,10 @@
     color: #FFFFFF;
     text-decoration: none;
     transition: opacity $transition-base;
+    
+    @include media('mobile') {
+      opacity: 0.8;
+    }
     
     &:hover {
       opacity: 0.8;
@@ -270,8 +309,7 @@
     gap: vw(30);
     
     @include media('mobile') {
-      gap: vw-mobile(20, 414);
-      margin-top: vw-mobile(30, 414);
+      display: none;
     }
   }
   
@@ -312,7 +350,13 @@
   }
 }
 
-.bottomLinks{width: 100%;
+.bottomLinks {
+  width: 100%;
   display: flex;
   gap: vw(135);
-  margin-top: -5vw;}
+  margin-top: -5vw;
+  
+  @include media('mobile') {
+    display: contents;
+  }
+}
