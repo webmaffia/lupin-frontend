@@ -65,7 +65,7 @@ export default function Life({ data }) {
         </div>
 
         {/* CTA Button */}
-        <Link href={lifeData.cta.href} className="our-story__cta" data-node-id="22:3363">
+        <Link href={lifeData.cta.href} className="life__cta" data-node-id="22:3363">
           <div className="life__cta-inner" data-node-id="22:3364">
             <div className="life__cta-content" data-node-id="22:3365">
               <span className="life__cta-dot" data-node-id="22:3366"></span>
