@@ -18,7 +18,7 @@
   
   @include media('mobile') {
     height: auto;
-    min-height: vw-mobile(800, 414);
+    min-height: auto;
   }
   
   // Background layers
@@ -131,9 +131,9 @@
     }
     
     @include media('mobile') {
-      flex-direction: column;
-      padding: vw-mobile(60, 414) vw-mobile(20, 414);
-      gap: vw-mobile(40, 414);
+      flex-direction: column-reverse;
+      padding: vw-mobile(30, 414) 0 0;
+      gap: vw-mobile(0, 414);
     }
   }
   
@@ -177,6 +177,7 @@
     @include media('mobile') {
       width: 100%;
       gap: vw-mobile(30, 414);
+      padding: 0 vw-mobile(20, 414);
     }
   }
   
@@ -199,7 +200,7 @@
     
     @include media('mobile') {
       width: 100%;
-      gap: vw-mobile(15, 414);
+      gap: vw-mobile(10, 414);
     }
   }
   
@@ -215,7 +216,7 @@
     margin: 0;
     
     @include media('mobile') {
-      font-size: vw-mobile(20, 414);
+      font-size: vw-mobile(16, 414);
       line-height: vw-mobile(18, 414);
     }
   }
@@ -231,8 +232,8 @@
     margin: 0;
     
     @include media('mobile') {
-      font-size: vw-mobile(40, 414);
-      line-height: vw-mobile(40, 414);
+      font-size: vw-mobile(30, 414);
+      line-height: vw-mobile(30, 414);
     }
   }
   
@@ -251,8 +252,8 @@
     width: vw(575);
     
     @include media('mobile') {
-      font-size: vw-mobile(16, 414);
-      line-height: vw-mobile(22, 414);
+      font-size: vw-mobile(12, 414);
+      line-height: vw-mobile(18, 414);
       width: 100%;
     }
   }
