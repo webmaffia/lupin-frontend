@@ -100,7 +100,7 @@
     @include media('mobile') {
       width: 100vw;
       max-width: 100%;
-      padding: vw-mobile(100, 414) vw-mobile(20, 414) vw-mobile(40, 414);
+      padding: vw-mobile(140, 414) vw-mobile(20, 414) vw-mobile(40, 414);
     }
   }
   
@@ -143,7 +143,7 @@
     @include media('mobile') {
       font-size: vw-mobile(20, 414);
       line-height: vw-mobile(50, 414);
-      padding: vw-mobile(16, 414) vw-mobile(20, 414);
+      padding: vw-mobile(10, 414) vw-mobile(20, 414);
     }
     
     &:hover {
