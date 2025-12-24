@@ -20,8 +20,8 @@
   
   @include media('mobile') {
     height: auto;
-    min-height: vw-mobile(800, 414);
-    padding: vw-mobile(100, 414) vw-mobile(30, 414);
+    min-height: vw-mobile(600, 414);
+    padding: vw-mobile(60, 414) vw-mobile(20, 414);
   }
   
   // Background
@@ -57,7 +57,8 @@
     z-index: 2;
     
     @include media('mobile') {
-      display: none;
+      display: block;
+      opacity: 0.3;
     }
   }
   
@@ -84,7 +85,7 @@
     
     @include media('mobile') {
       width: 100%;
-      gap: vw-mobile(25, 414);
+      gap: vw-mobile(20, 414);
     }
   }
   
@@ -114,7 +115,7 @@
     }
     
     @include media('mobile') {
-      gap: vw-mobile(20, 414);
+      gap: vw-mobile(12, 414);
     }
   }
   
@@ -128,7 +129,7 @@
     color: #FFFFFF;
     
     @include media('mobile') {
-      gap: vw-mobile(18, 414);
+      gap: vw-mobile(0, 414);
     }
   }
   
@@ -149,9 +150,9 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(120, 414);
-      line-height: vw-mobile(50, 414);
-      height: vw-mobile(100, 414);
+      font-size: vw-mobile(100, 414);
+      line-height: vw-mobile(85, 414);
+      height: auto;
     }
   }
   
@@ -171,8 +172,8 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(32, 414);
-      line-height: vw-mobile(30, 414);
+      font-size: vw-mobile(28, 414);
+      line-height: vw-mobile(32, 414);
     }
   }
   
@@ -224,10 +225,11 @@
     transition: transform $transition-base, box-shadow $transition-base;
     
     @include media('mobile') {
-      border-radius: vw-mobile(45, 414);
-      padding: vw-mobile(12, 414) vw-mobile(20, 414);
+      border-radius: vw-mobile(30, 414);
+      padding: vw-mobile(14, 414) vw-mobile(24, 414);
       height: vw-mobile(50, 414);
       width: 100%;
+      max-width: vw-mobile(280, 414);
     }
     
     &:hover {
@@ -277,8 +279,9 @@
     height: vw(33);
     
     @include media('mobile') {
-      font-size: vw-mobile(20, 414);
-      line-height: vw-mobile(24, 414);
+      font-size: vw-mobile(18, 414);
+      line-height: vw-mobile(22, 414);
+      height: auto;
     }
   }
   
