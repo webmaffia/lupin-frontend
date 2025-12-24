@@ -146,6 +146,20 @@ export default function Header({ data }) {
           </button>
         </div>
 
+        {/* Mobile Globe Icon (before menu button) */}
+        <button 
+          className="header__icon-btn header__icon-btn--mobile-header" 
+          aria-label="Change language"
+        >
+          <Image
+            src="/assets/icon-globe.svg"
+            alt="Globe"
+            width={26}
+            height={26}
+            quality={95}
+          />
+        </button>
+
         {/* Menu Button */}
         <button
           className={`header__menu-btn ${isMenuOpen ? 'is-open' : ''}`}

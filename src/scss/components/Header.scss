@@ -36,6 +36,7 @@
       padding: vw-mobile(16, 414) vw-mobile(20, 414);
       gap: vw-mobile(20, 414);
       z-index: z('modal') + 2;
+    
     }
   }
   
@@ -175,6 +176,7 @@
         display: block;
       }
     }
+    
   }
   
   // Actions
@@ -273,6 +275,30 @@
       height: 100%;
       object-fit: contain;
     }
+    
+    // Mobile version in header (before menu button)
+    &--mobile-header {
+      display: none;
+      
+      @include media('tablet') {
+        display: flex;
+        width: vw(26, 768);
+        height: vw(26, 768);
+        margin-right: vw(10, 768);
+      }
+      
+      @include media('mobile') {
+        display: flex;
+        width: vw-mobile(26, 414);
+        height: vw-mobile(26, 414);
+        margin-right: vw-mobile(10, 414);
+      }
+      
+      &:hover {
+        opacity: 0.8;
+        transform: scale(1.1);
+      }
+    }
   }
   
   // Menu Button
@@ -313,8 +339,8 @@
       }
       
       @include media('mobile') {
-        top: vw-mobile(16, 414);
-        right: vw-mobile(16, 414);
+        top: vw-mobile(30, 414);
+        right: vw-mobile(20, 414);
       }
     }
   }
