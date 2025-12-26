@@ -1,0 +1,80 @@
+import Image from 'next/image';
+import '../scss/components/InnerBanner.scss';
+
+export default function InnerBanner({ data }) {
+  // Default data (will be replaced by Strapi)
+  const bannerData = data || {
+    title: {
+      line1: "Transfer of Physical",
+      line2: "Shares (Re-lodgement)"
+    },
+    background: {
+      color1: "#41b66b",
+      color2: "#54bd7a",
+      opacity: 0.8
+    },
+    images: {
+      banner: {
+        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        alt: "Financial documents and charts"
+      },
+      petal: {
+        url: "/assets/inner-banner/petal-2.svg",
+        alt: "Decorative petal"
+      }
+    }
+  };
+
+  return (
+    <section className="inner-banner">
+      {/* Background Layers */}
+      <div className="inner-banner__bg">
+        {/* Base green background */}
+        <div className="inner-banner__bg-base"></div>
+        
+        {/* Gradient overlay */}
+        <div className="inner-banner__bg-gradient"></div>
+        
+        {/* Decorative Petal */}
+        <div className="inner-banner__petal">
+          <Image
+            src={bannerData.images.petal.url}
+            alt={bannerData.images.petal.alt}
+            width={400}
+            height={400}
+            className="inner-banner__petal-img"
+            quality={100}
+          />
+        </div>
+        
+        {/* Gradient overlays */}
+        <div className="inner-banner__overlay-1"></div>
+        <div className="inner-banner__overlay-2"></div>
+        <div className="inner-banner__overlay-3"></div>
+      </div>
+
+      {/* Banner Image */}
+      <div className="inner-banner__image">
+        <Image
+          src={bannerData.images.banner.url}
+          alt={bannerData.images.banner.alt}
+          fill
+          className="inner-banner__image-img"
+          quality={100}
+          priority
+        />
+      </div>
+
+      {/* Content */}
+      <div className="inner-banner__content">
+        <div className="inner-banner__text">
+          <h1 className="inner-banner__title">
+            <span className="inner-banner__title-line">{bannerData.title.line1}</span>
+            <span className="inner-banner__title-line">{bannerData.title.line2}</span>
+          </h1>
+        </div>
+      </div>
+    </section>
+  );
+}
+
