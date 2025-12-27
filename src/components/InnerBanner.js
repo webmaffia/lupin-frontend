@@ -36,16 +36,18 @@ export default function InnerBanner({ data }) {
         <div className="inner-banner__bg-gradient"></div>
         
         {/* Decorative Petal */}
-        <div className="inner-banner__petal">
-          <Image
-            src={bannerData.images.petal.url}
-            alt={bannerData.images.petal.alt}
-            width={400}
-            height={400}
-            className="inner-banner__petal-img"
-            quality={100}
-          />
-        </div>
+        {bannerData.images?.petal && (
+          <div className="inner-banner__petal">
+            <Image
+              src={bannerData.images.petal.url}
+              alt={bannerData.images.petal.alt}
+              width={400}
+              height={400}
+              className="inner-banner__petal-img"
+              quality={100}
+            />
+          </div>
+        )}
         
         {/* Gradient overlays */}
         <div className="inner-banner__overlay-1"></div>
@@ -54,23 +56,29 @@ export default function InnerBanner({ data }) {
       </div>
 
       {/* Banner Image */}
-      <div className="inner-banner__image">
-        <Image
-          src={bannerData.images.banner.url}
-          alt={bannerData.images.banner.alt}
-          fill
-          className="inner-banner__image-img"
-          quality={100}
-          priority
-        />
-      </div>
+      {bannerData.images?.banner && (
+        <div className="inner-banner__image">
+          <Image
+            src={bannerData.images.banner.url}
+            alt={bannerData.images.banner.alt}
+            fill
+            className="inner-banner__image-img"
+            quality={100}
+            priority
+          />
+        </div>
+      )}
 
       {/* Content */}
       <div className="inner-banner__content">
         <div className="inner-banner__text">
           <h1 className="inner-banner__title">
-            <span className="inner-banner__title-line">{bannerData.title.line1}</span>
-            <span className="inner-banner__title-line">{bannerData.title.line2}</span>
+            {bannerData.title?.line1 && (
+              <span className="inner-banner__title-line">{bannerData.title.line1}</span>
+            )}
+            {bannerData.title?.line2 && (
+              <span className="inner-banner__title-line">{bannerData.title.line2}</span>
+            )}
           </h1>
         </div>
       </div>

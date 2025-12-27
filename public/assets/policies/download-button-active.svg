@@ -1,0 +1,7 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Download button">
+<rect x="4" y="4" width="112" height="112" rx="56" fill="var(--fill-0, #126430)"/>
+<rect x="4" y="4" width="112" height="112" rx="56" stroke="var(--stroke-0, white)" stroke-width="8"/>
+<path id="Vector" d="M76 60.2014L66.2195 60.1267V44H52.7805V59.9027L43 59.7534L59.724 76.4774L76 60.2014Z" fill="var(--fill-0, white)"/>
+</g>
+</svg>
