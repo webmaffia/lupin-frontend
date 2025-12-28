@@ -301,7 +301,9 @@
     }
     
     // Mobile absolute positioning for each stat
+    // Order: 0 (Facilities) -> 1 (Employees) -> 2 (Countries) -> 3 (Products)
     &--0 {
+      // Stat 0: Facilities (15+ Global Facilities)
       @include media('mobile') {
         left: vw-mobile(130, 414);
         top: vw-mobile(100, 414);
@@ -309,6 +311,7 @@
     }
     
     &--1 {
+      // Stat 1: Employees (24000+ Employees)
       @include media('mobile') {
         left: vw-mobile(0, 414);
         top: vw-mobile(220, 414);
@@ -316,16 +319,18 @@
     }
     
     &--2 {
+      // Stat 2: Countries (100+ Countries)
       @include media('mobile') {
-        left: vw-mobile(100, 414);
-        top: vw-mobile(440, 414);
+        left: vw-mobile(20, 414);
+        top: vw-mobile(350, 414);
       }
     }
     
     &--3 {
+      // Stat 3: Products (1000+ Products)
       @include media('mobile') {
-        left: vw-mobile(20, 414);
-        top: vw-mobile(350, 414);
+        left: vw-mobile(100, 414);
+        top: vw-mobile(440, 414);
       }
     }
     
