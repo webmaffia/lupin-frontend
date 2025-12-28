@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Hero from '@/components/Hero';
+import InnerBanner from '@/components/InnerBanner';
 import AnalystCoverage from '@/components/AnalystCoverage';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 
@@ -13,10 +13,23 @@ export const metadata = generateSEOMetadata({
 });
 
 export default function AnalystCoveragePage() {
+  const bannerData = {
+    title: {
+      line1: "Transfer of Physical",
+      line2: "Shares (Re-lodgement)"
+    },
+    images: {
+      banner: {
+        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        alt: "Financial documents and charts"
+      },
+  
+    }
+  };
   return (
     <div style={{ position: 'relative' }}>
       <Header />
-      <Hero />
+      <InnerBanner data={bannerData} />
       <AnalystCoverage />
       <Footer />
     </div>
