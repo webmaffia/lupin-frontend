@@ -23,7 +23,10 @@ export default function AnalystCoveragePage() {
         url: "/assets/inner-banner/freepik-enhance-42835.jpg",
         alt: "Financial documents and charts"
       },
-  
+      petal: {
+        url: "/assets/inner-banner/petal-2.svg",
+        alt: "Decorative petal"
+      }
     }
   };
   return (
