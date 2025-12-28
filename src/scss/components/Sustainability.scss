@@ -203,25 +203,19 @@
   &__cta {
     @include flex(column, flex-start, flex-start);
     gap: vw(1);
-    width: vw(213.454);
-    height: vw(49.967);
-    padding: vw(12.98) vw(32.9) vw(12.98) vw(21.16);
+    padding: vw(16) vw(35);
     background: #FFFFFF;
     border-radius: vw(47.168);
     text-decoration: none;
     transition: transform $transition-base, box-shadow $transition-base;
     
     @include media('tablet') {
-      width: vw(180, 768);
-      height: vw(42, 768);
-      padding: vw(11, 768) vw(28, 768) vw(11, 768) vw(18, 768);
+      padding: vw(16, 768) vw(35, 768);
       border-radius: vw(40, 768);
     }
     
     @include media('mobile') {
-      width: vw-mobile(160, 414);
-      height: vw-mobile(38, 414);
-      padding: vw-mobile(10, 414) vw-mobile(24, 414) vw-mobile(10, 414) vw-mobile(16, 414);
+      padding: vw-mobile(16, 414) vw-mobile(35, 414);
       border-radius: vw-mobile(34, 414);
     }
     
@@ -252,27 +246,9 @@
     }
   }
   
-  &__cta-dot {
-    width: vw(3.959);
-    height: vw(3.959);
-    background: #363732;
-    border-radius: 50%;
-    flex-shrink: 0;
-    
-    @include media('tablet') {
-      width: vw(3.5, 768);
-      height: vw(3.5, 768);
-    }
-    
-    @include media('mobile') {
-      width: vw-mobile(3, 414);
-      height: vw-mobile(3, 414);
-    }
-  }
-  
   &__cta-text {
     font-family: $font-family-base;
-    font-weight: 700;
+    font-weight: 500;
     font-size: vw(20);
     line-height: vw(23.43);
     color: #363732;
@@ -289,19 +265,5 @@
     }
   }
   
-  &__cta-underline {
-    display: block;
-    width: 100%;
-    height: vw(0.5);
-    background: #363732;
-    
-    @include media('tablet') {
-      height: vw(0.4, 768);
-    }
-    
-    @include media('mobile') {
-      height: vw-mobile(0.3, 414);
-    }
-  }
 }
 

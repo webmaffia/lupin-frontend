@@ -127,12 +127,10 @@ export default function Investors({ data }) {
             
             <Link href={investorsData.exchangeReleases.cta.href} className="our-story__cta">
               <div className="investors__cta-inner">
-                <span className="investors__cta-dot"></span>
                 <span className="investors__cta-text">
                   View investor reports 
                 </span>
               </div>
-              <span className="investors__cta-underline"></span>
             </Link>
           </div>
         </div>

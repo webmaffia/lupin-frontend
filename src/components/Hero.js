@@ -84,9 +84,7 @@ export default function Hero({ data }) {
 
           {/* CTA Button */}
           <Link href={heroData.cta.href} className="hero__cta">
-            <span className="hero__cta-dot"></span>
             <span className="hero__cta-text">{heroData.cta.text}</span>
-            <span className="hero__cta-underline"></span>
           </Link>
         </div>
 

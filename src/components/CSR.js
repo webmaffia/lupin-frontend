@@ -65,12 +65,10 @@ export default function CSR({ data }) {
           {/* CTA Button */}
           <Link href={csrData.cta.href} className="our-story__cta" data-node-id="22:3342">
             <div className="csr__cta-inner">
-              <span className="csr__cta-dot" data-node-id="22:3345"></span>
               <span className="csr__cta-text" data-node-id="22:3344">
                 {csrData.cta.text}
               </span>
             </div>
-            <span className="csr__cta-underline" data-node-id="22:3346"></span>
           </Link>
         </div>
       </div>

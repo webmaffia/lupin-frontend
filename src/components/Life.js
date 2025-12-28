@@ -70,12 +70,10 @@ export default function Life({ data }) {
         <Link href={lifeData.cta.href} className="life__cta" data-node-id="22:3363">
           <div className="life__cta-inner" data-node-id="22:3364">
             <div className="life__cta-content" data-node-id="22:3365">
-              <span className="life__cta-dot" data-node-id="22:3366"></span>
               <span className="life__cta-text" data-node-id="22:3367">
                 {lifeData.cta.text}
               </span>
             </div>
-            <span className="life__cta-underline" data-node-id="22:3368"></span>
           </div>
         </Link>
       </div>

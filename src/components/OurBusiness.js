@@ -79,10 +79,8 @@ export default function OurBusiness({ data }) {
           </p>
           <Link href={businessData.cta.href} className="our-business__cta">
             <div className="our-business__cta-inner">
-              <span className="our-business__cta-dot"></span>
               <span className="our-business__cta-text">{businessData.cta.text}</span>
             </div>
-            <span className="our-business__cta-underline"></span>
           </Link>
         </div>
 

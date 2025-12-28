@@ -168,7 +168,7 @@ export default function GoldenLine() {
       }
 
       .cls-2, .cls-3, .cls-4 {
-        stroke-width: 1px;
+        stroke-width: 2px;
       }
 
       .cls-3 {
@@ -240,7 +240,7 @@ export default function GoldenLine() {
                   .cls-2 {
                     fill-rule: evenodd;
                     stroke-miterlimit: 10;
-                    stroke-width: .48px;
+                    stroke-width: 1px;
                   }
                   .cls-2, .cls-3 {
                     fill: none;
@@ -249,7 +249,7 @@ export default function GoldenLine() {
                   .cls-3 {
                     stroke-linecap: round;
                     stroke-linejoin: round;
-                    stroke-width: .5px;
+                    stroke-width: 1px;
                   }
                 `
               }

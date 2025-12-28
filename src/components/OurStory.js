@@ -91,10 +91,8 @@ export default function OurStory({ data }) {
           {/* CTA Button */}
           <Link href={storyData.cta.href} className="our-story__cta">
             <div className="our-story__cta-inner">
-              <span className="our-story__cta-dot"></span>
               <span className="our-story__cta-text">{storyData.cta.text}</span>
             </div>
-            <span className="our-story__cta-underline"></span>
           </Link>
         </div>
       </div>

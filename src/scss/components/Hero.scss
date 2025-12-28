@@ -236,39 +236,20 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: vw(235.184);
-    height: vw(61.688);
+    padding: vw(16) vw(50);
     background: linear-gradient(to right, #09a341, #38d973);
     border-radius: vw(30.844);
     text-decoration: none;
     transition: transform $transition-base, box-shadow $transition-base;
     
     @include media('mobile') {
-      width: vw-mobile(140, 414);
-      height: vw-mobile(42, 414);
+      padding: vw-mobile(16, 414) vw-mobile(35, 414);
       border-radius: vw-mobile(21, 414);
     }
     
     &:hover {
       transform: translateY(vw(-2));
       box-shadow: 0 vw(8) vw(20) rgba(0, 0, 0, 0.2);
-    }
-  }
-  
-  &__cta-dot {
-    position: absolute;
-    left: vw(34.7);
-    top: vw(28.27);
-    width: vw(5.388);
-    height: vw(5.388);
-    background: #ffffff;
-    border-radius: 50%;
-    
-    @include media('mobile') {
-      left: vw-mobile(20, 414);
-      top: vw-mobile(18, 414);
-      width: vw-mobile(3.5, 414);
-      height: vw-mobile(3.5, 414);
     }
   }
   
@@ -285,22 +266,6 @@
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
       line-height: vw-mobile(20, 414);
-    }
-  }
-  
-  &__cta-underline {
-    position: absolute;
-    left: vw(54.62);
-    bottom: vw(17.34);
-    width: vw(127.23);
-    height: vw(0.64);
-    background: #ffffff;
-    
-    @include media('mobile') {
-      left: vw-mobile(32, 414);
-      bottom: vw-mobile(11, 414);
-      width: vw-mobile(76, 414);
-      height: vw-mobile(0.5, 414);
     }
   }
   

@@ -298,7 +298,7 @@
     &--button {
       position: relative;
       @include flex(column, flex-start, flex-start);
-      width: vw(213.454);
+      width: vw(180);
       height: vw(49.967);
       background: linear-gradient(to left, #3adb75, #08a240);
       border-radius: vw(47.168);
@@ -334,7 +334,7 @@
     left: vw(32.9);
     top: vw(12.98);
     font-family: $font-family-base;
-    font-weight: 700;
+    font-weight: 500;
     font-size: vw(20);
     line-height: vw(23.43);
     color: #ffffff;

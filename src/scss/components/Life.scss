@@ -254,25 +254,18 @@
   &__cta {
     background: #FFFFFF;
     border-radius: vw(64.947);
-    padding: vw(17) vw(29);
-    height: vw(68);
-    width: vw(366);
+    padding: vw(16) vw(35);
     text-decoration: none;
     transition: transform $transition-base, box-shadow $transition-base;
     
     @include media('tablet') {
       border-radius: vw(50, 768);
-      padding: vw(14, 768) vw(24, 768);
-      height: vw(56, 768);
-      width: vw(300, 768);
+      padding: vw(16, 768) vw(35, 768);
     }
     
     @include media('mobile') {
       border-radius: vw-mobile(30, 414);
-      padding: vw-mobile(14, 414) vw-mobile(24, 414);
-      height: vw-mobile(50, 414);
-      width: 100%;
-      max-width: vw-mobile(226, 414);
+      padding: vw-mobile(16, 414) vw-mobile(35, 414);
       margin-top: vw-mobile(10, 414);
     }
     
@@ -308,27 +301,9 @@
     }
   }
   
-  &__cta-dot {
-    width: vw(5.451);
-    height: vw(5.451);
-    background: #363732;
-    border-radius: 50%;
-    flex-shrink: 0;
-    
-    @include media('tablet') {
-      width: vw(4.5, 768);
-      height: vw(4.5, 768);
-    }
-    
-    @include media('mobile') {
-      width: vw-mobile(4, 414);
-      height: vw-mobile(4, 414);
-    }
-  }
-  
   &__cta-text {
     font-family: $font-family-base;
-    font-weight: 600;
+    font-weight: 500;
     font-size: vw(27.539);
     line-height: vw(32.261);
     text-transform: capitalize;
@@ -349,19 +324,5 @@
     }
   }
   
-  &__cta-underline {
-    display: block;
-    width: 100%;
-    height: vw(0.69);
-    background: #363732;
-    
-    @include media('tablet') {
-      height: vw(0.6, 768);
-    }
-    
-    @include media('mobile') {
-      height: vw-mobile(0.5, 414);
-    }
-  }
 }
 

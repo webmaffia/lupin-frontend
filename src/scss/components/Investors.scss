@@ -468,9 +468,7 @@
   &__cta {
     @include flex(column, flex-start, flex-start);
     gap: vw(1);
-    width: vw(203.335);
-    height: vw(47.598);
-    padding: vw(12.37) vw(31.34) vw(12.37) vw(20.16);
+    padding: vw(16) vw(35);
     background: #ffffff;
     border-radius: vw(44.932);
     text-decoration: none;
@@ -478,9 +476,7 @@
     transition: transform $transition-base, box-shadow $transition-base;
     
     @include media('mobile') {
-      width: vw-mobile(150, 414);
-      height: vw-mobile(36, 414);
-      padding: vw-mobile(10, 414) vw-mobile(22, 414) vw-mobile(10, 414) vw-mobile(14, 414);
+      padding: vw-mobile(16, 414) vw-mobile(35, 414);
       border-radius: vw-mobile(30, 414);
       margin-top: vw-mobile(26, 414);
     }
@@ -500,22 +496,9 @@
     }
   }
   
-  &__cta-dot {
-    width: vw(3.771);
-    height: vw(3.771);
-    background: #033943;
-    border-radius: 50%;
-    flex-shrink: 0;
-    
-    @include media('mobile') {
-      width: vw-mobile(3, 414);
-      height: vw-mobile(3, 414);
-    }
-  }
-  
   &__cta-text {
     font-family: $font-family-base;
-    font-weight: 600;
+    font-weight: 500;
     font-size: vw(19.052);
     line-height: vw(22.319);
     color: #033943;
@@ -527,16 +510,6 @@
     }
   }
   
-  &__cta-underline {
-    display: block;
-    width: 100%;
-    height: vw(0.48);
-    background: #033943;
-    
-    @include media('mobile') {
-      height: vw-mobile(0.3, 414);
-    }
-  }
 }
 
 

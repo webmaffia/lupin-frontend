@@ -55,12 +55,10 @@ export default function Sustainability({ data }) {
         {/* CTA Button */}
         <Link href={sustainabilityData.cta.href} className="our-story__cta" data-node-id="22:3310">
           <div className="sustainability__cta-inner">
-            <span className="sustainability__cta-dot" data-node-id="22:3313"></span>
             <span className="sustainability__cta-text" data-node-id="22:3312">
               {sustainabilityData.cta.text}
             </span>
           </div>
-          <span className="sustainability__cta-underline" data-node-id="22:3314"></span>
         </Link>
       </div>
     </section>

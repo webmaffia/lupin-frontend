@@ -65,9 +65,9 @@ export default function OurPurpose({ data }) {
                 </p>
               </div>
               <Link href={purposeData.cards[0].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
-                <span className="our-purpose__card-cta-dot"></span>
+                
                 <span className="our-purpose__card-cta-text">{purposeData.cards[0].ctaText}</span>
-                <span className="our-purpose__card-cta-underline"></span>
+                
               </Link>
             </div>
           </div>
@@ -95,9 +95,9 @@ export default function OurPurpose({ data }) {
                 </p>
               </div>
               <Link href={purposeData.cards[1].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
-                <span className="our-purpose__card-cta-dot"></span>
+               
                 <span className="our-purpose__card-cta-text">{purposeData.cards[1].ctaText}</span>
-                <span className="our-purpose__card-cta-underline"></span>
+               
               </Link>
             </div>
           </div>
@@ -125,9 +125,9 @@ export default function OurPurpose({ data }) {
                 </p>
               </div>
               <Link href={purposeData.cards[2].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
-                <span className="our-purpose__card-cta-dot"></span>
+              
                 <span className="our-purpose__card-cta-text">{purposeData.cards[2].ctaText}</span>
-                <span className="our-purpose__card-cta-underline"></span>
+                
               </Link>
             </div>
           </div>
