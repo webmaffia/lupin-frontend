@@ -3,26 +3,12 @@ import Link from 'next/link';
 import '../scss/components/OurStory.scss';
 
 export default function OurStory({ data }) {
-  // Default data (will be replaced by Strapi)
-  const storyData = data || {
-    eyebrow: "The Lupin Story",
-    heading: {
-      line1: "Driven by ",
-      line2: "Science... ",
-      line3: "Inspired by Patients"
-    },
-    paragraphs: [
-      "Founded by Dr. Desh Bandhu Gupta in 1968, Lupin",
-      "aimed to improve access to essential",
-      "medicines. Today we stand tall as a globally",
-      "trusted pharmaceutical company guided by",
-      "science, quality, and a patient-first mindset"
-    ],
-    cta: {
-      text: "know more",
-      href: "#our-story"
-    }
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('OurStory component requires data prop from Strapi API');
+  }
+
+  const storyData = data;
 
   return (
     <section className="our-story">
@@ -62,12 +48,13 @@ export default function OurStory({ data }) {
         {/* Founder Image */}
         <div className="our-story__image-wrapper">
           <Image
-            src="/assets/674fc7febad2add4eedc3fdf118dcb3b7e306b0a.png"
-            alt="Founder Dr. Desh Bandhu Gupta"
-            width={802}
-            height={776}
+            src={storyData.image.url}
+            alt={storyData.image.alt || ''}
+            width={storyData.image.width}
+            height={storyData.image.height}
             className="our-story__image"
             quality={100}
+            unoptimized={process.env.NODE_ENV === 'development' && storyData.image.url?.includes('localhost')}
           />
         </div>
 
@@ -79,11 +66,12 @@ export default function OurStory({ data }) {
             <div className="our-story__heading-wrapper">
               <p className="our-story__eyebrow">{storyData.eyebrow}</p>
               <h2 className="our-story__heading">
-                <span className="our-story__heading-line">{storyData.heading.line1}</span>
-                <span className="our-story__heading-line">{storyData.heading.line2}</span>
-                {storyData.heading.line3 && (
-                  <span className="our-story__heading-line">{storyData.heading.line3}</span>
-                )}
+                {storyData.heading.map((line, index) => (
+                  <span key={index} className="our-story__heading-line">
+                    {line}
+                    {index < storyData.heading.length - 1 && <br />}
+                  </span>
+                ))}
               </h2>
             </div>
             

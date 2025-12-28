@@ -12,6 +12,7 @@ import NewsInsights from '@/components/NewsInsights';
 import Footer from '@/components/Footer';
 import GoldenLine from '@/components/GoldenLine';
 import { generateMetadata as generateSEOMetadata, generateOrganizationSchema } from '@/lib/seo';
+import { getHomepage, mapHomepageHeroData, mapHomepageOurStoryData, mapHomepageOurPurposeData, mapHomepageOverviewData, mapHomepageOurBusinessData, mapHomepageSustainabilityData, mapHomepageCSRData, mapHomepageLifeData, mapHomepageNewsInsightsData } from '@/lib/strapi';
 
 // Generate metadata for the home page
 export const metadata = generateSEOMetadata({
@@ -24,6 +25,33 @@ export const metadata = generateSEOMetadata({
 export default async function Home() {
   // Generate structured data for SEO
   const organizationSchema = generateOrganizationSchema();
+
+  // Fetch homepage data from Strapi - no fallback, must get from API
+  const homepageData = await getHomepage();
+  
+  // Log raw API response for debugging
+  console.log('Raw Strapi API response:', JSON.stringify(homepageData, null, 2));
+  
+  const heroData = mapHomepageHeroData(homepageData);
+  const ourStoryData = mapHomepageOurStoryData(homepageData);
+  const ourPurposeData = mapHomepageOurPurposeData(homepageData);
+  const overviewData = mapHomepageOverviewData(homepageData);
+  const ourBusinessData = mapHomepageOurBusinessData(homepageData);
+  const sustainabilityData = mapHomepageSustainabilityData(homepageData);
+  const csrData = mapHomepageCSRData(homepageData);
+  const lifeData = mapHomepageLifeData(homepageData);
+  const newsInsightsData = mapHomepageNewsInsightsData(homepageData);
+  
+  // Log mapped data for debugging
+  console.log('Mapped hero data:', JSON.stringify(heroData, null, 2));
+  console.log('Mapped ourStory data:', JSON.stringify(ourStoryData, null, 2));
+  console.log('Mapped ourPurpose data:', JSON.stringify(ourPurposeData, null, 2));
+  console.log('Mapped overview data:', JSON.stringify(overviewData, null, 2));
+  console.log('Mapped ourBusiness data:', JSON.stringify(ourBusinessData, null, 2));
+  console.log('Mapped sustainability data:', JSON.stringify(sustainabilityData, null, 2));
+  console.log('Mapped CSR data:', JSON.stringify(csrData, null, 2));
+  console.log('Mapped life data:', JSON.stringify(lifeData, null, 2));
+  console.log('Mapped newsInsights data:', JSON.stringify(newsInsightsData, null, 2));
 
   return (
     <>
@@ -38,17 +66,17 @@ export default async function Home() {
       <div style={{ position: 'relative' }}>
         <GoldenLine />
         <Header />
-        <Hero />
+        <Hero data={heroData} />
         <main>
-          <OurStory />
-          <OurPurpose />
-          <Overview />
-          <OurBusiness />
+          <OurStory data={ourStoryData} />
+          <OurPurpose data={ourPurposeData} />
+          <Overview data={overviewData} />
+          <OurBusiness data={ourBusinessData} />
           <Investors />
-          <Sustainability />
-          <CSR />
-          <Life />
-          <NewsInsights />
+          <Sustainability data={sustainabilityData} />
+          <CSR data={csrData} />
+          <Life data={lifeData} />
+          <NewsInsights data={newsInsightsData} />
         </main>
         <Footer />
       </div>

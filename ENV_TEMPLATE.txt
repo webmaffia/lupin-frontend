@@ -5,10 +5,10 @@
 # REQUIRED: Strapi URL
 # ============================================
 # For development (local Strapi)
-NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
+NEXT_PUBLIC_STRAPI_URL=http://localhost:1380
 
-# For production (replace with your Strapi URL)
-# NEXT_PUBLIC_STRAPI_URL=https://strapi.yourdomain.com
+# For production (your Strapi server)
+# NEXT_PUBLIC_STRAPI_URL=http://65.2.155.211:1380
 
 # ============================================
 # REQUIRED: Strapi API Token

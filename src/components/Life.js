@@ -3,19 +3,12 @@ import Image from 'next/image';
 import '../scss/components/Life.scss';
 
 export default function Life({ data }) {
-  // Default data (will be replaced by Strapi)
-  const lifeData = data || {
-    heading: {
-      large: "Life",
-      small: "at Lupin World"
-    },
-    description: "In every walk of Lupin life, our people are the #ForceOfGood in their mission of enhancing patient's life and longevity",
-    cta: {
-      text: "Join our Lupin team",
-      href: "#careers"
-    },
-    backgroundImage: "/assets/6e01a9ab02dfdbf2b098d95bb83f779151169bffx.png"
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('Life component requires data prop from Strapi API');
+  }
+
+  const lifeData = data;
 
   return (
     <section className="life" data-node-id="22:3347">
@@ -29,11 +22,12 @@ export default function Life({ data }) {
           <div className="life__bg-image-mask" data-node-id="22:3354">
             <Image
               src={lifeData.backgroundImage}
-              alt="Life at Lupin"
+              alt={lifeData.imageAlt || 'Life at Lupin'}
               width={2024}
               height={1077}
               quality={100}
               className="life__bg-img"
+              unoptimized={process.env.NODE_ENV === 'development' && lifeData.backgroundImage?.includes('localhost')}
             />
           </div>
         </div>
@@ -46,12 +40,15 @@ export default function Life({ data }) {
           {/* Heading Section */}
           <div className="life__heading-wrapper" data-node-id="22:3357">
             <div className="life__heading" data-node-id="22:3358">
-              <p className="life__heading-large" data-node-id="22:3359">
-                {lifeData.heading.large}
-              </p>
-              <p className="life__heading-small" data-node-id="22:3360">
-                {lifeData.heading.small}
-              </p>
+              {lifeData.heading.map((line, index) => (
+                <p 
+                  key={index} 
+                  className={index === 0 ? "life__heading-large" : "life__heading-small"}
+                  data-node-id={index === 0 ? "22:3359" : "22:3360"}
+                >
+                  {line}
+                </p>
+              ))}
             </div>
             
             {/* Underline */}
@@ -60,7 +57,12 @@ export default function Life({ data }) {
 
           {/* Description */}
           <p className="life__description" data-node-id="22:3362">
-            {lifeData.description}
+            {lifeData.description.map((line, index) => (
+              <span key={index}>
+                {line}
+                {index < lifeData.description.length - 1 && <br />}
+              </span>
+            ))}
           </p>
         </div>
 

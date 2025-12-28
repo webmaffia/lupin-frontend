@@ -3,21 +3,12 @@ import Image from 'next/image';
 import '../scss/components/CSR.scss';
 
 export default function CSR({ data }) {
-  // Default data (will be replaced by Strapi)
-  const csrData = data || {
-    eyebrow: "CSR",
-    heading: {
-      line1: "Beyond",
-      line2: "Medicines"
-    },
-    subheading: "The Lupin Foundation works in over 4,500 villages to ensure sustainable development.",
-    description: "At the core of Lupin's CSR work is a passion to build sustainable models for enhancement of human development indices, which can be widely replicated through collaborations and partnerships.",
-    cta: {
-      text: "know more",
-      href: "#csr"
-    },
-    image: "/assets/3f5064924f1431ea7a34af03258f97fc97981619.png"
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('CSR component requires data prop from Strapi API');
+  }
+
+  const csrData = data;
 
   return (
     <section className="csr" data-node-id="22:3315">
@@ -33,11 +24,12 @@ export default function CSR({ data }) {
           <div className="csr__image-circle" data-node-id="22:3333">
             <Image
               src={csrData.image}
-              alt="CSR Activities"
+              alt={csrData.imageAlt || 'CSR Activities'}
               width={770}
               height={770}
               className="csr__image"
               quality={100}
+              unoptimized={process.env.NODE_ENV === 'development' && csrData.image?.includes('localhost')}
             />
           </div>
         </div>
@@ -51,8 +43,9 @@ export default function CSR({ data }) {
                   {csrData.eyebrow}
                 </p>
                 <div className="csr__heading" data-node-id="22:3339">
-                  <p>{csrData.heading.line1}</p>
-                  <p>{csrData.heading.line2}</p>
+                  {csrData.heading.map((line, index) => (
+                    <p key={index}>{line}</p>
+                  ))}
                 </div>
               </div>
               <p className="csr__subheading" data-node-id="22:3340">
@@ -60,7 +53,12 @@ export default function CSR({ data }) {
               </p>
             </div>
             <p className="csr__description" data-node-id="22:3341">
-              {csrData.description}
+              {csrData.description.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < csrData.description.length - 1 && <br />}
+                </span>
+              ))}
             </p>
           </div>
 

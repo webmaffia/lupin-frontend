@@ -9,23 +9,18 @@ export default function Overview({ data }) {
   const [animatedNumbers, setAnimatedNumbers] = useState([0, 0, 0, 0]);
   const sectionRef = useRef(null);
 
-  // Default data (will be replaced by Strapi)
-  const overviewData = data || {
-    eyebrow: "Overview",
-    heading: {
-      line1: "Global Impact",
-      line2: "Human Touch"
-    },
-    stats: [
-      { number: "15", suffix: "+", label: "Global Facilities" },
-      { number: "24000", suffix: "+", label: "Employees" },
-      { number: "100", suffix: "+", label: "Countries" },
-      { number: "1000", suffix: "+", label: "Products" }
-    ]
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('Overview component requires data prop from Strapi API');
+  }
+
+  const overviewData = data;
 
   // Animated counting effect
   useEffect(() => {
+    const sectionElement = sectionRef.current;
+    if (!sectionElement) return;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -66,14 +61,10 @@ export default function Overview({ data }) {
       { threshold: 0.3 } // Trigger when 30% of the section is visible
     );
 
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
+    observer.observe(sectionElement);
 
     return () => {
-      if (sectionRef.current) {
-        observer.unobserve(sectionRef.current);
-      }
+      observer.unobserve(sectionElement);
     };
   }, [hasAnimated, overviewData.stats]);
 
@@ -96,8 +87,12 @@ export default function Overview({ data }) {
         <div className="overview__headline">
           <p className="overview__eyebrow">{overviewData.eyebrow}</p>
           <h2 className="overview__heading">
-            <span className="overview__heading-line">{overviewData.heading.line1}</span>
-            <span className="overview__heading-line">{overviewData.heading.line2}</span>
+            {overviewData.heading.map((line, index) => (
+              <span key={index} className="overview__heading-line">
+                {line}
+                {index < overviewData.heading.length - 1 && <br />}
+              </span>
+            ))}
           </h2>
         </div>
 

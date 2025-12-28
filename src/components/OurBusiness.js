@@ -3,20 +3,12 @@ import Image from 'next/image';
 import '../scss/components/OurBusiness.scss';
 
 export default function OurBusiness({ data }) {
-  // Default data (will be replaced by Strapi)
-  const businessData = data || {
-    heading: "Our Business",
-    description: [
-      "Lupin operates a highly diversified pharmaceutical business with a stronghold across key global markets. The operations spreads across generics, complex, branded segments amongst other high-burden speciality divisions, which are supported by strong R&D and manufacturing capabilities.",
-      "",
-      "Spread across developed and emerging markets, Lupin's business is anchored in patient-centric approach and operational excellence."
-    ],
-    cta: {
-      text: "know more",
-      href: "#business"
-    },
-    image: "/assets/f7a3759c4b0069780e574701080f40c6970cc178.png"
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('OurBusiness component requires data prop from Strapi API');
+  }
+
+  const businessData = data;
 
   return (
     <section className="our-business">
@@ -69,7 +61,14 @@ export default function OurBusiness({ data }) {
       <div className="our-business__container">
         {/* Left Content */}
         <div className="our-business__content">
-          <h2 className="our-business__heading">{businessData.heading}</h2>
+          <h2 className="our-business__heading">
+            {businessData.heading.map((line, index) => (
+              <span key={index}>
+                {line}
+                {index < businessData.heading.length - 1 && <br />}
+              </span>
+            ))}
+          </h2>
           <p className="our-business__description">
             {businessData.description.map((line, index) => (
               <span key={index} className="our-business__description-line">
@@ -101,11 +100,12 @@ export default function OurBusiness({ data }) {
           <div className="our-business__image-circle">
             <Image
               src={businessData.image}
-              alt="Healthcare Professional with Patient"
+              alt={businessData.imageAlt || 'Healthcare Professional with Patient'}
               width={832}
               height={832}
               className="our-business__image"
               quality={100}
+              unoptimized={process.env.NODE_ENV === 'development' && businessData.image?.includes('localhost')}
             />
           </div>
         </div>

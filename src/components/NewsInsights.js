@@ -11,28 +11,12 @@ import 'swiper/css/pagination';
 import '../scss/components/NewsInsights.scss';
 
 export default function NewsInsights({ data }) {
-  // Default data (will be replaced by Strapi)
-  const newsData = data || {
-    title: "News & Insights",
-    items: [
-      {
-        id: 1,
-        date: "12 September, 2025",
-        headline: "Ramesh Swaminathan's interview with ET CFO on GST, US tariffs, M&A, biosimilars, and tech in finance.",
-        circleOuter: "/assets/news-circle-outer-1.svg",
-        circleInner: "/assets/news-circle-inner-1.png",
-        href: "#news-1"
-      },
-      {
-        id: 2,
-        date: "11 April, 2025",
-        headline: "Lupin champions women's empowerment through equal opportunities, leadership development, and inclusive growth.",
-        circleOuter: "/assets/news-circle-outer-2.svg",
-        circleInner: "/assets/news-circle-inner-2.png",
-        href: "#news-2"
-      }
-    ]
-  };
+  // Require data prop - no fallback data
+  if (!data) {
+    throw new Error('NewsInsights component requires data prop. Please provide data from Strapi API.');
+  }
+
+  const newsData = data;
 
   const [isMobile, setIsMobile] = useState(false);
   const [shouldUseSlider, setShouldUseSlider] = useState(false);
@@ -63,12 +47,13 @@ export default function NewsInsights({ data }) {
           data-node-id={`22:${3384 + (item.id - 1) * 14}`}
         >
           <Image
-            src={item.circleInner}
-            alt=""
-            width={626.508}
-            height={626.508}
+            src={item.image.url}
+            alt={item.image.alt || ''}
+            width={item.image.width || 627}
+            height={item.image.height || 627}
             className="news-insights__circle-img"
             quality={100}
+            unoptimized={process.env.NODE_ENV === 'development' && item.image.url?.includes('localhost')}
           />
         </div>
 

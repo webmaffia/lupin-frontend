@@ -3,32 +3,12 @@ import Link from 'next/link';
 import '../scss/components/Hero.scss';
 
 export default function Hero({ data }) {
-  // Default data (will be replaced by Strapi)
-  const heroData = data || {
-    heading: {
-      line1: "Your health",
-      line2: "our promise"
-    },
-    subheading: [
-      "Advancing healthcare with trust, innovation,",
-      "and compassion — delivering solutions that",
-      "enhance lives globally."
-    ],
-    cta: {
-      text: "know more",
-      href: "#"
-    },
-    stickyNotes: [
-      {
-        text: "Product Finder",
-        href: "#product-finder"
-      },
-      {
-        text: "Chat",
-        href: "#chat"
-      }
-    ]
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('Hero component requires data prop from Strapi API');
+  }
+
+  const heroData = data;
 
   return (
     <section className="hero">
@@ -69,13 +49,16 @@ export default function Hero({ data }) {
       {/* Hero Image */}
       <div className="hero__image-wrapper">
         <Image
-          src="/assets/hero-image.png"
-          alt="Healthcare"
-          width={944}
-          height={894}
+          src={heroData.image.url}
+          alt={heroData.image.alt || ''}
+          width={heroData.image.width}
+          height={heroData.image.height}
           className="hero__image"
           priority
           quality={100}
+          // Disable optimization in development when using localhost
+          // In production, images will be optimized automatically
+     
         />
       </div>
 
@@ -85,8 +68,12 @@ export default function Hero({ data }) {
         <div className="hero__main">
           <div className="hero__text">
             <h1 className="hero__heading">
-              <span className="hero__heading-line">{heroData.heading.line1}</span>
-              <span className="hero__heading-line">{heroData.heading.line2}</span>
+              {heroData.heading.map((line, index) => (
+                <span key={index} className="hero__heading-line">
+                  {line}
+                  {index < heroData.heading.length - 1 && <br />}
+                </span>
+              ))}
             </h1>
             <p className="hero__subheading">
               {heroData.subheading.map((line, index) => (

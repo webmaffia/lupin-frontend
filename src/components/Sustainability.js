@@ -3,24 +3,12 @@ import Image from 'next/image';
 import '../scss/components/Sustainability.scss';
 
 export default function Sustainability({ data }) {
-  // Default data (will be replaced by Strapi)
-  const sustainabilityData = data || {
-    eyebrow: "Sustainability",
-    heading: {
-      line1: "Caring",
-      line2: "for People",
-      line3: "and Planet",
-    },
-    description: {
-      line1: "Our mission extends beyond medicine – we invest",
-      line2: "in people, communities, and a greener tomorrow."
-    },
-    cta: {
-      text: "know more",
-      href: "#sustainability"
-    },
-    backgroundImage: "/assets/3d912ec77c9e95fffd0212f6b331bddc3ea324cc.png"
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('Sustainability component requires data prop from Strapi API');
+  }
+
+  const sustainabilityData = data;
 
   return (
     <section className="sustainability" data-node-id="22:3301">
@@ -29,10 +17,11 @@ export default function Sustainability({ data }) {
         <div className="sustainability__bg-image" data-node-id="22:3303">
           <Image
             src={sustainabilityData.backgroundImage}
-            alt="Sustainability"
+            alt={sustainabilityData.imageAlt || 'Sustainability'}
             fill
             quality={100}
             className="sustainability__bg-img"
+            unoptimized={process.env.NODE_ENV === 'development' && sustainabilityData.backgroundImage?.includes('localhost')}
           />
         </div>
         <div className="sustainability__overlay"></div>
@@ -46,15 +35,20 @@ export default function Sustainability({ data }) {
               {sustainabilityData.eyebrow}
             </p>
             <div className="sustainability__heading" data-node-id="22:3308">
-              <p>{sustainabilityData.heading.line1}</p>
-              <p>{sustainabilityData.heading.line2}</p>
-              <p>{sustainabilityData.heading.line3}</p>
-              <p>{sustainabilityData.heading.line4}</p>
+              {sustainabilityData.heading.map((line, index) => (
+                <p key={index}>{line}</p>
+              ))}
             </div>
           </div>
           <div className="sustainability__description" data-node-id="22:3309">
-            <p>{sustainabilityData.description.line1}</p>
-            <p>{sustainabilityData.description.line2}</p>
+            <p>
+              {sustainabilityData.description.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < sustainabilityData.description.length - 1 && <br />}
+                </span>
+              ))}
+            </p>
           </div>
         </div>
 

@@ -3,35 +3,12 @@ import Link from 'next/link';
 import '../scss/components/OurPurpose.scss';
 
 export default function OurPurpose({ data }) {
-  // Default data (will be replaced by Strapi)
-  const purposeData = data || {
-    eyebrow: "Our Purpose",
-    heading: "We Catalyze Treatments That Transform Hope Into Healing",
-    description: "Ours is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders",
-    cards: [
-      {
-        id: 1,
-        title: "Relief from disease",
-        description: "Delivering meaningful treatments for today and tomorrow",
-        ctaText: "know more",
-        ctaHref: "#relief"
-      },
-      {
-        id: 2,
-        title: "Innovation to unlock access at scale",
-        description: "Making complex, cutting-edge healthcare solutions accessible to all",
-        ctaText: "know more",
-        ctaHref: "#innovation"
-      },
-      {
-        id: 3,
-        title: "Solutions for underserved communities",
-        description: "Serving markets and patients overlooked by others",
-        ctaText: "know more",
-        ctaHref: "#solutions"
-      }
-    ]
-  };
+  // NO FALLBACK - data must come from Strapi API
+  if (!data) {
+    throw new Error('OurPurpose component requires data prop from Strapi API');
+  }
+
+  const purposeData = data;
 
   return (
     <section className="our-purpose">
@@ -44,8 +21,22 @@ export default function OurPurpose({ data }) {
         <div className="our-purpose__headline">
           <p className="our-purpose__eyebrow">{purposeData.eyebrow}</p>
           <div className="our-purpose__text">
-            <h2 className="our-purpose__heading">{purposeData.heading}</h2>
-            <p className="our-purpose__description">{purposeData.description}</p>
+            <h2 className="our-purpose__heading">
+              {purposeData.heading.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < purposeData.heading.length - 1 && <br />}
+                </span>
+              ))}
+            </h2>
+            <p className="our-purpose__description">
+              {purposeData.description.map((line, index) => (
+                <span key={index}>
+                  {line}
+                  {index < purposeData.description.length - 1 && <br />}
+                </span>
+              ))}
+            </p>
           </div>
         </div>
 
@@ -64,7 +55,14 @@ export default function OurPurpose({ data }) {
             <div className="our-purpose__card-content">
               <div className="our-purpose__card-text">
                 <h3 className="our-purpose__card-title">{purposeData.cards[0].title}</h3>
-                <p className="our-purpose__card-description">{purposeData.cards[0].description}</p>
+                <p className="our-purpose__card-description">
+                  {purposeData.cards[0].description.map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < purposeData.cards[0].description.length - 1 && <br />}
+                    </span>
+                  ))}
+                </p>
               </div>
               <Link href={purposeData.cards[0].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
                 <span className="our-purpose__card-cta-dot"></span>
@@ -87,7 +85,14 @@ export default function OurPurpose({ data }) {
             <div className="our-purpose__card-content">
               <div className="our-purpose__card-text">
                 <h3 className="our-purpose__card-title">{purposeData.cards[1].title}</h3>
-                <p className="our-purpose__card-description">{purposeData.cards[1].description}</p>
+                <p className="our-purpose__card-description">
+                  {purposeData.cards[1].description.map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < purposeData.cards[1].description.length - 1 && <br />}
+                    </span>
+                  ))}
+                </p>
               </div>
               <Link href={purposeData.cards[1].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
                 <span className="our-purpose__card-cta-dot"></span>
@@ -110,7 +115,14 @@ export default function OurPurpose({ data }) {
             <div className="our-purpose__card-content">
               <div className="our-purpose__card-text">
                 <h3 className="our-purpose__card-title">{purposeData.cards[2].title}</h3>
-                <p className="our-purpose__card-description">{purposeData.cards[2].description}</p>
+                <p className="our-purpose__card-description">
+                  {purposeData.cards[2].description.map((line, index) => (
+                    <span key={index}>
+                      {line}
+                      {index < purposeData.cards[2].description.length - 1 && <br />}
+                    </span>
+                  ))}
+                </p>
               </div>
               <Link href={purposeData.cards[2].ctaHref} className="our-purpose__card-cta our-purpose__card-cta--button">
                 <span className="our-purpose__card-cta-dot"></span>
