@@ -313,6 +313,7 @@
     cursor: pointer;
     transition: all $transition-fast;
     flex-shrink: 0;
+    margin-left: vw(20);
     
     @include media('mobile') {
       height: vw-mobile(46, 414);

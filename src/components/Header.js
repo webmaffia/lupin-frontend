@@ -144,6 +144,23 @@ export default function Header({ data }) {
               quality={95}
             />
           </button>
+
+            {/* Menu Button */}
+        <button
+          className={`header__menu-btn ${isMenuOpen ? 'is-open' : ''}`}
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          aria-label="Toggle menu"
+        >
+          <Image
+            src="/assets/icon-menu.svg"
+            alt="Menu"
+            width={24}
+            height={14}
+            className="header__menu-icon"
+            quality={95}
+          />
+          <span className="header__menu-text">Menu</span>
+        </button>
         </div>
 
         {/* Mobile Globe Icon (before menu button) */}
@@ -160,22 +177,7 @@ export default function Header({ data }) {
           />
         </button>
 
-        {/* Menu Button */}
-        <button
-          className={`header__menu-btn ${isMenuOpen ? 'is-open' : ''}`}
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle menu"
-        >
-          <Image
-            src="/assets/icon-menu.svg"
-            alt="Menu"
-            width={24}
-            height={14}
-            className="header__menu-icon"
-            quality={95}
-          />
-          <span className="header__menu-text">Menu</span>
-        </button>
+      
       </div>
 
       {/* Mobile Menu Overlay */}
