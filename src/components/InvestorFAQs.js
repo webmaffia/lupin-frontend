@@ -1,28 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { usePathname } from 'next/navigation';
-import Link from 'next/link';
+import NavigationLinks from './NavigationLinks';
 import '../scss/components/InvestorFAQs.scss';
 
 export default function InvestorFAQs({ initialFAQs = [] }) {
-  const pathname = usePathname();
   const [expandedItems, setExpandedItems] = useState(new Set([0])); // First FAQ (id: 0) is expanded by default
   const [visibleCount, setVisibleCount] = useState(5); // Show first 5 FAQs initially (1 expanded + 4 collapsed)
   const [faqs, setFaqs] = useState(initialFAQs.length > 0 ? initialFAQs : getDefaultFAQs()); // Use initial data or fallback
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
-
-  const navigationLinks = [
-    { id: 'share-price', label: 'Share Price', href: '/investors/share-price' },
-    { id: 'analyst-coverage', label: 'Analyst Coverage', href: '/investors/analyst-coverage' },
-    { id: 'shareholding-pattern', label: 'Shareholding Pattern', href: '/investors/shareholding-pattern' },
-    { id: 'dividend', label: 'Dividend', href: '/investors/dividend' },
-    { id: 'unclaimed-dividend', label: 'Unclaimed Dividend & Shares', href: '/investors/unclaimed-dividend' },
-    { id: 'memorandum', label: 'Memorandum & Articles of Association', href: '/investors/memorandum' },
-    { id: 'investor-faqs', label: 'Investor FAQs', href: '/investors/investor-faqs' },
-    { id: 'business-responsibility', label: 'Business Responsibility', href: '/investors/business-responsibility' }
-  ];
 
   // Default FAQs fallback - all FAQs
   function getDefaultFAQs() {
@@ -104,30 +91,7 @@ export default function InvestorFAQs({ initialFAQs = [] }) {
       {/* Container */}
       <div className="investor-faqs__container">
         {/* Navigation Links */}
-        <div className="investor-faqs__tabs">
-          <div className="investor-faqs__tabs-row investor-faqs__tabs-row--1">
-            {navigationLinks.slice(0, 5).map((link) => (
-              <Link
-                key={link.id}
-                href={link.href}
-                className={`investor-faqs__tab ${pathname === link.href ? 'investor-faqs__tab--active' : ''}`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-          <div className="investor-faqs__tabs-row investor-faqs__tabs-row--2">
-            {navigationLinks.slice(5, 8).map((link) => (
-              <Link
-                key={link.id}
-                href={link.href}
-                className={`investor-faqs__tab ${pathname === link.href ? 'investor-faqs__tab--active' : ''}`}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </div>
+        <NavigationLinks />
 
         {/* FAQ Items */}
         <div className="investor-faqs__list">
