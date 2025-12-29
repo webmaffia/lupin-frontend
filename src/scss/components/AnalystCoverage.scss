@@ -114,6 +114,7 @@
   }
   
   &__tab {
+    display: inline-block;
     border: vw(1) solid #08a03f;
     background: #ffffff;
     color: #08a03f;
@@ -127,6 +128,7 @@
     cursor: pointer;
     transition: all $transition-base;
     white-space: nowrap;
+    text-decoration: none;
     
     @include media('mobile') {
       font-size: vw-mobile(14, 414);

@@ -1,22 +1,22 @@
 'use client';
 
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import '../scss/components/AnalystCoverage.scss';
 
 export default function AnalystCoverage() {
-  const [activeTab, setActiveTab] = useState('analyst-coverage');
+  const pathname = usePathname();
 
-  const tabs = [
-    { id: 'share-price', label: 'Share Price' },
-    { id: 'analyst-coverage', label: 'Analyst Coverage' },
-    { id: 'shareholding-pattern', label: 'Shareholding Pattern' },
-    { id: 'dividend', label: 'Dividend' },
-    { id: 'unclaimed-dividend', label: 'Unclaimed Dividend & Shares' },
-    { id: 'memorandum', label: 'Memorandum & Articles of Association' },
-    { id: 'investor-faqs', label: 'Investor FAQs' },
-    { id: 'business-responsibility', label: 'Business Responsibility' }
+  const navigationLinks = [
+    { id: 'share-price', label: 'Share Price', href: '/investors/share-price' },
+    { id: 'analyst-coverage', label: 'Analyst Coverage', href: '/investors/analyst-coverage' },
+    { id: 'shareholding-pattern', label: 'Shareholding Pattern', href: '/investors/shareholding-pattern' },
+    { id: 'dividend', label: 'Dividend', href: '/investors/dividend' },
+    { id: 'unclaimed-dividend', label: 'Unclaimed Dividend & Shares', href: '/investors/unclaimed-dividend' },
+    { id: 'memorandum', label: 'Memorandum & Articles of Association', href: '/investors/memorandum' },
+    { id: 'investor-faqs', label: 'Investor FAQs', href: '/investors/investor-faqs' },
+    { id: 'business-responsibility', label: 'Business Responsibility', href: '/investors/business-responsibility' }
   ];
 
   const analysts = [
@@ -135,63 +135,54 @@ export default function AnalystCoverage() {
 
       {/* Container */}
       <div className="analyst-coverage__container">
-        {/* Tabs Navigation */}
+        {/* Navigation Links */}
         <div className="analyst-coverage__tabs">
           <div className="analyst-coverage__tabs-row analyst-coverage__tabs-row--1">
-            {tabs.slice(0, 5).map((tab) => (
-              <button
-                key={tab.id}
-                className={`analyst-coverage__tab ${activeTab === tab.id ? 'analyst-coverage__tab--active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
+            {navigationLinks.slice(0, 5).map((link) => (
+              <Link
+                key={link.id}
+                href={link.href}
+                className={`analyst-coverage__tab ${pathname === link.href ? 'analyst-coverage__tab--active' : ''}`}
               >
-                {tab.label}
-              </button>
+                {link.label}
+              </Link>
             ))}
           </div>
           <div className="analyst-coverage__tabs-row analyst-coverage__tabs-row--2">
-            {tabs.slice(5, 8).map((tab) => (
-              <button
-                key={tab.id}
-                className={`analyst-coverage__tab ${activeTab === tab.id ? 'analyst-coverage__tab--active' : ''}`}
-                onClick={() => setActiveTab(tab.id)}
+            {navigationLinks.slice(5, 8).map((link) => (
+              <Link
+                key={link.id}
+                href={link.href}
+                className={`analyst-coverage__tab ${pathname === link.href ? 'analyst-coverage__tab--active' : ''}`}
               >
-                {tab.label}
-              </button>
+                {link.label}
+              </Link>
             ))}
           </div>
         </div>
 
         {/* Analyst Cards Grid */}
-        {activeTab === 'analyst-coverage' && (
-          <div className="analyst-coverage__grid">
-            {analysts.map((analyst) => (
-              <div
-                key={analyst.id}
-                className={`analyst-card ${analyst.isActive ? 'analyst-card--active' : ''}`}
-              >
-                <div className="analyst-card__content">
-                  <h3 className="analyst-card__institution">{analyst.institution}</h3>
-                  <div className="analyst-card__info">
-                    <p className="analyst-card__name">{analyst.analyst}</p>
-                    <a
-                      href={`mailto:${analyst.email}`}
-                      className="analyst-card__email"
-                    >
-                      {analyst.email}
-                    </a>
-                  </div>
+        <div className="analyst-coverage__grid">
+          {analysts.map((analyst) => (
+            <div
+              key={analyst.id}
+              className={`analyst-card ${analyst.isActive ? 'analyst-card--active' : ''}`}
+            >
+              <div className="analyst-card__content">
+                <h3 className="analyst-card__institution">{analyst.institution}</h3>
+                <div className="analyst-card__info">
+                  <p className="analyst-card__name">{analyst.analyst}</p>
+                  <a
+                    href={`mailto:${analyst.email}`}
+                    className="analyst-card__email"
+                  >
+                    {analyst.email}
+                  </a>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Placeholder content for other tabs */}
-        {activeTab !== 'analyst-coverage' && (
-          <div className="analyst-coverage__placeholder">
-            <p>Content for {tabs.find(t => t.id === activeTab)?.label} coming soon.</p>
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );

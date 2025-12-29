@@ -8,7 +8,7 @@ import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 export const metadata = generateSEOMetadata({
   title: "Analyst Coverage - Lupin | Investor Relations",
   description: "View analyst coverage and contact information for Lupin's investor relations team. Connect with financial analysts covering Lupin.",
-  canonicalUrl: "https://www.lupin.com/analyst-coverage",
+  canonicalUrl: "https://www.lupin.com/investors/analyst-coverage",
   keywords: "Lupin analyst coverage, investor relations, financial analysts, stock analysis",
 });
 
