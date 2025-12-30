@@ -189,14 +189,14 @@
   &__heading {
     font-family: 'Inter', sans-serif;
     font-weight: 700;
-    font-size: vw(100);
-    line-height: vw(118);
+    font-size: vw(75);
+    line-height: 1.2;
     text-transform: capitalize;
     color: #ffffff;
     margin: 0;
     
     @include media('mobile') {
-      font-size: vw-mobile(45, 414);
+      font-size: vw-mobile(35, 414);
       line-height: vw-mobile(42, 414);
     }
   }

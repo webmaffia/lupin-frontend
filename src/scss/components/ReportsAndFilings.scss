@@ -1,0 +1,562 @@
+// Reports and Filings Component Styles
+// Using vw() for desktop (base: 1920px) and vw-mobile() for mobile (base: 414px)
+// Based on Figma design: https://www.figma.com/design/QNIbuokNouJSBEY7GUGsEI/Jash---Final-Home-page-auto-layout--Copy-?node-id=2216-786
+
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
+.reports-filings {
+  position: relative;
+  width: 100%;
+  background: #f6f6f6;
+  padding: vw(40) vw(0) vw(70) vw(100);
+  
+  @include media('tablet') {
+    padding: vw(40, 768) vw(0, 768) vw(70, 768) vw(60, 768);
+  }
+  
+  @include media('mobile') {
+    padding: vw-mobile(40, 414) vw-mobile(0, 414) vw-mobile(70, 414) vw-mobile(20, 414);
+  }
+  
+  &__container {
+    position: relative;
+    width: vw(1920);
+    max-width: 100%;
+    margin: 0 auto;
+    @include flex(column, flex-start, flex-start);
+    gap: vw(50);
+    
+    @include media('mobile') {
+      width: 100%;
+      gap: vw-mobile(30, 414);
+    }
+  }
+  
+  // Title
+  &__title {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(48);
+    line-height: 1.2;
+    color: #126430;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(36, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(28, 414);
+    }
+  }
+  
+  // Cards Container
+  &__cards {
+    width: 100%;
+    @include flex(row, flex-start, stretch);
+    gap: vw(16);
+    align-items: stretch;
+    
+    @include media('tablet') {
+      gap: vw(12, 768);
+      flex-wrap: wrap;
+    }
+    
+    @include media('mobile') {
+      flex-direction: column;
+      gap: vw-mobile(20, 414);
+    }
+  }
+  
+  // Card Base
+  &__card {
+    position: relative;
+    background: #d9f0e1;
+    border-radius: vw(20);
+    padding: vw(40) vw(30);
+    @include flex(column, flex-start, flex-start);
+    transition: all $transition-base;
+    overflow: hidden;
+    
+    // Quarterly and Filings cards (500x500)
+    &--quarterly,
+    &--filings {
+      width: vw(500);
+      height: vw(500);
+      flex-shrink: 0;
+      padding: vw(55) vw(33) vw(0) vw(33);
+      @include flex(column, flex-start, center);
+    }
+    
+    // Integrated Report Card (693x693)
+    &--integrated {
+      width: vw(693);
+      height: vw(693);
+      flex-shrink: 0;
+      background: #08a03f;
+      color: #ffffff;
+      padding: vw(60) vw(60) vw(0) vw(60);
+      
+      @include media('tablet') {
+        width: 100%;
+        max-width: vw(693, 768);
+        height: auto;
+        min-height: vw(500, 768);
+        padding: vw(40, 768) vw(40, 768) vw(0, 768) vw(40, 768);
+      }
+      
+      @include media('mobile') {
+        width: 100%;
+        height: auto;
+        min-height: vw-mobile(400, 414);
+        padding: vw-mobile(30, 414) vw-mobile(20, 414) vw-mobile(0, 414) vw-mobile(20, 414);
+      }
+      
+      .reports-filings__integrated-title {
+        color: #ffffff;
+      }
+    }
+    
+    // Ensure content is above background image
+    & > *:not(.reports-filings__card-image) {
+      position: relative;
+      z-index: 1;
+    }
+    
+    @include media('tablet') {
+      border-radius: vw(15, 768);
+      padding: vw(30, 768) vw(25, 768);
+      
+      &--quarterly,
+      &--filings {
+        width: calc(50% - #{vw(6, 768)});
+        height: auto;
+        min-height: vw(400, 768);
+      }
+    }
+    
+    @include media('mobile') {
+      border-radius: vw-mobile(15, 414);
+      padding: vw-mobile(30, 414) vw-mobile(20, 414);
+      width: 100% !important;
+      height: auto !important;
+      min-height: auto;
+    }
+  }
+  
+  // Badge
+  &__badge {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(20);
+    line-height: 1.2;
+    color: #ffffff;
+    background: #08a03f;
+    border-radius: 50%;
+    width: vw(147);
+    height: vw(147);
+    @include flex(row, center, center);
+    margin: 0 auto vw(108) auto;
+    text-align: center;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      width: vw(120, 768);
+      height: vw(120, 768);
+      margin-bottom: vw(80, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      width: vw-mobile(100, 414);
+      height: vw-mobile(100, 414);
+      margin-bottom: vw-mobile(60, 414);
+    }
+  }
+  
+  // Metrics (Quarterly Card)
+  &__metrics {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(9);
+    width: 100%;
+    max-width: vw(433);
+    margin-bottom: vw(31);
+    align-items: flex-start;
+    
+    @include media('tablet') {
+      gap: vw(8, 768);
+      margin-bottom: vw(25, 768);
+      max-width: 100%;
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(8, 414);
+      margin-bottom: vw-mobile(20, 414);
+    }
+  }
+  
+  &__metric {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(18);
+    line-height: 1.4;
+    color: #126430;
+    margin: 0;
+    width: 100%;
+    
+    @include media('tablet') {
+      font-size: vw(16, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+    }
+  }
+  
+  // Integrated Report Content (Title + Buttons)
+  &__integrated-content {
+    position: relative;
+    z-index: 2;
+    @include flex(column, flex-start, flex-start);
+    gap: vw(30);
+    width: vw(408);
+    
+    @include media('tablet') {
+      width: 100%;
+      max-width: vw(408, 768);
+      gap: vw(20, 768);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      gap: vw-mobile(20, 414);
+    }
+  }
+  
+  // Integrated Report Title
+  &__integrated-title {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(48);
+    line-height: 1.25;
+    color: #ffffff;
+    margin: 0;
+    @include flex(column, flex-start, flex-start);
+    gap: 0;
+    
+    @include media('tablet') {
+      font-size: vw(36, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(32, 414);
+    }
+  }
+  
+  &__title-line {
+    display: block;
+  }
+  
+  // Card Image (All Cards)
+  &__card-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+    
+    // Quarterly and Filings - background image
+    &--quarterly,
+    &--filings {
+      border-radius: vw(20);
+      
+      @include media('tablet') {
+        border-radius: vw(15, 768);
+      }
+      
+      @include media('mobile') {
+        border-radius: vw-mobile(15, 414);
+      }
+    }
+    
+    // Integrated - circular mask in center
+    &--integrated {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: vw(890);
+      height: vw(890);
+      border-radius: 50%;
+      opacity: 0.3;
+      
+      @include media('tablet') {
+        width: vw(600, 768);
+        height: vw(600, 768);
+      }
+      
+      @include media('mobile') {
+        width: vw-mobile(400, 414);
+        height: vw-mobile(400, 414);
+      }
+    }
+  }
+  
+  &__card-image-img {
+    object-fit: cover;
+    object-position: center;
+    width: 100%;
+    height: 100%;
+  }
+  
+  // List (Filings Card)
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 vw(30) 0;
+    width: 100%;
+    @include flex(column, flex-start, flex-start);
+    gap: vw(17);
+    
+    @include media('tablet') {
+      gap: vw(12, 768);
+      margin-bottom: vw(20, 768);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(12, 414);
+      margin-bottom: vw-mobile(20, 414);
+    }
+  }
+  
+  &__list-item {
+    width: 100%;
+    margin: 0;
+  }
+  
+  &__list-link {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(16);
+    line-height: 1.4;
+    color: #126430;
+    text-decoration: none;
+    @include flex(row, space-between, center);
+    gap: vw(10);
+    transition: all $transition-base;
+    
+    @include media('tablet') {
+      font-size: vw(14, 768);
+      gap: vw(8, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+      gap: vw-mobile(8, 414);
+    }
+    
+    &:hover {
+      color: #08a03f;
+      text-decoration: underline;
+    }
+  }
+  
+  // Actions (Buttons Container)
+  &__actions {
+    @include flex(row, flex-start, center);
+    gap: vw(13);
+    width: 100%;
+    margin-top: auto;
+    
+    &--quarterly {
+      max-width: vw(251);
+      justify-content: flex-start;
+      margin-top: 0;
+    }
+    
+    &--integrated {
+      margin-top: 0;
+      width: auto;
+      flex-direction: column;
+      gap: vw(17);
+      align-items: flex-start;
+    }
+    
+    @include media('tablet') {
+      gap: vw(12, 768);
+      
+      &--quarterly {
+        max-width: 100%;
+      }
+      
+      &--integrated {
+        gap: vw(15, 768);
+      }
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(12, 414);
+      flex-direction: column;
+      width: 100%;
+      
+      &--quarterly {
+        flex-direction: row;
+        max-width: 100%;
+      }
+      
+      &--integrated {
+        width: 100%;
+      }
+    }
+  }
+  
+  // Button Base
+  &__btn {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(14);
+    line-height: 1.5;
+    padding: vw(4.5) vw(15);
+    border-radius: vw(20);
+    text-decoration: none;
+    transition: all $transition-base;
+    @include flex(row, center, center);
+    gap: vw(8);
+    white-space: nowrap;
+    border: vw(2) solid transparent;
+    height: vw(30);
+    
+    @include media('tablet') {
+      font-size: vw(12, 768);
+      padding: vw(4, 768) vw(12, 768);
+      border-radius: vw(15, 768);
+      gap: vw(6, 768);
+      border-width: vw(1.5, 768);
+      height: vw(28, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(12, 414);
+      padding: vw-mobile(4, 414) vw-mobile(12, 414);
+      border-radius: vw-mobile(15, 414);
+      gap: vw-mobile(6, 414);
+      width: 100%;
+      justify-content: center;
+      border-width: vw-mobile(1.5, 414);
+      height: vw-mobile(28, 414);
+    }
+    
+    // Download Button (White with Green Border)
+    &--download {
+      background: #ffffff;
+      border-color: #08a03f;
+      color: #08a03f;
+      width: vw(140);
+      
+      @include media('tablet') {
+        width: vw(120, 768);
+      }
+      
+      @include media('mobile') {
+        width: auto;
+        flex: 1;
+      }
+      
+      &:hover {
+        background: #08a03f;
+        color: #ffffff;
+      }
+    }
+    
+    // Primary Download (Solid Green)
+    &--primary {
+      background: #08a03f;
+      border-color: #08a03f;
+      color: #ffffff;
+      padding: vw(9) vw(19);
+      height: vw(44);
+      
+      @include media('tablet') {
+        height: vw(40, 768);
+        padding: vw(8, 768) vw(16, 768);
+      }
+      
+      @include media('mobile') {
+        height: vw-mobile(40, 414);
+        padding: vw-mobile(8, 414) vw-mobile(16, 414);
+      }
+      
+      &:hover {
+        background: #126430;
+        border-color: #126430;
+      }
+    }
+    
+    // View All Button (White with Green Border)
+    &--view-all {
+      background: #ffffff;
+      border-color: #08a03f;
+      color: #08a03f;
+      width: vw(98);
+      
+      @include media('tablet') {
+        width: vw(85, 768);
+      }
+      
+      @include media('mobile') {
+        width: auto;
+        flex: 1;
+      }
+      
+      &:hover {
+        background: #08a03f;
+        color: #ffffff;
+      }
+    }
+    
+    // Secondary View All (White with White Border on Dark Green)
+    &--secondary {
+      background: #ffffff;
+      border-color: #ffffff;
+      color: #08a03f;
+      height: vw(45);
+      
+      @include media('tablet') {
+        height: vw(40, 768);
+      }
+      
+      @include media('mobile') {
+        height: vw-mobile(40, 414);
+      }
+      
+      &:hover {
+        background: transparent;
+        color: #ffffff;
+        border-color: #ffffff;
+      }
+    }
+  }
+  
+  // Arrow Icon
+  &__arrow {
+    width: vw(12);
+    height: vw(12);
+    flex-shrink: 0;
+    color: currentColor;
+    
+    @include media('tablet') {
+      width: vw(10, 768);
+      height: vw(10, 768);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(10, 414);
+      height: vw-mobile(10, 414);
+    }
+  }
+}
+

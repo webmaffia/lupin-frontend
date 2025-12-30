@@ -1,6 +1,7 @@
 import InnerBanner from '@/components/InnerBanner';
 import InvestorIntro from '@/components/InvestorIntro';
 import WhatsNew from '@/components/WhatsNew';
+import ReportsAndFilings from '@/components/ReportsAndFilings';
 import NewsInsights from '@/components/NewsInsights';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
@@ -133,11 +134,29 @@ export default async function InvestorsPage() {
     // Will use default data from component
   }
 
+  // Fetch Reports and Filings data from Strapi
+  let reportsData = null;
+  try {
+    const investorsPageData = await getHomepage();
+    // Extract Reports and Filings data if available in Strapi
+    if (investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings) {
+      const reports = investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings;
+      reportsData = {
+        title: reports.title || "Reports and Filings",
+        cards: reports.cards || reports.items || []
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching Reports and Filings data from Strapi:', error);
+    // Will use default data from component
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
       <InvestorIntro data={introData} />
       <WhatsNew data={whatsNewData} />
+      <ReportsAndFilings data={reportsData} />
       <NewsInsights data={newsInsightsData} />
       <SubscriberUpdated />
     </div>
