@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import '../scss/components/Overview.scss';
 
 export default function Overview({ data }) {
@@ -229,7 +230,12 @@ export default function Overview({ data }) {
                   <span className="overview__stat-value">{formatNumber(animatedNumbers[0])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[0].suffix}</span>
                 </div>
-                <p className="overview__stat-label">{overviewData.stats[0].label}</p>
+                <div className="overview__stat-label-wrapper">
+                  <p className="overview__stat-label">{overviewData.stats[0].label}</p>
+                  <Link href={overviewData.stats[0].cta?.href || '#'} className="overview__stat-cta">
+                    {overviewData.stats[0].cta?.text || 'Know More'}
+                  </Link>
+                </div>
               </div>
 
               <div 
@@ -246,7 +252,12 @@ export default function Overview({ data }) {
                   <span className="overview__stat-value">{formatNumber(animatedNumbers[3])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[3].suffix}</span>
                 </div>
-                <p className="overview__stat-label">{overviewData.stats[3].label}</p>
+                <div className="overview__stat-label-wrapper">
+                  <p className="overview__stat-label">{overviewData.stats[3].label}</p>
+                  <Link href={overviewData.stats[3].cta?.href || '#'} className="overview__stat-cta">
+                    {overviewData.stats[3].cta?.text || 'Know More'}
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -266,7 +277,12 @@ export default function Overview({ data }) {
                   <span className="overview__stat-value">{formatNumber(animatedNumbers[1])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[1].suffix}</span>
                 </div>
-                <p className="overview__stat-label">{overviewData.stats[1].label}</p>
+                <div className="overview__stat-label-wrapper">
+                  <p className="overview__stat-label">{overviewData.stats[1].label}</p>
+                  <Link href={overviewData.stats[1].cta?.href || '#'} className="overview__stat-cta">
+                    {overviewData.stats[1].cta?.text || 'Know More'}
+                  </Link>
+                </div>
               </div>
 
               <div 
@@ -283,7 +299,12 @@ export default function Overview({ data }) {
                   <span className="overview__stat-value">{formatNumber(animatedNumbers[2])}</span>
                   <span className="overview__stat-suffix">{overviewData.stats[2].suffix}</span>
                 </div>
-                <p className="overview__stat-label">{overviewData.stats[2].label}</p>
+                <div className="overview__stat-label-wrapper">
+                  <p className="overview__stat-label">{overviewData.stats[2].label}</p>
+                  <Link href={overviewData.stats[2].cta?.href || '#'} className="overview__stat-cta">
+                    {overviewData.stats[2].cta?.text || 'Know More'}
+                  </Link>
+                </div>
               </div>
             </div>
           </div>

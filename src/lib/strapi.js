@@ -546,7 +546,12 @@ export function mapHomepageOverviewData(strapiData) {
     return {
       number,
       suffix,
-      label: stat.label
+      label: stat.label,
+      // Include CTA with fallback
+      cta: {
+        text: stat.cta?.text || 'Know More',
+        href: stat.cta?.href || '#'
+      }
     };
   });
 
