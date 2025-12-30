@@ -1,5 +1,3 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import InnerBanner from '@/components/InnerBanner';
 import InvestorFAQs from '@/components/InvestorFAQs';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
@@ -52,11 +50,9 @@ export default async function InvestorFAQSPage() {
   
   return (
     <div style={{ position: 'relative' }}>
-      <Header />
       <InnerBanner data={bannerData} />
       <InvestorFAQs initialFAQs={initialFAQs} />
       <SubscriberUpdated />
-      <Footer />
     </div>
   );
 }

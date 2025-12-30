@@ -1,6 +1,8 @@
 import { Inter } from "next/font/google";
 import "../scss/main.scss";
 import { generateMetadata as generateSEOMetadata, defaultSEO } from "@/lib/seo";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,7 +28,9 @@ export default function RootLayout({ children }) {
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body className={`${inter.variable}`}>
+        <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

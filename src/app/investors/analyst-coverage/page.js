@@ -1,5 +1,3 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import InnerBanner from '@/components/InnerBanner';
 import AnalystCoverage from '@/components/AnalystCoverage';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
@@ -31,10 +29,8 @@ export default function AnalystCoveragePage() {
   };
   return (
     <div style={{ position: 'relative' }}>
-      <Header />
       <InnerBanner data={bannerData} />
       <AnalystCoverage />
-      <Footer />
     </div>
   );
 }

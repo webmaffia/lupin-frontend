@@ -1,5 +1,3 @@
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import InnerBanner from '@/components/InnerBanner';
 import UnclaimedDividend from '@/components/UnclaimedDividend';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
@@ -94,10 +92,8 @@ export default async function UnclaimedDividendPage() {
   
   return (
     <div style={{ position: 'relative' }}>
-      <Header />
       <InnerBanner data={bannerData} />
       <UnclaimedDividend data={unclaimedData} />
-      <Footer />
     </div>
   );
 }

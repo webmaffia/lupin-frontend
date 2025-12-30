@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import OurStory from '@/components/OurStory';
 import OurPurpose from '@/components/OurPurpose';
@@ -9,7 +8,6 @@ import Sustainability from '@/components/Sustainability';
 import CSR from '@/components/CSR';
 import Life from '@/components/Life';
 import NewsInsights from '@/components/NewsInsights';
-import Footer from '@/components/Footer';
 import GoldenLine from '@/components/GoldenLine';
 import { generateMetadata as generateSEOMetadata, generateOrganizationSchema } from '@/lib/seo';
 import { getHomepage, mapHomepageHeroData, mapHomepageOurStoryData, mapHomepageOurPurposeData, mapHomepageOverviewData, mapHomepageOurBusinessData, mapHomepageSustainabilityData, mapHomepageCSRData, mapHomepageLifeData, mapHomepageNewsInsightsData } from '@/lib/strapi';
@@ -65,7 +63,6 @@ export default async function Home() {
 
       <div style={{ position: 'relative' }}>
         <GoldenLine />
-        <Header />
         <Hero data={heroData} />
         <main>
           <OurStory data={ourStoryData} />
@@ -78,7 +75,6 @@ export default async function Home() {
           <Life data={lifeData} />
           <NewsInsights data={newsInsightsData} />
         </main>
-        <Footer />
       </div>
     </>
   );
