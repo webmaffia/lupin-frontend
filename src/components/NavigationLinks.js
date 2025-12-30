@@ -4,10 +4,11 @@ import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import '../scss/components/NavigationLinks.scss';
 
-export default function NavigationLinks() {
+export default function NavigationLinks({ links }) {
   const pathname = usePathname();
 
-  const navigationLinks = [
+  // Default links for investor pages
+  const defaultLinks = [
     { id: 'share-price', label: 'Share Price', href: '/investors/share-price' },
     { id: 'analyst-coverage', label: 'Analyst Coverage', href: '/investors/analyst-coverage' },
     { id: 'shareholding-pattern', label: 'Shareholding Pattern', href: '/investors/shareholding-pattern' },
@@ -17,6 +18,9 @@ export default function NavigationLinks() {
     { id: 'investor-faqs', label: 'Investor FAQs', href: '/investors/investor-faqs' },
     { id: 'business-responsibility', label: 'Business Responsibility', href: '/investors/business-responsibility' }
   ];
+
+  // Use provided links or default links
+  const navigationLinks = links || defaultLinks;
 
   return (
     <div className="navigation-links">
@@ -31,17 +35,19 @@ export default function NavigationLinks() {
           </Link>
         ))}
       </div>
-      <div className="navigation-links__row navigation-links__row--2">
-        {navigationLinks.slice(5, 8).map((link) => (
-          <Link
-            key={link.id}
-            href={link.href}
-            className={`navigation-links__tab ${pathname === link.href ? 'navigation-links__tab--active' : ''}`}
-          >
-            {link.label}
-          </Link>
-        ))}
-      </div>
+      {navigationLinks.length > 5 && (
+        <div className="navigation-links__row navigation-links__row--2">
+          {navigationLinks.slice(5).map((link) => (
+            <Link
+              key={link.id}
+              href={link.href}
+              className={`navigation-links__tab ${pathname === link.href ? 'navigation-links__tab--active' : ''}`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

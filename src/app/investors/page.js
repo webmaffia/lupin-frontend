@@ -3,6 +3,7 @@ import InvestorIntro from '@/components/InvestorIntro';
 import WhatsNew from '@/components/WhatsNew';
 import CorporateGovernance from '@/components/CorporateGovernance';
 import ShareholderInformation from '@/components/ShareholderInformation';
+import ReportsAndFilings from '@/components/ReportsAndFilings';
 import NewsInsights from '@/components/NewsInsights';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
@@ -172,13 +173,34 @@ export default async function InvestorsPage() {
     // Will use default data from component
   }
 
+  // Fetch Reports and Filings data from Strapi
+  let reportsFilingsData = null;
+  try {
+    const investorsPageData = await getHomepage();
+    // Extract Reports and Filings data if available in Strapi
+    if (investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings) {
+      const reports = investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings;
+      reportsFilingsData = {
+        title: reports.title || "Reports and Filings",
+        leftCard: reports.leftCard || null,
+        middleCard: reports.middleCard || null,
+        rightCard: reports.rightCard || null
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching Reports and Filings data from Strapi:', error);
+    // Will use default data from component
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
       <InvestorIntro data={introData} />
       <WhatsNew data={whatsNewData} />
+      <ReportsAndFilings data={reportsFilingsData} />
       <CorporateGovernance data={governanceData} />
       <ShareholderInformation data={shareholderData} />
+     
       <NewsInsights data={newsInsightsData} />
       <SubscriberUpdated />
     </div>
