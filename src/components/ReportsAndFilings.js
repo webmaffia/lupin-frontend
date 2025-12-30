@@ -46,10 +46,6 @@ export default function ReportsAndFilings({ data }) {
           "SE Intimation Updates API R&D and OTC Business",
           "BSE/NSE Letter Acquisition of Renascience Pharma Limited"
         ],
-        image: {
-          url: "/assets/reports-filings/filings-image.jpg",
-          alt: "Exchange Filings"
-        },
         viewAllUrl: "#"
       }
     ]
@@ -161,19 +157,8 @@ export default function ReportsAndFilings({ data }) {
               {/* Exchange Filings Card */}
               {card.type === 'filings' && (
                 <>
-                  {card.image && (
-                    <div className="reports-filings__card-image reports-filings__card-image--filings">
-                      <Image
-                        src={card.image.url}
-                        alt={card.image.alt || ""}
-                        fill
-                        className="reports-filings__card-image-img"
-                        quality={100}
-                      />
-                    </div>
-                  )}
                   {card.badge && (
-                    <div className="reports-filings__badge">
+                    <div className="reports-filings__badge reports-filings__badge--filings">
                       {card.badge}
                     </div>
                   )}
@@ -182,7 +167,7 @@ export default function ReportsAndFilings({ data }) {
                       {card.items.map((item, index) => (
                         <li key={index} className="reports-filings__list-item">
                           <Link href="#" className="reports-filings__list-link">
-                            {item}
+                            <span className="reports-filings__list-text">{item}</span>
                             <svg
                               className="reports-filings__arrow"
                               width="12"
@@ -205,7 +190,7 @@ export default function ReportsAndFilings({ data }) {
                     </ul>
                   )}
                   {card.viewAllUrl && (
-                    <div className="reports-filings__actions">
+                    <div className="reports-filings__actions reports-filings__actions--filings">
                       <Link href={card.viewAllUrl} className="reports-filings__btn reports-filings__btn--view-all">
                         View all
                       </Link>
