@@ -156,8 +156,8 @@
       min-height: vw-mobile(250, 414);
     }
     
-    // Active card styling
-    &--active {
+    // Hover state (active styling)
+    &:hover {
       background: #08a03f;
       
       .whats-new__date {
@@ -169,9 +169,16 @@
       }
       
       .whats-new__category-btn {
-        background: #ffffff;
-        border-color: #08a03f;
-        color: #08a03f;
+        background: #126430;
+        border-color: #ffffff;
+        
+        .whats-new__category-text {
+          color: #ffffff;
+        }
+        
+        .whats-new__category-arrow {
+          color: #ffffff;
+        }
       }
     }
   }
@@ -242,12 +249,6 @@
       box-shadow: 0 vw(4) vw(12) rgba(8, 160, 63, 0.3);
     }
     
-    // Active card - white background with green border
-    .whats-new__card--active & {
-      background: #126430;
-      border-color: #fff;
-    
-    }
   }
   
   &__category-line {
@@ -281,9 +282,6 @@
       font-size: vw-mobile(8, 414);
     }
     
-    .whats-new__card--active & {
-      color: #fff;
-    }
   }
   
   &__category-arrow {
@@ -303,9 +301,6 @@
       height: vw-mobile(8, 414);
     }
     
-    .whats-new__card--active & {
-      color: #08a03f;
-    }
   }
   
   // Headline

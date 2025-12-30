@@ -23,8 +23,7 @@ export default function WhatsNew({ data }) {
           "mab"
         ],
         category: "Press Releases",
-        href: "#",
-        isActive: true
+        href: "#"
       },
       {
         id: 2,
@@ -36,8 +35,7 @@ export default function WhatsNew({ data }) {
           "mab"
         ],
         category: "Press Releases",
-        href: "#",
-        isActive: false
+        href: "#"
       },
       {
         id: 3,
@@ -49,8 +47,7 @@ export default function WhatsNew({ data }) {
           "mab"
         ],
         category: "Press Releases",
-        href: "#",
-        isActive: false
+        href: "#"
       },
 
       {
@@ -63,8 +60,7 @@ export default function WhatsNew({ data }) {
           "mab"
         ],
         category: "Press Releases",
-        href: "#",
-        isActive: false
+        href: "#"
       }
     ]
   };
@@ -135,7 +131,7 @@ export default function WhatsNew({ data }) {
           >
             {items.map((item, index) => (
               <SwiperSlide key={item.id} className="whats-new__slide">
-                <div className={`whats-new__card ${item.isActive || index === 0 ? 'whats-new__card--active' : ''}`}>
+                <div className="whats-new__card">
                   {/* Date */}
                   <div className="whats-new__date">
                     {item.date}
