@@ -1,7 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import InvestorIntro from '@/components/InvestorIntro';
 import WhatsNew from '@/components/WhatsNew';
-import ReportsAndFilings from '@/components/ReportsAndFilings';
+import CorporateGovernance from '@/components/CorporateGovernance';
+import ShareholderInformation from '@/components/ShareholderInformation';
 import NewsInsights from '@/components/NewsInsights';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
@@ -134,20 +135,40 @@ export default async function InvestorsPage() {
     // Will use default data from component
   }
 
-  // Fetch Reports and Filings data from Strapi
-  let reportsData = null;
+  // Fetch Corporate Governance data from Strapi
+  let governanceData = null;
   try {
     const investorsPageData = await getHomepage();
-    // Extract Reports and Filings data if available in Strapi
-    if (investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings) {
-      const reports = investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings;
-      reportsData = {
-        title: reports.title || "Reports and Filings",
-        cards: reports.cards || reports.items || []
+    // Extract Corporate Governance data if available in Strapi
+    if (investorsPageData?.data?.attributes?.corporateGovernance || investorsPageData?.corporateGovernance) {
+      const governance = investorsPageData?.data?.attributes?.corporateGovernance || investorsPageData?.corporateGovernance;
+      governanceData = {
+        title: governance.title || "Corporate Governance",
+        backgroundImage: governance.backgroundImage || governance.image,
+        buttons: governance.buttons || governance.items || []
       };
     }
   } catch (error) {
-    console.error('Error fetching Reports and Filings data from Strapi:', error);
+    console.error('Error fetching Corporate Governance data from Strapi:', error);
+    // Will use default data from component
+  }
+
+  // Fetch Shareholder Information data from Strapi
+  let shareholderData = null;
+  try {
+    const investorsPageData = await getHomepage();
+    // Extract Shareholder Information data if available in Strapi
+    if (investorsPageData?.data?.attributes?.shareholderInformation || investorsPageData?.shareholderInformation) {
+      const shareholder = investorsPageData?.data?.attributes?.shareholderInformation || investorsPageData?.shareholderInformation;
+      shareholderData = {
+        title: shareholder.title || "Shareholder Information",
+        centerImage: shareholder.centerImage || shareholder.image,
+        leftColumn: shareholder.leftColumn || shareholder.leftLinks || [],
+        rightColumn: shareholder.rightColumn || shareholder.rightLinks || []
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching Shareholder Information data from Strapi:', error);
     // Will use default data from component
   }
 
@@ -156,7 +177,8 @@ export default async function InvestorsPage() {
       <InnerBanner data={bannerData} />
       <InvestorIntro data={introData} />
       <WhatsNew data={whatsNewData} />
-      <ReportsAndFilings data={reportsData} />
+      <CorporateGovernance data={governanceData} />
+      <ShareholderInformation data={shareholderData} />
       <NewsInsights data={newsInsightsData} />
       <SubscriberUpdated />
     </div>
