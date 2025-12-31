@@ -64,12 +64,12 @@ export default function NewsInsights({ data }) {
         <Link href={item.href} className="news-insights__button" data-node-id="22:3386">
           <div className="news-insights__button-inner" data-node-id="22:3387">
             <div className="news-insights__button-content" data-node-id="22:3388">
-              <span className="news-insights__button-dot" data-node-id="22:3389"></span>
+              <span className="news-insights__" data-node-id="22:3389"></span>
               <span className="news-insights__button-text" data-node-id="22:3390">
                 know more
               </span>
             </div>
-            <span className="news-insights__button-underline" data-node-id="22:3391"></span>
+            {/* <span className="news-insights__button-underline" data-node-id="22:3391"></span> */}
           </div>
         </Link>
       </div>

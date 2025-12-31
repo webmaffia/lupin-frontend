@@ -163,7 +163,7 @@
   
   // Main Content
   &__main {
-    @include flex(column, flex-end, flex-end);
+    @include flex(column, flex-end, flex-start);
     gap: vw(18);
     max-width: vw(661.678);
     
@@ -175,7 +175,7 @@
   }
   
   &__text {
-    @include flex(column, flex-start, flex-end);
+    @include flex(column, flex-start, flex-start);
     gap: vw(18);
     text-align: right;
     
@@ -208,7 +208,7 @@
   // Subheading
   &__subheading {
     font-family: 'Inter', sans-serif;
-    font-weight: 600;
+    font-weight: 300;
     font-size: vw(20);
     line-height: vw(30);
     letter-spacing: vw(0.6);
@@ -232,15 +232,25 @@
   
   // CTA Button
   &__cta {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: vw(16) vw(50);
     background: linear-gradient(to right, #09a341, #38d973);
-    border-radius: vw(30.844);
+    border-radius: 1.5625vw;
+    flex-flow: column;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: .0520833vw;
+    padding: vw(12) vw(40);
     text-decoration: none;
-    transition: transform $transition-base, box-shadow $transition-base;
+    transition: transform .3s, box-shadow .3s;
+    display: flex;
+    // position: relative;
+    // display: inline-flex;
+    // align-items: center;
+    // justify-content: center;
+    // padding: vw(16) vw(50);
+    // border-radius: vw(30.844);
+    // text-decoration: none;
+    // transition: transform $transition-base, box-shadow $transition-base;
     
     @include media('mobile') {
       padding: vw-mobile(16, 414) vw-mobile(35, 414);
@@ -256,7 +266,7 @@
   &__cta-text {
     font-family: $font-family-base;
     font-weight: 500;
-    font-size: vw(27.22);
+    font-size: vw(20);
     line-height: vw(31.888);
     text-transform: capitalize;
     color: #ffffff;

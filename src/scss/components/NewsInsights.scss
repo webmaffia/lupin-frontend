@@ -325,9 +325,9 @@
     position: relative;
     background: #FFFFFF;
     border-radius: vw(64.947);
-    padding: vw(17) vw(29);
-    height: vw(68.801);
-    width: vw(274.611);
+    padding: vw(12) vw(29);
+    // height: vw(68.801);
+    // width: vw(274.611);
     text-decoration: none;
     z-index: 10;
     opacity: 0;
@@ -355,10 +355,21 @@
   }
   
   &__button-inner {
-    @include flex(column, flex-start, flex-start);
-    gap: vw(1);
-    width: 100%;
-    height: 100%;
+    // @include flex(column, flex-start, flex-start);
+    // gap: vw(1);
+    // width: 100%;
+    // height: 100%;
+    background: #fff;
+    border-radius: 1.5625vw;
+    flex-flow: column;
+    flex-shrink: 0;
+    justify-content: flex-start;
+    align-items: flex-start;
+    // gap: .0520833vw;
+    // padding: .833333vw 1.82292vw;
+    text-decoration: none;
+    transition: transform .3s, box-shadow .3s;
+    display: flex;
   }
   
   &__button-content {
@@ -395,8 +406,8 @@
   
   &__button-text {
     font-family: 'D-DIN', 'DIN-Bold', $font-family-base;
-    font-weight: 700;
-    font-size: vw(27.539);
+    font-weight: 500;
+    font-size: vw(20);
     line-height: vw(32.261);
     text-transform: capitalize;
     color: #363732;
@@ -480,6 +491,7 @@
     line-height: vw(31);
     color: #FFFFFF;
     margin: 0;
+    text-transform: none;
     
     @include media('tablet') {
       font-size: vw(20, 768);

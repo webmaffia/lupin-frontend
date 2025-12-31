@@ -8,9 +8,9 @@ export default function Investors({ data }) {
     eyebrow: "Investors",
     stockQuotes: {
       title: "Stock Quotes",
-      lastUpdated: "Latest updated on 19 Aug 25",
-      nse: "1932.70",
-      bse: "1932.70",
+      lastUpdated: "Last updated on 19 Aug 25",
+      nse : "1932.70",
+      bse : "1932.70",
       time: "15:59 IST",
       change: "1.08",
       changePercent: "0.68%"
@@ -18,7 +18,7 @@ export default function Investors({ data }) {
     performance: {
       title: "Performance",
       subtitle: {
-        line1: "Lupin 1QFY26",
+        line1: "Lupin Q1 FY26",
         line2: "Financial Results"
       },
       downloads: [
@@ -30,11 +30,11 @@ export default function Investors({ data }) {
       title: "Exchange Releases",
       description: {
         line1: "Lupin Financial Results",
-        line2: "for the quarter ended",
+        line2: "for the quarter",
         line3: "June 30, 2025"
       },
       cta: {
-        text: "View investor reports",
+        text: "View Investor Reports",
         href: "#releases"
       }
     }
@@ -76,13 +76,13 @@ export default function Investors({ data }) {
           </div>
             <div className="investors__stock-item investors__stock-item--1">
               <p className="investors__stock-value investors__stock-value--small">
-                NSE: {investorsData.stockQuotes.nse} <span className="investors__stock-meta">{investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}</span>
+                NSE : {investorsData.stockQuotes.nse} <span className="investors__stock-meta">{investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}</span>
               </p>
             </div>
             
             <div className="investors__stock-item investors__stock-item--2">
               <p className="investors__stock-value investors__stock-value--small">
-                BSE: {investorsData.stockQuotes.bse} <span className="investors__stock-meta">{investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}</span>
+                BSE : {investorsData.stockQuotes.bse} <span className="investors__stock-meta">{investorsData.stockQuotes.time}    {investorsData.stockQuotes.change}    {investorsData.stockQuotes.changePercent}</span>
               </p>
             </div>
           </div>
@@ -128,7 +128,7 @@ export default function Investors({ data }) {
             <Link href={investorsData.exchangeReleases.cta.href} className="our-story__cta">
               <div className="investors__cta-inner">
                 <span className="investors__cta-text">
-                  View investor reports 
+                  View Investor Reports 
                 </span>
               </div>
             </Link>
