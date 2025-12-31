@@ -13,7 +13,7 @@ export default function Policies({ data }) {
         id: 1,
         title: "Lupin Secures SBTi validation for Emission ReductionTargets",
         pdfUrl: "#",
-        isActive: true
+        isActive: false
       },
       {
         id: 2,
