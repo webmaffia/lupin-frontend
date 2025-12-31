@@ -108,7 +108,7 @@ export default function Hero({ data }) {
           <Link href={heroData.stickyNotes[1].href} className="hero__note hero__note--chat">
             <div className="hero__note-circle">
               <Image
-                src="/assets/chat-bubble-circle.svg"
+                src="/assets/Chat.svg"
                 alt=""
                 fill
                 quality={100}

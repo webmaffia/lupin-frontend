@@ -415,8 +415,8 @@
     
     .hero__note-text {
       position: absolute;
-      left: vw(37.62);
-      top: vw(50.48);
+      left: vw(24);
+      top: vw(45);
       z-index: 2;
       
       @include media('mobile') {
