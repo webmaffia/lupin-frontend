@@ -6,7 +6,7 @@ import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 export const metadata = generateSEOMetadata({
   title: "Committees of the Board - Lupin | Corporate Governance",
   description: "View Lupin's board committees including Strategy Committee and Audit Committee members and their roles.",
-  canonicalUrl: "https://www.lupin.com/investors/policies/committees",
+  canonicalUrl: "https://www.lupin.com/investors/committees",
   keywords: "Lupin committees, board committees, strategy committee, audit committee, corporate governance, board members",
 });
 

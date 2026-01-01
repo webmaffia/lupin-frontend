@@ -135,7 +135,8 @@
   &__member {
     @include flex(column, flex-start, center);
     position: relative;
-    transition: all $transition-base;
+    transition: transform $transition-base;
+    will-change: transform;
     
     &--large {
       width: vw(500);
@@ -165,12 +166,24 @@
     
     // Hover state - apply special styling
     &:hover {
+      transform: scale(1.1);
+      z-index: 10;
+      
       .committees-board__member-circle:not(.committees-board__member-circle--special) {
         background: #08a03f;
       }
       
       .committees-board__member-info:not(.committees-board__member-info--special) {
         color: #08a03f;
+        transform: translateY(0);
+        
+        @include media('tablet') {
+          transform: translateY(0);
+        }
+        
+        @include media('mobile') {
+          transform: translateY(0);
+        }
         
         .committees-board__member-name {
           color: #08a03f;
@@ -282,7 +295,7 @@
   // Special Indicator (Arrow Icon)
   &__member-indicator {
     position: absolute;
-    bottom: vw(35);
+    bottom: vw(-20);
     left: 50%;
     transform: translateX(-50%);
     width: vw(84.652);
@@ -346,17 +359,21 @@
   &__member-info {
     @include flex(column, center, center);
     text-align: center;
-    padding-top: vw(20);
+    padding-top: vw(45);
     width: vw(347.261);
+    transform: translateY(vw(-25));
+    transition: transform $transition-base, color $transition-base;
     
     @include media('tablet') {
       width: vw(300, 768);
-      padding-top: vw(15, 768);
+      padding-top: vw(35, 768);
+      transform: translateY(vw(-20, 768));
     }
     
     @include media('mobile') {
       width: 100%;
-      padding-top: vw-mobile(15, 414);
+      padding-top: vw-mobile(30, 414);
+      transform: translateY(vw-mobile(-15, 414));
     }
     
     &--special {
@@ -382,7 +399,7 @@
     .committees-board__member-info--special & {
       font-weight: 700;
       font-size: vw(37.062);
-      line-height: 2.66;
+     
       color: #08a03f;
       
       @include media('tablet') {
@@ -397,7 +414,7 @@
     .committees-board__member-info:not(.committees-board__member-info--special) & {
       font-weight: 600;
       font-size: vw(28.949);
-      line-height: 2.66;
+   
       color: #1e1e1e;
       opacity: 0.8;
       

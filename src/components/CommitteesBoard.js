@@ -18,7 +18,7 @@ export default function CommitteesBoard({ data }) {
             name: "Vinita Gupta",
             title: "Chief Executive Officer",
             image: {
-              url: "/assets/committees-board/vinita-gupta.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Vinita Gupta"
             },
      
@@ -28,7 +28,7 @@ export default function CommitteesBoard({ data }) {
             name: "Nilesh D Gupta",
             title: "Managing Director",
             image: {
-              url: "/assets/committees-board/nilesh-gupta.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Nilesh D Gupta"
             }
           },
@@ -37,7 +37,7 @@ export default function CommitteesBoard({ data }) {
             name: "Mark D. McDade",
             title: "Independent Director",
             image: {
-              url: "/assets/committees-board/mark-mcdade.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Mark D. McDade"
             }
           },
@@ -46,7 +46,7 @@ export default function CommitteesBoard({ data }) {
             name: "Jeffrey Kindler",
             title: "Independent Director",
             image: {
-              url: "/assets/committees-board/jeffrey-kindler.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Jeffrey Kindler"
             }
           },
@@ -55,7 +55,7 @@ export default function CommitteesBoard({ data }) {
             name: "Alfonso Zulueta",
             title: "Independent Director",
             image: {
-              url: "/assets/committees-board/alfonso-zulueta.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Alfonso Zulueta"
             }
           },
@@ -64,7 +64,7 @@ export default function CommitteesBoard({ data }) {
             name: "Punita Lal",
             title: "Independent Director",
             image: {
-              url: "/assets/committees-board/punita-lal.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Punita Lal"
             }
           }
@@ -80,7 +80,7 @@ export default function CommitteesBoard({ data }) {
             name: "Mark D. McDade",
             title: "Independent Director",
             image: {
-              url: "/assets/committees-board/mark-mcdade.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Mark D. McDade"
             }
           },
@@ -89,7 +89,7 @@ export default function CommitteesBoard({ data }) {
             name: "Alfonso Zulueta",
             title: "Independent Director",
             image: {
-              url: "/assets/committees-board/alfonso-zulueta.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "Alfonso Zulueta"
             }
           },
@@ -98,7 +98,7 @@ export default function CommitteesBoard({ data }) {
             name: "K B S Anand",
             title: "Independent Director",
             image: {
-              url: "/assets/committees-board/kbs-anand.jpg",
+              url: "/assets/committees-board/vinita-gupta.png",
               alt: "K B S Anand"
             }
           }
@@ -112,7 +112,7 @@ export default function CommitteesBoard({ data }) {
       <div className="committees-board__container">
         {/* Navigation Links */}
         <NavigationLinks links={[
-          { id: 'committees', label: 'Committees of the Board', href: '/investors/policies/committees' },
+          { id: 'committees', label: 'Committees of the Board', href: '/investors/committees' },
           { id: 'code-of-conduct', label: 'Code of Conduct', href: '/investors/code-of-conduct' },
           { id: 'policies', label: 'Policies', href: '/investors/policies' }
         ]} />

@@ -67,7 +67,7 @@ export default function CodeOfConduct({ data }) {
       <div className="code-of-conduct__container">
         {/* Navigation Links */}
         <NavigationLinks links={[
-          { id: 'committees', label: 'Committees of the Board', href: '/investors/policies/committees' },
+          { id: 'committees', label: 'Committees of the Board', href: '/investors/committees' },
           { id: 'code-of-conduct', label: 'Code of Conduct', href: '/investors/code-of-conduct' },
           { id: 'policies', label: 'Policies', href: '/investors/policies' }
         ]} />
