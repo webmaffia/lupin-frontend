@@ -42,10 +42,11 @@
   &__header {
     @include flex(column, flex-start, flex-start);
     gap: vw(23);
-    width: 100%;
+    width: 40%;
     
     @include media('mobile') {
       gap: vw-mobile(20, 414);
+      width: 100%;
     }
   }
   
