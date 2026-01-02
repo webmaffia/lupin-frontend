@@ -20,15 +20,37 @@
   // Container
   &__container {
     position: relative;
-    width: vw(1723);
+width: 100%;
     max-width: 100%;
     margin: 0 auto;
     padding: 0 vw(99);
     z-index: 1;
+    @include flex(column, flex-start, flex-start);
+    gap: vw(48);
     
     @include media('mobile') {
       width: 100%;
       padding: 0 vw-mobile(20, 414);
+      gap: vw-mobile(30, 414);
+    }
+  }
+
+  // Section Title (for Presentations, etc.)
+  &__section-title {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(48);
+    line-height: 1.2;
+    color: #08A03F;
+    margin: 0;
+    text-align: left;
+    
+    @include media('tablet') {
+      font-size: vw(36, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(28, 414);
     }
   }
   

@@ -8,7 +8,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import '../scss/components/WhatsNew.scss';
 
-export default function WhatsNew({ data }) {
+export default function WhatsNew({ data, className }) {
   // Default data (will be replaced by Strapi)
   const whatsNewData = data || {
     title: "What's New",
@@ -90,7 +90,7 @@ export default function WhatsNew({ data }) {
   };
 
   return (
-    <section className="whats-new" data-node-id="2216:743">
+    <section className={`whats-new ${className || ''}`} data-node-id="2216:743">
       <div className="whats-new__container">
         {/* Title */}
         {whatsNewData.title && (
