@@ -8,13 +8,18 @@
 .policies {
   position: relative;
   width: 100%;
-  min-height: vw(1118);
+
   padding: vw(90) 0;
   background: #ffffff;
   
   @include media('mobile') {
     min-height: auto;
     padding: vw-mobile(50, 414) 0;
+  }
+
+  // Light background variant
+  &--light-bg {
+    background: #F6F6F6;
   }
   
   // Container
@@ -116,6 +121,39 @@ width: 100%;
     @include media('mobile') {
       margin-top: vw-mobile(40, 414);
     }
+
+    // Modifier: Remove top margin (for VotingResults component)
+    &--no-top-margin {
+      margin-top: 0;
+      
+      @include media('mobile') {
+        margin-top: 0;
+      }
+    }
+  }
+
+  // Paragraph
+  &__paragraph {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(20);
+    line-height: 1.5;
+    color: #08A03F;
+    margin: 0 auto vw(100) 0;
+    max-width: vw(1200);
+    text-align: left;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      margin: 0 auto vw(80, 768) 0;
+      max-width: 100%;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: 1.6;
+      margin: 0 auto vw-mobile(60, 414) 0;
+    }
   }
   
   // Policy Cards Grid
@@ -145,9 +183,9 @@ width: 100%;
   &__decorative {
     position: absolute;
     right: vw(-50);
-    top: vw(553);
-    width: vw(319);
-    height: vw(313);
+    top: 0;
+    width: vw(726.203);
+    height: vw(406);
     z-index: 1;
     pointer-events: none;
     
