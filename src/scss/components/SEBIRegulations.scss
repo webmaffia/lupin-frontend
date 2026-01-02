@@ -9,11 +9,11 @@
 .sebi-regulations {
   position: relative;
   width: 100%;
-  padding: vw(100) vw(35);
+  padding: vw(100) vw(100);
   background: #ffffff;
   
   @include media('tablet') {
-    padding: vw(60, 768) vw(30, 768);
+    padding: vw(60, 768) vw(20, 768);
   }
   
   @include media('mobile') {
@@ -23,7 +23,7 @@
   &__container {
     position: relative;
     width: 100%;
-    max-width: vw(1758.518);
+
     margin: 0 auto;
     @include flex(column, flex-start, flex-start);
     gap: vw(82);
@@ -94,7 +94,7 @@
     width: 100%;
     @include flex(row, flex-start, center);
     position: relative;
-    padding: 0 vw(100) 0 vw(100);
+    padding: 0 vw(100) 0 vw(0);
     min-height: vw(123);
     isolation: isolate;
     
@@ -153,7 +153,7 @@
   
   &__header-particulars {
     background: #08a03f;
-    flex: 0 0 vw(1319);
+    flex: 0 0 vw(1375);
     height: vw(123);
     padding: vw(32) vw(173);
     @include flex(row, flex-start, center);
@@ -218,13 +218,14 @@
   &__table-body {
     width: 100%;
     @include flex(column, flex-start, flex-start);
+    margin-top: vw(60);
   }
   
   &__row {
     width: 100%;
     @include flex(row, flex-start, center);
-    min-height: vw(45);
-    border-bottom: vw(1) solid #e0e0e0;
+    min-height: vw(85);
+
     padding: vw(0) 0;
     
     @include media('tablet') {
@@ -262,11 +263,11 @@
     
     &--number {
       flex: 0 0 vw(144.518);
-      padding-left: vw(100);
+
       
       @include media('tablet') {
         flex: 0 0 vw(100, 768);
-        padding-left: vw(50, 768);
+      
       }
       
       @include media('mobile') {
@@ -310,7 +311,7 @@
   
   // Link
   &__link {
-    @include flex(row, flex-end, center);
+    @include flex(row, center, center);
     gap: vw(8);
     font-family: $font-family-base;
     font-weight: 400;

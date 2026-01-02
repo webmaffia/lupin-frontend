@@ -6,8 +6,8 @@ import '../scss/components/SEBIRegulations.scss';
 export default function SEBIRegulations({ data }) {
   // Default data (will be replaced by Strapi)
   const regulationsData = data || {
-    title: "Disclosure under Regulation 46 of SEBI Regulations, 2015",
-    subtitle: "Disclosure under Regulation 46 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2015",
+    title: "Disclosure under Regulation 46 of SEBI Regulations, 2016",
+    subtitle: "Disclosure under Regulation 46 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2016",
     items: [
       {
         id: 1,
