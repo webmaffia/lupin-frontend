@@ -116,14 +116,38 @@
 	/* LEFT IMAGE */
 	&__media {
 		position: relative;
-
+		width: 52vw;
+		z-index: 2;
+		overflow: hidden;
+	
 		img {
 			width: 100%;
 			height: 100%;
 			object-fit: cover;
-			display: block;
-		}
+		  
+			/* LOCKED DEFAULT */
+			clip-path: circle(32% at 50% 50%);
+			transition: clip-path 0.8s ease;
+		  }
+		  
 	}
+	
+	
+
+	.inner_banner_clip {
+	position: absolute;
+    width: 100%;
+    height: 100%;
+	// background: linear-gradient(145deg, #50b95f, #3c9c4a);
+
+	img {
+		width: 100%;
+    -webkit-clip-path: circle(25% at 50% 50%);
+    clip-path: circle(25% at 50% 50%);
+    -webkit-transition: all .8s ease-in-out;
+    transition: all .8s ease-in-out;
+	}
+}
 
 	&__cta {
 		position: absolute;
@@ -139,9 +163,8 @@
 		border: none;
 		line-height: 1.2;
 		cursor: pointer;
-		opacity: 0;
-		visibility: hidden;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		opacity: 1;
+		visibility: visible;
 	}
 
 	/* RIGHT CONTENT */
@@ -155,34 +178,31 @@
 	}
 
 	&__icon {
-		position: absolute;
-		opacity: 1;
-		visibility: visible;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
-		z-index: 2;
+		display: none;
 	}
 
 	&__circle {
 		position: relative;
-		background: #fff;
-		width: 22vw;
-		height: 22vw;
-		border-radius: 50%;
+		background: transparent;
+		width: auto;
+		height: auto;
+		border-radius: 0;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 2.4vw;
-		opacity: 0;
-		visibility: hidden;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		padding: 0;
+		opacity: 1;
+		visibility: visible;
 		z-index: 1;
+		transition: all 0.8s ease-in-out;
 
 		p {
 			font-size: 0.78vw;
 			line-height: 1.7;
-			color: #21AB53;
+			color: #fff;
 			margin: 0;
 			width: 79%;
+			transition: color 0.8s ease-in-out;
 		}
 
 		&::after {
@@ -193,29 +213,96 @@
 			transform: translateX(-50%);
 			width: 57%;
 			height: 2px;
-			background: #21AB53;
+			background: transparent;
 			border-radius: 2px;
-			opacity: 0.2;
-		}
-	}
-
-	/* Hover effect for all wrappers - show circle and CTA, hide icon */
-	&__wrapper:hover {
-		.our-story__circle {
-			opacity: 1;
-			visibility: visible;
-		}
-
-		.our-story__icon {
 			opacity: 0;
-			visibility: hidden;
-		}
-
-		.our-story__cta {
-			opacity: 1;
-			visibility: visible;
+			transition: background 0.8s ease-in-out, opacity 0.8s ease-in-out;
 		}
 	}
+
+	// Hover effects
+	&__wrapper {
+		// When hovering on image (media comes before content): show circle in content
+		&:hover &__media:hover ~ &__content &__circle {
+			background: #fff !important;
+			width: 22vw !important;
+			height: 22vw !important;
+			border-radius: 50% !important;
+			padding: 2.4vw !important;
+
+			p {
+				color: #21AB53 !important;
+			}
+
+			&::after {
+				background: #21AB53 !important;
+				opacity: 0.2 !important;
+			}
+		}
+
+		// When hovering on content/description (media comes before content): show circle in content, remove circle from image
+		&:hover &__content:hover &__circle {
+			background: #fff !important;
+			width: 22vw !important;
+			height: 22vw !important;
+			border-radius: 50% !important;
+			padding: 2.4vw !important;
+
+			p {
+				color: #21AB53 !important;
+			}
+
+			&::after {
+				background: #21AB53 !important;
+				opacity: 0.2 !important;
+			}
+		}
+
+		&:hover &__content:hover ~ &__media img {
+			clip-path: circle(150% at 50% 50%) !important;
+		}
+
+		// For sections where content comes before media - hover on media shows circle in content
+		&:has(&__media:hover) &__content &__circle {
+			background: #fff !important;
+			width: 22vw !important;
+			height: 22vw !important;
+			border-radius: 50% !important;
+			padding: 2.4vw !important;
+
+			p {
+				color: #21AB53 !important;
+			}
+
+			&::after {
+				background: #21AB53 !important;
+				opacity: 0.2 !important;
+			}
+		}
+
+		// For sections where content comes before media - hover on content shows circle, removes from image
+		&:has(&__content:hover) &__content &__circle {
+			background: #fff !important;
+			width: 22vw !important;
+			height: 22vw !important;
+			border-radius: 50% !important;
+			padding: 2.4vw !important;
+
+			p {
+				color: #21AB53 !important;
+			}
+
+			&::after {
+				background: #21AB53 !important;
+				opacity: 0.2 !important;
+			}
+		}
+
+		&:has(&__content:hover) &__media img {
+			clip-path: circle(150% at 50% 50%) !important;
+		}
+	}
+
 
 	/* OVERLAPPING TITLE */
 	&__title {
@@ -494,3 +581,117 @@
 		}
 	}
 }
+
+.our-story {
+	padding: 2.5vw;
+	background: #00a0a0;
+  
+	&__wrapper {
+	  position: relative;
+	  display: grid;
+	  grid-template-columns: 55% 45%;
+	  border-radius: 1.8vw;
+	  overflow: hidden;
+	}
+  
+	/* ---------------- IMAGE ---------------- */
+	&__media {
+	  position: relative;
+	  overflow: hidden;
+  
+	  img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+  
+		/* ✅ IMAGE IS CIRCLE BY DEFAULT */
+		clip-path: circle(32% at 50% 50%);
+		transition: clip-path 0.8s ease;
+	  }
+	}
+  
+	/* ---------------- CONTENT ---------------- */
+	&__content {
+	  background: #00b050;
+	  display: flex;
+	  align-items: center;
+	  justify-content: center;
+	  padding: 3vw;
+	}
+  
+	/* ---------------- DESCRIPTION ---------------- */
+	&__circle {
+	  width: auto;
+	  height: auto;
+	  background: transparent;
+	  border-radius: 0;
+	  padding: 0;
+	  position: relative;
+	  transition: all 0.6s ease;
+  
+	  p {
+		font-size: 0.78vw;
+		line-height: 1.7;
+		color: #fff;
+		width: 79%;
+		margin: 0;
+		transition: color 0.6s ease;
+	  }
+  
+	  &::after {
+		content: "";
+		opacity: 0;
+		transition: opacity 0.4s ease;
+	  }
+	}
+  
+	/* =================================================
+	   HOVER IMAGE → DESCRIPTION BECOMES CIRCLE
+	   ================================================= */
+	&__media:hover ~ &__content &__circle {
+	  width: 22vw;
+	  height: 22vw;
+	  background: #fff;
+	  border-radius: 50%;
+	  padding: 2.4vw;
+  
+	  p {
+		color: #21ab53;
+	  }
+  
+	  &::after {
+		content: "";
+		position: absolute;
+		bottom: 86%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 57%;
+		height: 2px;
+		background: #21ab53;
+		opacity: 0.2;
+	  }
+	}
+  
+	/* =================================================
+	   HOVER DESCRIPTION → IMAGE EXPANDS
+	   ================================================= */
+	&__content:hover ~ &__media img {
+	  clip-path: circle(150% at 50% 50%);
+	}
+  
+	&__content:hover &__circle {
+	  background: transparent;
+	  width: auto;
+	  height: auto;
+	  padding: 0;
+  
+	  p {
+		color: #fff;
+	  }
+  
+	  &::after {
+		opacity: 0;
+	  }
+	}
+  }
+  
