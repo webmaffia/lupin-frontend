@@ -79,13 +79,13 @@ export default function PurposePage() {
             <div className="purpose-story__content">
               <div className="purpose-story__text">
                 <h2 className="purpose-story__title">
-                  Catalyzing Hope <br />Into Healing
+                A Purpose <br />That Heals
                 </h2>
                 <p className="purpose-story__paragraph">
-                  A purpose-driven journey of over five decades – improving lives, building sustainability, and delivering long-term value to our stakeholders. When you find your WHY, you find a WAY to make it happen. Our founder, Dr. Desh Bandhu Gupta, discovered our 'why' and established our mission – to ensure that no one is left without the quality care they deserve.
+                Ours is a purpose-driven journey of over five decades – improving lives, building sustainability, and delivering long-term value to our stakeholders. Guided by a clear sense of purpose, our Founder, Dr. Desh Bandhu Gupta, shaped Lupin’s mission to ensure that no one is left without access to quality healthcare they deserve. Our founder, Dr. Desh Bandhu Gupta, discovered our 'why' and established our mission – to ensure that no one is left without the quality care they deserve.
                 </p>
                 <p className="purpose-story__paragraph">
-                  It is this blend of vision, compassion, and resilience that drives us to keep moving forward - so that generations to come may benefit from the foundation we continue to build.
+                  It is this blend of vision, compassion, and resilience that drives us to keep moving forward, so that generations to come may benefit from the foundation we continue to build.
                 </p>
               </div>
               <PurposeVideo />
@@ -256,7 +256,7 @@ export default function PurposePage() {
                 <h3 className="purpose-framework__circle-title">
                   <span className="purpose-framework__circle-title-word">Values</span> <br />Our Core Beliefs
                 </h3>
-                <p className="purpose-framework__circle-text">Attributes that inform our behaviors and decisions.</p>
+                <p className="purpose-framework__circle-text">Attitude that dictates our decisions and behavior.</p>
               </div>
             </div>
           </div>
