@@ -104,32 +104,29 @@
 .our-story {
 	padding: 2.5vw;
 	background: #00a0a0;
-
+  
 	&__wrapper {
-		position: relative;
-		display: grid;
-		grid-template-columns: 55% 45%;
-		border-radius: 1.8vw;
-		overflow: hidden;
+	  position: relative;
+	  display: grid;
+	  grid-template-columns: 55% 45%;
+	  border-radius: 1.8vw;
+	  overflow: hidden;
 	}
-
-	/* LEFT IMAGE */
+  
+	/* ================= IMAGE ================= */
 	&__media {
-		position: relative;
-		width: 52vw;
-		z-index: 2;
-		overflow: hidden;
-	
-		img {
-			width: 100%;
-			height: 100%;
-			object-fit: cover;
-		  
-			/* LOCKED DEFAULT */
-			clip-path: circle(32% at 50% 50%);
-			transition: clip-path 0.8s ease;
-		  }
-		  
+	  position: relative;
+	  overflow: hidden;
+  
+	  img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+  
+		/* IMAGE IS ALWAYS A CIRCLE */
+		clip-path: circle(32% at 50% 50%);
+		transition: clip-path 0.8s ease;
+	  }
 	}
 	
 	
@@ -175,7 +172,8 @@
 		justify-content: center;
 		padding: 3vw;
 		position: relative;
-	}
+	  }
+	
 
 	&__icon {
 		display: none;
@@ -221,88 +219,111 @@
 	}
 
 	// Hover effects
-	&__wrapper {
-		// When hovering on image (media comes before content): show circle in content
-		&:hover &__media:hover ~ &__content &__circle {
-			background: #fff !important;
-			width: 22vw !important;
-			height: 22vw !important;
-			border-radius: 50% !important;
-			padding: 2.4vw !important;
+	// &__wrapper {
+	// 	// When hovering on image (media comes before content): show circle in content
+	// 	&:hover &__media:hover ~ &__content &__circle {
+	// 		background: #fff !important;
+	// 		width: 22vw !important;
+	// 		height: 22vw !important;
+	// 		border-radius: 50% !important;
+	// 		padding: 2.4vw !important;
 
-			p {
-				color: #21AB53 !important;
-			}
+	// 		p {
+	// 			color: #21AB53 !important;
+	// 		}
 
-			&::after {
-				background: #21AB53 !important;
-				opacity: 0.2 !important;
-			}
+	// 		&::after {
+	// 			background: #21AB53 !important;
+	// 			opacity: 0.2 !important;
+	// 		}
+	// 	}
+
+	// 	// When hovering on content/description (media comes before content): show circle in content, remove circle from image
+	// 	&:hover &__content:hover &__circle {
+	// 		background: #fff !important;
+	// 		width: 22vw !important;
+	// 		height: 22vw !important;
+	// 		border-radius: 50% !important;
+	// 		padding: 2.4vw !important;
+
+	// 		p {
+	// 			color: #21AB53 !important;
+	// 		}
+
+	// 		&::after {
+	// 			background: #21AB53 !important;
+	// 			opacity: 0.2 !important;
+	// 		}
+	// 	}
+
+	// 	// &:hover &__content:hover ~ &__media img {
+	// 	// 	clip-path: circle(150% at 50% 50%) !important;
+	// 	// }
+
+	// 	// For sections where content comes before media - hover on media shows circle in content
+	// 	&:has(&__media:hover) &__content &__circle {
+	// 		background: #fff !important;
+	// 		width: 22vw !important;
+	// 		height: 22vw !important;
+	// 		border-radius: 50% !important;
+	// 		padding: 2.4vw !important;
+
+	// 		p {
+	// 			color: #21AB53 !important;
+	// 		}
+
+	// 		&::after {
+	// 			background: #21AB53 !important;
+	// 			opacity: 0.2 !important;
+	// 		}
+	// 	}
+
+	// 	// For sections where content comes before media - hover on content shows circle, removes from image
+	// 	&:has(&__content:hover) &__content &__circle {
+	// 		background: #fff !important;
+	// 		width: 22vw !important;
+	// 		height: 22vw !important;
+	// 		border-radius: 50% !important;
+	// 		padding: 2.4vw !important;
+
+	// 		p {
+	// 			color: #21AB53 !important;
+	// 		}
+
+	// 		&::after {
+	// 			background: #21AB53 !important;
+	// 			opacity: 0.2 !important;
+	// 		}
+	// 	}
+
+	// 	// &:has(&__content:hover) &__media img {
+	// 	// 	clip-path: circle(150% at 50% 50%) !important;
+	// 	// }
+	// }
+
+	&__media:hover ~ &__content &__circle {
+		width: 22vw;
+		height: 22vw;
+		background: #fff;
+		border-radius: 50%;
+		padding: 2.4vw;
+	
+		p {
+		  color: #21ab53;
 		}
-
-		// When hovering on content/description (media comes before content): show circle in content, remove circle from image
-		&:hover &__content:hover &__circle {
-			background: #fff !important;
-			width: 22vw !important;
-			height: 22vw !important;
-			border-radius: 50% !important;
-			padding: 2.4vw !important;
-
-			p {
-				color: #21AB53 !important;
-			}
-
-			&::after {
-				background: #21AB53 !important;
-				opacity: 0.2 !important;
-			}
+	
+		&::after {
+		  content: "";
+		  position: absolute;
+		  bottom: 86%;
+		  left: 50%;
+		  transform: translateX(-50%);
+		  width: 57%;
+		  height: 2px;
+		  background: #21ab53;
+		  opacity: 0.2;
 		}
-
-		&:hover &__content:hover ~ &__media img {
-			clip-path: circle(150% at 50% 50%) !important;
-		}
-
-		// For sections where content comes before media - hover on media shows circle in content
-		&:has(&__media:hover) &__content &__circle {
-			background: #fff !important;
-			width: 22vw !important;
-			height: 22vw !important;
-			border-radius: 50% !important;
-			padding: 2.4vw !important;
-
-			p {
-				color: #21AB53 !important;
-			}
-
-			&::after {
-				background: #21AB53 !important;
-				opacity: 0.2 !important;
-			}
-		}
-
-		// For sections where content comes before media - hover on content shows circle, removes from image
-		&:has(&__content:hover) &__content &__circle {
-			background: #fff !important;
-			width: 22vw !important;
-			height: 22vw !important;
-			border-radius: 50% !important;
-			padding: 2.4vw !important;
-
-			p {
-				color: #21AB53 !important;
-			}
-
-			&::after {
-				background: #21AB53 !important;
-				opacity: 0.2 !important;
-			}
-		}
-
-		&:has(&__content:hover) &__media img {
-			clip-path: circle(150% at 50% 50%) !important;
-		}
-	}
-
+	  }
 
 	/* OVERLAPPING TITLE */
 	&__title {
@@ -594,39 +615,45 @@
 	  overflow: hidden;
 	}
   
-	/* ---------------- IMAGE ---------------- */
+	/* ================= IMAGE ================= */
 	&__media {
 	  position: relative;
 	  overflow: hidden;
+	  cursor: pointer;
+  
+	  /* NEXT.JS IMAGE WRAPPER */
+	  span {
+		display: block;
+		width: 100%;
+		height: 100%;
+		clip-path: circle(32% at 50% 50%);
+		transition: clip-path 0.8s ease;
+	  }
   
 	  img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-  
-		/* ✅ IMAGE IS CIRCLE BY DEFAULT */
-		clip-path: circle(32% at 50% 50%);
-		transition: clip-path 0.8s ease;
+		display: block;
 	  }
 	}
   
-	/* ---------------- CONTENT ---------------- */
+	/* ================= CONTENT ================= */
 	&__content {
 	  background: #00b050;
 	  display: flex;
 	  align-items: center;
 	  justify-content: center;
 	  padding: 3vw;
+	  position: relative;
 	}
   
-	/* ---------------- DESCRIPTION ---------------- */
 	&__circle {
+	  background: transparent;
 	  width: auto;
 	  height: auto;
-	  background: transparent;
 	  border-radius: 0;
 	  padding: 0;
-	  position: relative;
 	  transition: all 0.6s ease;
   
 	  p {
@@ -640,14 +667,19 @@
   
 	  &::after {
 		content: "";
+		position: absolute;
+		bottom: 86%;
+		left: 50%;
+		transform: translateX(-50%);
+		width: 57%;
+		height: 2px;
+		background: #21ab53;
 		opacity: 0;
 		transition: opacity 0.4s ease;
 	  }
 	}
   
-	/* =================================================
-	   HOVER IMAGE → DESCRIPTION BECOMES CIRCLE
-	   ================================================= */
+	/* ================= KEY HOVER RULE ================= */
 	&__media:hover ~ &__content &__circle {
 	  width: 22vw;
 	  height: 22vw;
@@ -660,38 +692,28 @@
 	  }
   
 	  &::after {
-		content: "";
-		position: absolute;
-		bottom: 86%;
-		left: 50%;
-		transform: translateX(-50%);
-		width: 57%;
-		height: 2px;
-		background: #21ab53;
 		opacity: 0.2;
 	  }
 	}
   
-	/* =================================================
-	   HOVER DESCRIPTION → IMAGE EXPANDS
-	   ================================================= */
-	&__content:hover ~ &__media img {
-	  clip-path: circle(150% at 50% 50%);
-	}
+	/* ================= TITLE ================= */
+	&__title {
+	  position: absolute;
+	  top: 50%;
+	  left: 55%;
+	  transform: translate(-50%, -50%);
+	  z-index: 5;
+	  pointer-events: none;
   
-	&__content:hover &__circle {
-	  background: transparent;
-	  width: auto;
-	  height: auto;
-	  padding: 0;
-  
-	  p {
+	  h2 {
 		color: #fff;
-	  }
-  
-	  &::after {
-		opacity: 0;
+		font-size: 4.2vw;
+		font-weight: 700;
+		line-height: 1.05;
+		margin: 0;
+		text-align: center;
 	  }
 	}
   }
+  
   

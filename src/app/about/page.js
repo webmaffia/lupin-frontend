@@ -64,7 +64,8 @@ export default function AboutPage() {
           <div className="our-story__wrapper">
             <div className="our-story__media">
             {/* <div className="our-story__hover"> */}
-            <div className="inner_banner_clip"></div>
+            {/* <div className="inner_banner_clip"></div> */}
+            <span>
               <Image
                 src="/assets/images/about/story.webp"
                 alt="Our Story"
@@ -72,12 +73,13 @@ export default function AboutPage() {
                 height={600}
                 quality={100}
               />
+              </span>
               {/* <button className="our-story__cta">
                 READ<br />MORE
               </button> */}
             </div>
             <div className="our-story__content">
-            <div className="inner_banner_clip"></div>
+            {/* <div className="inner_banner_clip"></div> */}
               <Image
                 src="/assets/images/about/icon-1.webp"
                 alt="Our Story"
