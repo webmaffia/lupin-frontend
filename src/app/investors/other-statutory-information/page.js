@@ -2,6 +2,8 @@ import InnerBanner from '@/components/InnerBanner';
 import EGM from '@/components/EGM';
 import DeclarationOfResultsEvoting from '@/components/DeclarationOfResultsEvoting';
 import VotingResults from '@/components/VotingResults';
+import VotingTable from '@/components/VotingTable';
+import IEPFTable from '@/components/IEPFTable';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 
@@ -65,6 +67,28 @@ export default async function OtherStatutoryInformationPage() {
     // Will use default data from component
   }
 
+  // Fetch Voting Table data from Strapi (optional - component has default data)
+  let votingTableData = null;
+  
+  try {
+    // This would typically fetch from a Strapi endpoint
+    // For now, component will use default data
+  } catch (error) {
+    console.error('Error fetching Voting Table data from Strapi:', error);
+    // Will use default data from component
+  }
+
+  // Fetch IEPF Table data from Strapi (optional - component has default data)
+  let iepfTableData = null;
+  
+  try {
+    // This would typically fetch from a Strapi endpoint
+    // For now, component will use default data
+  } catch (error) {
+    console.error('Error fetching IEPF Table data from Strapi:', error);
+    // Will use default data from component
+  }
+
   // Fetch subscriber data from Strapi (optional - component has default data)
   let subscriberData = null;
   
@@ -82,6 +106,8 @@ export default async function OtherStatutoryInformationPage() {
       <EGM data={egmData} />
       <DeclarationOfResultsEvoting data={declarationData} />
       <VotingResults data={votingData} />
+      <VotingTable data={votingTableData} />
+      <IEPFTable data={iepfTableData} />
       <SubscriberUpdated data={subscriberData} />
     </div>
   );

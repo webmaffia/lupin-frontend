@@ -155,6 +155,316 @@ width: 100%;
       margin: 0 auto vw-mobile(60, 414) 0;
     }
   }
+
+  // Table Paragraph (for VotingTable component)
+  &__table-paragraph {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(25.77);
+    line-height: 1.37;
+    color: #08a03f;
+    margin: 0 0 vw(77) 0;
+    width: vw(1585);
+    text-align: left;
+    
+    @include media('tablet') {
+      font-size: vw(22, 768);
+      width: 100%;
+      margin: 0 0 vw(60, 768) 0;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(18, 414);
+      width: 100%;
+      margin: 0 0 vw-mobile(40, 414) 0;
+      line-height: 1.4;
+    }
+  }
+
+  // Voting Table Wrapper
+  &__voting-table-wrapper {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(65);
+    width: 100%;
+    
+    @include media('tablet') {
+      gap: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(30, 414);
+    }
+  }
+
+  // Voting Table Header
+  &__voting-table-header {
+    @include flex(row, center, center);
+    width: 100%;
+    
+    @include media('mobile') {
+      flex-direction: column;
+    }
+  }
+
+  // Voting Table Header Cell
+  &__voting-table-header-cell {
+    @include flex(row, center, center);
+    height: vw(142);
+    width: vw(575.667);
+    padding: vw(17) vw(35);
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(18);
+    line-height: 1.39; // 25px / 18px
+    text-transform: capitalize;
+    text-align: center;
+    
+    &:nth-child(2) {
+      width: vw(575.667);
+    }
+    
+    &:nth-child(3) {
+      width: vw(576);
+    }
+    
+    &--large-padding {
+      padding: vw(58) vw(35);
+    }
+    
+    p {
+      margin: 0;
+      line-height: vw(25);
+    }
+    
+    @include media('tablet') {
+      height: vw(120, 768);
+      width: vw(200, 768);
+      padding: vw(15, 768) vw(20, 768);
+      font-size: vw(16, 768);
+      
+      &:nth-child(2) {
+        width: vw(200, 768);
+      }
+      
+      &:nth-child(3) {
+        width: vw(200, 768);
+      }
+      
+      &--large-padding {
+        padding: vw(40, 768) vw(20, 768);
+      }
+      
+      p {
+        line-height: vw(22, 768);
+      }
+    }
+    
+    @include media('mobile') {
+      height: vw-mobile(80, 414);
+      width: 100%;
+      padding: vw-mobile(12, 414) vw-mobile(15, 414);
+      font-size: vw-mobile(14, 414);
+      
+      &:nth-child(2),
+      &:nth-child(3) {
+        width: 100%;
+      }
+      
+      &--large-padding {
+        padding: vw-mobile(30, 414) vw-mobile(15, 414);
+      }
+      
+      p {
+        line-height: vw-mobile(20, 414);
+      }
+    }
+  }
+
+  // Voting Table Rows
+  &__voting-table-rows {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(9);
+    width: 100%;
+    
+    @include media('tablet') {
+      width: 100%;
+      gap: vw(8, 768);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      gap: vw-mobile(6, 414);
+    }
+  }
+
+  // Voting Table Row
+  &__voting-table-row {
+    @include flex(row, flex-start, center);
+    width: 100%;
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(18);
+    line-height: vw(45);
+    color: #000000;
+    text-transform: capitalize;
+    
+    // Match header column widths
+    p {
+      &:nth-child(1) {
+        width: vw(575.667);
+      }
+      
+      &:nth-child(2) {
+        width: vw(575.667);
+      }
+      
+      &:nth-child(3) {
+        width: vw(576);
+      }
+    }
+    
+    @include media('tablet') {
+      font-size: vw(16, 768);
+      line-height: vw(40, 768);
+      
+      p {
+        &:nth-child(1) {
+          width: vw(200, 768);
+        }
+        
+        &:nth-child(2) {
+          width: vw(200, 768);
+        }
+        
+        &:nth-child(3) {
+          width: vw(200, 768);
+        }
+      }
+    }
+    
+    @include media('mobile') {
+      flex-direction: column;
+      align-items: flex-start;
+      font-size: vw-mobile(14, 414);
+      line-height: vw-mobile(30, 414);
+      
+      p {
+        width: 100% !important;
+        padding-left: 0 !important;
+        margin-bottom: vw-mobile(10, 414);
+        
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+
+  // Voting Table Cell
+  &__voting-table-cell {
+    margin: 0;
+    opacity: 0.8;
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(18);
+    line-height: vw(45);
+    color: #000000;
+    text-align: left;
+    
+    @include media('tablet') {
+      font-size: vw(16, 768);
+      line-height: vw(40, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+      line-height: vw-mobile(30, 414);
+    }
+  }
+
+  // Table Wrapper (kept for backward compatibility)
+  &__table-wrapper {
+    width: 100%;
+    max-width: vw(1200);
+    margin: 0 auto;
+    overflow-x: auto;
+    
+    @include media('tablet') {
+      max-width: 100%;
+    }
+    
+    @include media('mobile') {
+      max-width: 100%;
+    }
+  }
+
+  // Table (kept for backward compatibility)
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: $font-family-base;
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+    }
+  }
+
+  // Table Header (kept for backward compatibility)
+  &__table-header {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(18);
+    line-height: 1.5;
+    color: #000000;
+    padding: vw(20) vw(30);
+    text-align: left;
+    border-bottom: vw(2) solid #08A03F;
+    background: #F6F6F6;
+    
+    @include media('tablet') {
+      font-size: vw(16, 768);
+      padding: vw(15, 768) vw(20, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+      padding: vw-mobile(12, 414) vw-mobile(15, 414);
+    }
+  }
+
+  // Table Row (kept for backward compatibility)
+  &__table-row {
+    border-bottom: vw(1) solid #E0E0E0;
+    
+    @include media('mobile') {
+      border-bottom: vw-mobile(1, 414) solid #E0E0E0;
+    }
+    
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  // Table Cell (kept for backward compatibility)
+  &__table-cell {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(16);
+    line-height: 1.5;
+    color: #000000;
+    padding: vw(20) vw(30);
+    text-align: left;
+    
+    @include media('tablet') {
+      font-size: vw(14, 768);
+      padding: vw(15, 768) vw(20, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(12, 414);
+      padding: vw-mobile(12, 414) vw-mobile(15, 414);
+    }
+  }
   
   // Policy Cards Grid
   &__grid {
