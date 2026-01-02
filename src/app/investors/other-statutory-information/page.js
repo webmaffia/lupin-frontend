@@ -120,7 +120,7 @@ export default async function OtherStatutoryInformationPage() {
       <VotingResults data={votingData} />
       <VotingTable data={votingTableData} />
       <IEPFTable data={iepfTableData} />
-      <NoticeTable data={noticeTableData} />
+
       <SubscriberUpdated data={subscriberData} />
     </div>
   );
