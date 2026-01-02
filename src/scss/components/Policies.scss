@@ -209,6 +209,7 @@ width: 100%;
   // Voting Table Header Cell
   &__voting-table-header-cell {
     @include flex(row, center, center);
+    justify-content: left !important;
     height: vw(142);
     width: vw(575.667);
     padding: vw(17) vw(35);

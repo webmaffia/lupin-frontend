@@ -4,6 +4,7 @@ import DeclarationOfResultsEvoting from '@/components/DeclarationOfResultsEvotin
 import VotingResults from '@/components/VotingResults';
 import VotingTable from '@/components/VotingTable';
 import IEPFTable from '@/components/IEPFTable';
+import NoticeTable from '@/components/NoticeTable';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 
@@ -89,6 +90,17 @@ export default async function OtherStatutoryInformationPage() {
     // Will use default data from component
   }
 
+  // Fetch Notice Table data from Strapi (optional - component has default data)
+  let noticeTableData = null;
+  
+  try {
+    // This would typically fetch from a Strapi endpoint
+    // For now, component will use default data
+  } catch (error) {
+    console.error('Error fetching Notice Table data from Strapi:', error);
+    // Will use default data from component
+  }
+
   // Fetch subscriber data from Strapi (optional - component has default data)
   let subscriberData = null;
   
@@ -108,6 +120,7 @@ export default async function OtherStatutoryInformationPage() {
       <VotingResults data={votingData} />
       <VotingTable data={votingTableData} />
       <IEPFTable data={iepfTableData} />
+      <NoticeTable data={noticeTableData} />
       <SubscriberUpdated data={subscriberData} />
     </div>
   );

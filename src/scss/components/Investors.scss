@@ -303,7 +303,7 @@
     &--2 {
       .investors__circle-title {
        position: relative;
-       left: 1.7vw;
+      //  left: 1.7vw;
       }
       @include flex(column, center, flex-end);
       padding: 8.75vw 3.2vw 8.75vw 6vw;
