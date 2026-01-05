@@ -1,5 +1,6 @@
 import InnerBanner from '@/components/InnerBanner';
 import ProfileCard from '@/components/global/ProfileCard';
+import MediaContact from '@/components/global/MediaContact';
 import '@/scss/pages/test-profile-card.scss';
 
 export default function TestProfileCardPage() {
@@ -99,6 +100,16 @@ export default function TestProfileCardPage() {
           </div>
         </div>
       </section>
+
+      {/* Media Contact Section */}
+      <MediaContact 
+        contact={{
+          name: "Rajalakshmi Azariah",
+          title: "Vice President & Global Head – Corporate Communications",
+          email: "rajalakshmiazariah@lupin.com"
+        }}
+        mediaKitLink="/media-kit"
+      />
     </div>
   );
 }
