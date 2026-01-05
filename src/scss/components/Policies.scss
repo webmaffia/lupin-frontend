@@ -383,6 +383,189 @@ width: 100%;
     }
   }
 
+
+  // Notice Box - matching Figma design exactly
+  &__notice-box {
+    width: 100%;
+    background: #ffffff;
+    border: vw(1) solid #08a03f;
+    border-radius: vw(60);
+    padding: vw(61) vw(70);
+    position: relative;
+    
+    @include media('tablet') {
+      border-radius: vw(40, 768);
+      padding: vw(40, 768) vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      border-radius: vw-mobile(30, 414);
+      padding: vw-mobile(30, 414) vw-mobile(20, 414);
+    }
+  }
+
+  &__notice-content {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(43);
+    width: 100%;
+    
+    @include media('tablet') {
+      gap: vw(30, 768);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(25, 414);
+    }
+  }
+
+  &__notice-title {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(65);
+    line-height: vw(80);
+    color: #08a03f;
+    margin: 0;
+    text-transform: capitalize;
+    white-space: nowrap;
+    
+    @include media('tablet') {
+      font-size: vw(48, 768);
+      line-height: vw(60, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(36, 414);
+      line-height: vw-mobile(44, 414);
+    }
+  }
+
+  &__notice-main {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(81);
+    width: 100%;
+    
+    @include media('tablet') {
+      gap: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(35, 414);
+    }
+  }
+
+  &__notice-paragraph {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(20);
+    line-height: vw(36);
+    color: #126430;
+    opacity: 0.8;
+    margin: 0;
+    text-transform: capitalize;
+    width: vw(1311);
+    max-width: 100%;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      line-height: vw(32, 768);
+      width: 100%;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(28, 414);
+    }
+  }
+
+  &__notice-columns {
+    @include flex(row, flex-start, flex-start);
+    gap: vw(212);
+    width: 100%;
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(20);
+    line-height: vw(36);
+    color: #126430;
+    opacity: 0.8;
+    text-transform: capitalize;
+    
+    @include media('tablet') {
+      flex-direction: column;
+      gap: vw(30, 768);
+      font-size: vw(18, 768);
+      line-height: vw(32, 768);
+    }
+    
+    @include media('mobile') {
+      flex-direction: column;
+      gap: vw-mobile(25, 414);
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(28, 414);
+    }
+  }
+
+  &__notice-address-column {
+    width: vw(409);
+    flex-shrink: 0;
+    
+    @include media('tablet') {
+      width: 100%;
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+    }
+  }
+
+  &__notice-address-text {
+    margin: 0;
+  }
+
+  &__notice-contact-column {
+    width: vw(766);
+    flex: 1;
+    
+    @include media('tablet') {
+      width: 100%;
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+    }
+  }
+
+  &__notice-contact-text {
+    margin: 0 0 vw(10) 0;
+    
+    @include media('tablet') {
+      margin: 0 0 vw(10, 768) 0;
+    }
+    
+    @include media('mobile') {
+      margin: 0 0 vw-mobile(10, 414) 0;
+    }
+  }
+
+  &__notice-email-link {
+    color: #126430;
+    text-decoration: underline;
+    text-decoration-skip-ink: none;
+    cursor: pointer;
+    
+    &:hover {
+      opacity: 1;
+    }
+    
+    span {
+      text-decoration: underline;
+      text-decoration-skip-ink: none;
+    }
+  }
+
+  &__notice-phone-text {
+    margin: 0;
+  }
+
   // Table Wrapper (kept for backward compatibility)
   &__table-wrapper {
     width: 100%;

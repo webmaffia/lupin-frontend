@@ -1,0 +1,211 @@
+// Grid 5x3 Component Styles - Uses Notice component structure with 5-column grid
+// Using vw() for desktop (base: 1920px) and vw-mobile() for mobile (base: 414px)
+
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
+// Override Notice grid for 5 columns
+.notice--grid-5x3 {
+  .notice__grid--5cols {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: vw(40) vw(30);
+    margin-bottom: vw(50);
+    width: 100%;
+    
+    @include media('tablet') {
+      grid-template-columns: repeat(3, 1fr);
+      gap: vw(30, 768) vw(25, 768);
+      width: 100%;
+    }
+    
+    @include media('mobile') {
+      grid-template-columns: repeat(1, 1fr);
+      gap: vw-mobile(30, 414);
+      margin-bottom: vw-mobile(30, 414);
+      width: 100%;
+    }
+  }
+
+  // Simple card variant for 5x3 grid (matching Figma design node-id: 2273:779)
+  .notice-card--simple {
+    position: relative;
+    padding-bottom: 0;
+    
+    @include media('mobile') {
+      padding-bottom: 0;
+    }
+  }
+
+  .notice-card__content--simple {
+    background: #d9f0e1;
+    border-radius: vw(35.787);
+    padding: vw(104) vw(13);
+    min-height: auto;
+    @include flex(column, center, center);
+    gap: vw(20);
+    
+    @include media('tablet') {
+      border-radius: vw(25, 768);
+      padding: vw(70, 768) vw(10, 768);
+      gap: vw(15, 768);
+    }
+    
+    @include media('mobile') {
+      border-radius: vw-mobile(20, 414);
+      padding: vw-mobile(50, 414) vw-mobile(10, 414);
+      gap: vw-mobile(15, 414);
+    }
+  }
+
+  .notice-card__title {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(18);
+    line-height: 1.37;
+    color: #08a03f;
+    text-align: center;
+    margin: 0;
+    transition: color $transition-base;
+    
+    @include media('tablet') {
+      font-size: vw(16, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+    }
+  }
+
+  .notice-card__title-line {
+    margin: 0;
+    
+    &:not(:last-child) {
+      margin-bottom: vw(5);
+      
+      @include media('tablet') {
+        margin-bottom: vw(4, 768);
+      }
+      
+      @include media('mobile') {
+        margin-bottom: vw-mobile(3, 414);
+      }
+    }
+  }
+
+  .notice-card__download-link--simple {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(16);
+    line-height: 1.5;
+    color: #08a03f;
+    text-decoration: underline;
+    text-align: center;
+    transition: opacity $transition-base;
+    margin: 0;
+    height: auto;
+    
+    @include media('tablet') {
+      font-size: vw(14, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(12, 414);
+    }
+    
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .notice-card--simple:hover,
+  .notice-card--simple.notice-card--active {
+    .notice-card__content--simple {
+      background: #08a03f;
+    }
+    
+    .notice-card__title {
+      color: #ffffff;
+    }
+    
+    .notice-card__download-link--simple {
+      color: #ffffff;
+    }
+  }
+
+  // Bottom Decorative Circle Arrow
+  .notice-card__decorative-circle {
+    position: absolute;
+    bottom: vw(-30);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    width: vw(60);
+    height: vw(40);
+    overflow: visible;
+    
+    @include media('tablet') {
+      bottom: vw(-25, 768);
+      width: vw(50, 768);
+      height: vw(35, 768);
+    }
+    
+    @include media('mobile') {
+      bottom: vw-mobile(-20, 414);
+      width: vw-mobile(45, 414);
+      height: vw-mobile(30, 414);
+    }
+  }
+
+  .notice-card__decorative-circle-inner {
+    width: vw(60);
+    height: vw(60);
+    background: #08a03f;
+    border-radius: 50%;
+    @include flex(row, center, center);
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    overflow: visible;
+    
+    // Make it appear as a partial circle (bottom half visible, top half hidden)
+    clip-path: inset(50% 0 0 0);
+    
+    @include media('tablet') {
+      width: vw(50, 768);
+      height: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(45, 414);
+      height: vw-mobile(45, 414);
+    }
+  }
+
+  .notice-card__decorative-icon {
+    width: vw(4);
+    height: vw(24);
+    background: #ffffff;
+    border-radius: vw(2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    
+    @include media('tablet') {
+      width: vw(3, 768);
+      height: vw(20, 768);
+      border-radius: vw(1.5, 768);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(2.5, 414);
+      height: vw-mobile(18, 414);
+      border-radius: vw-mobile(1.25, 414);
+    }
+  }
+}
+
