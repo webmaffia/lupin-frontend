@@ -116,6 +116,17 @@
     }
   }
 
+  // Video card name styling
+  &--has-video {
+    .profile-card__name {
+      font-size: vw(35);
+      
+      @include media('mobile') {
+        font-size: vw-mobile(24, 414);
+      }
+    }
+  }
+
   &__title {
     font-family: $font-family-base;
     font-weight: 400;

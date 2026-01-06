@@ -39,13 +39,38 @@
     }
   }
   
+  // Header (contains title wrapper and description)
+  &__header {
+    width: 100%;
+    @include flex(column, flex-start, flex-start);
+    gap: vw(20);
+    
+    @include media('mobile') {
+      gap: vw-mobile(15, 414);
+    }
+  }
+
+  // Title Wrapper
+  &__title-wrapper {
+    width: 100%;
+    @include flex(row, flex-start, center);
+    align-items: center;
+    gap: vw(50);
+    
+    @include media('mobile') {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: vw-mobile(30, 414);
+    }
+  }
+
   // Title
   &__title {
     font-family: $font-family-base;
     font-weight: 600;
     font-size: vw(48);
     line-height: 1.2;
-    color: #126430;
+    color: #08A03F;
     margin: 0;
     
     @include media('tablet') {
@@ -54,6 +79,94 @@
     
     @include media('mobile') {
       font-size: vw-mobile(28, 414);
+    }
+  }
+
+  // Description
+  &__description {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(25);
+    line-height: 1.5;
+    color: #08A03F;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(22, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(18, 414);
+    }
+  }
+
+  // Explore Button
+  &__explore-button {
+    display: inline-flex;
+    align-items: center;
+    gap: vw(15);
+    padding: vw(13) vw(20);
+    background: #08A03F;
+    border-radius: vw(63);
+    text-decoration: none;
+    transition: all $transition-base;
+    flex-shrink: 0;
+    
+    @include media('tablet') {
+      padding: vw(12, 768) vw(18, 768);
+      gap: vw(12, 768);
+      border-radius: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      padding: vw-mobile(10, 414) vw-mobile(15, 414);
+      gap: vw-mobile(10, 414);
+      border-radius: vw-mobile(40, 414);
+    }
+
+    &:hover {
+      background: #0a8a35;
+      transform: translateY(vw(-2));
+      
+      @include media('mobile') {
+        transform: translateY(vw-mobile(-1, 414));
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  &__explore-text {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(20);
+    line-height: 1.2;
+    color: #ffffff;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+    }
+  }
+
+  &__explore-icon {
+    width: vw(18);
+    height: vw(18);
+    flex-shrink: 0;
+    
+    @include media('tablet') {
+      width: vw(16, 768);
+      height: vw(16, 768);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(14, 414);
+      height: vw-mobile(14, 414);
     }
   }
   
@@ -109,6 +222,15 @@
     .swiper-slide {
       width: auto;
       height: auto;
+    }
+    
+    // ProfileCard in slider - custom width
+    .profile-card--slider {
+      width: vw(495) !important;
+      
+      @include media('mobile') {
+        width: 100% !important;
+      }
     }
   }
   
@@ -360,6 +482,20 @@
       height: auto;
       min-height: vw-mobile(100, 414);
       gap: vw-mobile(15, 414);
+    }
+    
+    // When ProfileCard is used in slider, match its height
+    &--profile-slider {
+      height: vw(598.77);
+      
+      @include media('tablet') {
+        height: vw(450, 768);
+      }
+      
+      @include media('mobile') {
+        height: auto;
+        min-height: vw-mobile(100, 414);
+      }
     }
   }
   

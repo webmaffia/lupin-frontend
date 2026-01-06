@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
+import ProfileCard from './global/ProfileCard';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import '../scss/components/WhatsNew.scss';
 
-export default function WhatsNew({ data, className }) {
+export default function WhatsNew({ data, className, useProfileCard = false, exploreLink }) {
   // Default data (will be replaced by Strapi)
   const whatsNewData = data || {
     title: "What's New",
@@ -93,10 +94,42 @@ export default function WhatsNew({ data, className }) {
     <section className={`whats-new ${className || ''}`} data-node-id="2216:743">
       <div className="whats-new__container">
         {/* Title */}
-        {whatsNewData.title && (
-          <h2 className="whats-new__title">
-            {whatsNewData.title}
-          </h2>
+        {(whatsNewData.title || whatsNewData.description || exploreLink) && (
+          <div className="whats-new__header">
+            <div className="whats-new__title-wrapper">
+              {whatsNewData.title && (
+                <h2 className="whats-new__title">
+                  {whatsNewData.title}
+                </h2>
+              )}
+              {exploreLink && (
+                <a href={exploreLink} className="whats-new__explore-button">
+                  <span className="whats-new__explore-text">Explore</span>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="whats-new__explore-icon"
+                  >
+                    <path
+                      d="M1 17L17 1M17 1H1M17 1V17"
+                      stroke="white"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </a>
+              )}
+            </div>
+            {whatsNewData.description && (
+              <p className="whats-new__description">
+                {whatsNewData.description}
+              </p>
+            )}
+          </div>
         )}
 
         {/* Cards Container */}
@@ -130,68 +163,81 @@ export default function WhatsNew({ data, className }) {
             watchOverflow={true}
           >
             {items.map((item, index) => (
-              <SwiperSlide key={item.id} className="whats-new__slide">
-                <div className="whats-new__card">
-                  {/* Date */}
-                  <div className="whats-new__date">
-                    {item.date}
+              <SwiperSlide key={item.id || index} className="whats-new__slide">
+                {useProfileCard ? (
+                  <ProfileCard
+                    name={item.name || item.date || item.headline?.[0] || ''}
+                    title={item.title || (Array.isArray(item.headline) ? item.headline.join(' ') : item.headline) || ''}
+                    date={item.date}
+                    link={item.link || item.href}
+                    image={item.image}
+                    imagePosition={item.imagePosition || 'bottom'}
+                    showArrow={item.showArrow !== undefined ? item.showArrow : true}
+                    className="profile-card--slider"
+                  />
+                ) : (
+                  <div className="whats-new__card">
+                    {/* Date */}
+                    <div className="whats-new__date">
+                      {item.date}
+                    </div>
+
+                    {/* Category Button */}
+                    {item.category && (() => {
+                      // Split category text (e.g., "Press Releases" -> ["Press", "Releases"])
+                      const categoryParts = item.category.split(' ');
+                      const firstPart = categoryParts[0] || item.category;
+                      const secondPart = categoryParts.slice(1).join(' ') || '';
+                      
+                      return (
+                        <Link href={item.href || "#"} className="whats-new__category-btn">
+                          <div className="whats-new__category-line">
+                            <span className="whats-new__category-text">{firstPart}</span>
+                            <svg
+                              className="whats-new__category-arrow"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M1 11L11 1M11 1H1M11 1V11"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </div>
+                          {secondPart && (
+                            <span className="whats-new__category-text">{secondPart}</span>
+                          )}
+                        </Link>
+                      );
+                    })()}
+
+                    {/* Headline */}
+                    <h3 className="whats-new__headline">
+                      {Array.isArray(item.headline) ? (
+                        item.headline.map((line, lineIndex) => (
+                          <span key={lineIndex} className="whats-new__headline-line">
+                            {line}
+                            {lineIndex < item.headline.length - 1 && <br />}
+                          </span>
+                        ))
+                      ) : (
+                        item.headline
+                      )}
+                    </h3>
                   </div>
-
-                  {/* Category Button */}
-                  {item.category && (() => {
-                    // Split category text (e.g., "Press Releases" -> ["Press", "Releases"])
-                    const categoryParts = item.category.split(' ');
-                    const firstPart = categoryParts[0] || item.category;
-                    const secondPart = categoryParts.slice(1).join(' ') || '';
-                    
-                    return (
-                      <Link href={item.href || "#"} className="whats-new__category-btn">
-                        <div className="whats-new__category-line">
-                          <span className="whats-new__category-text">{firstPart}</span>
-                          <svg
-                            className="whats-new__category-arrow"
-                            width="12"
-                            height="12"
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M1 11L11 1M11 1H1M11 1V11"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </div>
-                        {secondPart && (
-                          <span className="whats-new__category-text">{secondPart}</span>
-                        )}
-                      </Link>
-                    );
-                  })()}
-
-                  {/* Headline */}
-                  <h3 className="whats-new__headline">
-                    {Array.isArray(item.headline) ? (
-                      item.headline.map((line, lineIndex) => (
-                        <span key={lineIndex} className="whats-new__headline-line">
-                          {line}
-                          {lineIndex < item.headline.length - 1 && <br />}
-                        </span>
-                      ))
-                    ) : (
-                      item.headline
-                    )}
-                  </h3>
-                </div>
+                )}
               </SwiperSlide>
             ))}
           </Swiper>
 
           {/* Navigation Card */}
-          <div className="whats-new__nav-card">
+          <div className={`whats-new__nav-card ${useProfileCard ? 'whats-new__nav-card--profile-slider' : ''}`}>
             <button
               className={`whats-new__nav-btn ${isBeginning ? 'whats-new__nav-btn--disabled' : ''}`}
               onClick={handlePrevious}

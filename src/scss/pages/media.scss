@@ -1,0 +1,35 @@
+// Media Page Styles
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
+.sectionPressReleases {
+  padding-top: vw(60);
+  padding-bottom: vw(30);
+  
+  @include media('tablet') {
+    padding-top: vw(50, 768);
+    padding-bottom: vw(25, 768);
+  }
+  
+  @include media('mobile') {
+    padding-top: vw-mobile(40, 414);
+    padding-bottom: vw-mobile(20, 414);
+  }
+}
+
+// Media page specific styles for WhatsNew
+.whats-new.whats-new--media-page {
+  .whats-new__title {
+    font-size: vw(65) !important;
+    
+    @include media('tablet') {
+      font-size: vw(48, 768) !important;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(32, 414) !important;
+    }
+  }
+}
+
