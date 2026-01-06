@@ -12,7 +12,7 @@
   height: vw(598.772);
   background: #d9f0e1;
   border-radius: vw(44.79);
-  padding: vw(47);
+  padding: vw(47) vw(27.2) vw(47) vw(47);
   @include flex(column, flex-start, flex-start);
   transition: all $transition-base;
   cursor: pointer;
