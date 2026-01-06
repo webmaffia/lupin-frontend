@@ -1,7 +1,7 @@
 name: "CodeQL config"
 
 paths-ignore:
-  - build/**
-  - dist/**
-  - .cache/**
-  - node_modules/**
+  - '**/build/**'        
+  - '**/dist/**'
+  - '**/.cache/**'
+  - '**/node_modules/**'
