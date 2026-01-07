@@ -136,6 +136,7 @@ export default function PerspectivesPage() {
           title: "Vice President & Global Head – Corporate Communications",
           email: "rajalakshmiazariah@lupin.com"
         }}
+        mediaKitLink="/media/media-kit"
       />
     </div>
   );

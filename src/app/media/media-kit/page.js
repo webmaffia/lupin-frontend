@@ -117,6 +117,7 @@ export default function MediaKitPage() {
           title: "Vice President & Global Head – Corporate Communications",
           email: "rajalakshmiazariah@lupin.com"
         }}
+        mediaKitLink="/media/media-kit"
       />
     </div>
   );
