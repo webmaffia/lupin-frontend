@@ -5,6 +5,7 @@ import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
 import MediaSearch from '@/components/MediaSearch';
 import ProfileCard from '@/components/global/ProfileCard';
+import Pagination from '@/components/global/Pagination';
 import MediaContact from '@/components/global/MediaContact';
 import '@/scss/pages/media.scss';
 import '@/scss/pages/test-profile-card.scss';
@@ -12,6 +13,8 @@ import '@/scss/pages/test-profile-card.scss';
 export default function MediaCoveragePage() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
   // Banner data for Media Coverage page
   const bannerData = {
     title: {
@@ -32,7 +35,7 @@ export default function MediaCoveragePage() {
   // Profile cards data
   const mediaCoverageItems = [
     {
-      id: 7,
+      id: 1,
       name: "Annual General Meeting 2024",
       title: "42nd Annual General Meeting – Aug 2, 2024",
       image: "/assets/media-kit-card/demo5.png",
@@ -40,41 +43,47 @@ export default function MediaCoveragePage() {
       showArrow: false
     },
     {
-      id: 10,
+      id: 2,
       name: "YouTube Video",
       title: "Lupin Corporate Video",
       image: "/assets/media-kit-card/demo5.png",
       videoLink: "https://www.youtube.com/watch?v=59In9bOyyE4"
     },
     {
-      id: 8,
+      id: 3,
       name: "Corporate Strategy Update",
       title: "Lupin's Vision for Global Expansion",
       image: "/assets/media-kit-card/demo5.png",
       videoLink: "https://www.lupin.com/video/corporate-strategy-2024.mp4"
     },
     {
-      id: 9,
+      id: 4,
       name: "Research & Development",
       title: "Innovation in Pharmaceutical Sciences",
       image: "/assets/media-kit-card/demo5.png",
       videoLink: "https://www.lupin.com/video/rd-innovation-2024.mp4"
     },
     {
-        id: 8,
-        name: "Corporate Strategy Update",
-        title: "Lupin's Vision for Global Expansion",
-        image: "/assets/media-kit-card/demo5.png",
-        videoLink: "https://www.lupin.com/video/corporate-strategy-2024.mp4"
-      },
-      {
-        id: 9,
-        name: "Research & Development",
-        title: "Innovation in Pharmaceutical Sciences",
-        image: "/assets/media-kit-card/demo5.png",
-        videoLink: "https://www.lupin.com/video/rd-innovation-2024.mp4"
-      },
- 
+      id: 5,
+      name: "Corporate Strategy Update 2",
+      title: "Lupin's Vision for Global Expansion",
+      image: "/assets/media-kit-card/demo5.png",
+      videoLink: "https://www.lupin.com/video/corporate-strategy-2024.mp4"
+    },
+    {
+      id: 6,
+      name: "Research & Development 2",
+      title: "Innovation in Pharmaceutical Sciences",
+      image: "/assets/media-kit-card/demo5.png",
+      videoLink: "https://www.lupin.com/video/rd-innovation-2024.mp4"
+    },
+    {
+      id: 7,
+      name: "Research & Development 3",
+      title: "Innovation in Pharmaceutical Sciences",
+      image: "/assets/media-kit-card/demo5.png",
+      videoLink: "https://www.lupin.com/video/rd-innovation-2024.mp4"
+    }
   ];
 
   // Helper function to check if URL is YouTube
@@ -118,6 +127,24 @@ export default function MediaCoveragePage() {
     }
   };
 
+  // Pagination logic
+  const totalItems = mediaCoverageItems.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentPageItems = mediaCoverageItems.slice(startIndex, endIndex);
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      // Scroll to top of cards section when page changes
+      const cardsSection = document.querySelector('.sectionProfileCards');
+      if (cardsSection) {
+        cardsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
@@ -131,7 +158,7 @@ export default function MediaCoveragePage() {
       <section className="sectionProfileCards sectionProfileCards--media-coverage">
         <div className="profile-cards-container">
           <div className="profile-card-grid">
-            {mediaCoverageItems.map((item) => (
+            {currentPageItems.map((item) => (
               <div 
                 key={item.id} 
                 className={`profile-card-wrapper ${item.videoLink ? 'profile-card-wrapper--clickable' : ''}`}
@@ -187,6 +214,17 @@ export default function MediaCoveragePage() {
             ))}
           </div>
         </div>
+        
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="pagination-container">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </section>
 
       <MediaContact 

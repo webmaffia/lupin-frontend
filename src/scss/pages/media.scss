@@ -53,6 +53,20 @@
   width: 100%;
 }
 
+.pagination-container {
+  width: 100%;
+  @include flex(row, center, center);
+  margin-top: vw(60);
+  
+  @include media('tablet') {
+    margin-top: vw(50, 768);
+  }
+  
+  @include media('mobile') {
+    margin-top: vw-mobile(40, 414);
+  }
+}
+
 // PDF Download Section
 .sectionPdfDownload {
   padding: vw(100);
