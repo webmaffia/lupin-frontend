@@ -1,20 +1,16 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
 import MediaSearch from '@/components/MediaSearch';
 import ProfileCard from '@/components/global/ProfileCard';
 import MediaContact from '@/components/global/MediaContact';
-import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import '@/scss/pages/media.scss';
 
-// Generate metadata for the Perspectives page
-export const metadata = generateSEOMetadata({
-  title: "Perspectives - Lupin | Corporate Communications",
-  description: "Insights from the leading minds in our industry. Explore perspectives and thought leadership from Lupin Limited.",
-  canonicalUrl: "https://www.lupin.com/media/perspectives",
-  keywords: "Lupin perspectives, thought leadership, industry insights, corporate communications, Lupin Limited, executive perspectives",
-});
-
 export default function PerspectivesPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   // Banner data for Perspectives page
   const bannerData = {
     title: {
@@ -33,7 +29,7 @@ export default function PerspectivesPage() {
   };
 
   // Profile cards data
-  const perspectives = [
+  const allPerspectives = [
     {
       id: 4,
       name: "November 4, 2025",
@@ -90,20 +86,41 @@ export default function PerspectivesPage() {
     },
   ];
 
+  // Search and filter logic
+  const filteredPerspectives = allPerspectives.filter((item) => {
+    // Search filter - check name and title
+    const matchesSearch = searchQuery === '' || 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Year filter - placeholder for future year matching
+    const matchesYear = selectedYear === '' || true;
+    
+    return matchesSearch && matchesYear;
+  });
+
+  // Reset filters when search changes
+  useEffect(() => {
+    // This ensures the component re-renders when search changes
+  }, [searchQuery, selectedYear]);
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
       <MediaNavigation />
       
       <section className="sectionMediaSearch">
-        <MediaSearch />
+        <MediaSearch 
+          onSearch={(query) => setSearchQuery(query)}
+          onYearChange={(year) => setSelectedYear(year)}
+        />
       </section>
 
       {/* Profile Cards Section */}
       <section className="sectionProfileCards">
         <div className="profile-cards-container">
           <div className="profile-card-grid">
-            {perspectives.map((item) => (
+            {filteredPerspectives.map((item) => (
               <ProfileCard
                 key={item.id}
                 name={item.name}

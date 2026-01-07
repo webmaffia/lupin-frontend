@@ -1,21 +1,17 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
 import MediaSearch from '@/components/MediaSearch';
 import ProfileCard from '@/components/global/ProfileCard';
 import PdfDownload from '@/components/global/PdfDownload';
 import MediaContact from '@/components/global/MediaContact';
-import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import '@/scss/pages/media.scss';
 
-// Generate metadata for the Media Kit page
-export const metadata = generateSEOMetadata({
-  title: "Media Kit - Lupin | Corporate Communications",
-  description: "Access Lupin's media kit with press materials, company information, logos, and resources for media professionals.",
-  canonicalUrl: "https://www.lupin.com/media/media-kit",
-  keywords: "Lupin media kit, press materials, corporate communications, media resources, Lupin Limited, press kit",
-});
-
 export default function MediaKitPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   // Banner data for Media Kit page
   const bannerData = {
     title: {
@@ -34,7 +30,7 @@ export default function MediaKitPage() {
   };
 
   // Profile data
-  const profiles = [
+  const allProfiles = [
     {
       id: 1,
       name: "Vinita Gupta",
@@ -55,20 +51,41 @@ export default function MediaKitPage() {
     },
   ];
 
+  // Search and filter logic
+  const filteredProfiles = allProfiles.filter((item) => {
+    // Search filter - check name and title
+    const matchesSearch = searchQuery === '' || 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Year filter - placeholder for future year matching
+    const matchesYear = selectedYear === '' || true;
+    
+    return matchesSearch && matchesYear;
+  });
+
+  // Reset filters when search changes
+  useEffect(() => {
+    // This ensures the component re-renders when search changes
+  }, [searchQuery, selectedYear]);
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
       <MediaNavigation />
       
       <section className="sectionMediaSearch">
-        <MediaSearch />
+        <MediaSearch 
+          onSearch={(query) => setSearchQuery(query)}
+          onYearChange={(year) => setSelectedYear(year)}
+        />
       </section>
 
       {/* Profile Cards Section */}
       <section className="sectionProfileCards">
         <div className="profile-cards-container">
           <div className="profile-card-grid">
-            {profiles.map((profile) => (
+            {filteredProfiles.map((profile) => (
               <ProfileCard
                 key={profile.id}
                 name={profile.name}

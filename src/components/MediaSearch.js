@@ -39,6 +39,10 @@ export default function MediaSearch({ onSearch, onYearChange, years = [] }) {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
+    // Trigger search on input change for real-time filtering
+    if (onSearch) {
+      onSearch(value);
+    }
   };
 
   const handleSearchSubmit = () => {

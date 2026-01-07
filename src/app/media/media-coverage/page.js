@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
 import MediaSearch from '@/components/MediaSearch';
@@ -14,6 +14,8 @@ export default function MediaCoveragePage() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedYear, setSelectedYear] = useState('');
   const itemsPerPage = 6;
   // Banner data for Media Coverage page
   const bannerData = {
@@ -127,12 +129,32 @@ export default function MediaCoveragePage() {
     }
   };
 
+  // Search and filter logic
+  const filteredItems = mediaCoverageItems.filter((item) => {
+    // Search filter - check name and title
+    const matchesSearch = searchQuery === '' || 
+      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // Year filter - if year is selected, check if item has a date matching the year
+    // For now, we'll just return true for year filter as items don't have year data
+    // You can add year extraction from dates if needed
+    const matchesYear = selectedYear === '' || true; // Placeholder - implement year matching if items have dates
+    
+    return matchesSearch && matchesYear;
+  });
+
   // Pagination logic
-  const totalItems = mediaCoverageItems.length;
+  const totalItems = filteredItems.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentPageItems = mediaCoverageItems.slice(startIndex, endIndex);
+  const currentPageItems = filteredItems.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search or filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedYear]);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -151,7 +173,10 @@ export default function MediaCoveragePage() {
       <MediaNavigation />
       
       <section className="sectionMediaSearch">
-        <MediaSearch />
+        <MediaSearch 
+          onSearch={(query) => setSearchQuery(query)}
+          onYearChange={(year) => setSelectedYear(year)}
+        />
       </section>
 
       {/* Profile Cards Section */}
