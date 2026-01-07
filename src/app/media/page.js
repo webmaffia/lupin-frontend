@@ -99,8 +99,9 @@ export default function MediaPage() {
         data={{
           title: "Media Coverage"
         }}
+        id="media-coverage"
       />
-     <section className="sectionPressReleases">
+     <section id="perspectives" className="sectionPressReleases">
      <WhatsNew 
         className="whats-new--media-page"
         data={{

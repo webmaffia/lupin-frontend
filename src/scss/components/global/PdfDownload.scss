@@ -8,7 +8,7 @@
 
 .pdf-download {
   position: relative;
-  width: vw(832);
+  width: vw(820);
   height: vw(592.977);
   cursor: pointer;
   transition: all $transition-base;
@@ -36,7 +36,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    width: vw(832);
+    width: vw(820);
     height: vw(492);
     z-index: 1;
     overflow: hidden;

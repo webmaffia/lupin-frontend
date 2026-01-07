@@ -28,7 +28,7 @@ import '@/scss/components/MediaCoverage.scss';
  *   }}
  * />
  */
-export default function MediaCoverage({ data, className = '' }) {
+export default function MediaCoverage({ data, className = '', id }) {
   const defaultData = {
     title: "Media Coverage",
     items: [
@@ -95,7 +95,7 @@ export default function MediaCoverage({ data, className = '' }) {
   };
 
   return (
-    <section className={`media-coverage ${className}`}>
+    <section id={id} className={`media-coverage ${className}`}>
       {/* Background Petals */}
       <div className="media-coverage__bg-petals">
         <Image
