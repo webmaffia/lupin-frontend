@@ -173,18 +173,21 @@
 .profile-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(vw(519.295), 1fr));
-  gap: vw(30);
+  row-gap: vw(65);
+  column-gap: vw(30);
   width: 100%;
   justify-items: center;
   
   @include media('tablet') {
     grid-template-columns: repeat(auto-fill, minmax(vw(400, 768), 1fr));
-    gap: vw(20, 768);
+    row-gap: vw(50, 768);
+    column-gap: vw(20, 768);
   }
   
   @include media('mobile') {
     grid-template-columns: 1fr;
-    gap: vw-mobile(20, 414);
+    row-gap: vw-mobile(30, 414);
+    column-gap: vw-mobile(20, 414);
     justify-items: stretch;
   }
 }

@@ -27,7 +27,7 @@ export default function MediaNavigation() {
     { 
       id: 'perspectives', 
       label: 'perspectives', 
-      href: '/media#perspectives' 
+      href: '/media/perspectives' 
     }
   ];
 
@@ -40,6 +40,10 @@ export default function MediaNavigation() {
     // Exact match for /media/media-kit
     if (link.href === '/media/media-kit') {
       return pathname === '/media/media-kit';
+    }
+    // Exact match for /media/perspectives
+    if (link.href === '/media/perspectives') {
+      return pathname === '/media/perspectives';
     }
     // For hash links, check if we're on the base /media page
     // (Note: hash links won't change pathname, so we consider them active when on /media)
