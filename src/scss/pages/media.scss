@@ -19,17 +19,59 @@
 }
 
 .sectionPressReleases {
-  padding-top: vw(60);
-  padding-bottom: vw(30);
+  padding: vw(100);
   
   @include media('tablet') {
-    padding-top: vw(50, 768);
-    padding-bottom: vw(25, 768);
+    padding: vw(50, 768);
   }
   
   @include media('mobile') {
-    padding-top: vw-mobile(40, 414);
-    padding-bottom: vw-mobile(20, 414);
+    padding: vw-mobile(40, 414);
+  }
+
+  .whats-new__container {
+    padding: 0;
+  }
+
+  .whats-new__cards-wrapper {
+    width: 100%;
+  }
+
+  .whats-new__grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: vw(50);
+    justify-content: space-between;
+    width: 100%;
+    
+    @include media('tablet') {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw(40, 768);
+    }
+    
+    @include media('mobile') {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: vw-mobile(30, 414);
+    }
+  }
+
+  .whats-new__card {
+    width: 495px;
+    height: 489.879px;
+    
+    @include media('tablet') {
+      width: 100%;
+      height: auto;
+      min-height: vw(350, 768);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      height: auto;
+      min-height: vw-mobile(250, 414);
+    }
   }
 }
 
@@ -127,5 +169,10 @@
       font-size: vw-mobile(32, 414) !important;
     }
   }
+}
+
+// Perspectives section padding
+#perspectives {
+  padding: 0 !important;
 }
 

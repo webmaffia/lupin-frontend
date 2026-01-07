@@ -12,7 +12,7 @@ export default function MediaNavigation() {
     { 
       id: 'press-releases', 
       label: 'Press Releases', 
-      href: '/media' 
+      href: '/media/press-releases' 
     },
     { 
       id: 'media-coverage', 
@@ -33,27 +33,12 @@ export default function MediaNavigation() {
 
   // Check if current path matches the link
   const isActive = (link) => {
-    // Exact match for /media page
-    if (link.href === '/media') {
-      return pathname === '/media';
-    }
-    // Exact match for /media/media-kit
-    if (link.href === '/media/media-kit') {
-      return pathname === '/media/media-kit';
-    }
-    // Exact match for /media/perspectives
-    if (link.href === '/media/perspectives') {
-      return pathname === '/media/perspectives';
-    }
-    // Exact match for /media/media-coverage
-    if (link.href === '/media/media-coverage') {
-      return pathname === '/media/media-coverage';
-    }
     // For hash links, check if we're on the base /media page
     // (Note: hash links won't change pathname, so we consider them active when on /media)
     if (link.href.startsWith('/media#')) {
       return pathname === '/media';
     }
+    // Exact match for all other paths
     return pathname === link.href;
   };
 
