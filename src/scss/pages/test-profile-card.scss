@@ -93,6 +93,19 @@
   position: relative;
   width: 100%;
   height: 100%;
+  
+  &--clickable {
+    cursor: pointer;
+    transition: transform $transition-base;
+    
+    &:hover {
+      transform: translateY(vw(-5));
+      
+      @include media('mobile') {
+        transform: translateY(vw-mobile(-3, 414));
+      }
+    }
+  }
 }
 
 // Play Button Overlay
@@ -231,6 +244,12 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+.test-profile-card__video--youtube {
+  border: none;
+  width: 100%;
+  height: 100%;
 }
 
 // Popup Title

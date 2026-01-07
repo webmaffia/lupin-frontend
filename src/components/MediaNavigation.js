@@ -17,7 +17,7 @@ export default function MediaNavigation() {
     { 
       id: 'media-coverage', 
       label: 'Media Coverage', 
-      href: '/media#media-coverage' 
+      href: '/media/media-coverage' 
     },
     { 
       id: 'media-kit', 
@@ -44,6 +44,10 @@ export default function MediaNavigation() {
     // Exact match for /media/perspectives
     if (link.href === '/media/perspectives') {
       return pathname === '/media/perspectives';
+    }
+    // Exact match for /media/media-coverage
+    if (link.href === '/media/media-coverage') {
+      return pathname === '/media/media-coverage';
     }
     // For hash links, check if we're on the base /media page
     // (Note: hash links won't change pathname, so we consider them active when on /media)

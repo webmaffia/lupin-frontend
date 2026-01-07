@@ -85,6 +85,21 @@
   }
 }
 
+// Media Coverage page specific styles
+.sectionProfileCards--media-coverage {
+  .profile-card__name {
+    font-size: vw(35) !important;
+    
+    @include media('tablet') {
+      font-size: vw(28, 768) !important;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(24, 414) !important;
+    }
+  }
+}
+
 // Media page specific styles for WhatsNew
 .whats-new.whats-new--media-page {
   .whats-new__title {

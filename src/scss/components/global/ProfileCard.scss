@@ -174,9 +174,9 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(vw(519.295), 1fr));
   row-gap: vw(65);
-  column-gap: vw(30);
+  column-gap: vw(70);
   width: 100%;
-  justify-items: center;
+  justify-items: center;  
   
   @include media('tablet') {
     grid-template-columns: repeat(auto-fill, minmax(vw(400, 768), 1fr));
