@@ -91,8 +91,8 @@ export default function MediaPage() {
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
 
-      <section className="sectionPressReleases">
-        <WhatsNew className="whats-new--media-page" data={whatsNewData} exploreLink="/press-releases"  />
+      <section className="sectionPressReleases pd0">
+        <WhatsNew className="whats-new--media-page" data={whatsNewData} exploreLink="/media/press-releases"  />
       </section>
 
       <MediaCoverage 
@@ -100,6 +100,7 @@ export default function MediaPage() {
           title: "Media Coverage"
         }}
         id="media-coverage"
+        exploreLink="/media/media-coverage"
       />
      <section id="perspectives" className="sectionPressReleases">
      <WhatsNew 
@@ -150,7 +151,7 @@ export default function MediaPage() {
           ]
         }}
         useProfileCard={true}
-        exploreLink="/perspectives"
+        exploreLink="/media/perspectives"
       />
       </section>
     
@@ -161,7 +162,7 @@ export default function MediaPage() {
           title: "Vice President & Global Head – Corporate Communications",
           email: "rajalakshmiazariah@lupin.com"
         }}
-        mediaKitLink="/media-kit"
+        mediaKitLink="/media/media-kit"
       />
     </div>
   );

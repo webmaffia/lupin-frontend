@@ -10,6 +10,7 @@ import '@/scss/components/MediaCoverage.scss';
  * @param {string} data.title - Section title (optional)
  * @param {Array} data.items - Array of media coverage items
  * @param {string} className - Additional CSS classes (optional)
+ * @param {string} exploreLink - Link for the explore button (optional)
  * 
  * @example
  * <MediaCoverage 
@@ -26,9 +27,10 @@ import '@/scss/components/MediaCoverage.scss';
  *       }
  *     ]
  *   }}
+ *   exploreLink="/media/media-coverage"
  * />
  */
-export default function MediaCoverage({ data, className = '', id }) {
+export default function MediaCoverage({ data, className = '', id, exploreLink }) {
   const defaultData = {
     title: "Media Coverage",
     items: [
@@ -192,9 +194,32 @@ export default function MediaCoverage({ data, className = '', id }) {
             )}
           </div>
         </div>
-
- 
         </div>
+
+        {/* Explore Button */}
+        {exploreLink && (
+          <div className="media-coverage__explore-wrapper">
+            <Link href={exploreLink} className="media-coverage__explore-button">
+              <span className="media-coverage__explore-text">Explore</span>
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 18 18"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className="media-coverage__explore-icon"
+              >
+                <path
+                  d="M1 17L17 1M17 1H1M17 1V17"
+                  stroke="#168E47"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );
