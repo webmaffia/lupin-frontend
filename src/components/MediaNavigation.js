@@ -1,10 +1,12 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
+import MediaSearch from './MediaSearch';
 import '../scss/components/MediaNavigation.scss';
 
-export default function MediaNavigation() {
+export default function MediaNavigation({ onSearch, onYearChange }) {
   const pathname = usePathname();
 
   // Media navigation links
@@ -44,6 +46,30 @@ export default function MediaNavigation() {
 
   return (
     <section className="media-navigation">
+      {/* Decorative Petals */}
+      <div className="media-navigation__petals media-navigation__petals--left">
+        <Image
+          src="/assets/media/small-petals.svg"
+          alt=""
+          width={218}
+          height={413}
+          className="media-navigation__petals-img"
+          quality={100}
+          unoptimized
+        />
+      </div>
+      <div className="media-navigation__petals media-navigation__petals--right">
+        <Image
+          src="/assets/media/small-petals.svg"
+          alt=""
+          width={218}
+          height={413}
+          className="media-navigation__petals-img media-navigation__petals-img--flipped"
+          quality={100}
+          unoptimized
+        />
+      </div>
+      
       <h2 className="media-navigation__heading">In this section</h2>
       <div className="media-navigation__tabs">
         {mediaLinks.map((link) => (
@@ -55,6 +81,14 @@ export default function MediaNavigation() {
             {link.label}
           </Link>
         ))}
+      </div>
+      
+      {/* Media Search */}
+      <div className="media-navigation__search">
+        <MediaSearch 
+          onSearch={onSearch}
+          onYearChange={onYearChange}
+        />
       </div>
     </section>
   );

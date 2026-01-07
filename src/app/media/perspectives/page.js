@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
-import MediaSearch from '@/components/MediaSearch';
 import ProfileCard from '@/components/global/ProfileCard';
 import MediaContact from '@/components/global/MediaContact';
 import '@/scss/pages/media.scss';
@@ -107,14 +106,10 @@ export default function PerspectivesPage() {
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
-      <MediaNavigation />
-      
-      <section className="sectionMediaSearch">
-        <MediaSearch 
-          onSearch={(query) => setSearchQuery(query)}
-          onYearChange={(year) => setSelectedYear(year)}
-        />
-      </section>
+      <MediaNavigation 
+        onSearch={(query) => setSearchQuery(query)}
+        onYearChange={(year) => setSelectedYear(year)}
+      />
 
       {/* Profile Cards Section */}
       <section className="sectionProfileCards">

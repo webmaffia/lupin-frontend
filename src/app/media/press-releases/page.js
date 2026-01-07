@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
-import MediaSearch from '@/components/MediaSearch';
 import MediaContact from '@/components/global/MediaContact';
 import '@/scss/pages/media.scss';
 import '@/scss/components/WhatsNew.scss';
@@ -131,14 +130,10 @@ export default function PressReleasesPage() {
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
-      <MediaNavigation />
-      
-      <section className="sectionMediaSearch">
-        <MediaSearch 
-          onSearch={(query) => setSearchQuery(query)}
-          onYearChange={(year) => setSelectedYear(year)}
-        />
-      </section>
+      <MediaNavigation 
+        onSearch={(query) => setSearchQuery(query)}
+        onYearChange={(year) => setSelectedYear(year)}
+      />
 
       {/* Press Releases Grid Section */}
       <section className="sectionPressReleases">
