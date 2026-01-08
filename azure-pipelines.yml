@@ -1,0 +1,109 @@
+trigger:
+  branches:
+    include:
+      - uat
+
+variables:
+  azureServiceConnection: 'lupinglobal-sc'
+  nodeVersion: '20.x'
+  uatWebAppName: 'lupin-uat'
+
+stages:
+
+# =========================
+# BUILD STAGE
+# =========================
+- stage: Build
+  displayName: Build Next.js Frontend
+  jobs:
+    - job: BuildJob
+      pool:
+        vmImage: ubuntu-latest
+      steps:
+
+        # -------------------------
+        # Use Node Version
+        # -------------------------
+        - task: NodeTool@0
+          displayName: Use Node.js $(nodeVersion)
+          inputs:
+            versionSpec: '$(nodeVersion)'
+
+        # -------------------------
+        # CodeQL Init
+        # -------------------------
+        - task: AdvancedSecurity-Codeql-Init@1
+          displayName: Initialize CodeQL
+          inputs:
+            languages: 'javascript'
+            querysuite: 'security-and-quality'
+            configfilepath: '$(Build.SourcesDirectory)/.github/codeql/codeql-config.yml'
+
+        # -------------------------
+        # Install & Build (CI)
+        # -------------------------
+        - script: |
+            npm ci
+            npm run build
+          displayName: Install dependencies & build Next.js
+
+        # -------------------------
+        # CodeQL Analyze
+        # -------------------------
+        - task: AdvancedSecurity-Codeql-Analyze@1
+          displayName: Run CodeQL Analysis
+
+        # -------------------------
+        # Create Deployment ZIP
+        # -------------------------
+        - task: ArchiveFiles@2
+          displayName: Create deployment zip
+          inputs:
+            rootFolderOrFile: '$(Build.SourcesDirectory)'
+            includeRootFolder: false
+            archiveType: zip
+            archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+            replaceExistingArchive: true
+            excludePatterns: |
+              **/.git/**
+              **/.github/**
+              **/.next/cache/**
+              **/node_modules/**
+              **/.env
+
+        # -------------------------
+        # Publish Artifact
+        # -------------------------
+        - task: PublishBuildArtifacts@1
+          displayName: Publish build artifact
+          inputs:
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+            ArtifactName: drop
+
+# =========================
+# DEPLOY TO UAT
+# =========================
+- stage: Deploy_UAT
+  displayName: Deploy to UAT
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/uat'))
+
+  jobs:
+    - deployment: DeployUAT
+      displayName: Deploy Frontend to Azure UAT
+      environment: uat
+      strategy:
+        runOnce:
+          deploy:
+            steps:
+              - download: current
+                artifact: drop
+
+              - task: AzureWebApp@1
+                displayName: Deploy to Azure Web App (UAT)
+                inputs:
+                  azureSubscription: '$(azureServiceConnection)'
+                  appType: webAppLinux
+                  appName: '$(uatWebAppName)'
+                  package: '$(Pipeline.Workspace)/drop/frontend.zip'
+                  startUpCommand: 'npm run start'
