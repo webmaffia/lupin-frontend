@@ -62,9 +62,8 @@ export default function AboutPage() {
 
         <section className="our-story">
           <div className="our-story__wrapper">
-            <div className="our-story__media">
-            {/* <div className="our-story__hover"> */}
-            {/* <div className="inner_banner_clip"></div> */}
+            <div className="our-story__media active">
+            <div className="inner_banner_clip"></div>
             <span>
               <Image
                 src="/assets/images/about/story.webp"
@@ -74,12 +73,13 @@ export default function AboutPage() {
                 quality={100}
               />
               </span>
-              {/* <button className="our-story__cta">
+              <button className="our-story__cta">
                 READ<br />MORE
-              </button> */}
+              </button>
             </div>
-            <div className="our-story__content">
-            {/* <div className="inner_banner_clip"></div> */}
+            
+            <div className="our-story__content active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/icon-1.webp"
                 alt="Our Story"
@@ -107,7 +107,8 @@ export default function AboutPage() {
           </div>
 
           <div className="our-story__wrapper">
-            <div className="our-story__content">
+            <div className="our-story__content active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/icon-1.webp"
                 alt="Our Purpose"
@@ -128,7 +129,8 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
-            <div className="our-story__media">
+            <div className="our-story__media active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/purpose.webp"
                 alt="Our Purpose"
@@ -136,9 +138,9 @@ export default function AboutPage() {
                 height={600}
                 quality={100}
               />
-              {/* <button className="our-story__cta">
+              <button className="our-story__cta">
                 READ<br />MORE
-              </button> */}
+              </button>
             </div>
             {/* OVERLAPPING TITLE */}
             <div className="our-story__title">
@@ -147,7 +149,8 @@ export default function AboutPage() {
           </div>
 
           <div className="our-story__wrapper">
-            <div className="our-story__media">
+            <div className="our-story__media active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/values.webp"
                 alt="Our Values"
@@ -155,11 +158,12 @@ export default function AboutPage() {
                 height={600}
                 quality={100}
               />
-              {/* <button className="our-story__cta">
+              <button className="our-story__cta">
                 READ<br />MORE
-              </button> */}
+              </button>
             </div>
-            <div className="our-story__content">
+            <div className="our-story__content active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/icon-2.webp"
                 alt="Our Values"
@@ -187,7 +191,8 @@ export default function AboutPage() {
           </div>
 
           <div className="our-story__wrapper">
-            <div className="our-story__content">
+            <div className="our-story__content active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/icon-3.webp"
                 alt="Our Leadership"
@@ -208,7 +213,8 @@ export default function AboutPage() {
                 </p>
               </div>
             </div>
-            <div className="our-story__media">
+            <div className="our-story__media active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/leader.webp"
                 alt="Our Leadership"
@@ -216,9 +222,9 @@ export default function AboutPage() {
                 height={600}
                 quality={100}
               />
-              {/* <button className="our-story__cta">
+              <button className="our-story__cta">
                 READ<br />MORE
-              </button> */}
+              </button>
             </div>
             {/* OVERLAPPING TITLE */}
             <div className="our-story__title">
@@ -228,6 +234,7 @@ export default function AboutPage() {
 
           <div className="our-story__wrapper">
             <div className="our-story__media">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/global.webp"
                 alt="Global Presence"
@@ -235,11 +242,12 @@ export default function AboutPage() {
                 height={600}
                 quality={100}
               />
-              {/* <button className="our-story__cta">
+              <button className="our-story__cta">
                 READ<br />MORE
-              </button> */}
+              </button>
             </div>
-            <div className="our-story__content">
+            <div className="our-story__content active">
+            <div className="inner_banner_clip"></div>
               <Image
                 src="/assets/images/about/icon-4.webp"
                 alt="Global Presence"
