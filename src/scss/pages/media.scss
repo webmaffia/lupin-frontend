@@ -58,8 +58,8 @@
   }
 
   .whats-new__card {
-    width: 495px;
-    height: 489.879px;
+    width: vw(495);
+    height: vw(489.879);
     
     @include media('tablet') {
       width: 100%;
