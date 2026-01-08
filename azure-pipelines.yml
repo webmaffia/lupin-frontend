@@ -21,17 +21,11 @@ stages:
         vmImage: ubuntu-latest
       steps:
 
-        # -------------------------
-        # Use Node Version
-        # -------------------------
         - task: NodeTool@0
           displayName: Use Node.js $(nodeVersion)
           inputs:
             versionSpec: '$(nodeVersion)'
 
-        # -------------------------
-        # CodeQL Init
-        # -------------------------
         - task: AdvancedSecurity-Codeql-Init@1
           displayName: Initialize CodeQL
           inputs:
@@ -39,23 +33,15 @@ stages:
             querysuite: 'security-and-quality'
             configfilepath: '$(Build.SourcesDirectory)/.github/codeql/codeql-config.yml'
 
-        # -------------------------
-        # Install & Build (CI)
-        # -------------------------
         - script: |
+            export SKIP_STRAPI_FETCH=true
             npm ci
             npm run build
           displayName: Install dependencies & build Next.js
 
-        # -------------------------
-        # CodeQL Analyze
-        # -------------------------
         - task: AdvancedSecurity-Codeql-Analyze@1
           displayName: Run CodeQL Analysis
 
-        # -------------------------
-        # Create Deployment ZIP
-        # -------------------------
         - task: ArchiveFiles@2
           displayName: Create deployment zip
           inputs:
@@ -71,9 +57,6 @@ stages:
               **/node_modules/**
               **/.env
 
-        # -------------------------
-        # Publish Artifact
-        # -------------------------
         - task: PublishBuildArtifacts@1
           displayName: Publish build artifact
           inputs:
