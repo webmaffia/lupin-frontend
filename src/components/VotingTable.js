@@ -34,7 +34,7 @@ export default function VotingTable({ data }) {
           {/* Paragraph */}
           {tableData.paragraph && (
             <p className="policies__table-paragraph">
-              Based on the consolidated results of e-voting and Ballot, the Resolution as set out in the Notice of Extraordinary General<br />Meeting has been approved by the Shareholders with requisite majority.
+              {tableData.paragraph}
             </p>
           )}
 
