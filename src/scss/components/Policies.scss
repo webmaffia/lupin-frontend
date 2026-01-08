@@ -159,23 +159,20 @@ width: 100%;
   // Table Paragraph (for VotingTable component)
   &__table-paragraph {
     font-family: $font-family-base;
-    font-weight: 600;
+    font-weight: 500;
     font-size: vw(25.77);
     line-height: 1.37;
     color: #08a03f;
     margin: 0 0 vw(77) 0;
-    width: vw(1585);
     text-align: left;
     
     @include media('tablet') {
       font-size: vw(22, 768);
-      width: 100%;
       margin: 0 0 vw(60, 768) 0;
     }
     
     @include media('mobile') {
       font-size: vw-mobile(18, 414);
-      width: 100%;
       margin: 0 0 vw-mobile(40, 414) 0;
       line-height: 1.4;
     }
@@ -841,5 +838,10 @@ width: 100%;
     object-fit: contain;
     display: block;
   }
+}
+
+// Table Policies specific styles
+.tablePolicies .policies__content {
+  align-items: baseline;
 }
 

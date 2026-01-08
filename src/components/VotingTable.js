@@ -26,7 +26,7 @@ export default function VotingTable({ data }) {
   };
 
   return (
-    <section className="policies">
+    <section className="policies tablePolicies">
       {/* Container */}
       <div className="policies__container">
         {/* Content */}
@@ -34,7 +34,7 @@ export default function VotingTable({ data }) {
           {/* Paragraph */}
           {tableData.paragraph && (
             <p className="policies__table-paragraph">
-              {tableData.paragraph}
+              Based on the consolidated results of e-voting and Ballot, the Resolution as set out in the Notice of Extraordinary General<br />Meeting has been approved by the Shareholders with requisite majority.
             </p>
           )}
 
