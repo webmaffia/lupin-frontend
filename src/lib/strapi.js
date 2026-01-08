@@ -67,10 +67,21 @@ export async function fetchAPI(endpoint, options = {}) {
     
     const data = await response.json();
     return data;
-  } catch (error) {
-    console.error('Error fetching from Strapi:', error);
-    throw error;
+  } 
+  catch (error)
+  {
+    // CI / Pipeline - do not allow failed on Build time. 
+    if (process.env.SKIP_STRAPI_FETCH === 'true') {
+      console.warn(
+        'SKIP_STRAPI_FETCH enabled. Returning null instead of throwing error.'
+      );
+      return null;
   }
+
+  console.error('Error fetching from Strapi:', error);
+  throw error;
+}
+
 }
 
 /**
