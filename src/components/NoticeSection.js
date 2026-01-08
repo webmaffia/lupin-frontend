@@ -26,7 +26,7 @@ export default function NoticeSection({ data }) {
   };
 
   return (
-    <section className="policies policies--light-bg">
+    <section className="policies">
       {/* Container */}
       <div className="policies__container">
         {/* Content */}

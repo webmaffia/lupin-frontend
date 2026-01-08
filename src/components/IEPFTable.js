@@ -26,7 +26,7 @@ export default function IEPFTable({ data }) {
   };
 
   return (
-    <section className="policies policies--light-bg">
+    <section className="policies policies--light-bg tablePolicies">
       {/* Container */}
       <div className="policies__container">
         {/* Content */}
@@ -34,7 +34,7 @@ export default function IEPFTable({ data }) {
           {/* Paragraph */}
           {tableData.paragraph && (
             <p className="policies__table-paragraph">
-              {tableData.paragraph}
+              The following unpaid dividend payment of the Company have already been<br />transferred to the Investor Education & Protection Fund (IEPF) as under :-
             </p>
           )}
 
