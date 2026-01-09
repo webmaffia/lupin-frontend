@@ -100,19 +100,12 @@
   
   // Banner Image
   &__image {
-    position: absolute;
-    top: vw(216);
-    left: vw(-152);
-    width: vw(2895);
-    height: vw(633);
     z-index: 7;
-    
-    @include media('mobile') {
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
   }
   
   &__image-img {

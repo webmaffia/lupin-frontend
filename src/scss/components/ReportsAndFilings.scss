@@ -619,3 +619,26 @@
   }
 }
 
+// Tabs Section Wrapper for Reports and Filings page
+.reports-filings-tabs {
+  position: relative;
+  width: 100%;
+  background: #ffffff;
+  padding: vw(90) vw(97);
+  
+  @include media('tablet') {
+    padding: vw(70, 768) vw(60, 768);
+  }
+  
+  @include media('mobile') {
+    padding: vw-mobile(50, 414) vw-mobile(20, 414);
+  }
+
+  &__container {
+    position: relative;
+    width: 100%;
+    max-width: vw(1723);
+    margin: 0 auto;
+  }
+}
+
