@@ -23,7 +23,7 @@ export default async function ReportsAndFilingsPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/test.png",
         alt: "Reports and Filings"
       },
       petal: {
