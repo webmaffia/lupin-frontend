@@ -6,6 +6,15 @@ import ExchangeFilings from '@/components/ExchangeFilings';
 import ReportsAndFilings from '@/components/ReportsAndFilings';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import { 
+  getReportFiling, 
+  mapReportFilingData,
+  transformQuarterlyResultsForComponent,
+  transformAnnualReportsForComponent,
+  transformAnnualReturnsForComponent,
+  transformBoardMeetingFilingsForComponent,
+  transformOthersFilingsForComponent
+} from '@/lib/strapi-reports';
 import '@/scss/components/ReportsAndFilings.scss';
 
 // Generate metadata for the Reports and Filings page
@@ -35,15 +44,37 @@ export default async function ReportsAndFilingsPage() {
     }
   };
 
-  // Fetch Reports and Filings data from Strapi (optional - component has default data)
-  let reportsFilingsData = null;
+  // Fetch Reports and Filings data from Strapi
+  let reportFilingData = null;
+  let quarterlyData = null;
+  let annualReportData = null;
+  let annualReturnsData = [];
+  let boardMeetingData = null;
+  let othersFilingsData = null;
   
   try {
-    // This would typically fetch from a Strapi endpoint
-    // For now, component will use default data
+    const rawData = await getReportFiling();
+    reportFilingData = mapReportFilingData(rawData);
+    
+    // Transform data for each component
+    quarterlyData = transformQuarterlyResultsForComponent(reportFilingData);
+    annualReportData = transformAnnualReportsForComponent(reportFilingData);
+    annualReturnsData = transformAnnualReturnsForComponent(reportFilingData);
+    boardMeetingData = transformBoardMeetingFilingsForComponent(reportFilingData);
+    othersFilingsData = transformOthersFilingsForComponent(reportFilingData);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Reports & Filings - Mapped data:', {
+        quarterlyData,
+        annualReportData,
+        annualReturnsData,
+        boardMeetingData,
+        othersFilingsData
+      });
+    }
   } catch (error) {
     console.error('Error fetching Reports and Filings data from Strapi:', error);
-    // Will use default data from component
+    // Will use default/fallback data below
   }
 
   // Fetch subscriber data from Strapi (optional - component has default data)
@@ -57,8 +88,8 @@ export default async function ReportsAndFilingsPage() {
     // Will use default data from component
   }
 
-  // Tabs data for Quarterly Results
-  const quarterlyTabs = [
+  // Use Strapi data if available, otherwise use fallback defaults
+  const quarterlyTabs = quarterlyData?.tabs || [
     'FY 2025-26',
     'FY 2024-25',
     'FY 2023-24',
@@ -67,13 +98,11 @@ export default async function ReportsAndFilingsPage() {
     'FY 2020-21'
   ];
 
-  // Quarterly results items for FY 2025-26 - Q1 (before cards)
-  const quarterlyItems = [
+  const quarterlyItems = quarterlyData?.quarterlyItems || [
     { period: 'Q1(July-Sep)', status: 'Unaudited' },
   ];
 
-  // Cards data for Q1 quarterly results
-  const quarterlyCardsQ1 = [
+  const quarterlyCardsQ1 = quarterlyData?.cards || [
     { id: 1, title: 'Consolidated', pdfUrl: '#', isActive: false },
     { id: 2, title: 'Standalone', pdfUrl: '#', isActive: false },
     { id: 3, title: 'Earnings call Transcript', pdfUrl: '#', isActive: false },
@@ -81,13 +110,11 @@ export default async function ReportsAndFilingsPage() {
     { id: 5, title: 'Earnings Call audio', pdfUrl: '#', isActive: false }
   ];
 
-  // Quarterly results items for FY 2025-26 - Q2 (after cards)
-  const quarterlyItemsAfterCards = [
+  const quarterlyItemsAfterCards = quarterlyData?.quarterlyItemsAfterCards || [
     { period: 'Q2(July-Sep)', status: 'Unaudited' },
   ];
 
-  // Cards data for Q2 quarterly results
-  const quarterlyCardsQ2 = [
+  const quarterlyCardsQ2 = quarterlyData?.cardsAfterQ2 || [
     { id: 1, title: 'Consolidated', pdfUrl: '#', isActive: false },
     { id: 2, title: 'Standalone', pdfUrl: '#', isActive: false },
     { id: 3, title: 'Earnings call Transcript', pdfUrl: '#', isActive: false },
@@ -95,8 +122,8 @@ export default async function ReportsAndFilingsPage() {
     { id: 5, title: 'Earnings Call audio', pdfUrl: '#', isActive: false }
   ];
 
-  // Tabs for Integrated Report/Annual Report section - Years from 2025 to 2021
-  const integratedReportTabs = [
+  // Use Strapi data if available, otherwise use fallback defaults
+  const integratedReportTabs = annualReportData?.tabs || [
     '2025',
     '2024',
     '2023',
@@ -105,7 +132,7 @@ export default async function ReportsAndFilingsPage() {
   ];
 
   // Data for all tabs - mapping year to its content
-  const integratedReportTabsData = {
+  const integratedReportTabsData = annualReportData?.tabsData || {
     '2025': {
       cardData: {
         title: ["Financial Year", "2025"],
@@ -403,17 +430,17 @@ export default async function ReportsAndFilingsPage() {
     }
   };
 
-  // Annual Returns cards data
-  const annualReturnsCards = [
+  // Annual Returns cards data - use Strapi data if available
+  const annualReturnsCards = annualReturnsData.length > 0 ? annualReturnsData : [
     { id: 1, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
-    { id: 2, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
-    { id: 3, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
-    { id: 4, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
-    { id: 5, title: 'March 31, 2025', pdfUrl: '#', isActive: false }
+    { id: 2, title: 'March 31, 2024', pdfUrl: '#', isActive: false },
+    { id: 3, title: 'March 31, 2023', pdfUrl: '#', isActive: false },
+    { id: 4, title: 'March 31, 2022', pdfUrl: '#', isActive: false },
+    { id: 5, title: 'March 31, 2021', pdfUrl: '#', isActive: false }
   ];
 
-  // Tabs for Exchange Filings section - Years from 2025 to 2021
-  const exchangeFilingsTabs = [
+  // Use Strapi data if available, otherwise use fallback defaults
+  const exchangeFilingsTabs = boardMeetingData?.tabs || [
     '2025',
     '2024',
     '2023',
@@ -421,32 +448,20 @@ export default async function ReportsAndFilingsPage() {
     '2021'
   ];
 
-  // Shared card data for Exchange Filings (same content for all tabs)
-  const exchangeFilingsCardsData = [
-    {
-      links: [
-        { text: 'Board meeting – Q2 FY2026', href: '#' },
-        { text: 'Earnings Call Q1 FY26', href: '#' },
-        { text: 'Board meeting – Q1 FY2026', href: '#' },
-        { text: 'Board meeting resolutions, May 14, 2025', href: '#' },
-        { text: 'SE Intimation Other Matters', href: '#' }
-      ]
-    },
-    {
-      links: [
-        { text: 'Board meeting – Q2 FY2026', href: '#' },
-        { text: 'Earnings Call Q1 FY26', href: '#' },
-        { text: 'Board meeting – Q1 FY2026', href: '#' },
-        { text: 'Board meeting resolutions, May 14, 2025', href: '#' },
-        { text: 'SE Intimation Other Matters', href: '#' }
-      ]
-    }
-  ];
-
   // Data for all Exchange Filings tabs
-  const exchangeFilingsTabsData = {
+  const exchangeFilingsTabsData = boardMeetingData?.tabsData || {
     '2025': {
-      cards: exchangeFilingsCardsData
+      cards: [
+        {
+          links: [
+            { text: 'Board meeting – Q2 FY2026', href: '#' },
+            { text: 'Earnings Call Q1 FY26', href: '#' },
+            { text: 'Board meeting – Q1 FY2026', href: '#' },
+            { text: 'Board meeting resolutions, May 14, 2025', href: '#' },
+            { text: 'SE Intimation Other Matters', href: '#' }
+          ]
+        }
+      ]
     },
     '2024': {
       content: null
@@ -462,8 +477,8 @@ export default async function ReportsAndFilingsPage() {
     }
   };
 
-  // Tabs for Exchange Filings (Others) section - Years from 2026 to 2019
-  const exchangeFilingsOthersTabs = [
+  // Use Strapi data if available, otherwise use fallback defaults
+  const exchangeFilingsOthersTabs = othersFilingsData?.tabs || [
     '2026',
     '2025',
     '2024',
@@ -474,31 +489,47 @@ export default async function ReportsAndFilingsPage() {
     '2019'
   ];
 
-  // Data for all Exchange Filings (Others) tabs - same content as 2025
-  const exchangeFilingsOthersTabsData = {
+  // Data for all Exchange Filings (Others) tabs
+  const exchangeFilingsOthersTabsData = othersFilingsData?.tabsData || {
     '2026': {
-      cards: exchangeFilingsCardsData
+      cards: [
+        {
+          links: [
+            { text: 'Board meeting – Appointment of Mr. Anand Kripalu', href: '#' },
+            { text: 'Update on acquisition of VISUfarma B.V.', href: '#' },
+            { text: 'Closure of Trading Window', href: '#' }
+          ]
+        }
+      ]
     },
     '2025': {
-      cards: exchangeFilingsCardsData
+      cards: [
+        {
+          links: [
+            { text: 'Board meeting – Appointment of Mr. Anand Kripalu', href: '#' },
+            { text: 'Update on acquisition of VISUfarma B.V.', href: '#' },
+            { text: 'Closure of Trading Window', href: '#' }
+          ]
+        }
+      ]
     },
     '2024': {
-      cards: exchangeFilingsCardsData
+      cards: null
     },
     '2023': {
-      cards: exchangeFilingsCardsData
+      cards: null
     },
     '2022': {
-      cards: exchangeFilingsCardsData
+      cards: null
     },
     '2021': {
-      cards: exchangeFilingsCardsData
+      cards: null
     },
     '2020': {
-      cards: exchangeFilingsCardsData
+      cards: null
     },
     '2019': {
-      cards: exchangeFilingsCardsData
+      cards: null
     }
   };
 

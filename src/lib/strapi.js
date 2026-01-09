@@ -1024,3 +1024,145 @@ export async function getGlobalSettings() {
   });
 }
 
+/**
+ * Fetch analyst coverage data from Strapi
+ * This is a Single Type, so it returns one entry with AnalystCard array
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getAnalystCoverage() {
+  return fetchAPI('analyst-coverage?populate=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map analyst coverage data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Array} Mapped analyst data array
+ */
+export function mapAnalystCoverageData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    throw new Error('No data received from Strapi API. Check that the analyst-coverage endpoint returns data.');
+  }
+
+  // Map AnalystCard array to component format
+  const analystCards = Array.isArray(data.AnalystCard)
+    ? data.AnalystCard.map((card, index) => ({
+        id: card.id || index + 1,
+        institution: card.company_name || '',
+        analyst: card.name || '',
+        email: card.email || '',
+        isActive: false // Default to false, can be set in Strapi if needed
+      }))
+    : [];
+
+  return analystCards;
+}
+
+/**
+ * Fetch policy data from Strapi
+ * This is a Single Type, so it returns one entry with PdfCard array
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getPolicy() {
+  // Populate PdfCard and pdf media
+  return fetchAPI('policy?populate[PdfCard][populate][pdf][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map policy data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped policy data for component
+ */
+export function mapPolicyData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    throw new Error('No data received from Strapi API. Check that the policy endpoint returns data.');
+  }
+
+  // Map PdfCard array to component format
+  const policies = Array.isArray(data.PdfCard)
+    ? data.PdfCard.map((card) => {
+        const pdf = card.pdf?.data?.attributes || card.pdf;
+        const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+
+        return {
+          id: card.id,
+          title: card.title || '',
+          pdfUrl: pdfUrl || '#',
+          isActive: card.isActive !== undefined ? card.isActive : false,
+          publishedDate: card.publishedDate || null
+        };
+      })
+    : [];
+
+  // Return in component-expected format
+  return {
+    policies: policies,
+    images: {
+      downloadButton: {
+        active: "/assets/policies/download-button-active.svg",
+        inactive: "/assets/policies/download-button-inactive.svg"
+      },
+      decorativeGroup: "/assets/policies/group.svg"
+    }
+  };
+}
+
+/**
+ * Fetch financial data from Strapi
+ * This is a Single Type, so it returns one entry with PdfCard array
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getFinancial() {
+  // Populate PdfCard and pdf media
+  return fetchAPI('financial?populate[PdfCard][populate][pdf][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map financial data from Strapi for Related Party Transactions
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Array} Mapped related party transactions cards
+ */
+export function mapFinancialData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    throw new Error('No data received from Strapi API. Check that the financial endpoint returns data.');
+  }
+
+  // Map PdfCard array to component format
+  const relatedPartyTransactions = Array.isArray(data.PdfCard)
+    ? data.PdfCard.map((card) => {
+        const pdf = card.pdf?.data?.attributes || card.pdf;
+        const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+
+        return {
+          id: card.id,
+          title: card.title || '',
+          pdfUrl: pdfUrl || '#',
+          isActive: card.isActive !== undefined ? card.isActive : false,
+          publishedDate: card.publishedDate || null
+        };
+      })
+    : [];
+
+  return relatedPartyTransactions;
+}
+

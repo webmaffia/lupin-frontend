@@ -4,15 +4,15 @@ import Image from 'next/image';
 import NavigationLinks from './NavigationLinks';
 import '../scss/components/AnalystCoverage.scss';
 
-export default function AnalystCoverage() {
-
-  const analysts = [
+export default function AnalystCoverage({ analysts: analystsProp }) {
+  // Use prop data if available, otherwise fall back to default data
+  const analysts = analystsProp && analystsProp.length > 0 ? analystsProp : [
     {
       id: 1,
       institution: 'Ambit Capital',
       analyst: 'Prashant Nair',
       email: 'prashant.nair@ambit.co',
-      isActive: false // First card has green background
+      isActive: false
     },
     {
       id: 2,

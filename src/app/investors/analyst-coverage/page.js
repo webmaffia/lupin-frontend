@@ -1,6 +1,7 @@
 import InnerBanner from '@/components/InnerBanner';
 import AnalystCoverage from '@/components/AnalystCoverage';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import { getAnalystCoverage, mapAnalystCoverageData } from '@/lib/strapi';
 
 // Generate metadata for the analyst coverage page
 export const metadata = generateSEOMetadata({
@@ -10,11 +11,26 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin analyst coverage, investor relations, financial analysts, stock analysis",
 });
 
-export default function AnalystCoveragePage() {
+export default async function AnalystCoveragePage() {
+  // Fetch analyst coverage data from Strapi
+  let analystsData = [];
+  
+  try {
+    const rawData = await getAnalystCoverage();
+    analystsData = mapAnalystCoverageData(rawData);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Analyst Coverage - Mapped data:', analystsData);
+    }
+  } catch (error) {
+    console.error('Error fetching Analyst Coverage data from Strapi:', error);
+    // Will use default data from component if fetch fails
+  }
+
   const bannerData = {
     title: {
-      line1: "Transfer of Physical",
-      line2: "Shares (Re-lodgement)"
+      line1: "Analyst",
+      line2: "Coverage"
     },
     images: {
       banner: {
@@ -27,10 +43,11 @@ export default function AnalystCoveragePage() {
       }
     }
   };
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
-      <AnalystCoverage />
+      <AnalystCoverage analysts={analystsData} />
     </div>
   );
 }
