@@ -1,6 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import QuarterlyResultsWithTabs from '@/components/QuarterlyResultsWithTabs';
 import IntegratedReportAnnualReport from '@/components/IntegratedReportAnnualReport';
+import AnnualReturns from '@/components/AnnualReturns';
+import ExchangeFilings from '@/components/ExchangeFilings';
 import ReportsAndFilings from '@/components/ReportsAndFilings';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
@@ -401,6 +403,105 @@ export default async function ReportsAndFilingsPage() {
     }
   };
 
+  // Annual Returns cards data
+  const annualReturnsCards = [
+    { id: 1, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
+    { id: 2, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
+    { id: 3, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
+    { id: 4, title: 'March 31, 2025', pdfUrl: '#', isActive: false },
+    { id: 5, title: 'March 31, 2025', pdfUrl: '#', isActive: false }
+  ];
+
+  // Tabs for Exchange Filings section - Years from 2025 to 2021
+  const exchangeFilingsTabs = [
+    '2025',
+    '2024',
+    '2023',
+    '2022',
+    '2021'
+  ];
+
+  // Shared card data for Exchange Filings (same content for all tabs)
+  const exchangeFilingsCardsData = [
+    {
+      links: [
+        { text: 'Board meeting – Q2 FY2026', href: '#' },
+        { text: 'Earnings Call Q1 FY26', href: '#' },
+        { text: 'Board meeting – Q1 FY2026', href: '#' },
+        { text: 'Board meeting resolutions, May 14, 2025', href: '#' },
+        { text: 'SE Intimation Other Matters', href: '#' }
+      ]
+    },
+    {
+      links: [
+        { text: 'Board meeting – Q2 FY2026', href: '#' },
+        { text: 'Earnings Call Q1 FY26', href: '#' },
+        { text: 'Board meeting – Q1 FY2026', href: '#' },
+        { text: 'Board meeting resolutions, May 14, 2025', href: '#' },
+        { text: 'SE Intimation Other Matters', href: '#' }
+      ]
+    }
+  ];
+
+  // Data for all Exchange Filings tabs
+  const exchangeFilingsTabsData = {
+    '2025': {
+      cards: exchangeFilingsCardsData
+    },
+    '2024': {
+      content: null
+    },
+    '2023': {
+      content: null
+    },
+    '2022': {
+      content: null
+    },
+    '2021': {
+      content: null
+    }
+  };
+
+  // Tabs for Exchange Filings (Others) section - Years from 2026 to 2019
+  const exchangeFilingsOthersTabs = [
+    '2026',
+    '2025',
+    '2024',
+    '2023',
+    '2022',
+    '2021',
+    '2020',
+    '2019'
+  ];
+
+  // Data for all Exchange Filings (Others) tabs - same content as 2025
+  const exchangeFilingsOthersTabsData = {
+    '2026': {
+      cards: exchangeFilingsCardsData
+    },
+    '2025': {
+      cards: exchangeFilingsCardsData
+    },
+    '2024': {
+      cards: exchangeFilingsCardsData
+    },
+    '2023': {
+      cards: exchangeFilingsCardsData
+    },
+    '2022': {
+      cards: exchangeFilingsCardsData
+    },
+    '2021': {
+      cards: exchangeFilingsCardsData
+    },
+    '2020': {
+      cards: exchangeFilingsCardsData
+    },
+    '2019': {
+      cards: exchangeFilingsCardsData
+    }
+  };
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
@@ -419,6 +520,26 @@ export default async function ReportsAndFilingsPage() {
         title="Integrated Report/Annual Report"
         tabs={integratedReportTabs}
         tabsData={integratedReportTabsData}
+      />
+      
+      {/* Annual Returns Section */}
+      <AnnualReturns 
+        title="Annual Returns"
+        cards={annualReturnsCards}
+      />
+      
+      {/* Exchange Filings (Board meeting) Section */}
+      <ExchangeFilings 
+        title="Exchange Filings (Board meeting)"
+        tabs={exchangeFilingsTabs}
+        tabsData={exchangeFilingsTabsData}
+      />
+      
+      {/* Exchange Filings (Others) Section */}
+      <ExchangeFilings 
+        title="Exchange Filings (Others)"
+        tabs={exchangeFilingsOthersTabs}
+        tabsData={exchangeFilingsOthersTabsData}
       />
       
       <SubscriberUpdated data={subscriberData} />
