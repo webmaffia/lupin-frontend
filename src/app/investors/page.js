@@ -82,8 +82,12 @@ export default async function InvestorsPage() {
 
   const bannerData = {
     title: {
-      line1: "Investor",
-      line2: "Relations"
+      line1: "Investors",
+     
+    },
+    subheading: {
+      enabled: true,
+      text: "Trust and Growth Focus"
     },
     images: {
       banner: {

@@ -8,6 +8,10 @@ export default function InnerBanner({ data }) {
       line1: "Transfer of Physical",
       line2: "Shares (Re-lodgement)"
     },
+    subheading: {
+      enabled: false,
+      text: "Subheading text here"
+    },
     background: {
       color1: "#41b66b",
       color2: "#54bd7a",
@@ -80,6 +84,9 @@ export default function InnerBanner({ data }) {
               <span className="inner-banner__title-line">{bannerData.title.line2}</span>
             )}
           </h1>
+          {bannerData.subheading?.enabled && bannerData.subheading?.text && (
+            <p className="inner-banner__subheading">{bannerData.subheading.text}</p>
+          )}
         </div>
       </div>
     </section>

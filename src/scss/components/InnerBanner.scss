@@ -157,5 +157,21 @@
       margin-bottom: 0;
     }
   }
+
+  &__subheading {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(35);
+    line-height: vw(45);
+    color: #ffffff;
+    margin: vw(20) 0 0 0;
+    opacity: 0.9;
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(24, 414);
+      margin: vw-mobile(12, 414) 0 0 0;
+    }
+  }
 }
 
