@@ -79,7 +79,7 @@ export default function Policies({ data }) {
             {policiesData.policies.map((policy) => (
               <div
                 key={policy.id}
-                className={`policy-card ${policy.isActive ? 'policy-card--active' : ''}`}
+                className="policy-card"
               >
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{policy.title}</h3>
