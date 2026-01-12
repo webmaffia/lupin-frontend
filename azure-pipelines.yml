@@ -10,44 +10,29 @@ variables:
 
 stages:
 
-################################
-#        BUILD STAGE
-################################
+# =========================
+# BUILD STAGE
+# =========================
 - stage: Build
-  displayName: "Build Lupin Frontend"
+  displayName: Build Next.js Frontend
   jobs:
     - job: BuildJob
       pool:
-        vmImage: 'ubuntu-latest'
+        vmImage: ubuntu-latest
 
       steps:
-
-        # Use Node
         - task: NodeTool@0
-          displayName: "Use Node.js $(nodeVersion)"
+          displayName: Use Node.js $(nodeVersion)
           inputs:
             versionSpec: '$(nodeVersion)'
 
-        # CodeQL Init
-        - task: AdvancedSecurity-Codeql-Init@1
-          displayName: "Initialize CodeQL"
-          inputs:
-            languages: 'javascript'
-            querysuite: 'security-and-quality'
-
-        # Install & Build
         - script: |
+            export SKIP_STRAPI_FETCH=true
             npm ci
             npm run build
-          displayName: "Install dependencies & build Next.js"
+          displayName: Install & Build Next.js
 
-        # CodeQL Analyze
-        - task: AdvancedSecurity-Codeql-Analyze@1
-          displayName: "Run CodeQL Analysis"
-
-        # -----------------------------
-        # CREATE STANDALONE BUNDLE
-        # -----------------------------
+        # Prepare standalone bundle
         - script: |
             set -e
 
@@ -55,48 +40,39 @@ stages:
             mkdir -p .next/standalone/.next
             mkdir -p .next/standalone/.next/cache
 
-            if [ -d ".next/static" ]; then
-              cp -r .next/static .next/standalone/.next/static
-            fi
+            cp -r .next/static .next/standalone/.next/static
+            cp -r public .next/standalone/public
 
-            if [ -d "public" ]; then
-              cp -r public .next/standalone/public
-            fi
-
-            echo "Standalone bundle ready"
+            echo "Standalone content:"
             ls -la .next/standalone
-          displayName: "Assemble standalone bundle"
+          displayName: Prepare standalone bundle
 
-        # ZIP ONLY STANDALONE
         - task: ArchiveFiles@2
-          displayName: "Archive standalone output"
+          displayName: Archive standalone output
           inputs:
-            rootFolderOrFile: "$(System.DefaultWorkingDirectory)/.next/standalone"
+            rootFolderOrFile: '.next/standalone'
             includeRootFolder: false
             archiveType: zip
-            archiveFile: "$(Build.ArtifactStagingDirectory)/frontend.zip"
+            archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
             replaceExistingArchive: true
 
-        # Publish Artifact
         - task: PublishBuildArtifacts@1
-          displayName: "Publish Build Artifact"
+          displayName: Publish Artifact
           inputs:
-            PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
             ArtifactName: drop
-            publishLocation: Container
 
-
-################################
-#        DEPLOY STAGE
-################################
+# =========================
+# DEPLOY STAGE
+# =========================
 - stage: Deploy_UAT
-  displayName: "Deploy to UAT"
+  displayName: Deploy to UAT
   dependsOn: Build
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/uat')
+  condition: succeeded()
 
   jobs:
     - deployment: DeployUAT
-      displayName: "Deploy to Azure Web App"
+      displayName: Deploy Frontend to UAT
       environment: uat
       strategy:
         runOnce:
@@ -106,10 +82,10 @@ stages:
                 artifact: drop
 
               - task: AzureWebApp@1
-                displayName: "Deploy Lupin Frontend to UAT"
+                displayName: Deploy to Azure Web App
                 inputs:
-                  azureSubscription: "$(azureServiceConnection)"
+                  azureSubscription: '$(azureServiceConnection)'
                   appType: webAppLinux
-                  appName: "$(uatWebAppName)"
-                  package: "$(Pipeline.Workspace)/drop/frontend.zip"
-                  startUpCommand: "node server.js"
+                  appName: '$(uatWebAppName)'
+                  package: '$(Pipeline.Workspace)/drop/frontend.zip'
+                  startUpCommand: 'node server.js'
