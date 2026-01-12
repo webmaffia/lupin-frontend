@@ -5,75 +5,98 @@ trigger:
 
 variables:
   azureServiceConnection: 'lupinglobal-sc'
-  nodeVersion: '20.x'
   uatWebAppName: 'lupin-uat'
+  nodeVersion: '20.x'
 
 stages:
 
-# =========================
-# BUILD STAGE
-# =========================
+################################
+#        BUILD STAGE
+################################
 - stage: Build
-  displayName: Build Next.js Frontend
+  displayName: "Build Lupin Frontend"
   jobs:
     - job: BuildJob
       pool:
-        vmImage: ubuntu-latest
+        vmImage: 'ubuntu-latest'
+
       steps:
 
+        # Use Node
         - task: NodeTool@0
-          displayName: Use Node.js $(nodeVersion)
+          displayName: "Use Node.js $(nodeVersion)"
           inputs:
             versionSpec: '$(nodeVersion)'
 
+        # CodeQL Init
         - task: AdvancedSecurity-Codeql-Init@1
-          displayName: Initialize CodeQL
+          displayName: "Initialize CodeQL"
           inputs:
             languages: 'javascript'
             querysuite: 'security-and-quality'
-            configfilepath: '$(Build.SourcesDirectory)/.github/codeql/codeql-config.yml'
 
+        # Install & Build
         - script: |
-            export SKIP_STRAPI_FETCH=true
             npm ci
             npm run build
-          displayName: Install dependencies & build Next.js
+          displayName: "Install dependencies & build Next.js"
 
+        # CodeQL Analyze
         - task: AdvancedSecurity-Codeql-Analyze@1
-          displayName: Run CodeQL Analysis
+          displayName: "Run CodeQL Analysis"
 
+        # -----------------------------
+        # CREATE STANDALONE BUNDLE
+        # -----------------------------
+        - script: |
+            set -e
+
+            echo "Preparing standalone bundle..."
+            mkdir -p .next/standalone/.next
+            mkdir -p .next/standalone/.next/cache
+
+            if [ -d ".next/static" ]; then
+              cp -r .next/static .next/standalone/.next/static
+            fi
+
+            if [ -d "public" ]; then
+              cp -r public .next/standalone/public
+            fi
+
+            echo "Standalone bundle ready"
+            ls -la .next/standalone
+          displayName: "Assemble standalone bundle"
+
+        # ZIP ONLY STANDALONE
         - task: ArchiveFiles@2
-          displayName: Create deployment zip
+          displayName: "Archive standalone output"
           inputs:
-            rootFolderOrFile: '$(Build.SourcesDirectory)'
+            rootFolderOrFile: "$(System.DefaultWorkingDirectory)/.next/standalone"
             includeRootFolder: false
             archiveType: zip
-            archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+            archiveFile: "$(Build.ArtifactStagingDirectory)/frontend.zip"
             replaceExistingArchive: true
-            excludePatterns: |
-              **/.git/**
-              **/.github/**
-              **/.next/cache/**
-              **/node_modules/**
-              **/.env
 
+        # Publish Artifact
         - task: PublishBuildArtifacts@1
-          displayName: Publish build artifact
+          displayName: "Publish Build Artifact"
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+            PathtoPublish: "$(Build.ArtifactStagingDirectory)"
             ArtifactName: drop
+            publishLocation: Container
 
-# =========================
-# DEPLOY TO UAT
-# =========================
+
+################################
+#        DEPLOY STAGE
+################################
 - stage: Deploy_UAT
-  displayName: Deploy to UAT
+  displayName: "Deploy to UAT"
   dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/uat'))
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/uat')
 
   jobs:
     - deployment: DeployUAT
-      displayName: Deploy Frontend to Azure UAT
+      displayName: "Deploy to Azure Web App"
       environment: uat
       strategy:
         runOnce:
@@ -83,10 +106,10 @@ stages:
                 artifact: drop
 
               - task: AzureWebApp@1
-                displayName: Deploy to Azure Web App (UAT)
+                displayName: "Deploy Lupin Frontend to UAT"
                 inputs:
-                  azureSubscription: '$(azureServiceConnection)'
+                  azureSubscription: "$(azureServiceConnection)"
                   appType: webAppLinux
-                  appName: '$(uatWebAppName)'
-                  package: '$(Pipeline.Workspace)/drop/frontend.zip'
-                  startUpCommand: 'npm run start'
+                  appName: "$(uatWebAppName)"
+                  package: "$(Pipeline.Workspace)/drop/frontend.zip"
+                  startUpCommand: "node server.js"
