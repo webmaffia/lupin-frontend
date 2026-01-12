@@ -24,7 +24,7 @@ export default function ExtraSmallCard({
   className = ''
 }) {
   return (
-    <div className={`extra-small-card ${isActive ? 'extra-small-card--active' : ''} ${className}`}>
+    <div className="extra-small-card">
       <div className="extra-small-card__content">
         <div className="extra-small-card__links">
           <Link href={pdfUrl} className="extra-small-card__link">

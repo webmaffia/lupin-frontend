@@ -1,8 +1,7 @@
 'use client';
 
-import Image from 'next/image';
-import Link from 'next/link';
 import NavigationLinks from './NavigationLinks';
+import LeaderInCircle from './global/LeaderInCircle';
 import '../scss/components/CommitteesBoard.scss';
 
 export default function CommitteesBoard({ data }) {
@@ -132,54 +131,17 @@ export default function CommitteesBoard({ data }) {
                 {/* Members Grid */}
                 <div className="committees-board__members">
                 {committee.members.map((member) => (
-                  <div
+                  <LeaderInCircle
                     key={member.id}
-                    className={`committees-board__member ${
-                      member.isSpecial ? 'committees-board__member--special' : ''
-                    } ${member.size === 'large' ? 'committees-board__member--large' : ''}`}
-                  >
-                    <div className="committees-board__member-image-wrapper">
-                      <div className={`committees-board__member-circle ${
-                        member.isSpecial ? 'committees-board__member-circle--special' : ''
-                      }`}>
-                        <Image
-                          src={member.image.url}
-                          alt={member.image.alt || member.name}
-                          width={member.size === 'large' ? 500 : 400}
-                          height={member.size === 'large' ? 500 : 400}
-                          className="committees-board__member-image"
-                          quality={100}
-                        />
-                      </div>
-                      
-                      {/* Special Indicator (Arrow Icon) - Always render, shown on hover for non-special members */}
-                      <Link href="#" className="committees-board__member-indicator">
-                        <svg
-                          width="13"
-                          height="13"
-                          viewBox="0 0 13 13"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M1 12L12 1M12 1H1M12 1V12"
-                            stroke="white"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </Link>
-                    </div>
-
-                    {/* Member Info */}
-                    <div className={`committees-board__member-info ${
-                      member.isSpecial ? 'committees-board__member-info--special' : ''
-                    }`}>
-                      <h3 className="committees-board__member-name">{member.name}</h3>
-                      <p className="committees-board__member-title">{member.title}</p>
-                    </div>
-                  </div>
+                    id={member.id}
+                    name={member.name}
+                    title={member.title}
+                    image={member.image}
+                    isSpecial={member.isSpecial}
+                    size={member.size}
+                    link={member.link || '#'}
+                    className="committees-board__member"
+                  />
                  ))}
                 </div>
               </div>
