@@ -142,10 +142,10 @@ export function mapHomepageHeroData(strapiData) {
   console.log('Data object:', JSON.stringify(data, null, 2));
 
   // If no data, throw error instead of using fallback
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
-  }
-
+  if (!strapiData) {
+  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+  return {};
+}
   // Helper function to extract heading - NO FALLBACK, only from API
   // Returns array format: ["Line 1", "Line 2"]
   const extractHeading = (data) => {
@@ -311,9 +311,10 @@ export function mapHomepageOurStoryData(strapiData) {
   // Log for debugging
   console.log('Mapping OurStory data. Full response:', JSON.stringify(strapiData, null, 2));
   
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
-  }
+  if (!strapiData) {
+  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+  return {};
+}
 
   const sectionData = data.ourStory?.sectionData;
   if (!sectionData) {
@@ -392,9 +393,10 @@ export function mapHomepageOurPurposeData(strapiData) {
   
   // Log for debugging
   console.log('Mapping OurPurpose data. Full response:', JSON.stringify(strapiData, null, 2));
-  
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
+
+  if (!strapiData) {
+    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+    return {};
   }
 
   const ourPurpose = data.ourPurpose;
@@ -500,9 +502,10 @@ export function mapHomepageOverviewData(strapiData) {
   // Log for debugging
   console.log('Mapping Overview data. Full response:', JSON.stringify(strapiData, null, 2));
   
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
-  }
+  if (!strapiData) {
+  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+  return {};
+}
 
   const overView = data.overView;
   if (!overView) {
@@ -607,9 +610,11 @@ export function mapHomepageOurBusinessData(strapiData) {
   // Log for debugging
   console.log('Mapping OurBusiness data. Full response:', JSON.stringify(strapiData, null, 2));
   
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
-  }
+  if (!strapiData) {
+  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+  return {};
+}
+
 
   const ourBusiness = data.ourBusiness;
   if (!ourBusiness) {
@@ -685,8 +690,9 @@ export function mapHomepageSustainabilityData(strapiData) {
   // Log for debugging
   console.log('Mapping Sustainability data. Full response:', JSON.stringify(strapiData, null, 2));
   
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
+  if (!strapiData) {
+    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+    return {};
   }
 
   const sustainability = data.sustainability;
@@ -767,8 +773,9 @@ export function mapHomepageCSRData(strapiData) {
   // Log for debugging
   console.log('Mapping CSR data. Full response:', JSON.stringify(strapiData, null, 2));
   
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
+  if (!strapiData) {
+    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+    return {};
   }
 
   const csr = data.csr;
@@ -855,8 +862,9 @@ export function mapHomepageLifeData(strapiData) {
   // Log for debugging
   console.log('Mapping Life data. Full response:', JSON.stringify(strapiData, null, 2));
   
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
+  if (!strapiData) {
+    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+    return {};
   }
 
   const life = data.life;
@@ -947,8 +955,9 @@ export function mapHomepageNewsInsightsData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
   
-  if (!data) {
-    throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
+  if (!strapiData) {
+    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
+    return {};
   }
 
   // Extract news object - required

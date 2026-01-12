@@ -25,8 +25,13 @@ export default async function Home() {
   const organizationSchema = generateOrganizationSchema();
 
   // Fetch homepage data from Strapi - no fallback, must get from API
-  const homepageData = await getHomepage();
+  const homepageData = await getHomepage() || {};
   
+  if (!homepageData) {
+  console.warn('SKIP_STRAPI_FETCH active - rendering empty homepage');
+  return null; // or <></>
+  }
+
   // Log raw API response for debugging
   console.log('Raw Strapi API response:', JSON.stringify(homepageData, null, 2));
   
