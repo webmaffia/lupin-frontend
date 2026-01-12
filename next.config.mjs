@@ -50,6 +50,12 @@ const nextConfig = {
     minimumCacheTTL: 60,
     remotePatterns: [
       getStrapiImagePattern(),
+      // Allow images from www.lupin.com
+      {
+        protocol: 'https',
+        hostname: 'www.lupin.com',
+        pathname: '/wp-content/uploads/**',
+      },
     ],
   },
   
