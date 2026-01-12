@@ -3,32 +3,30 @@
 // Helper function to parse Strapi URL and create remote pattern
 function getStrapiImagePattern() {
   const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1380';
-  
+
   try {
     const url = new URL(strapiUrl);
     const protocol = url.protocol.replace(':', '') || 'http';
     const hostname = url.hostname;
-    
-    // Build pattern object
+
     const pattern = {
       protocol,
       hostname,
       pathname: '/uploads/**',
     };
-    
-    // Only add port if it's not the default port
+
+    // Add port only if non-default
     const defaultPort = protocol === 'https' ? '443' : '80';
     if (url.port && url.port !== defaultPort) {
       pattern.port = url.port;
     }
-    
-    // Log pattern for debugging (will show in build logs)
-    console.log(`[Next.js Config] Image remotePattern for Strapi:`, JSON.stringify(pattern, null, 2));
-    console.log(`[Next.js Config] Strapi URL: ${strapiUrl}`);
-    
+
+    console.log('[Next.js Config] Strapi Image Pattern:', pattern);
     return pattern;
   } catch (error) {
-    console.warn('Invalid NEXT_PUBLIC_STRAPI_URL, using default localhost pattern');
+    console.warn(
+      '[Next.js Config] Invalid NEXT_PUBLIC_STRAPI_URL, falling back to default'
+    );
     return {
       protocol: 'http',
       hostname: '65.2.155.211',
@@ -39,45 +37,49 @@ function getStrapiImagePattern() {
 }
 
 const nextConfig = {
-  // Add empty turbopack config to silence the warning
+  /**
+   * REQUIRED FOR AZURE + PIPELINE
+   * This generates `.next/standalone/server.js`
+   */
+  output: 'standalone',
+
+  /**
+   * Silence turbopack warning
+   */
   turbopack: {},
-  
-  // Image optimization settings
+
+  /**
+   * Image optimization (Strapi CMS)
+   */
   images: {
     formats: ['image/webp'],
     deviceSizes: [414, 768, 1024, 1440, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
-    remotePatterns: [
-      getStrapiImagePattern(),
-    ],
+    remotePatterns: [getStrapiImagePattern()],
   },
-  
-  // Disable CSS modules for .scss files
+
+  /**
+   * SCSS + CSS Modules control
+   */
   webpack(config) {
-    // Find the rule that handles CSS modules
     const rules = config.module.rules
       .find((rule) => typeof rule.oneOf === 'object')
       ?.oneOf?.filter((rule) => Array.isArray(rule.use));
 
     if (rules) {
       rules.forEach((rule) => {
-        if (rule.use) {
-          rule.use.forEach((moduleLoader) => {
-            if (
-              moduleLoader.loader?.includes('css-loader') &&
-              moduleLoader.options?.modules
-            ) {
-              // Disable CSS modules for .scss files
-              if (typeof moduleLoader.options.modules === 'object') {
-                moduleLoader.options.modules.auto = (resourcePath) => {
-                  // Only use CSS modules for .module.css and .module.scss
-                  return /\.module\.(css|scss|sass)$/i.test(resourcePath);
-                };
-              }
+        rule.use?.forEach((loader) => {
+          if (
+            loader.loader?.includes('css-loader') &&
+            loader.options?.modules
+          ) {
+            if (typeof loader.options.modules === 'object') {
+              loader.options.modules.auto = (resourcePath) =>
+                /\.module\.(css|scss|sass)$/i.test(resourcePath);
             }
-          });
-        }
+          }
+        });
       });
     }
 
