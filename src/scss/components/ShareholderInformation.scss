@@ -61,7 +61,7 @@
     width: 100%;
     @include flex(row, space-between, flex-start);
     gap: vw(36);
-    align-items: flex-start;
+    align-items: center;
     
     @include media('tablet') {
       gap: vw(30, 768);

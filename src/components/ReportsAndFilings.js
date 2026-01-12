@@ -35,8 +35,9 @@ export default function ReportsAndFilings({ data }) {
       buttons: [
         {
           label: "Download Now",
-          href: "#",
-          variant: "outline"
+          href: "https://www.lupin.com/wp-content/uploads/2025/07/integrated-report-consolidated.pdf",
+          variant: "outline",
+          download: true
         },
         {
           label: "View all",
@@ -50,23 +51,28 @@ export default function ReportsAndFilings({ data }) {
       links: [
         {
           text: "Disclosure Dated 20th june 2025",
-          href: "#"
+          href: "https://www.lupin.com/wp-content/uploads/2025/06/disclosure-dated-20th-june-2025.pdf",
+          download: true
         },
         {
           text: "BSE / NSE Letter Schedule of Analyst Investors Meet",
-          href: "#"
+          href: "https://www.lupin.com/wp-content/uploads/2025/06/bse-nse-letter-schedule-of-analyst-investors-meet-19-06-2025.pdf",
+          download: true
         },
         {
           text: "Change in Directors",
-          href: "#"
+          href: "https://www.lupin.com/wp-content/uploads/2025/05/bse-nse-letter-change-in-director.pdf",
+          download: true
         },
         {
           text: "SE Intimation Updates API R&D and OTC Business",
-          href: "#"
+          href: "https://www.lupin.com/wp-content/uploads/2025/04/se-intimation-updates-api-rd-and-otc-business.pdf",
+          download: true
         },
         {
           text: "BSE/NSE Letter Acquisition of Renascience Pharma Limited",
-          href: "#"
+          href: "https://www.lupin.com/wp-content/uploads/2025/04/bse-nse-letter-acquisition-of-renascience-pharma-limited.pdf",
+          download: true
         }
       ],
       button: {
@@ -158,37 +164,78 @@ export default function ReportsAndFilings({ data }) {
                 </h3>
               )}
               <div className="reports-filings__card-buttons reports-filings__card-buttons--middle">
-                {reportsData.middleCard.buttons && reportsData.middleCard.buttons.map((button, index) => (
-                  <Link
-                    key={index}
-                    href={button.href || "#"}
-                    className={`reports-filings__button ${
-                      button.variant === 'filled' 
-                        ? 'reports-filings__button--filled-white' 
-                        : 'reports-filings__button--outline-white'
-                    }`}
-                  >
-                    {button.label}
-                    {button.variant === 'filled' && (
-                      <svg
-                        className="reports-filings__button-arrow"
-                        width="11"
-                        height="11"
-                        viewBox="0 0 11 11"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
+                {reportsData.middleCard.buttons && reportsData.middleCard.buttons.map((button, index) => {
+                  // For download buttons (PDFs), use anchor tag instead of Next.js Link
+                  if (button.download) {
+                    return (
+                      <a
+                        key={index}
+                        href={button.href || "#"}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={`reports-filings__button ${
+                          button.variant === 'filled' 
+                            ? 'reports-filings__button--filled-white' 
+                            : 'reports-filings__button--outline-white'
+                        }`}
                       >
-                        <path
-                          d="M1 10L10 1M10 1H1M10 1V10"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    )}
-                  </Link>
-                ))}
+                        {button.label}
+                        {button.variant === 'filled' && (
+                          <svg
+                            className="reports-filings__button-arrow"
+                            width="11"
+                            height="11"
+                            viewBox="0 0 11 11"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1 10L10 1M10 1H1M10 1V10"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        )}
+                      </a>
+                    );
+                  }
+                  
+                  // Regular Link for non-download buttons
+                  return (
+                    <Link
+                      key={index}
+                      href={button.href || "#"}
+                      className={`reports-filings__button ${
+                        button.variant === 'filled' 
+                          ? 'reports-filings__button--filled-white' 
+                          : 'reports-filings__button--outline-white'
+                      }`}
+                    >
+                      {button.label}
+                      {button.variant === 'filled' && (
+                        <svg
+                          className="reports-filings__button-arrow"
+                          width="11"
+                          height="11"
+                          viewBox="0 0 11 11"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M1 10L10 1M10 1H1M10 1V10"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      )}
+                    </Link>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -205,33 +252,70 @@ export default function ReportsAndFilings({ data }) {
             </div>
             <div className="reports-filings__card-content reports-filings__card-content--right">
               <div className="reports-filings__card-links">
-                {reportsData.rightCard.links && reportsData.rightCard.links.map((link, index) => (
-                  <Link
-                    key={index}
-                    href={link.href || "#"}
-                    className="reports-filings__card-link"
-                  >
-                    <span className="reports-filings__card-link-text">
-                      {link.text}       <svg
-                      className="reports-filings__card-link-arrow"
-                      width="13"
-                      height="13"
-                      viewBox="0 0 13 13"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
+                {reportsData.rightCard.links && reportsData.rightCard.links.map((link, index) => {
+                  // For PDF download links, use anchor tag instead of Next.js Link
+                  if (link.download) {
+                    return (
+                      <a
+                        key={index}
+                        href={link.href || "#"}
+                        download
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="reports-filings__card-link"
+                      >
+                        <span className="reports-filings__card-link-text">
+                          {link.text}
+                          <svg
+                            className="reports-filings__card-link-arrow"
+                            width="13"
+                            height="13"
+                            viewBox="0 0 13 13"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1 12L12 1M12 1H1M12 1V12"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </span>
+                      </a>
+                    );
+                  }
+                  
+                  // Regular Link for non-download links
+                  return (
+                    <Link
+                      key={index}
+                      href={link.href || "#"}
+                      className="reports-filings__card-link"
                     >
-                      <path
-                        d="M1 12L12 1M12 1H1M12 1V12"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    </span>
-              
-                  </Link>
-                ))}
+                      <span className="reports-filings__card-link-text">
+                        {link.text}
+                        <svg
+                          className="reports-filings__card-link-arrow"
+                          width="13"
+                          height="13"
+                          viewBox="0 0 13 13"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M1 12L12 1M12 1H1M12 1V12"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    </Link>
+                  );
+                })}
               </div>
               {reportsData.rightCard.button && (
                 <Link

@@ -16,19 +16,19 @@ export default function CorporateGovernance({ data }) {
       {
         id: 1,
         label: "Committees of the Board",
-        href: "#",
+        href: "/investors/committees",
         isActive: false
       },
       {
         id: 2,
-        label: "Committees of the Board",
-        href: "#",
+        label: "Code of Conduct",
+        href: "/investors/code-of-conduct",
         isActive: false
       },
       {
         id: 3,
         label: "Policies",
-        href: "#",
+        href: "/investors/policies",
         isActive: false
       }
     ]
