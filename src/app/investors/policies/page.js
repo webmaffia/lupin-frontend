@@ -1,7 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import Policies from '@/components/Policies';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getPolicy, mapPolicyData } from '@/lib/strapi';
+// TODO: Uncomment when ready to connect to Strapi API
+// import { getPolicy, mapPolicyData } from '@/lib/strapi';
 
 // Generate metadata for the policies page
 export const metadata = generateSEOMetadata({
@@ -11,21 +12,25 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin policies, corporate governance, code of conduct, board committees, investor relations",
 });
 
-export default async function PoliciesPage() {
+export default function PoliciesPage() {
+  // TODO: Uncomment when ready to connect to Strapi API
   // Fetch policy data from Strapi
-  let policiesData = null;
-  
-  try {
-    const rawData = await getPolicy();
-    policiesData = mapPolicyData(rawData);
-    
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Policies - Mapped data:', policiesData);
-    }
-  } catch (error) {
-    console.error('Error fetching Policy data from Strapi:', error);
-    // Will use default data from component if fetch fails
-  }
+  // let policiesData = null;
+  // 
+  // try {
+  //   const rawData = await getPolicy();
+  //   policiesData = mapPolicyData(rawData);
+  //   
+  //   if (process.env.NODE_ENV === 'development') {
+  //     console.log('Policies - Mapped data:', policiesData);
+  //   }
+  // } catch (error) {
+  //   console.error('Error fetching Policy data from Strapi:', error);
+  //   // Will use default data from component if fetch fails
+  // }
+
+  // Using fallback data (component will use default data when null is passed)
+  const policiesData = null;
 
   // Custom banner data for this page
   const bannerData = {
