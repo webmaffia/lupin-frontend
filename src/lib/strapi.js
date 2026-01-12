@@ -1026,12 +1026,13 @@ export async function getGlobalSettings() {
 
 /**
  * Fetch analyst coverage data from Strapi
- * This is a Single Type, so it returns one entry with AnalystCard array
+ * This is a Single Type, so it returns one entry with AnalystCard array and TopBanner
  * 
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getAnalystCoverage() {
-  return fetchAPI('analyst-coverage?populate=*', {
+  // Populate TopBanner and AnalystCard
+  return fetchAPI('analyst-coverage?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[AnalystCard][populate]=*', {
     next: { revalidate: 60 },
   });
 }
@@ -1066,13 +1067,13 @@ export function mapAnalystCoverageData(strapiData) {
 
 /**
  * Fetch policy data from Strapi
- * This is a Single Type, so it returns one entry with PdfCard array
+ * This is a Single Type, so it returns one entry with PdfCard array and TopBanner
  * 
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getPolicy() {
-  // Populate PdfCard and pdf media
-  return fetchAPI('policy?populate[PdfCard][populate][pdf][populate]=*', {
+  // Populate TopBanner, PdfCard and pdf media
+  return fetchAPI('policy?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[PdfCard][populate][pdf][populate]=*', {
     next: { revalidate: 60 },
   });
 }
@@ -1122,13 +1123,13 @@ export function mapPolicyData(strapiData) {
 
 /**
  * Fetch financial data from Strapi
- * This is a Single Type, so it returns one entry with PdfCard array
+ * This is a Single Type, so it returns one entry with PdfCard array and TopBanner
  * 
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getFinancial() {
-  // Populate PdfCard and pdf media
-  return fetchAPI('financial?populate[PdfCard][populate][pdf][populate]=*', {
+  // Populate TopBanner, PdfCard and pdf media
+  return fetchAPI('financial?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[PdfCard][populate][pdf][populate]=*', {
     next: { revalidate: 60 },
   });
 }
@@ -1164,5 +1165,56 @@ export function mapFinancialData(strapiData) {
     : [];
 
   return relatedPartyTransactions;
+}
+
+/**
+ * Map TopBanner component from Strapi to InnerBanner format
+ * 
+ * @param {Object} topBanner - TopBanner component from Strapi
+ * @returns {Object|null} Mapped banner data for InnerBanner component or null
+ */
+export function mapTopBannerData(topBanner) {
+  if (!topBanner) return null;
+
+  // Get desktop and mobile images
+  const desktopImage = topBanner.desktop_image?.data?.attributes || topBanner.desktop_image;
+  const mobileImage = topBanner.mobile_image?.data?.attributes || topBanner.mobile_image;
+  
+  // Use desktop image as banner, fallback to mobile if desktop not available
+  const bannerImage = desktopImage || mobileImage;
+  const bannerImageUrl = bannerImage ? getStrapiMedia(bannerImage) : null;
+
+  // Parse BannerTitle - could be single line or two lines separated by newline/space
+  const bannerTitle = topBanner.BannerTitle || '';
+  const titleParts = bannerTitle.split(/\n|\\n/).filter(part => part.trim());
+  
+  // If subHeading exists, use it as line2, otherwise split BannerTitle
+  const line1 = titleParts[0]?.trim() || topBanner.subHeading || '';
+  const line2 = topBanner.subheadingtext || titleParts[1]?.trim() || '';
+
+  // Build banner data object
+  const bannerData = {
+    title: {
+      line1: line1,
+      line2: line2
+    },
+    images: {}
+  };
+
+  // Add banner image if available
+  if (bannerImageUrl) {
+    bannerData.images.banner = {
+      url: bannerImageUrl,
+      alt: bannerImage.alternativeText || bannerImage.caption || 'Banner image'
+    };
+  }
+
+  // Add petal image (default - can be overridden if needed)
+  bannerData.images.petal = {
+    url: "/assets/inner-banner/petal-2.svg",
+    alt: "Decorative petal"
+  };
+
+  return bannerData;
 }
 

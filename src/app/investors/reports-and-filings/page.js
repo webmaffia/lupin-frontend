@@ -27,7 +27,19 @@ export const metadata = generateSEOMetadata({
 });
 
 export default function ReportsAndFilingsPage() {
-  // Custom banner data for this page
+  // TODO: Uncomment when ready to connect to Strapi API
+  // Fetch banner data from Strapi
+  // let bannerData = null;
+  // 
+  // try {
+  //   const rawData = await getReportFiling();
+  //   const mappedData = mapReportFilingData(rawData);
+  //   bannerData = mappedData.topBanner;
+  // } catch (error) {
+  //   console.error('Error fetching Reports and Filings banner data from Strapi:', error);
+  // }
+
+  // Using fallback banner data (will be replaced by Strapi API later)
   const bannerData = {
     title: {
       line1: "Reports and",

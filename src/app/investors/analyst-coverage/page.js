@@ -2,7 +2,7 @@ import InnerBanner from '@/components/InnerBanner';
 import AnalystCoverage from '@/components/AnalystCoverage';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 // TODO: Uncomment when ready to connect to Strapi API
-// import { getAnalystCoverage, mapAnalystCoverageData } from '@/lib/strapi';
+// import { getAnalystCoverage, mapAnalystCoverageData, mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the analyst coverage page
 export const metadata = generateSEOMetadata({
@@ -29,9 +29,22 @@ export default function AnalystCoveragePage() {
   //   // Will use default data from component if fetch fails
   // }
 
+  // TODO: Uncomment when ready to connect to Strapi API
+  // Fetch banner data from Strapi
+  // let bannerData = null;
+  // 
+  // try {
+  //   const rawData = await getAnalystCoverage();
+  //   const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+  //   bannerData = mapTopBannerData(topBanner);
+  // } catch (error) {
+  //   console.error('Error fetching Analyst Coverage banner data from Strapi:', error);
+  // }
+
   // Using fallback data (component will use default data when empty array is passed)
   const analystsData = [];
 
+  // Using fallback banner data (will be replaced by Strapi API later)
   const bannerData = {
     title: {
       line1: "Analyst",
@@ -39,7 +52,7 @@ export default function AnalystCoveragePage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/Analys-coverage.png",
         alt: "Financial documents and charts"
       },
       petal: {

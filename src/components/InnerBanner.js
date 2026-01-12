@@ -58,14 +58,17 @@ export default function InnerBanner({ data }) {
       {/* Banner Image */}
       {bannerData.images?.banner && (
         <div className="inner-banner__image">
-          <Image
-            src={bannerData.images.banner.url}
-            alt={bannerData.images.banner.alt}
-            fill
-            className="inner-banner__image-img"
-            quality={100}
-            priority
-          />
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <Image
+              src={bannerData.images.banner.url}
+              alt={bannerData.images.banner.alt}
+              fill
+              className="inner-banner__image-img"
+              quality={100}
+              priority
+              sizes="100vw"
+            />
+          </div>
         </div>
       )}
 

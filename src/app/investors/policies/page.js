@@ -2,7 +2,7 @@ import InnerBanner from '@/components/InnerBanner';
 import Policies from '@/components/Policies';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 // TODO: Uncomment when ready to connect to Strapi API
-// import { getPolicy, mapPolicyData } from '@/lib/strapi';
+// import { getPolicy, mapPolicyData, mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the policies page
 export const metadata = generateSEOMetadata({
@@ -29,14 +29,36 @@ export default function PoliciesPage() {
   //   // Will use default data from component if fetch fails
   // }
 
+  // TODO: Uncomment when ready to connect to Strapi API
+  // Fetch banner data from Strapi
+  // let bannerData = null;
+  // 
+  // try {
+  //   const rawData = await getPolicy();
+  //   const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+  //   bannerData = mapTopBannerData(topBanner);
+  // } catch (error) {
+  //   console.error('Error fetching Policy banner data from Strapi:', error);
+  // }
+
   // Using fallback data (component will use default data when null is passed)
   const policiesData = null;
 
-  // Custom banner data for this page
+  // Using fallback banner data (will be replaced by Strapi API later)
   const bannerData = {
     title: {
       line1: "Policies",
       line2: ""
+    },
+    images: {
+      banner: {
+        url: "/assets/inner-banner/Policies.png",
+        alt: "Policies"
+      },
+      petal: {
+        url: "/assets/inner-banner/petal-2.svg",
+        alt: "Decorative petal"
+      }
     }
   };
 
