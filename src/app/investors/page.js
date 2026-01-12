@@ -91,7 +91,7 @@ export default async function InvestorsPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/Investors.png",
         alt: "Investor Relations"
       },
       petal: {

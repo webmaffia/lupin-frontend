@@ -4,7 +4,7 @@ import SmallCard from '@/components/global/SmallCard';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 // TODO: Uncomment when ready to connect to Strapi API
-// import { getFinancial, mapFinancialData } from '@/lib/strapi';
+// import { getFinancial, mapFinancialData, mapTopBannerData } from '@/lib/strapi';
 import '@/scss/pages/financials.scss';
 
 // Generate metadata for the financials page
@@ -16,7 +16,19 @@ export const metadata = generateSEOMetadata({
 });
 
 export default function FinancialsPage() {
-  // Custom banner data for this page
+  // TODO: Uncomment when ready to connect to Strapi API
+  // Fetch banner data from Strapi
+  // let bannerData = null;
+  // 
+  // try {
+  //   const rawData = await getFinancial();
+  //   const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+  //   bannerData = mapTopBannerData(topBanner);
+  // } catch (error) {
+  //   console.error('Error fetching Financial banner data from Strapi:', error);
+  // }
+
+  // Using fallback banner data (will be replaced by Strapi API later)
   const bannerData = {
     title: {
       line1: "Financials",

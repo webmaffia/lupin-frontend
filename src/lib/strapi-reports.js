@@ -1,7 +1,7 @@
 // Strapi API helper functions for Reports & Filings
 // Handles the report-filing Single Type with nested repeatable components
 
-import { fetchAPI, getStrapiMedia } from './strapi';
+import { fetchAPI, getStrapiMedia, mapTopBannerData } from './strapi';
 
 /**
  * Fetch report-filing data from Strapi
@@ -10,8 +10,10 @@ import { fetchAPI, getStrapiMedia } from './strapi';
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getReportFiling() {
-  // Populate all nested components and media files
+  // Populate all nested components and media files including TopBanner
   const populateQuery = [
+    'populate[TopBanner][populate][desktop_image][populate]=*',
+    'populate[TopBanner][populate][mobile_image][populate]=*',
     'populate[QuarterlyResult][populate][pdfCard][populate][pdf][populate]=*',
     'populate[AnnualReport][populate][pdfCard][populate][pdf][populate]=*',
     'populate[AnnualReport][populate][image][populate]=*',
@@ -195,6 +197,9 @@ export function mapReportFilingData(strapiData) {
     throw new Error('No data received from Strapi API. Check that the report-filing endpoint returns data.');
   }
 
+  // Map TopBanner if available
+  const topBanner = mapTopBannerData(data.TopBanner);
+
   // Map each section
   const quarterlyResults = Array.isArray(data.QuarterlyResult)
     ? data.QuarterlyResult.map(mapQuarterlyResult).filter(Boolean)
@@ -217,6 +222,7 @@ export function mapReportFilingData(strapiData) {
     : [];
 
   return {
+    topBanner: topBanner,
     quarterlyResults: quarterlyResults,
     annualReports: annualReports,
     annualReturns: annualReturns,
