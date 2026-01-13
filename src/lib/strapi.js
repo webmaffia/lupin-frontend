@@ -1,27 +1,27 @@
-// Strapi API helper functions
-// Update STRAPI_URL when you set up Strapi
+// strapi.js
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1380';
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1380";
 
 /**
  * Fetch data from Strapi API
- * @param {string} endpoint - API endpoint (e.g., 'homepage', 'articles')
- * @param {object} options - Fetch options
- * @returns {Promise} - API response data
  */
 export async function fetchAPI(endpoint, options = {}) {
+  // IMPORTANT: Pipeline skip should happen BEFORE any network call
+  if (process.env.SKIP_STRAPI_FETCH === "true") {
+    console.warn("SKIP_STRAPI_FETCH enabled. Returning null immediately.");
+    return null;
+  }
+
   const defaultOptions = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
   };
 
-  // Add authorization token if available
   if (process.env.STRAPI_API_TOKEN) {
-    defaultOptions.headers['Authorization'] = `Bearer ${process.env.STRAPI_API_TOKEN}`;
+    defaultOptions.headers["Authorization"] = `Bearer ${process.env.STRAPI_API_TOKEN}`;
   }
 
-  // Merge headers properly
   const mergedOptions = {
     ...defaultOptions,
     ...options,
@@ -33,1014 +33,500 @@ export async function fetchAPI(endpoint, options = {}) {
 
   const requestUrl = `${STRAPI_URL}/api/${endpoint}`;
 
-  // Debug logging in development
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Fetching from Strapi:', requestUrl);
-    console.log('Token present:', !!process.env.STRAPI_API_TOKEN);
-  }
-
   try {
     const response = await fetch(requestUrl, mergedOptions);
-    
+
     if (!response.ok) {
-      // Get error details from response
       let errorMessage = `HTTP error! status: ${response.status}`;
+
       try {
         const errorData = await response.json();
-        if (errorData.error) {
-          errorMessage += ` - ${errorData.error.message || JSON.stringify(errorData.error)}`;
+        if (errorData?.error) {
+          errorMessage += ` - ${
+            errorData.error.message || JSON.stringify(errorData.error)
+          }`;
         }
       } catch (e) {
-        // If response is not JSON, use status text
         errorMessage += ` - ${response.statusText}`;
       }
-      
-      // Provide helpful error messages
-      if (response.status === 403) {
-        errorMessage += '\n\n403 Forbidden: Check that STRAPI_API_TOKEN is set in your .env.local file and has proper permissions.';
-      } else if (response.status === 401) {
-        errorMessage += '\n\n401 Unauthorized: Check that your STRAPI_API_TOKEN is valid.';
-      }
-      
+
       throw new Error(errorMessage);
     }
-    
-    const data = await response.json();
-    return data;
-  } 
-  catch (error)
-  {
-    // CI / Pipeline - do not allow failed on Build time. 
-    if (process.env.SKIP_STRAPI_FETCH === 'true') {
-      console.warn(
-        'SKIP_STRAPI_FETCH enabled. Returning null instead of throwing error.'
-      );
+
+    return await response.json();
+  } catch (error) {
+    // Just in case SKIP flag was set mid-way
+    if (process.env.SKIP_STRAPI_FETCH === "true") {
       return null;
+    }
+
+    console.error("Error fetching from Strapi:", error);
+    throw error;
   }
-
-  console.error('Error fetching from Strapi:', error);
-  throw error;
-}
-
 }
 
 /**
  * Get full Strapi media URL
- * @param {string|object} media - Media path or object
- * @returns {string} - Full URL
  */
 export function getStrapiMedia(media) {
   if (!media) return null;
-  
-  const imageUrl = typeof media === 'string' ? media : media.url;
-  
-  // Return full URL if it's already a complete URL
-  if (imageUrl.startsWith('http')) {
-    return imageUrl;
-  }
-  
-  // Otherwise prepend Strapi URL
+
+  const imageUrl =
+    typeof media === "string"
+      ? media
+      : media.url || media?.data?.attributes?.url;
+
+  if (!imageUrl) return null;
+
+  if (imageUrl.startsWith("http")) return imageUrl;
+
   return `${STRAPI_URL}${imageUrl}`;
 }
 
 /**
- * Fetch homepage data from Strapi
- * Example usage in page.js:
- * const homepage = await getHomepage();
- * 
- * Populates the hero component and all its nested fields recursively
+ * Fetch homepage data
  */
 export async function getHomepage() {
-  // Populate hero component and all nested components/fields recursively
-  return fetchAPI('homepage?populate[hero][populate]=*&populate[ourStory][populate][sectionData][populate]=*&populate[ourPurpose][populate][sectionData][populate]=*&populate[ourPurpose][populate][cards][populate]=*&populate[overView][populate][sectionData][populate]=*&populate[overView][populate][stats][populate]=*&populate[ourBusiness][populate][sectionData][populate]=*&populate[sustainability][populate][sectionData][populate]=*&populate[csr][populate][sectionData][populate]=*&populate[life][populate][sectionData][populate]=*&populate[news][populate][items][populate]=*', {
-    next: { revalidate: 60 },
-  });
+  return fetchAPI(
+    "homepage?populate[hero][populate]=*&populate[ourStory][populate][sectionData][populate]=*&populate[ourPurpose][populate][sectionData][populate]=*&populate[ourPurpose][populate][cards][populate]=*&populate[overView][populate][sectionData][populate]=*&populate[overView][populate][stats][populate]=*&populate[ourBusiness][populate][sectionData][populate]=*&populate[sustainability][populate][sectionData][populate]=*&populate[csr][populate][sectionData][populate]=*&populate[life][populate][sectionData][populate]=*&populate[news][populate][items][populate]=*",
+    { next: { revalidate: 60 } }
+  );
 }
 
 /**
- * Map Strapi homepage hero data to Hero component format
- * 
- * Expected Strapi data structures (any of these will work):
- * 1. heading as array: { heading: ["Line 1", "Line 2"] }
- * 2. heading as object: { heading: { line1: "Text", line2: "Text" } } (will be converted to array)
- * 3. heading as string: { heading: "Line 1, Line 2" } (will be split into array)
- * 4. Nested in hero: { hero: { heading: [...] } }
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted hero data with structure:
- *   { heading: [string, string], subheading: [...], cta: {...}, stickyNotes: [...] }
- * @throws {Error} If required data is missing from Strapi
+ * SAFE DEFAULTS (so components never crash)
+ */
+function defaultHero() {
+  return {
+    heading: [],
+    subheading: [],
+    cta: { text: "", href: "#" },
+
+    // MUST have at least 2 items because Hero.js uses [0] and [1]
+    stickyNotes: [
+      { text: "Product Finder", href: "#" },
+      { text: "Chat", href: "#" },
+    ],
+
+    image: { url: "", alt: "", width: 0, height: 0 },
+  };
+}
+
+
+function defaultOurStory() {
+  return {
+    eyebrow: "",
+    heading: [],
+    paragraphs: [],
+    image: { url: "", alt: "", width: 0, height: 0 },
+    cta: { text: "", href: "#" },
+  };
+}
+
+function defaultOurPurpose() {
+  return {
+    eyebrow: "",
+    heading: [],
+    description: [],
+    cards: [],
+  };
+}
+
+function defaultOverview() {
+  return {
+    eyebrow: "",
+    heading: [],
+    stats: [],
+  };
+}
+
+function defaultSectionWithBg() {
+  return {
+    eyebrow: "",
+    heading: [],
+    description: [],
+    backgroundImage: "",
+    imageAlt: "",
+    cta: { text: "", href: "#" },
+  };
+}
+
+function defaultCSR() {
+  return {
+    eyebrow: "",
+    heading: [],
+    subheading: "",
+    description: [],
+    image: "",
+    imageAlt: "",
+    cta: { text: "", href: "#" },
+  };
+}
+
+function defaultOurBusiness() {
+  return {
+    heading: [],
+    description: [],
+    image: "",
+    imageAlt: "",
+    cta: { text: "", href: "#" },
+  };
+}
+
+function defaultNewsInsights() {
+  return {
+    title: "News & Insights",
+    items: [],
+  };
+}
+
+/**
+ * Map Homepage Hero
  */
 export function mapHomepageHeroData(strapiData) {
-  // Handle Strapi v4 response structure
-  // For single types: data.hero.heading (no attributes wrapper)
-  // For collection types: data.attributes.hero.heading
-  const data = strapiData?.data || strapiData;
-  
-  // Log the structure we're working with
-  console.log('Mapping Strapi data. Full response:', JSON.stringify(strapiData, null, 2));
-  console.log('Data object:', JSON.stringify(data, null, 2));
+  // If Strapi is skipped/unavailable, return safe structure
+  if (!strapiData?.data) return defaultHero();
 
-  // If no data, throw error instead of using fallback
-  if (!strapiData) {
-  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-  return {};
-}
-  // Helper function to extract heading - NO FALLBACK, only from API
-  // Returns array format: ["Line 1", "Line 2"]
-  const extractHeading = (data) => {
-    console.log('Extracting heading from:', {
-      'data.heading': data.heading,
-      'data.hero?.heading': data.hero?.heading,
-      'heading type': typeof (data.hero?.heading || data.heading),
-      'is array': Array.isArray(data.hero?.heading || data.heading)
-    });
+  const data = strapiData.data;
+  const hero = data.hero || {};
 
-    const heading = data.hero?.heading || data.heading;
-    
-    // If heading is already an array, return it
-    if (Array.isArray(heading)) {
-      console.log('Found heading as array:', heading);
-      if (heading.length === 0) {
-        throw new Error('Heading array is empty. Please provide at least one line in Strapi.');
-      }
-      return heading.filter(line => line && line.trim());
-    }
-    
-    // If heading is an object with line1/line2, convert to array
-    if (heading && typeof heading === 'object') {
-      if (heading.line1 && heading.line2) {
-        console.log('Found heading as object with line1/line2, converting to array');
-        return [heading.line1, heading.line2];
-      }
-      if (heading.line1) {
-        throw new Error('Heading has line1 but missing line2. Please provide both line1 and line2 in Strapi, or use an array format.');
-      }
-    }
-    
-    // If heading is a string, split it (try common separators)
-    if (typeof heading === 'string' && heading.trim()) {
-      console.log('Found heading as string:', heading);
-      // Try splitting by newline, comma, or common patterns
-      const parts = heading.split(/\n|, | - | — | \| /).filter(p => p.trim());
-      if (parts.length >= 1) {
-        console.log('Split heading into:', parts);
-        return parts.map(p => p.trim());
-      }
-      throw new Error(`Heading is a single string "${heading}" but could not be split. Expected array, object with line1/line2, or string with separator (newline, comma, dash).`);
-    }
-    
-    throw new Error(`Heading data not found in Strapi response. Available keys: ${Object.keys(data).join(', ')}. Please add heading field to your homepage content.`);
-  };
+  const heading = Array.isArray(hero.heading)
+    ? hero.heading.filter(Boolean)
+    : typeof hero.heading === "string"
+    ? hero.heading.split("\n").filter(Boolean)
+    : [];
 
-  // Helper function to extract subheading - flexible, can be optional
-  const extractSubheading = (data) => {
-    const subheading = data.hero?.subheading || data.subheading;
-    if (Array.isArray(subheading)) {
-      return subheading;
-    }
-    if (typeof subheading === 'string' && subheading.trim()) {
-      // Split by newlines or return as single-item array
-      return subheading.split('\n').filter(s => s.trim());
-    }
-    // Return empty array if not found (optional field)
-    console.warn('Subheading not found in Strapi, using empty array');
-    return [];
-  };
+  const subheading = Array.isArray(hero.subheading)
+    ? hero.subheading
+    : typeof hero.subheading === "string"
+    ? hero.subheading.split("\n").filter(Boolean)
+    : [];
 
-  // Extract CTA - flexible, can have defaults
-  const extractCTA = (data) => {
-    const cta = data.hero?.cta || data.cta;
-    if (!cta) {
-      console.warn('CTA not found in Strapi, using default');
-      return { text: 'know more', href: '#' };
-    }
-    return {
-      text: cta.text || 'know more',
-      href: cta.href || '#'
-    };
-  };
+  const stickyNotes = Array.isArray(hero.stickyNotes) ? hero.stickyNotes : [];
 
-  // Extract sticky notes - make optional since they might not be in CMS yet
-  const extractStickyNotes = (data) => {
-    const stickyNotes = data.hero?.stickyNotes || data.stickyNotes;
-    // Make stickyNotes optional - return default if not present (Hero component needs at least 2 items)
-    if (!stickyNotes || !Array.isArray(stickyNotes) || stickyNotes.length === 0) {
-      console.warn('StickyNotes not found, using default values');
-      return [
-        { text: 'Product Finder', href: '#product-finder' },
-        { text: 'Chat', href: '#chat' }
-      ];
-    }
-    return stickyNotes;
-  };
+  const imageObj = hero.image || null;
+  const imageUrl = getStrapiMedia(imageObj) || "";
 
-  // Extract image from Strapi - NO FALLBACK, must come from API
-  const extractImage = (data) => {
-    const image = data.hero?.image || data.image;
-    if (!image) {
-      throw new Error('Image not found in Strapi response. Please add image field to your hero component in Strapi.');
-    }
-    
-    if (!image.url) {
-      throw new Error('Image URL is missing in Strapi response. Please ensure the image is properly uploaded in Strapi.');
-    }
-    
-    // Get full image URL using getStrapiMedia
-    const imageUrl = getStrapiMedia(image);
-    
-    if (!imageUrl) {
-      throw new Error('Failed to generate image URL from Strapi data.');
-    }
-    
-    return {
-      url: imageUrl,
-      alt: image.alternativeText || image.caption || '',
-      width: image.width,
-      height: image.height
-    };
-  };
-
-  // Map Strapi data to Hero component format
   return {
-    heading: extractHeading(data),
-    subheading: extractSubheading(data),
-    cta: extractCTA(data),
-    stickyNotes: extractStickyNotes(data),
-    image: extractImage(data),
+    heading,
+    subheading,
+    cta: {
+      text: hero.cta?.text || "",
+      href: hero.cta?.href || "#",
+    },
+    stickyNotes,
+    image: {
+      url: imageUrl,
+      alt: imageObj?.alternativeText || imageObj?.caption || "",
+      width: imageObj?.width || 0,
+      height: imageObj?.height || 0,
+    },
   };
 }
 
 /**
- * Fetch all articles from Strapi
- * Example usage:
- * const articles = await getArticles();
- */
-export async function getArticles() {
-  return fetchAPI('articles?populate=*', {
-    next: { revalidate: 60 },
-  });
-}
-
-/**
- * Fetch single article by slug
- * Example usage:
- * const article = await getArticle('my-article-slug');
- */
-export async function getArticle(slug) {
-  const articles = await fetchAPI(
-    `articles?filters[slug][$eq]=${slug}&populate=*`,
-    {
-      next: { revalidate: 60 },
-    }
-  );
-  return articles.data?.[0];
-}
-
-/**
- * Map Strapi homepage ourStory data to OurStory component format
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted ourStory data
- * @throws {Error} If required data is missing from Strapi
+ * Map OurStory
  */
 export function mapHomepageOurStoryData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  // Log for debugging
-  console.log('Mapping OurStory data. Full response:', JSON.stringify(strapiData, null, 2));
-  
-  if (!strapiData) {
-  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-  return {};
-}
+  if (!strapiData?.data) return defaultOurStory();
 
-  const sectionData = data.ourStory?.sectionData;
-  if (!sectionData) {
-    throw new Error('OurStory sectionData not found in Strapi response. Please add ourStory component to your homepage content.');
-  }
+  const data = strapiData.data;
+  const sectionData = data.ourStory?.sectionData || {};
 
-  // Extract eyebrow
-  if (!sectionData.eyebrow) {
-    throw new Error('Eyebrow not found in ourStory sectionData. Please add eyebrow field in Strapi.');
-  }
+  const heading =
+    typeof sectionData.heading === "string"
+      ? sectionData.heading.split("\n").filter(Boolean)
+      : Array.isArray(sectionData.heading)
+      ? sectionData.heading
+      : [];
 
-  // Extract and split heading by newlines
-  if (!sectionData.heading) {
-    throw new Error('Heading not found in ourStory sectionData. Please add heading field in Strapi.');
-  }
-  const heading = typeof sectionData.heading === 'string' 
-    ? sectionData.heading.split('\n').filter(line => line.trim())
-    : sectionData.heading;
+  const paragraphs =
+    typeof sectionData.paragraphs === "string"
+      ? sectionData.paragraphs.split("\n").filter(Boolean)
+      : Array.isArray(sectionData.paragraphs)
+      ? sectionData.paragraphs
+      : [];
 
-  // Extract and split paragraphs by newlines
-  if (!sectionData.paragraphs) {
-    throw new Error('Paragraphs not found in ourStory sectionData. Please add paragraphs field in Strapi.');
-  }
-  const paragraphs = typeof sectionData.paragraphs === 'string'
-    ? sectionData.paragraphs.split('\n').filter(para => para.trim())
-    : sectionData.paragraphs;
-
-  // Extract image - NO FALLBACK
-  const image = sectionData.image;
-  if (!image) {
-    throw new Error('Image not found in ourStory sectionData. Please add image field in Strapi.');
-  }
-  if (!image.url) {
-    throw new Error('Image URL is missing in ourStory sectionData. Please ensure the image is properly uploaded in Strapi.');
-  }
-  const imageUrl = getStrapiMedia(image);
-  if (!imageUrl) {
-    throw new Error('Failed to generate image URL from Strapi data.');
-  }
-
-  // Extract CTA - required, throw error if missing
-  if (!sectionData.cta) {
-    throw new Error('CTA not found in ourStory sectionData. Please add cta field in Strapi.');
-  }
-  if (!sectionData.cta.text || !sectionData.cta.href) {
-    throw new Error('CTA data incomplete in ourStory sectionData. Please provide both text and href in Strapi.');
-  }
+  const imageObj = sectionData.image || null;
 
   return {
-    eyebrow: sectionData.eyebrow,
+    eyebrow: sectionData.eyebrow || "",
     heading,
     paragraphs,
     image: {
-      url: imageUrl,
-      alt: image.alternativeText || image.caption || '',
-      width: image.width,
-      height: image.height
+      url: getStrapiMedia(imageObj) || "",
+      alt: imageObj?.alternativeText || imageObj?.caption || "",
+      width: imageObj?.width || 0,
+      height: imageObj?.height || 0,
     },
     cta: {
-      text: sectionData.cta.text,
-      href: sectionData.cta.href
-    }
+      text: sectionData.cta?.text || "",
+      href: sectionData.cta?.href || "#",
+    },
   };
 }
 
 /**
- * Map Strapi homepage ourPurpose data to OurPurpose component format
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted ourPurpose data
- * @throws {Error} If required data is missing from Strapi
+ * Map OurPurpose
  */
 export function mapHomepageOurPurposeData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  // Log for debugging
-  console.log('Mapping OurPurpose data. Full response:', JSON.stringify(strapiData, null, 2));
+  if (!strapiData?.data) return defaultOurPurpose();
 
-  if (!strapiData) {
-    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-    return {};
-  }
+  const data = strapiData.data;
+  const ourPurpose = data.ourPurpose || {};
+  const sectionData = ourPurpose.sectionData || {};
 
-  const ourPurpose = data.ourPurpose;
-  if (!ourPurpose) {
-    throw new Error('OurPurpose data not found in Strapi response. Please add ourPurpose component to your homepage content.');
-  }
+  const heading =
+    typeof sectionData.heading === "string"
+      ? sectionData.heading.split("\n").filter(Boolean)
+      : Array.isArray(sectionData.heading)
+      ? sectionData.heading
+      : [];
 
-  const sectionData = ourPurpose.sectionData;
-  if (!sectionData) {
-    throw new Error('OurPurpose sectionData not found in Strapi response. Please add sectionData to your ourPurpose component.');
-  }
+  const description =
+    typeof sectionData.paragraphs === "string"
+      ? sectionData.paragraphs.split("\n").filter(Boolean)
+      : Array.isArray(sectionData.paragraphs)
+      ? sectionData.paragraphs
+      : [];
 
-  // Extract eyebrow
-  if (!sectionData.eyebrow) {
-    throw new Error('Eyebrow not found in ourPurpose sectionData. Please add eyebrow field in Strapi.');
-  }
-
-  // Extract and split heading by newlines
-  if (!sectionData.heading) {
-    throw new Error('Heading not found in ourPurpose sectionData. Please add heading field in Strapi.');
-  }
-  const heading = typeof sectionData.heading === 'string' 
-    ? sectionData.heading.split('\n').filter(line => line.trim())
-    : sectionData.heading;
-
-  // Extract and split paragraphs/description by newlines
-  if (!sectionData.paragraphs) {
-    throw new Error('Paragraphs not found in ourPurpose sectionData. Please add paragraphs field in Strapi.');
-  }
-  const description = typeof sectionData.paragraphs === 'string'
-    ? sectionData.paragraphs.split('\n').filter(para => para.trim())
-    : sectionData.paragraphs;
-
-  // Extract cards - required, throw error if missing
-  const cards = ourPurpose.cards;
-  if (!cards || !Array.isArray(cards) || cards.length === 0) {
-    throw new Error('Cards not found in ourPurpose data. Please add cards array in Strapi.');
-  }
-
-  // Map cards array
-  const mappedCards = cards.map((card, index) => {
-    if (!card.title) {
-      throw new Error(`Card ${index + 1} is missing title. Please add title field in Strapi.`);
-    }
-    if (!card.description) {
-      throw new Error(`Card ${index + 1} is missing description. Please add description field in Strapi.`);
-    }
-    if (!card.cta) {
-      throw new Error(`Card ${index + 1} is missing CTA. Please add cta field in Strapi.`);
-    }
-    if (!card.cta.text || !card.cta.href) {
-      throw new Error(`Card ${index + 1} CTA is incomplete. Please provide both text and href in Strapi.`);
-    }
-
-    // Split description by newlines
-    const cardDescription = typeof card.description === 'string'
-      ? card.description.split('\n').filter(line => line.trim())
-      : card.description;
-
-    return {
-      id: card.id || index + 1,
-      title: card.title,
-      description: cardDescription,
-      ctaText: card.cta.text,
-      ctaHref: card.cta.href
-    };
-  });
+  const cards = Array.isArray(ourPurpose.cards) ? ourPurpose.cards : [];
 
   return {
-    eyebrow: sectionData.eyebrow,
+    eyebrow: sectionData.eyebrow || "",
     heading,
     description,
-    cards: mappedCards,
-    // Image and CTA are optional - only include if not null
-    ...(sectionData.image && {
-      image: {
-        url: getStrapiMedia(sectionData.image),
-        alt: sectionData.image.alternativeText || sectionData.image.caption || '',
-        width: sectionData.image.width,
-        height: sectionData.image.height
-      }
-    }),
-    ...(sectionData.cta && sectionData.cta.text && sectionData.cta.href && {
-      cta: {
-        text: sectionData.cta.text,
-        href: sectionData.cta.href
-      }
-    })
+    cards: cards.map((card, index) => ({
+      id: card?.id || index + 1,
+      title: card?.title || "",
+      description:
+        typeof card?.description === "string"
+          ? card.description.split("\n").filter(Boolean)
+          : Array.isArray(card?.description)
+          ? card.description
+          : [],
+      ctaText: card?.cta?.text || "",
+      ctaHref: card?.cta?.href || "#",
+    })),
   };
 }
 
 /**
- * Map Strapi homepage overview data to Overview component format
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted overview data
- * @throws {Error} If required data is missing from Strapi
+ * Map Overview
  */
 export function mapHomepageOverviewData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  // Log for debugging
-  console.log('Mapping Overview data. Full response:', JSON.stringify(strapiData, null, 2));
-  
-  if (!strapiData) {
-  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-  return {};
-}
+  if (!strapiData?.data) return defaultOverview();
 
-  const overView = data.overView;
-  if (!overView) {
-    throw new Error('Overview data not found in Strapi response. Please add overView component to your homepage content.');
-  }
+  const data = strapiData.data;
+  const overView = data.overView || {};
+  const sectionData = overView.sectionData || {};
 
-  const sectionData = overView.sectionData;
-  if (!sectionData) {
-    throw new Error('Overview sectionData not found in Strapi response. Please add sectionData to your overView component.');
-  }
+  const heading =
+    typeof sectionData.heading === "string"
+      ? sectionData.heading.split("\n").filter(Boolean)
+      : Array.isArray(sectionData.heading)
+      ? sectionData.heading
+      : [];
 
-  // Extract eyebrow
-  if (!sectionData.eyebrow) {
-    throw new Error('Eyebrow not found in overview sectionData. Please add eyebrow field in Strapi.');
-  }
-
-  // Extract and split heading by newlines
-  if (!sectionData.heading) {
-    throw new Error('Heading not found in overview sectionData. Please add heading field in Strapi.');
-  }
-  const heading = typeof sectionData.heading === 'string' 
-    ? sectionData.heading.split('\n').filter(line => line.trim())
-    : sectionData.heading;
-
-  // Extract stats - required, throw error if missing
-  const stats = overView.stats;
-  if (!stats || !Array.isArray(stats) || stats.length === 0) {
-    throw new Error('Stats not found in overview data. Please add stats array in Strapi.');
-  }
-
-  // Map stats array - extract suffix from number if present, otherwise default to "+"
-  const mappedStats = stats.map((stat, index) => {
-    if (!stat.label) {
-      throw new Error(`Stat ${index + 1} is missing label. Please add label field in Strapi.`);
-    }
-    if (!stat.number) {
-      throw new Error(`Stat ${index + 1} is missing number. Please add number field in Strapi.`);
-    }
-
-    // Extract suffix from number if it exists (e.g., "15+", "100+")
-    // Otherwise default to "+"
-    let number = stat.number.toString().trim();
-    let suffix = '+';
-    
-    // Check if number ends with a non-digit character (like +, %, etc.)
-    const suffixMatch = number.match(/[^\d]+$/);
-    if (suffixMatch) {
-      suffix = suffixMatch[0];
-      number = number.replace(/[^\d]+$/, '').trim();
-    }
-
-    return {
-      number,
-      suffix,
-      label: stat.label,
-      // Include CTA with fallback
-      cta: {
-        text: stat.cta?.text || 'Know More',
-        href: stat.cta?.href || '#'
-      }
-    };
-  });
+  const stats = Array.isArray(overView.stats) ? overView.stats : [];
 
   return {
-    eyebrow: sectionData.eyebrow,
+    eyebrow: sectionData.eyebrow || "",
     heading,
-    stats: mappedStats,
-    // paragraphs, image, and cta are optional - only include if not null
-    ...(sectionData.paragraphs && {
-      paragraphs: typeof sectionData.paragraphs === 'string'
-        ? sectionData.paragraphs.split('\n').filter(para => para.trim())
-        : sectionData.paragraphs
-    }),
-    ...(sectionData.image && {
-      image: {
-        url: getStrapiMedia(sectionData.image),
-        alt: sectionData.image.alternativeText || sectionData.image.caption || '',
-        width: sectionData.image.width,
-        height: sectionData.image.height
-      }
-    }),
-    ...(sectionData.cta && sectionData.cta.text && sectionData.cta.href && {
+    stats: stats.map((stat) => ({
+      number: (stat?.number || "").toString(),
+      suffix: "+",
+      label: stat?.label || "",
       cta: {
-        text: sectionData.cta.text,
-        href: sectionData.cta.href
-      }
-    })
+        text: stat?.cta?.text || "Know More",
+        href: stat?.cta?.href || "#",
+      },
+    })),
   };
 }
 
 /**
- * Map Strapi homepage ourBusiness data to OurBusiness component format
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted ourBusiness data
- * @throws {Error} If required data is missing from Strapi
+ * Map OurBusiness
  */
 export function mapHomepageOurBusinessData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  // Log for debugging
-  console.log('Mapping OurBusiness data. Full response:', JSON.stringify(strapiData, null, 2));
-  
-  if (!strapiData) {
-  console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-  return {};
-}
+  if (!strapiData?.data) return defaultOurBusiness();
 
-
-  const ourBusiness = data.ourBusiness;
-  if (!ourBusiness) {
-    throw new Error('OurBusiness data not found in Strapi response. Please add ourBusiness component to your homepage content.');
-  }
-
-  const sectionData = ourBusiness.sectionData;
-  if (!sectionData) {
-    throw new Error('OurBusiness sectionData not found in Strapi response. Please add sectionData to your ourBusiness component.');
-  }
-
-  // Extract heading - required
-  if (!sectionData.heading) {
-    throw new Error('Heading not found in ourBusiness sectionData. Please add heading field in Strapi.');
-  }
-  const heading = typeof sectionData.heading === 'string' 
-    ? sectionData.heading.split('\n').filter(line => line.trim())
-    : sectionData.heading;
-
-  // Extract paragraphs/description - required
-  if (!sectionData.paragraphs) {
-    throw new Error('Paragraphs not found in ourBusiness sectionData. Please add paragraphs field in Strapi.');
-  }
-  const description = typeof sectionData.paragraphs === 'string'
-    ? sectionData.paragraphs.split('\n').filter(para => para.trim())
-    : sectionData.paragraphs;
-
-  // Extract image - required
-  if (!sectionData.image) {
-    throw new Error('Image not found in ourBusiness sectionData. Please add image field in Strapi.');
-  }
-  if (!sectionData.image.url) {
-    throw new Error('Image URL is missing in ourBusiness sectionData. Please ensure the image is properly uploaded in Strapi.');
-  }
-  const imageUrl = getStrapiMedia(sectionData.image);
-  if (!imageUrl) {
-    throw new Error('Failed to generate image URL from Strapi data.');
-  }
-
-  // Extract CTA - required
-  if (!sectionData.cta) {
-    throw new Error('CTA not found in ourBusiness sectionData. Please add cta field in Strapi.');
-  }
-  if (!sectionData.cta.text || !sectionData.cta.href) {
-    throw new Error('CTA data incomplete in ourBusiness sectionData. Please provide both text and href in Strapi.');
-  }
+  const data = strapiData.data;
+  const ourBusiness = data.ourBusiness || {};
+  const sectionData = ourBusiness.sectionData || {};
+  const imageObj = sectionData.image || null;
 
   return {
-    heading,
-    description,
-    image: imageUrl,
-    imageAlt: sectionData.image.alternativeText || sectionData.image.caption || 'Healthcare Professional with Patient',
+    heading:
+      typeof sectionData.heading === "string"
+        ? sectionData.heading.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.heading)
+        ? sectionData.heading
+        : [],
+    description:
+      typeof sectionData.paragraphs === "string"
+        ? sectionData.paragraphs.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.paragraphs)
+        ? sectionData.paragraphs
+        : [],
+    image: getStrapiMedia(imageObj) || "",
+    imageAlt: imageObj?.alternativeText || imageObj?.caption || "",
     cta: {
-      text: sectionData.cta.text,
-      href: sectionData.cta.href
+      text: sectionData.cta?.text || "",
+      href: sectionData.cta?.href || "#",
     },
-    // Eyebrow is optional - only include if not null
-    ...(sectionData.eyebrow && { eyebrow: sectionData.eyebrow })
   };
 }
 
 /**
- * Map Strapi homepage sustainability data to Sustainability component format
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted sustainability data
- * @throws {Error} If required data is missing from Strapi
+ * Map Sustainability
  */
 export function mapHomepageSustainabilityData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  // Log for debugging
-  console.log('Mapping Sustainability data. Full response:', JSON.stringify(strapiData, null, 2));
-  
-  if (!strapiData) {
-    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-    return {};
-  }
+  if (!strapiData?.data) return defaultSectionWithBg();
 
-  const sustainability = data.sustainability;
-  if (!sustainability) {
-    throw new Error('Sustainability data not found in Strapi response. Please add sustainability component to your homepage content.');
-  }
-
-  const sectionData = sustainability.sectionData;
-  if (!sectionData) {
-    throw new Error('Sustainability sectionData not found in Strapi response. Please add sectionData to your sustainability component.');
-  }
-
-  // Extract eyebrow - required
-  if (!sectionData.eyebrow) {
-    throw new Error('Eyebrow not found in sustainability sectionData. Please add eyebrow field in Strapi.');
-  }
-
-  // Extract and split heading by newlines
-  if (!sectionData.heading) {
-    throw new Error('Heading not found in sustainability sectionData. Please add heading field in Strapi.');
-  }
-  const heading = typeof sectionData.heading === 'string' 
-    ? sectionData.heading.split('\n').filter(line => line.trim())
-    : sectionData.heading;
-
-  // Extract paragraphs/description - required
-  if (!sectionData.paragraphs) {
-    throw new Error('Paragraphs not found in sustainability sectionData. Please add paragraphs field in Strapi.');
-  }
-  const description = typeof sectionData.paragraphs === 'string'
-    ? sectionData.paragraphs.split('\n').filter(para => para.trim())
-    : sectionData.paragraphs;
-
-  // Extract image/backgroundImage - required
-  if (!sectionData.image) {
-    throw new Error('Image not found in sustainability sectionData. Please add image field in Strapi.');
-  }
-  if (!sectionData.image.url) {
-    throw new Error('Image URL is missing in sustainability sectionData. Please ensure the image is properly uploaded in Strapi.');
-  }
-  const imageUrl = getStrapiMedia(sectionData.image);
-  if (!imageUrl) {
-    throw new Error('Failed to generate image URL from Strapi data.');
-  }
-
-  // Extract CTA - required
-  if (!sectionData.cta) {
-    throw new Error('CTA not found in sustainability sectionData. Please add cta field in Strapi.');
-  }
-  if (!sectionData.cta.text || !sectionData.cta.href) {
-    throw new Error('CTA data incomplete in sustainability sectionData. Please provide both text and href in Strapi.');
-  }
+  const data = strapiData.data;
+  const sectionData = data.sustainability?.sectionData || {};
+  const imageObj = sectionData.image || null;
 
   return {
-    eyebrow: sectionData.eyebrow,
-    heading,
-    description,
-    backgroundImage: imageUrl,
-    imageAlt: sectionData.image.alternativeText || sectionData.image.caption || 'Sustainability',
+    eyebrow: sectionData.eyebrow || "",
+    heading:
+      typeof sectionData.heading === "string"
+        ? sectionData.heading.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.heading)
+        ? sectionData.heading
+        : [],
+    description:
+      typeof sectionData.paragraphs === "string"
+        ? sectionData.paragraphs.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.paragraphs)
+        ? sectionData.paragraphs
+        : [],
+    backgroundImage: getStrapiMedia(imageObj) || "",
+    imageAlt: imageObj?.alternativeText || imageObj?.caption || "",
     cta: {
-      text: sectionData.cta.text,
-      href: sectionData.cta.href
-    }
+      text: sectionData.cta?.text || "",
+      href: sectionData.cta?.href || "#",
+    },
   };
 }
 
 /**
- * Map Strapi homepage CSR data to CSR component format
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted CSR data
- * @throws {Error} If required data is missing from Strapi
+ * Map CSR
  */
 export function mapHomepageCSRData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  // Log for debugging
-  console.log('Mapping CSR data. Full response:', JSON.stringify(strapiData, null, 2));
-  
-  if (!strapiData) {
-    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-    return {};
-  }
+  if (!strapiData?.data) return defaultCSR();
 
-  const csr = data.csr;
-  if (!csr) {
-    throw new Error('CSR data not found in Strapi response. Please add csr component to your homepage content.');
-  }
-
-  const sectionData = csr.sectionData;
-  if (!sectionData) {
-    throw new Error('CSR sectionData not found in Strapi response. Please add sectionData to your csr component.');
-  }
-
-  // Extract eyebrow - required
-  if (!sectionData.eyebrow) {
-    throw new Error('Eyebrow not found in CSR sectionData. Please add eyebrow field in Strapi.');
-  }
-
-  // Extract heading - required
-  if (!sectionData.heading) {
-    throw new Error('Heading not found in CSR sectionData. Please add heading field in Strapi.');
-  }
-  const heading = typeof sectionData.heading === 'string' 
-    ? sectionData.heading.split('\n').filter(line => line.trim())
-    : sectionData.heading;
-
-  // Extract subheading - at csr level, not sectionData
-  if (!csr.subheading) {
-    throw new Error('Subheading not found in CSR data. Please add subheading field in Strapi.');
-  }
-
-  // Extract paragraphs/description - required
-  if (!sectionData.paragraphs) {
-    throw new Error('Paragraphs not found in CSR sectionData. Please add paragraphs field in Strapi.');
-  }
-  const description = typeof sectionData.paragraphs === 'string'
-    ? sectionData.paragraphs.split('\n').filter(para => para.trim())
-    : sectionData.paragraphs;
-
-  // Extract image - required
-  if (!sectionData.image) {
-    throw new Error('Image not found in CSR sectionData. Please add image field in Strapi.');
-  }
-  if (!sectionData.image.url) {
-    throw new Error('Image URL is missing in CSR sectionData. Please ensure the image is properly uploaded in Strapi.');
-  }
-  const imageUrl = getStrapiMedia(sectionData.image);
-  if (!imageUrl) {
-    throw new Error('Failed to generate image URL from Strapi data.');
-  }
-
-  // Extract CTA - required
-  if (!sectionData.cta) {
-    throw new Error('CTA not found in CSR sectionData. Please add cta field in Strapi.');
-  }
-  if (!sectionData.cta.text || !sectionData.cta.href) {
-    throw new Error('CTA data incomplete in CSR sectionData. Please provide both text and href in Strapi.');
-  }
+  const data = strapiData.data;
+  const csr = data.csr || {};
+  const sectionData = csr.sectionData || {};
+  const imageObj = sectionData.image || null;
 
   return {
-    eyebrow: sectionData.eyebrow,
-    heading,
-    subheading: csr.subheading,
-    description,
-    image: imageUrl,
-    imageAlt: sectionData.image.alternativeText || sectionData.image.caption || 'CSR Activities',
+    eyebrow: sectionData.eyebrow || "",
+    heading:
+      typeof sectionData.heading === "string"
+        ? sectionData.heading.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.heading)
+        ? sectionData.heading
+        : [],
+    subheading: csr.subheading || "",
+    description:
+      typeof sectionData.paragraphs === "string"
+        ? sectionData.paragraphs.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.paragraphs)
+        ? sectionData.paragraphs
+        : [],
+    image: getStrapiMedia(imageObj) || "",
+    imageAlt: imageObj?.alternativeText || imageObj?.caption || "",
     cta: {
-      text: sectionData.cta.text,
-      href: sectionData.cta.href
-    }
+      text: sectionData.cta?.text || "",
+      href: sectionData.cta?.href || "#",
+    },
   };
 }
 
 /**
- * Map Strapi homepage life data to Life component format
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted life data
- * @throws {Error} If required data is missing from Strapi
+ * Map Life
  */
 export function mapHomepageLifeData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  // Log for debugging
-  console.log('Mapping Life data. Full response:', JSON.stringify(strapiData, null, 2));
-  
-  if (!strapiData) {
-    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-    return {};
-  }
+  if (!strapiData?.data) return defaultSectionWithBg();
 
-  const life = data.life;
-  if (!life) {
-    throw new Error('Life data not found in Strapi response. Please add life component to your homepage content.');
-  }
-
-  const sectionData = life.sectionData;
-  if (!sectionData) {
-    throw new Error('Life sectionData not found in Strapi response. Please add sectionData to your life component.');
-  }
-
-  // Extract heading - required
-  if (!sectionData.heading) {
-    throw new Error('Heading not found in life sectionData. Please add heading field in Strapi.');
-  }
-  const heading = typeof sectionData.heading === 'string' 
-    ? sectionData.heading.split('\n').filter(line => line.trim())
-    : sectionData.heading;
-
-  // Extract paragraphs/description - required
-  if (!sectionData.paragraphs) {
-    throw new Error('Paragraphs not found in life sectionData. Please add paragraphs field in Strapi.');
-  }
-  const description = typeof sectionData.paragraphs === 'string'
-    ? sectionData.paragraphs.split('\n').filter(para => para.trim())
-    : sectionData.paragraphs;
-
-  // Extract image/backgroundImage - required
-  if (!sectionData.image) {
-    throw new Error('Image not found in life sectionData. Please add image field in Strapi.');
-  }
-  if (!sectionData.image.url) {
-    throw new Error('Image URL is missing in life sectionData. Please ensure the image is properly uploaded in Strapi.');
-  }
-  const imageUrl = getStrapiMedia(sectionData.image);
-  if (!imageUrl) {
-    throw new Error('Failed to generate image URL from Strapi data.');
-  }
-
-  // Extract CTA - required
-  if (!sectionData.cta) {
-    throw new Error('CTA not found in life sectionData. Please add cta field in Strapi.');
-  }
-  if (!sectionData.cta.text || !sectionData.cta.href) {
-    throw new Error('CTA data incomplete in life sectionData. Please provide both text and href in Strapi.');
-  }
+  const data = strapiData.data;
+  const sectionData = data.life?.sectionData || {};
+  const imageObj = sectionData.image || null;
 
   return {
-    heading,
-    description,
-    backgroundImage: imageUrl,
-    imageAlt: sectionData.image.alternativeText || sectionData.image.caption || 'Life at Lupin',
+    eyebrow: sectionData.eyebrow || "",
+    heading:
+      typeof sectionData.heading === "string"
+        ? sectionData.heading.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.heading)
+        ? sectionData.heading
+        : [],
+    description:
+      typeof sectionData.paragraphs === "string"
+        ? sectionData.paragraphs.split("\n").filter(Boolean)
+        : Array.isArray(sectionData.paragraphs)
+        ? sectionData.paragraphs
+        : [],
+    backgroundImage: getStrapiMedia(imageObj) || "",
+    imageAlt: imageObj?.alternativeText || imageObj?.caption || "",
     cta: {
-      text: sectionData.cta.text,
-      href: sectionData.cta.href
+      text: sectionData.cta?.text || "",
+      href: sectionData.cta?.href || "#",
     },
-    // Eyebrow is optional - only include if not null
-    ...(sectionData.eyebrow && { eyebrow: sectionData.eyebrow })
   };
 }
 
 /**
- * Map Strapi homepage newsInsights data to NewsInsights component format
- * 
- * Expected Strapi structure:
- * {
- *   news: {
- *     titile: "News & Insights",  // Section title (note: typo in Strapi)
- *     items: [
- *       {
- *         id: number,
- *         date: "12 September, 2025",
- *         headline: "Headline text",
- *         circleInner: { image object },
- *         cta: { text: "Know More", href: "/" }
- *       }
- *     ]
- *   }
- * }
- * 
- * @param {object} strapiData - Raw Strapi API response
- * @returns {object} Formatted newsInsights data with structure:
- *   { title: string, items: [{ id, date, headline, image: { url, width, height, alt }, href }] }
- * @throws {Error} If required data is missing from Strapi
+ * Map News & Insights
  */
 export function mapHomepageNewsInsightsData(strapiData) {
-  // Handle Strapi v4 response structure
-  const data = strapiData?.data || strapiData;
-  
-  if (!strapiData) {
-    console.warn('SKIP_STRAPI_FETCH: returning empty hero data');
-    return {};
-  }
+  if (!strapiData?.data) return defaultNewsInsights();
 
-  // Extract news object - required
-  if (!data.news) {
-    throw new Error('news not found in Strapi response. Please add news field in Strapi homepage.');
-  }
+  const data = strapiData.data;
+  const news = data.news || {};
 
-  // Extract title from news.titile (note: typo in Strapi field name)
-  const title = data.news.titile || data.news.title;
-  if (!title) {
-    throw new Error('News title not found in Strapi response. Please add titile or title field in news component.');
-  }
-
-  // Extract items array - required
-  if (!data.news.items) {
-    throw new Error('news.items not found in Strapi response. Please add items field in news component.');
-  }
-  if (!Array.isArray(data.news.items) || data.news.items.length === 0) {
-    throw new Error('news.items is empty or not an array. Please add at least one item in Strapi.');
-  }
-
-  // Map each news item
-  const items = data.news.items.map((item, index) => {
-    if (!item.id) {
-      throw new Error(`News item at index ${index} is missing id field. Please provide id in Strapi.`);
-    }
-
-    // Extract date - required
-    if (!item.date) {
-      throw new Error(`News item with id ${item.id} is missing date field. Please add date in Strapi.`);
-    }
-
-    // Extract headline - required
-    if (!item.headline) {
-      throw new Error(`News item with id ${item.id} is missing headline field. Please add headline in Strapi.`);
-    }
-
-    // Extract circleInner image - required
-    if (!item.circleInner) {
-      throw new Error(`News item with id ${item.id} is missing circleInner field. Please add circleInner image in Strapi.`);
-    }
-    if (!item.circleInner.url) {
-      throw new Error(`News item with id ${item.id} has circleInner but image URL is missing. Please ensure the image is properly uploaded in Strapi.`);
-    }
-    const imageUrl = getStrapiMedia(item.circleInner);
-    if (!imageUrl) {
-      throw new Error(`Failed to generate image URL for news item with id ${item.id}.`);
-    }
-
-    // Extract CTA href - required
-    if (!item.cta) {
-      throw new Error(`News item with id ${item.id} is missing cta field. Please add cta in Strapi.`);
-    }
-    if (!item.cta.href) {
-      throw new Error(`News item with id ${item.id} has cta but href is missing. Please provide href in Strapi.`);
-    }
-
-    return {
-      id: item.id,
-      date: item.date,
-      headline: item.headline,
-      image: {
-        url: imageUrl,
-        width: item.circleInner.width || 627,
-        height: item.circleInner.height || 627,
-        alt: item.circleInner.alternativeText || item.circleInner.caption || ''
-      },
-      href: item.cta.href
-    };
-  });
+  const title = news.title || news.titile || "News & Insights";
+  const items = Array.isArray(news.items) ? news.items : [];
 
   return {
-    title: title,
-    items: items
+    title,
+    items: items.map((item, index) => ({
+      id: item?.id || index,
+      date: item?.date || "",
+      headline: item?.headline || "",
+      image: {
+        url: getStrapiMedia(item?.circleInner) || "",
+        width: item?.circleInner?.width || 0,
+        height: item?.circleInner?.height || 0,
+        alt: item?.circleInner?.alternativeText || "",
+      },
+      href: item?.cta?.href || "#",
+    })),
   };
 }
 
 /**
- * Fetch global settings from Strapi (header, footer, etc.)
+ * Articles
  */
-export async function getGlobalSettings() {
-  return fetchAPI('global?populate=deep', {
-    next: { revalidate: 3600 }, // Revalidate every hour
-  });
+export async function getArticles() {
+  return fetchAPI("articles?populate=*", { next: { revalidate: 60 } });
 }
 
+export async function getArticle(slug) {
+  const articles = await fetchAPI(
+    `articles?filters[slug][$eq]=${slug}&populate=*`,
+    { next: { revalidate: 60 } }
+  );
+
+  return articles?.data?.[0] || null;
+}
+
+/**
+ * Global settings
+ */
+export async function getGlobalSettings() {
+  return fetchAPI("global?populate=deep", { next: { revalidate: 3600 } });
+}

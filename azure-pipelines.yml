@@ -8,72 +8,102 @@ variables:
   uatWebAppName: 'lupin-uat'
   nodeVersion: '20.x'
 
+  NEXT_PUBLIC_STRAPI_BASE_URL: 'http://65.2.155.211:1380'
+  NEXT_PUBLIC_STRAPI_API_URL: 'http://65.2.155.211:1380/api'
+  NEXT_PUBLIC_BASE_PDF_URL: 'https://lupin-uat-aqcsfua0hhf0gke8.centralindia-01.azurewebsites.net'
+
 stages:
 
-# =========================
-# BUILD STAGE
-# =========================
+################################
+#       BUILD STAGE
+################################
 - stage: Build
-  displayName: Build Next.js Frontend
+  displayName: "Build frontend"
   jobs:
     - job: BuildJob
       pool:
-        vmImage: ubuntu-latest
+        vmImage: 'ubuntu-latest'
 
       steps:
+
         - task: NodeTool@0
-          displayName: Use Node.js $(nodeVersion)
           inputs:
             versionSpec: '$(nodeVersion)'
+          displayName: "Use Node $(nodeVersion)"
+
+        # If client doesn't want security scanning, comment these 3 tasks
+        - task: AdvancedSecurity-Codeql-Init@1
+          inputs:
+            languages: 'javascript'
+            querysuite: 'security-and-quality'
+          displayName: 'Initialize CodeQL'
+
+        - task: AdvancedSecurity-Dependency-Scanning@1
+          displayName: 'Dependency Scanning'
 
         - script: |
-            export SKIP_STRAPI_FETCH=true
-            npm ci
+            npm install
             npm run build
-          displayName: Install & Build Next.js
+          displayName: "Install & Build Next.js"
+          env:
+            NEXT_PUBLIC_STRAPI_BASE_URL: $(NEXT_PUBLIC_STRAPI_BASE_URL)
+            NEXT_PUBLIC_STRAPI_API_URL: $(NEXT_PUBLIC_STRAPI_API_URL)
+            NEXT_PUBLIC_BASE_PDF_URL: $(NEXT_PUBLIC_BASE_PDF_URL)
 
-        # Prepare standalone bundle
+        - task: AdvancedSecurity-Codeql-Analyze@1
+          displayName: 'Perform CodeQL Analysis'
+
+        # Assemble standalone bundle
         - script: |
             set -e
 
-            echo "Preparing standalone bundle..."
+            echo "Creating standalone bundle..."
             mkdir -p .next/standalone/.next
             mkdir -p .next/standalone/.next/cache
 
-            cp -r .next/static .next/standalone/.next/static
-            cp -r public .next/standalone/public
+            echo "Copying .next/static..."
+            if [ -d ".next/static" ]; then
+              cp -r .next/static .next/standalone/.next/static
+            fi
 
-            echo "Standalone content:"
+            echo "Copying public folder..."
+            if [ -d "public" ]; then
+              cp -r public .next/standalone/public
+            fi
+
+            echo "Standalone bundle content:"
             ls -la .next/standalone
-          displayName: Prepare standalone bundle
+          displayName: "Assemble standalone bundle"
 
         - task: ArchiveFiles@2
-          displayName: Archive standalone output
+          displayName: "Archive standalone output"
           inputs:
-            rootFolderOrFile: '.next/standalone'
+            rootFolderOrFile: "$(System.DefaultWorkingDirectory)/.next/standalone"
             includeRootFolder: false
             archiveType: zip
-            archiveFile: '$(Build.ArtifactStagingDirectory)/frontend.zip'
+            archiveFile: "$(Build.ArtifactStagingDirectory)/frontend.zip"
             replaceExistingArchive: true
 
         - task: PublishBuildArtifacts@1
-          displayName: Publish Artifact
+          displayName: "Publish Artifact"
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)/frontend.zip'
-            ArtifactName: drop
+            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+            ArtifactName: 'drop'
+            publishLocation: 'Container'
 
-# =========================
-# DEPLOY STAGE
-# =========================
+
+################################
+#       UAT DEPLOYMENT
+################################
 - stage: Deploy_UAT
-  displayName: Deploy to UAT
+  displayName: "Deploy to UAT"
   dependsOn: Build
-  condition: succeeded()
+  condition: eq(variables['Build.SourceBranch'], 'refs/heads/uat')
 
   jobs:
     - deployment: DeployUAT
-      displayName: Deploy Frontend to UAT
-      environment: uat
+      displayName: "Deploy to UAT Web App"
+      environment: "uat"
       strategy:
         runOnce:
           deploy:
@@ -82,10 +112,10 @@ stages:
                 artifact: drop
 
               - task: AzureWebApp@1
-                displayName: Deploy to Azure Web App
+                displayName: "Deploy Next.js to UAT"
                 inputs:
-                  azureSubscription: '$(azureServiceConnection)'
+                  azureSubscription: "$(azureServiceConnection)"
                   appType: webAppLinux
-                  appName: '$(uatWebAppName)'
-                  package: '$(Pipeline.Workspace)/drop/frontend.zip'
-                  startUpCommand: 'node server.js'
+                  appName: "$(uatWebAppName)"
+                  package: "$(Pipeline.Workspace)/drop/frontend.zip"
+                  startUpCommand: "node server.js"
