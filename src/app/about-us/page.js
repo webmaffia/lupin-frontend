@@ -1,7 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import Image from 'next/image';
+import Link from 'next/link';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getAboutUs, mapAboutUsTopfoldData, mapTopBannerData } from '@/lib/strapi';
+import { getAboutUs, mapAboutUsTopfoldData, mapAboutUsFoldsData, mapTopBannerData } from '@/lib/strapi';
 import '@/scss/pages/about-us.scss';
 
 // Generate metadata for the About Us page
@@ -16,6 +17,7 @@ export default async function AboutUsPage() {
   // Fetch data from Strapi
   let bannerData = null;
   let topfoldData = null;
+  let foldsData = null;
 
   try {
     const strapiData = await getAboutUs();
@@ -36,6 +38,9 @@ export default async function AboutUsPage() {
 
     // Map Topfold data
     topfoldData = mapAboutUsTopfoldData(strapiData);
+    
+    // Map Folds data
+    foldsData = mapAboutUsFoldsData(strapiData);
   } catch (error) {
     console.error('Error fetching about-us data from Strapi:', error);
     // Will use default data below
@@ -103,6 +108,89 @@ export default async function AboutUsPage() {
                 )}
               </div>
             </div>
+        
+            <section className="about-us-content__fold about-us-content__fold--teal">
+              <div className="about-us-content__fold-container">
+                <div className="about-us-content__fold-image about-us-content__fold-image--left">
+                  <Image
+                    src="/assets/about/image.png"
+                    alt="About Us"
+                    width={800}
+                    height={623}
+                    quality={100}
+                  />
+                  <Link href="#" className="about-us-content__fold-cta">
+                    <div className="about-us-content__fold-cta-circle"></div>
+                    <span className="about-us-content__fold-cta-text">
+                      READ<br />MORE
+                    </span>
+                  </Link>
+                </div>
+                <div className="about-us-content__fold-svg about-us-content__fold-svg--right">
+                  <Image
+                    src="/assets/about/svg1.svg"
+                    alt="Decorative SVG"
+                    width={251}
+                    height={284}
+                    quality={100}
+                  />
+                </div>
+                <h2 className="about-us-content__fold-heading">Our Purpose</h2>
+                <div className="about-us-content__fold-text">
+                  {foldsData?.teal?.text ? (
+                    foldsData.teal.text.split('\n\n').filter(para => para.trim()).map((paragraph, index) => (
+                      <p key={index}>{paragraph.trim()}</p>
+                    ))
+                  ) : (
+                    <>
+                      <p>Founded by Dr. Desh Bandhu Gupta in 1968, Lupin began as a simple but powerful idea: that quality healthcare should be within reach for everyone.</p>
+                      <p>What started as a small, determined venture has grown into a global pharmaceutical leader. This is the story of how that belief took shape, gained momentum, and became the Lupin you see today.</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </section>
+            <section className="about-us-content__fold about-us-content__fold--green">
+              <div className="about-us-content__fold-container">
+                <div className="about-us-content__fold-image about-us-content__fold-image--right">
+                  <Image
+                    src="/assets/about/image.png"
+                    alt="About Us"
+                    width={800}
+                    height={623}
+                    quality={100}
+                  />
+                  <Link href="#" className="about-us-content__fold-cta">
+                    <div className="about-us-content__fold-cta-circle"></div>
+                    <span className="about-us-content__fold-cta-text">
+                      READ<br />MORE
+                    </span>
+                  </Link>
+                </div>
+                <div className="about-us-content__fold-svg about-us-content__fold-svg--left">
+                  <Image
+                    src="/assets/about/svg2.svg"
+                    alt="Decorative SVG"
+                    width={531}
+                    height={384}
+                    quality={100}
+                  />
+                </div>
+                <h2 className="about-us-content__fold-heading">Our Purpose</h2>
+                <div className="about-us-content__fold-text">
+                  {foldsData?.green?.text ? (
+                    foldsData.green.text.split('\n\n').filter(para => para.trim()).map((paragraph, index) => (
+                      <p key={index}>{paragraph.trim()}</p>
+                    ))
+                  ) : (
+                    <>
+                      <p>Founded by Dr. Desh Bandhu Gupta in 1968, Lupin began as a simple but powerful idea: that quality healthcare should be within reach for everyone.</p>
+                      <p>What started as a small, determined venture has grown into a global pharmaceutical leader. This is the story of how that belief took shape, gained momentum, and became the Lupin you see today.</p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </section>
           </div>
         </div>
       </section>

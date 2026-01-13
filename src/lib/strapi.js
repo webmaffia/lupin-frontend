@@ -1225,8 +1225,8 @@ export function mapTopBannerData(topBanner) {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getAboutUs() {
-  // Populate TopBanner and Topfold content
-  return fetchAPI('about-us?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[Topfold][populate]=*', {
+  // Populate TopBanner, Topfold, and Fold sections content
+  return fetchAPI('about-us?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[Topfold][populate]=*&populate[folds][populate]=*', {
     next: { revalidate: 60 },
   });
 }
@@ -1266,6 +1266,52 @@ export function mapAboutUsTopfoldData(strapiData) {
   return {
     heading: heading,
     description: description
+  };
+}
+
+/**
+ * Map about-us folds data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped folds data with text content for each fold
+ */
+export function mapAboutUsFoldsData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  // Check if folds is an array or object
+  const folds = data.folds || data.Folds;
+  
+  if (!folds) {
+    return null;
+  }
+
+  // If folds is an array, map each fold
+  if (Array.isArray(folds)) {
+    return folds.map(fold => ({
+      text: fold.text || fold.content || fold.description || '',
+    }));
+  }
+
+  // If folds is an object with teal and green properties
+  if (folds.teal || folds.green) {
+    return {
+      teal: {
+        text: folds.teal?.text || folds.teal?.content || folds.teal?.description || ''
+      },
+      green: {
+        text: folds.green?.text || folds.green?.content || folds.green?.description || ''
+      }
+    };
+  }
+
+  // Single fold object
+  return {
+    text: folds.text || folds.content || folds.description || ''
   };
 }
 
