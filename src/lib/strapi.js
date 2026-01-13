@@ -1293,6 +1293,7 @@ export function mapAboutUsFoldsData(strapiData) {
   // If folds is an array, map each fold
   if (Array.isArray(folds)) {
     return folds.map(fold => ({
+      heading: fold.heading || fold.title || 'Our Purpose',
       text: fold.text || fold.content || fold.description || '',
     }));
   }
@@ -1301,16 +1302,28 @@ export function mapAboutUsFoldsData(strapiData) {
   if (folds.teal || folds.green) {
     return {
       teal: {
+        heading: folds.teal?.heading || folds.teal?.title || 'Our Purpose',
         text: folds.teal?.text || folds.teal?.content || folds.teal?.description || ''
       },
       green: {
+        heading: folds.green?.heading || folds.green?.title || 'Our Purpose',
         text: folds.green?.text || folds.green?.content || folds.green?.description || ''
       }
     };
   }
+  
+  // If folds is an array of fold objects
+  if (Array.isArray(folds) && folds.length > 0) {
+    return folds.map((fold, index) => ({
+      heading: fold.heading || fold.title || 'Our Purpose',
+      text: fold.text || fold.content || fold.description || '',
+      index: index
+    }));
+  }
 
   // Single fold object
   return {
+    heading: folds.heading || folds.title || 'Our Purpose',
     text: folds.text || folds.content || folds.description || ''
   };
 }

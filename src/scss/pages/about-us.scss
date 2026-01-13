@@ -209,6 +209,11 @@
         opacity: 1;
         visibility: visible;
       }
+      
+      .about-us-content__fold-heading {
+        opacity: 0;
+        visibility: hidden;
+      }
     }
   }
   
@@ -402,6 +407,22 @@
     color: #ffffff;
     margin: 0;
     z-index: 3;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity $transition-base, visibility $transition-base;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    
+    span {
+      display: block;
+      line-height: 1.2;
+      
+      &:not(:last-child) {
+        margin-bottom: 0;
+      }
+    }
     
     @include media('tablet') {
       font-size: vw(60, 768);
@@ -484,6 +505,75 @@
         margin-bottom: vw-mobile(15, 414);
         font-weight: 500;
       }
+    }
+  }
+  
+  &__view-all {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: vw(60);
+    
+    @include media('tablet') {
+      margin-top: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      margin-top: vw-mobile(40, 414);
+    }
+  }
+  
+  &__view-all-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: vw(1836);
+    height: vw(276);
+    border: vw(1) solid rgba(217, 217, 217, 0.5);
+    border-radius: vw(52);
+    text-decoration: none;
+    transition: border-color $transition-base, background-color $transition-base;
+    
+    @include media('tablet') {
+      width: 90%;
+      max-width: vw(1836, 768);
+      height: vw(220, 768);
+      border-radius: vw(40, 768);
+      border-width: vw(1, 768);
+    }
+    
+    @include media('mobile') {
+      width: 90%;
+      max-width: vw-mobile(350, 414);
+      height: vw-mobile(150, 414);
+      border-radius: vw-mobile(30, 414);
+      border-width: vw-mobile(1, 414);
+    }
+    
+    &:hover {
+      border-color: rgba(217, 217, 217, 0.8);
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  }
+  
+  &__view-all-text {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(50);
+    line-height: vw(100.977);
+    color: #ffffff;
+    text-transform: capitalize;
+    text-align: center;
+    
+    @include media('tablet') {
+      font-size: vw(40, 768);
+      line-height: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(28, 414);
+      line-height: vw-mobile(35, 414);
     }
   }
 }
