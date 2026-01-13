@@ -25,6 +25,8 @@ export default function GoldenLine() {
   const isMobile = useIsMobile();
 
   useEffect(() => {
+    if (isMobile) return; // Skip desktop animation on mobile
+    
     const path = pathRef.current;
     const container = containerRef.current;
     const dna = dnaRef.current;
@@ -152,8 +154,11 @@ export default function GoldenLine() {
   useEffect(() => {
     if (!isMobile) return;
 
-    const mobilePath = document.getElementById('Mobile_golden_line');
-    const mobileDna = document.getElementById('DNA');
+    const mobileSvg = document.getElementById('mobileGoldebLine');
+    if (!mobileSvg) return;
+    
+    const mobilePath = mobileSvg.querySelector('#Mobile_golden_line');
+    const mobileDna = mobileSvg.querySelector('#DNA');
     
     if (!mobilePath) return;
 
@@ -232,6 +237,11 @@ export default function GoldenLine() {
       window.removeEventListener('resize', requestScrollUpdate);
     };
   }, [isMobile]);
+
+  // Hide entire component on mobile
+  if (isMobile) {
+    return null;
+  }
 
   return (
     <div ref={containerRef} className="golden-line" style={{ zIndex: 9999 }}>

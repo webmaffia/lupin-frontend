@@ -9,6 +9,7 @@ import CSR from '@/components/CSR';
 import Life from '@/components/Life';
 import NewsInsights from '@/components/NewsInsights';
 import GoldenLine from '@/components/GoldenLine';
+import MobileLine from '@/components/MobileLine';
 import { generateMetadata as generateSEOMetadata, generateOrganizationSchema } from '@/lib/seo';
 import { getHomepage, mapHomepageHeroData, mapHomepageOurStoryData, mapHomepageOurPurposeData, mapHomepageOverviewData, mapHomepageOurBusinessData, mapHomepageSustainabilityData, mapHomepageCSRData, mapHomepageLifeData, mapHomepageNewsInsightsData } from '@/lib/strapi';
 
@@ -63,6 +64,7 @@ export default async function Home() {
 
       <div style={{ position: 'relative' }}>
         <GoldenLine />
+        <MobileLine />
         <Hero data={heroData} />
         <main>
           <OurStory data={ourStoryData} />
