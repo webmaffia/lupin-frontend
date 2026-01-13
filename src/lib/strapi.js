@@ -1218,3 +1218,54 @@ export function mapTopBannerData(topBanner) {
   return bannerData;
 }
 
+/**
+ * Fetch about-us data from Strapi
+ * This is a Single Type, so it returns one entry with TopBanner and Topfold content
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getAboutUs() {
+  // Populate TopBanner and Topfold content
+  return fetchAPI('about-us?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[Topfold][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map about-us topfold data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped topfold data
+ */
+export function mapAboutUsTopfoldData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const topfold = data.Topfold || data.topfold;
+  if (!topfold) {
+    return null;
+  }
+
+  // Extract heading - can be string or array
+  let heading = topfold.heading || topfold.title || '';
+  if (typeof heading === 'string') {
+    // Split by newlines or common separators
+    heading = heading.split(/\n|, | - /).filter(line => line.trim());
+  }
+  if (!Array.isArray(heading) || heading.length === 0) {
+    return null;
+  }
+
+  // Extract description/paragraph
+  const description = topfold.description || topfold.paragraph || topfold.text || '';
+
+  return {
+    heading: heading,
+    description: description
+  };
+}
+
