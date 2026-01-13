@@ -46,6 +46,8 @@ stages:
             npm run build
           displayName: "Install & Build Next.js"
           env:
+            SKIP_STRAPI_FETCH: "true"
+            NEXT_PUBLIC_STRAPI_URL: $(NEXT_PUBLIC_STRAPI_BASE_URL)
             NEXT_PUBLIC_STRAPI_BASE_URL: $(NEXT_PUBLIC_STRAPI_BASE_URL)
             NEXT_PUBLIC_STRAPI_API_URL: $(NEXT_PUBLIC_STRAPI_API_URL)
             NEXT_PUBLIC_BASE_PDF_URL: $(NEXT_PUBLIC_BASE_PDF_URL)
