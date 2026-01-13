@@ -15,7 +15,7 @@ export default function Header({ data }) {
       alt: "Lupin Logo"
     },
     navigation: [
-      { label: "About Us", href: "/about", active: false },
+      { label: "About Us", href: "/about-us", active: false },
       { label: "Our Business", href: "/business", active: false },
       { label: "Investors", href: "/investors", active: false },
       { label: "Sustainability", href: "/sustainability", active: false },
