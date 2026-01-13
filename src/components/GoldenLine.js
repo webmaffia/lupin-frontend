@@ -148,6 +148,91 @@ export default function GoldenLine() {
     };
   }, []);
 
+  // Mobile scroll animation
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const mobilePath = document.getElementById('Mobile_golden_line');
+    const mobileDna = document.getElementById('DNA');
+    
+    if (!mobilePath) return;
+
+    // Get the total length of the path
+    const pathLength = mobilePath.getTotalLength();
+    
+    // Set up the starting positions - path completely hidden
+    mobilePath.style.strokeDasharray = `${pathLength} ${pathLength}`;
+    mobilePath.style.strokeDashoffset = `${pathLength}`;
+    mobilePath.style.transition = 'none';
+    
+    // Initially hide DNA group if it exists
+    if (mobileDna) {
+      mobileDna.style.opacity = '0';
+      mobileDna.style.transition = 'opacity 0.5s ease';
+    }
+
+    // Function to update the path drawing based on scroll
+    const handleScroll = () => {
+      // Get current scroll position
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      
+      // Get total scrollable height
+      const documentHeight = document.documentElement.scrollHeight;
+      const windowHeight = window.innerHeight;
+      const maxScroll = documentHeight - windowHeight;
+      
+      // Calculate scroll percentage (0 at top, 1 at bottom)
+      let percentage = 0;
+      if (maxScroll > 0) {
+        percentage = scrollTop / maxScroll;
+      }
+      
+      // Ensure percentage is between 0 and 1
+      percentage = Math.max(0, Math.min(1, percentage));
+      
+      // Calculate offset (goes from pathLength down to 0)
+      const offset = pathLength * (1 - percentage);
+      
+      // Update stroke-dashoffset
+      mobilePath.style.strokeDashoffset = `${offset}`;
+      
+      // Show/hide DNA group based on scroll percentage
+      if (mobileDna) {
+        if (percentage > 0.1) {
+          mobileDna.style.opacity = '1';
+        } else {
+          mobileDna.style.opacity = '0';
+        }
+      }
+    };
+
+    // Use requestAnimationFrame for smoother animation
+    let ticking = false;
+    const requestScrollUpdate = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          handleScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    // Add scroll event listener with passive flag for better performance
+    window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+    // Also listen to resize in case viewport changes
+    window.addEventListener('resize', requestScrollUpdate, { passive: true });
+    
+    // Initial call
+    handleScroll();
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', requestScrollUpdate);
+      window.removeEventListener('resize', requestScrollUpdate);
+    };
+  }, [isMobile]);
+
   return (
     <div ref={containerRef} className="golden-line" style={{ zIndex: 9999 }}>
       {!isMobile ? (
