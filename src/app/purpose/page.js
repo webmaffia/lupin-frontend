@@ -31,47 +31,7 @@ export default function PurposePage() {
       <Header />
       <InnerBanner data={bannerData} />
       <main className="wrapper">
-        {/* Section 1: Our Purpose */}
-        <section className="purpose-hero">
-          <div className="container-para">
-            <div className="purpose-hero__content">
-              <div className="purpose-hero__text">
-                <div className="purpose-hero__petal">
-                  <Image
-                    src="/assets/images/purpose/petal.webp"
-                    alt="Petal"
-                    width={200}
-                    height={200}
-                    quality={100}
-                  />
-                </div>
-                <h1 className="purpose-hero__title">Our Purpose</h1>
-                <h2 className="purpose-hero__subtitle">
-                  We Catalyze Treatments<br />
-                  That Transform Hope Into Healing
-                </h2>
-              </div>
-              <div className="purpose-hero__flower">
-                <Image
-                  src="/assets/images/purpose/bigflower.webp"
-                  alt="Hope and Healing"
-                  width={600}
-                  height={600}
-                  quality={100}
-                />
-              </div>
-              <div className="purpose-hero__media">
-                <Image
-                  src="/assets/images/purpose/girl.webp"
-                  alt="Hope and Healing"
-                  width={800}
-                  height={800}
-                  quality={100}
-                />
-              </div>
-            </div>
-          </div>
-        </section>
+
 
         {/* Section 2: Catalyzing Hope Into Healing */}
         <section className="purpose-story">
