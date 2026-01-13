@@ -121,9 +121,10 @@
   &__image {
     position: absolute !important;
     left: 30.92% !important;
-    top: 9.71% !important;
+    top: auto !important;
     width: 49.12% !important;
-    height: 92.33% !important;
+    height: auto !important;
+    bottom: 0;
     object-fit: contain;
     object-position: center;
     

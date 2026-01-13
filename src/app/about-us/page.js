@@ -110,23 +110,71 @@ export default async function AboutUsPage() {
             </div>
         
             {(() => {
-              // Default text content for all folds
-              const defaultText = 'Founded by Dr. Desh Bandhu Gupta in 1968, Lupin began as a simple but powerful idea: that quality healthcare should be within reach for everyone.\n\nWhat started as a small, determined venture has grown into a global pharmaceutical leader. This is the story of how that belief took shape, gained momentum, and became the Lupin you see today.';
-              
-              // Default fold headings
+              // Default fold data with headings and text content
               const defaultFolds = [
-                { heading: 'Our\nStory', color: 'teal', svg: 'svg1', svgPosition: 'right', imagePosition: 'left', text: defaultText },
-                { heading: 'Our Purpose', color: 'green', svg: 'svg2', svgPosition: 'left', imagePosition: 'right', text: defaultText },
-                { heading: 'Our\nValues', color: 'teal', svg: 'svg1', svgPosition: 'right', imagePosition: 'left', text: defaultText },
-                { heading: 'Our\nLeadership', color: 'green', svg: 'svg2', svgPosition: 'left', imagePosition: 'right', text: defaultText },
-                { heading: 'Global\nPresence', color: 'teal', svg: 'svg1', svgPosition: 'right', imagePosition: 'left', text: defaultText }
+                { 
+                  heading: 'Our\nStory', 
+                  color: 'teal', 
+                  svg: 'svg1', 
+                  svgPosition: 'right', 
+                  imagePosition: 'left', 
+                  text: 'Founded by Dr. Desh Bandhu Gupta in 1968, Lupin began as a simple but powerful idea: that quality healthcare should be within reach for everyone.\n\nWhat started as a small, determined venture has grown into a global pharmaceutical leader. This is the story of how that belief took shape, gained momentum, and became the Lupin you see today.'
+                },
+                { 
+                  heading: 'Our Purpose', 
+                  color: 'green', 
+                  svg: 'svg2', 
+                  svgPosition: 'left', 
+                  imagePosition: 'right', 
+                  text: 'We Catalyze Treatments that Transform Hope into Healing\n\nOurs is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders'
+                },
+                { 
+                  heading: 'Our\nValues', 
+                  color: 'teal', 
+                  svg: 'svg1', 
+                  svgPosition: 'right', 
+                  imagePosition: 'left', 
+                  text: 'At Lupin, we pride ourselves on our promise of caring for our customers, our commitment to our employees\' growth and welfare, our continuous quality focus, and the spirit of innovation that drives each of us to discover better ways of working. This culture is shaped and driven by our values.'
+                },
+                { 
+                  heading: 'Our\nLeadership', 
+                  color: 'green', 
+                  svg: 'svg2', 
+                  svgPosition: 'left', 
+                  imagePosition: 'right', 
+                  text: 'At Lupin, we are guided by a team that brings experience, vision, and a shared commitment to growth. We strive to create an impact, innovate, and bring meaningful change every day.'
+                },
+                { 
+                  heading: 'Global\nPresence', 
+                  color: 'teal', 
+                  svg: 'svg1', 
+                  svgPosition: 'right', 
+                  imagePosition: 'left', 
+                  text: 'From a single vision in 1968 to an organization that moves across borders, Lupin has grown into a network of 24,000+ people across 11 countries and six continents.'
+                },
+                { 
+                  heading: 'Our Manufacturing\nApproach', 
+                  color: 'green', 
+                  svg: 'svg2', 
+                  svgPosition: 'left', 
+                  imagePosition: 'right', 
+                  text: 'Our manufacturing strength is built on the power of technology, advanced facilities, rigorous quality systems, and a commitment to sustainable, reliable production.'
+                },
+                { 
+                  heading: 'Our Science', 
+                  color: 'teal', 
+                  svg: 'svg1', 
+                  svgPosition: 'right', 
+                  imagePosition: 'left', 
+                  text: 'At Lupin, our Research and Development (R&D) division drives our industry positioning as a leading pharmaceutical solutions provider in the US and in India. It develops solutions that allow us to deliver on our purpose and vision.'
+                }
               ];
               
               // Use Strapi data if available, otherwise use defaults
               const foldsToRender = Array.isArray(foldsData) 
                 ? foldsData.map((fold, index) => ({
                     heading: fold.heading || defaultFolds[index]?.heading || 'Our Purpose',
-                    text: fold.text || defaultText,
+                    text: fold.text || defaultFolds[index]?.text || '',
                     color: index % 2 === 0 ? 'teal' : 'green',
                     svg: index % 2 === 0 ? 'svg1' : 'svg2',
                     svgPosition: index % 2 === 0 ? 'right' : 'left',
@@ -136,7 +184,7 @@ export default async function AboutUsPage() {
               
               return foldsToRender.map((fold, index) => {
                 const headingLines = fold.heading.split('\n').filter(line => line.trim());
-                const textContent = fold.text || defaultText;
+                const textContent = fold.text || defaultFolds[index]?.text || '';
                 
                 return (
                   <section key={index} className={`about-us-content__fold about-us-content__fold--${fold.color}`}>
