@@ -1328,3 +1328,57 @@ export function mapAboutUsFoldsData(strapiData) {
   };
 }
 
+/**
+ * Fetch our-values data from Strapi
+ * This is a Single Type, so it returns one entry with TopBanner and ContentSection
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getOurValues() {
+  // Populate TopBanner and ContentSection with decoration image
+  return fetchAPI('our-values?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[ContentSection][populate][decoration][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map our-values content section data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped content section data
+ */
+export function mapOurValuesContentData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const contentSection = data.ContentSection || data.contentSection;
+  if (!contentSection) {
+    return null;
+  }
+
+  // Extract heading
+  const heading = contentSection.heading || contentSection.title || '';
+
+  // Extract description
+  const description = contentSection.description || contentSection.text || contentSection.paragraph || '';
+
+  // Extract decoration image
+  const decoration = contentSection.decoration?.data?.attributes || contentSection.decoration;
+  const decorationUrl = decoration ? getStrapiMedia(decoration) : null;
+
+  return {
+    heading: heading,
+    description: description,
+    decoration: decorationUrl ? {
+      url: decorationUrl,
+      alt: decoration.alternativeText || decoration.caption || 'Decorative element',
+      width: decoration.width || 1228,
+      height: decoration.height || 576
+    } : null
+  };
+}
+
