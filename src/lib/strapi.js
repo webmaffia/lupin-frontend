@@ -1389,8 +1389,8 @@ export function mapOurValuesContentData(strapiData) {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getCommunity() {
-  // Populate TopBanner and InfoSection with image
-  return fetchAPI('community?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[InfoSection][populate][image][populate]=*', {
+  // Populate TopBanner, InfoSection, LivelihoodTabs, and KeyHighlights with nested data
+  return fetchAPI('community?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[InfoSection][populate][image][populate]=*&populate[LivelihoodTabs][populate][tabs][populate][content][populate][image][populate]=*&populate[KeyHighlights][populate][highlights][populate]=*', {
     next: { revalidate: 60 },
   });
 }
@@ -1437,5 +1437,111 @@ export function mapCommunityInfoData(strapiData) {
       height: image.height || 600
     } : null
   };
+}
+
+/**
+ * Map community livelihood tabs data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Array} Mapped tabs data
+ */
+export function mapLivelihoodTabsData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const livelihoodTabs = data.LivelihoodTabs || data.livelihoodTabs;
+  if (!livelihoodTabs || !livelihoodTabs.tabs || !Array.isArray(livelihoodTabs.tabs)) {
+    return null;
+  }
+
+  // Map each tab
+  const mappedTabs = livelihoodTabs.tabs.map((tab, index) => {
+    const tabId = tab.id || index + 1;
+    
+    // Extract title - handle newlines
+    let title = tab.title || tab.name || '';
+    if (typeof title === 'string' && title.includes('\n')) {
+      // Keep newlines for display
+      title = title;
+    }
+
+    // Extract content if available
+    let content = null;
+    if (tab.content) {
+      const contentData = tab.content;
+      
+      // Extract heading
+      const heading = contentData.heading || contentData.title || '';
+      
+      // Extract paragraphs
+      let paragraphs = contentData.paragraphs || contentData.paragraph || [];
+      if (typeof paragraphs === 'string') {
+        paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
+      }
+      if (!Array.isArray(paragraphs)) {
+        paragraphs = paragraphs ? [paragraphs] : [];
+      }
+
+      // Extract image
+      const image = contentData.image?.data?.attributes || contentData.image;
+      const imageUrl = image ? getStrapiMedia(image) : null;
+
+      content = {
+        heading: heading,
+        paragraphs: paragraphs,
+        image: imageUrl ? {
+          url: imageUrl,
+          alt: image.alternativeText || image.caption || 'Tab Image',
+          width: image.width || 600,
+          height: image.height || 600
+        } : null
+      };
+    }
+
+    return {
+      id: tabId,
+      title: title,
+      content: content
+    };
+  });
+
+  return mappedTabs.length > 0 ? mappedTabs : null;
+}
+
+/**
+ * Map community key highlights data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Array} Mapped highlights data
+ */
+export function mapKeyHighlightsData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const keyHighlights = data.KeyHighlights || data.keyHighlights;
+  if (!keyHighlights || !keyHighlights.highlights || !Array.isArray(keyHighlights.highlights)) {
+    return null;
+  }
+
+  // Map each highlight
+  const mappedHighlights = keyHighlights.highlights.map((highlight, index) => {
+    const highlightId = highlight.id || index + 1;
+    
+    return {
+      id: highlightId,
+      number: highlight.number || highlight.metric || '',
+      description: highlight.description || highlight.text || ''
+    };
+  });
+
+  return mappedHighlights.length > 0 ? mappedHighlights : null;
 }
 

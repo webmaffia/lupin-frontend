@@ -1,7 +1,11 @@
 import InnerBanner from '@/components/InnerBanner';
 import Image from 'next/image';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getCommunity, mapCommunityInfoData, mapTopBannerData } from '@/lib/strapi';
+import { getCommunity, mapCommunityInfoData, mapTopBannerData, mapLivelihoodTabsData } from '@/lib/strapi';
+import LivelihoodTabs from '@/components/community/LivelihoodTabs';
+import LivesProgram from '@/components/community/LivesProgram';
+import FoundationLink from '@/components/community/FoundationLink';
+import ImpactAtGlance from '@/components/community/ImpactAtGlance';
 import '@/scss/pages/community.scss';
 
 // Generate metadata for the Community page
@@ -18,6 +22,7 @@ export default async function CommunityPage() {
   // Fetch data from Strapi
   let bannerData = null;
   let infoData = null;
+  let tabsData = null;
 
   try {
     const strapiData = await getCommunity();
@@ -30,6 +35,9 @@ export default async function CommunityPage() {
 
     // Map InfoSection data
     infoData = mapCommunityInfoData(strapiData);
+
+    // Map LivelihoodTabs data
+    tabsData = mapLivelihoodTabsData(strapiData);
   } catch (error) {
     console.error('Error fetching community data from Strapi:', error);
     // Will use default data below
@@ -133,6 +141,10 @@ export default async function CommunityPage() {
           </div>
         </div>
       </section>
+      <LivelihoodTabs tabs={tabsData || []} />
+      <LivesProgram programData={null} />
+      <FoundationLink linkData={null} />
+      <ImpactAtGlance impactData={null} />
     </div>
   );
 }
