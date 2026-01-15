@@ -6,9 +6,7 @@ export default function InvestorIntro({ data }) {
   // Default data with exact line breaks as per Figma design (will be replaced by Strapi)
   const introData = data || {
     paragraphs: [
-      "Lupin has maintained a strong presence across key markets and a razor-sharp focus ",
-      "on long term sustainable growth. This section provides access to key investor information, that includes financial reports,",
-      "regulatory filings, and disclosures. The section also highlights corporate governance framework and practices that reflect",
+      "Lupin has maintained a strong presence across key markets and a razor-sharp focus","on long term sustainable growth. This section provides access to key investor information, that includes financial reports,", "regulatory filings, and disclosures. The section also highlights corporate governance framework and practices that reflect",
       "and support accountability and transparency. Shareholders can find relevant information on ownership and policies ",
       "that are designed to protect and enhance shareholder value."
     ]
@@ -48,9 +46,9 @@ export default function InvestorIntro({ data }) {
             {paragraphs.map((paragraph, index) => (
               <p key={index} className="investor-intro__paragraph">
                 {/* Capitalize first letter of first paragraph */}
-                {index === 0 && paragraph ? (
+                {/* {index === 0 && paragraph ? (
                   <>
-                    <span className="investor-intro__first-letter">
+                    <span>
                       {paragraph.charAt(0).toUpperCase()}
                     </span>
                     {paragraph.slice(1)}
@@ -60,7 +58,9 @@ export default function InvestorIntro({ data }) {
                   paragraph.charAt(0).toUpperCase() === paragraph.charAt(0) 
                     ? paragraph 
                     : paragraph.charAt(0).toUpperCase() + paragraph.slice(1)
-                )}
+                )} */}
+                {/* Print paragraphs as they are */}
+                {paragraph}
               </p>
             ))}
           </div>

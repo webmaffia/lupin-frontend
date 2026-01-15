@@ -13,9 +13,9 @@ export default function SakshamNiveshak({ data }) {
         text: [
           "Pursuant to the provisions of Section 124(6) of the Companies Act, 2013 and Investor Education & Protection Fund (IEPF) Authority Rules 2016, the dividend which has remained unclaimed/unpaid for a period of seven years shall be credited to the IEPF Account.",
            
-          "Further, the corresponding shares on which dividend has remained unclaimed/unpaid for seven consecutive years shall also be transferred to the IEPF Account as per the procedure prescribed.",
+          "Further, the corresponding shares on which dividend has remained unclaimed/unpaid for seven consecutive years shall also be transferred to the IEPF account as per the procedure prescribed.",
           "",
-          "Shareholders who have not claimed their dividend and remained unpaid with the Company, are requested to update the below mentioned details to claim their unpaid dividends."
+          "Shareholders who have not claimed their dividend and remained unpaid with the company, are requested to update the below mentioned details to claim their unpaid dividends."
         ]
       },
       {
@@ -33,7 +33,7 @@ export default function SakshamNiveshak({ data }) {
       {
         type: 'paragraph',
         text: [
-          "If the details are not updated for claiming the unclaimed/unpaid dividend, and the same has remained unclaimed for seven consecutive years, the Company shall initiate to transfer the same to the IEPF Account.",
+          "If the details are not updated for claiming the unclaimed/unpaid dividend, and the same has remained unclaimed for seven consecutive years, the company shall initiate to transfer the same to the IEPF Account.",
           "",
           "For any further information/clarification, please contact our Registrar & Transfer Agents (RTA) MUFG Intime India Pvt. Limited. (formerly Link Intime India Private Limited), C-101, Tower C, 247 Park, L.B.S. Marg, Vikhroli (West),",
           "Mumbai – 400 083. Tel. no. 8108116767, e-mail ",

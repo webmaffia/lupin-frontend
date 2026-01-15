@@ -126,9 +126,9 @@ export default function ReportsAndFilingsPage() {
   const quarterlyCardsQ2 = [
     { id: 1, title: 'Consolidated', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/consolidated-q1fy26.pdf', isActive: true },
     { id: 2, title: 'Standalone', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/standalone-q1fy26.pdf', isActive: true },
-    { id: 3, title: 'Earnings call Transcript', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/earnings-call-q1fy26-transcript.pdf', isActive: true },
+    { id: 3, title: 'Earnings Call Transcript', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/earnings-call-q1fy26-transcript.pdf', isActive: true },
     { id: 4, title: 'Presentation', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/investor-presentation-q1fy26.pdf', isActive: true },
-    { id: 5, title: 'Earnings Call audio', pdfUrl: 'https://www.lupin.com/audio/q1-fy26-earnings-call.mp3', isActive: true }
+    { id: 5, title: 'Earnings Call Audio', pdfUrl: 'https://www.lupin.com/audio/q1-fy26-earnings-call.mp3', isActive: true }
   ];
 
   const quarterlyItemsAfterCards = [
@@ -138,9 +138,9 @@ export default function ReportsAndFilingsPage() {
   const quarterlyCardsQ1 = [
     { id: 1, title: 'Consolidated', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/11/consolidated-q2fy26.pdf', isActive: true },
     { id: 2, title: 'Standalone', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/11/standalone-q2fy26.pdf', isActive: true },
-    { id: 3, title: 'Earnings call Transcript', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/11/earnings-call-transcript-q2fy26.pdf', isActive: true },
+    { id: 3, title: 'Earnings Call Transcript', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/11/earnings-call-transcript-q2fy26.pdf', isActive: true },
     { id: 4, title: 'Presentation', pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/11/lupin-investor-presentation-q2-fy26.pdf', isActive: true },
-    { id: 5, title: 'Earnings Call audio', pdfUrl: 'https://www.lupin.com/audio/q2-fy26-earnings-call.mp3', isActive: true }
+    { id: 5, title: 'Earnings Call Audio', pdfUrl: 'https://www.lupin.com/audio/q2-fy26-earnings-call.mp3', isActive: true }
   ];
 
   // Using fallback defaults
@@ -201,7 +201,7 @@ export default function ReportsAndFilingsPage() {
         },
         { 
           id: 5, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/compliance-certificate-under-sebi-share-based-employee-benefits-and-sweat-equity-regulations-2021.pdf', 
           isActive: true 
         },
@@ -248,37 +248,37 @@ export default function ReportsAndFilingsPage() {
       extraSmallCards: [
         { 
           id: 1, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 2, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 3, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 4, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 5, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 6, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         }
@@ -307,37 +307,37 @@ export default function ReportsAndFilingsPage() {
       extraSmallCards: [
         { 
           id: 1, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 2, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 3, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 4, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 5, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 6, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         }
@@ -366,37 +366,37 @@ export default function ReportsAndFilingsPage() {
       extraSmallCards: [
         { 
           id: 1, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 2, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 3, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 4, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 5, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 6, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         }
@@ -425,37 +425,37 @@ export default function ReportsAndFilingsPage() {
       extraSmallCards: [
         { 
           id: 1, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 2, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 3, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 4, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 5, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         },
         { 
           id: 6, 
-          title: 'Disclosure pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
+          title: 'Disclosure Pursuant to SEBI (Share Based Employee Benefits and Sweat Equity Regulations), 2021', 
           pdfUrl: '#', 
           isActive: false 
         }

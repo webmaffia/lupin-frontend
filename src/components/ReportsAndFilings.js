@@ -88,15 +88,7 @@ export default function ReportsAndFilings({ data }) {
         {/* Title */}
         {reportsData.title && (
           <h2 className="reports-filings__title">
-            {reportsData.title === "Reports and Filings" ? (
-              <>
-                <span>Reports </span>
-                and
-                <span> Filings</span>
-              </>
-            ) : (
-              reportsData.title
-            )}
+            {reportsData.title}
           </h2>
         )}
 

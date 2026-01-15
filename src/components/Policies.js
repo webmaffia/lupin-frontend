@@ -35,7 +35,7 @@ export default function Policies({ data }) {
       },
       {
         id: 5,
-        title: "Authorised Persons: Policy For Determining Materiality For Disclosures Of Events Or Information",
+        title: "Authorized Persons: Policy For Determining Materiality For Disclosures Of Events Or Information",
         pdfUrl: "https://www.lupin.com/wp-content/uploads/2024/09/policy-for-determining-materiality-for-disclosures-of-events-or-information-1.pdf",
         isActive: false
       },
@@ -143,7 +143,7 @@ export default function Policies({ data }) {
       },
       {
         id: 23,
-        title: "Terms and conditions for appointment of independent directors",
+        title: "Terms and Conditions for Appointment of Independent Directors",
         pdfUrl: "https://www.lupin.com/wp-content/uploads/2025/07/terms-and-conditions-of-appointment-of-independent-director.pdf",
         isActive: false
       },
@@ -155,7 +155,7 @@ export default function Policies({ data }) {
       },
       {
         id: 25,
-        title: "Lupin’s clinical trial commitment",
+        title: "Lupin’s Clinical Trial Commitment",
         pdfUrl: "https://www.lupin.com/wp-content/uploads/2026/01/lupins-clinical-trial-commitment.pdf",
         isActive: false
       },

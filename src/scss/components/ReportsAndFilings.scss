@@ -46,7 +46,7 @@
     line-height: 1.23;
     color: #08a03f;
     margin: 0;
-    text-transform: capitalize;
+    // text-transform: capitalize; // Removed to allow "and" to remain lowercase
     
     @include media('tablet') {
       font-size: vw(50, 768);

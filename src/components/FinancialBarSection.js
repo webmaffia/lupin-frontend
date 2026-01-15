@@ -9,7 +9,7 @@ import '../scss/components/FinancialBarSection.scss';
 export default function FinancialBarSection({ data }) {
   // Default data structure
   const sectionData = data || {
-    title: "Revenue And Profitability",
+    title: "Revenue and Profitability",
     charts: [
       {
         title: "Net Sales (₹ Millions)",

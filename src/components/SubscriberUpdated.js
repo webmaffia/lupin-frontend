@@ -35,7 +35,7 @@ export default function SubscriberUpdated({ data }) {
       privacyPolicyText: "Privacy Policy",
       privacyPolicyLink: "/policies/privacy",
       andText: "and the",
-      termsText: "Terms of use",
+      termsText: "Terms of Use",
       termsLink: "/policies/terms",
       websiteText: "of this website",
       submitText: "Submit"
