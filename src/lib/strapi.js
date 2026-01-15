@@ -1389,8 +1389,8 @@ export function mapOurValuesContentData(strapiData) {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getCommunity() {
-  // Populate TopBanner, InfoSection, LivelihoodTabs, and KeyHighlights with nested data
-  return fetchAPI('community?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[InfoSection][populate][image][populate]=*&populate[LivelihoodTabs][populate][tabs][populate][content][populate][image][populate]=*&populate[KeyHighlights][populate][highlights][populate]=*', {
+  // Populate TopBanner, InfoSection, LivelihoodSection, LivelihoodTabs, and KeyHighlights with nested data
+  return fetchAPI('community?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[InfoSection][populate][image][populate]=*&populate[LivelihoodSection][populate][background_image][populate]=*&populate[LivelihoodTabs][populate][tabs][populate][content][populate][image][populate]=*&populate[KeyHighlights][populate][highlights][populate]=*', {
     next: { revalidate: 60 },
   });
 }
@@ -1436,6 +1436,53 @@ export function mapCommunityInfoData(strapiData) {
       width: image.width || 600,
       height: image.height || 600
     } : null
+  };
+}
+
+/**
+ * Map community livelihood section data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped livelihood section data
+ */
+export function mapLivelihoodSectionData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const livelihoodSection = data.LivelihoodSection || data.livelihoodSection;
+  if (!livelihoodSection) {
+    return null;
+  }
+
+  // Extract heading
+  const heading = livelihoodSection.heading || livelihoodSection.title || 'Livelihood Program';
+
+  // Extract subheading
+  const subheading = livelihoodSection.subheading || livelihoodSection.subtitle || 'Desh Bandhu Jan Utkarsh Pariyojana';
+
+  // Extract paragraphs - can be array or string
+  let paragraphs = livelihoodSection.paragraphs || livelihoodSection.paragraph || [];
+  if (typeof paragraphs === 'string') {
+    // Split by double newlines or keep as single paragraph
+    paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
+  }
+  if (!Array.isArray(paragraphs)) {
+    paragraphs = paragraphs ? [paragraphs] : [];
+  }
+
+  // Extract background image
+  const bgImage = livelihoodSection.background_image?.data?.attributes || livelihoodSection.background_image;
+  const bgImageUrl = bgImage ? getStrapiMedia(bgImage) : null;
+
+  return {
+    heading,
+    subheading,
+    paragraphs,
+    backgroundImage: bgImageUrl || '/assets/community/livelihood.png'
   };
 }
 

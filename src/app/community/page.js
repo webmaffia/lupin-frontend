@@ -1,7 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import Image from 'next/image';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getCommunity, mapCommunityInfoData, mapTopBannerData, mapLivelihoodTabsData } from '@/lib/strapi';
+import { getCommunity, mapCommunityInfoData, mapTopBannerData, mapLivelihoodTabsData, mapLivelihoodSectionData } from '@/lib/strapi';
+import LivelihoodSection from '@/components/community/LivelihoodSection';
 import LivelihoodTabs from '@/components/community/LivelihoodTabs';
 import LivesProgram from '@/components/community/LivesProgram';
 import FoundationLink from '@/components/community/FoundationLink';
@@ -22,6 +23,7 @@ export default async function CommunityPage() {
   // Fetch data from Strapi
   let bannerData = null;
   let infoData = null;
+  let livelihoodData = null;
   let tabsData = null;
 
   try {
@@ -35,6 +37,9 @@ export default async function CommunityPage() {
 
     // Map InfoSection data
     infoData = mapCommunityInfoData(strapiData);
+
+    // Map LivelihoodSection data
+    livelihoodData = mapLivelihoodSectionData(strapiData);
 
     // Map LivelihoodTabs data
     tabsData = mapLivelihoodTabsData(strapiData);
@@ -102,49 +107,12 @@ export default async function CommunityPage() {
           </div>
         </div>
       </section>
-      <section className="community-livelihood">
-        <div className="community-livelihood__bg">
-          <picture>
-            {/* Mobile image can be added here later */}
-            {/* <source media="(max-width: 768px)" srcSet="/assets/community/livelihood-mobile.png" /> */}
-            <img
-              src="/assets/community/livelihood.png"
-              alt="Livelihood"
-              className="community-livelihood__bg-image"
-            />
-          </picture>
-        </div>
-        <div className="community-livelihood__container">
-          <div className="community-livelihood__content">
-            <h2 className="community-livelihood__heading">
-              Livelihood Program
-            </h2>
-            <div className="community-livelihood__text">
-              <h3 className="community-livelihood__subheading">
-                Desh Bandhu Jan Utkarsh Pariyojana
-              </h3>
-              <div className="community-livelihood__paragraphs">
-                <p className="community-livelihood__paragraph">
-                  Agriculture remains the backbone of rural India, but still farmers face
-                  challenges such as low productivity, climate vulnerability or lack of modern agricultural practices.
-                </p>
-                <p className="community-livelihood__paragraph">
-                  Through its Livelihood Program, LHWRF addresses these challenges by enabling technology-led, climate-resilient livelihood solutions anchored in agriculture
-                  and allied activities.
-                </p>
-                <p className="community-livelihood__paragraph">
-                  Implemented across all eight states, the program has reached millions of families, supporting their transition from mere subsistence to long-term sustainability.
-                  Within the Livelihood Program, LHWRF focuses on three focus areas.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <ImpactAtGlance impactData={null} />
+      <LivelihoodSection livelihoodData={livelihoodData} />
       <LivelihoodTabs tabs={tabsData || []} />
       <LivesProgram programData={null} />
       <FoundationLink linkData={null} />
-      <ImpactAtGlance impactData={null} />
+      
     </div>
   );
 }
