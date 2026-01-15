@@ -1592,3 +1592,13 @@ export function mapKeyHighlightsData(strapiData) {
   return mappedHighlights.length > 0 ? mappedHighlights : null;
 }
 
+/**
+ * Fetch leaders page data from Strapi
+ * Populates TopBanner with nested data
+ */
+export async function getLeaders() {
+  return fetchAPI('leaders?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
