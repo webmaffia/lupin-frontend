@@ -1382,3 +1382,60 @@ export function mapOurValuesContentData(strapiData) {
   };
 }
 
+/**
+ * Fetch community data from Strapi
+ * This is a Single Type, so it returns one entry with TopBanner and InfoSection
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getCommunity() {
+  // Populate TopBanner and InfoSection with image
+  return fetchAPI('community?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[InfoSection][populate][image][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map community info section data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped info section data with paragraphs and image
+ */
+export function mapCommunityInfoData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const infoSection = data.InfoSection || data.infoSection;
+  if (!infoSection) {
+    return null;
+  }
+
+  // Extract paragraphs - can be array or string
+  let paragraphs = infoSection.paragraphs || infoSection.paragraph || [];
+  if (typeof paragraphs === 'string') {
+    // Split by double newlines or keep as single paragraph
+    paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
+  }
+  if (!Array.isArray(paragraphs)) {
+    paragraphs = paragraphs ? [paragraphs] : [];
+  }
+
+  // Extract image
+  const image = infoSection.image?.data?.attributes || infoSection.image;
+  const imageUrl = image ? getStrapiMedia(image) : null;
+
+  return {
+    paragraphs: paragraphs,
+    image: imageUrl ? {
+      url: imageUrl,
+      alt: image.alternativeText || image.caption || 'Community Impact',
+      width: image.width || 600,
+      height: image.height || 600
+    } : null
+  };
+}
+
