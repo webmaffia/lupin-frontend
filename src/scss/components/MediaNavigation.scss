@@ -16,7 +16,7 @@
   }
   
   @include media('mobile') {
-    padding: vw-mobile(40, 414) 0;
+    padding: vw-mobile(40, 414) vw-mobile(20, 414);
   }
 
   // Decorative Petals
@@ -126,7 +126,8 @@
     }
     
     @include media('mobile') {
-      padding: 50px vw-mobile(20, 414) 0;
+      padding: vw-mobile(40, 414) 0 0 0;
+      max-width: 100%;
     }
     
     @include media('tablet') {

@@ -31,7 +31,7 @@
     }
     
     @include media('mobile') {
-      bottom: vw-mobile(60, 414);
+      bottom: vw-mobile(80, 414);
     }
     
     &-img {
@@ -45,7 +45,7 @@
       }
       
       @include media('mobile') {
-        max-width: vw-mobile(250, 414);
+        max-width: vw-mobile(80, 414);
       }
     }
   }

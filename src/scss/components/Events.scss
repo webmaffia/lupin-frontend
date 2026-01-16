@@ -16,7 +16,7 @@
   }
   
   @include media('mobile') {
-    padding: vw-mobile(50, 414) vw-mobile(20, 414);
+    padding: vw-mobile(50, 414) vw-mobile(20, 414) 0 vw-mobile(20, 414);
   }
 
   &__container {

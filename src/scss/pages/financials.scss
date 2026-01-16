@@ -21,21 +21,21 @@
   }
 
   &__grid {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(5, vw(288));
     gap: vw(70);
-    flex-wrap: wrap;
     justify-content: flex-start;
-    align-items: center;
+    align-items: flex-start;
 
     @include media('tablet') {
+      grid-template-columns: repeat(3, 1fr);
       gap: vw(40, 768);
       justify-content: center;
     }
 
     @include media('mobile') {
-      gap: vw-mobile(30, 414);
-      flex-direction: column;
-      align-items: center;
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw-mobile(15, 414);
     }
   }
 }
@@ -95,8 +95,8 @@
     }
 
     @include media('mobile') {
-      grid-template-columns: 1fr;
-      gap: vw-mobile(30, 414);
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw-mobile(15, 414);
     }
   }
 }
@@ -133,8 +133,8 @@
     }
 
     @include media('mobile') {
-      grid-template-columns: 1fr;
-      gap: vw-mobile(30, 414);
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw-mobile(15, 414);
     }
   }
 }
@@ -194,8 +194,8 @@
     }
 
     @include media('mobile') {
-      grid-template-columns: 1fr;
-      gap: vw-mobile(30, 414);
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw-mobile(15, 414);
     }
   }
 }

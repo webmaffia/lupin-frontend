@@ -156,6 +156,7 @@
     @include media('mobile') {
       margin-left: vw-mobile(60, 414);
       padding: vw-mobile(15, 414) vw-mobile(20, 414) vw-mobile(15, 414) vw-mobile(80, 414);
+      min-height: vw-mobile(120, 414);
     }
   }
   
@@ -175,7 +176,7 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(18, 414);
+      font-size: vw-mobile(14, 414);
       line-height: vw-mobile(26, 414);
     }
   }

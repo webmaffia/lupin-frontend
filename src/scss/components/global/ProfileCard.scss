@@ -19,7 +19,7 @@
   
   @include media('mobile') {
     width: 100%;
-    max-width: vw-mobile(350, 414);
+    max-width: 100%;
     height: auto;
     min-height: vw-mobile(400, 414);
     border-radius: vw-mobile(30, 414);
@@ -40,6 +40,10 @@
     text-decoration: none;
     color: inherit;
     display: block;
+    
+    @include media('mobile') {
+      width: 100%;
+    }
   }
 
   &__content {
@@ -187,7 +191,7 @@
   @include media('mobile') {
     grid-template-columns: 1fr;
     row-gap: vw-mobile(30, 414);
-    column-gap: vw-mobile(20, 414);
+    column-gap: vw-mobile(15, 414);
     justify-items: stretch;
   }
 }

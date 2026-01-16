@@ -185,7 +185,7 @@
     @include media('mobile') {
       margin-top: vw-mobile(30, 414);
       border-radius: vw-mobile(40, 414);
-      padding: 0 vw-mobile(20, 414) 0 0;
+      padding: vw-mobile(10, 414);
       gap: vw-mobile(30, 414);
       flex-direction: column;
     }
@@ -244,8 +244,8 @@
     }
     
     @include media('mobile') {
-      grid-template-columns: 1fr;
-      gap: vw-mobile(20, 414);
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw-mobile(15, 414);
     }
   }
 }

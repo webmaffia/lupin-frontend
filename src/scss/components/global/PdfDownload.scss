@@ -16,7 +16,8 @@
   @include media('mobile') {
     width: 100%;
     max-width: 100%;
-    height: vw-mobile(400, 414);
+    height: auto;
+    @include flex(column, flex-start, flex-start);
   }
 
   &:hover {
@@ -43,9 +44,11 @@
     border-radius: vw(45);
     
     @include media('mobile') {
+      position: relative;
       width: 100%;
       height: auto;
       border-radius: vw-mobile(30, 414);
+      order: 1;
     }
   }
 
@@ -75,6 +78,7 @@
       @include flex(row, space-between, center);
       position: relative;
       pointer-events: auto;
+      order: 2;
     }
   }
 

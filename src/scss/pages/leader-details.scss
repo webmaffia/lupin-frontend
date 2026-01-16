@@ -47,7 +47,7 @@
     }
     
     @include media('mobile') {
-      flex-direction: column;
+      flex-direction: column-reverse;
       gap: vw-mobile(30, 414);
       align-items: center;
     }
@@ -250,7 +250,7 @@
     
     @include media('mobile') {
       border-radius: vw-mobile(15, 414);
-      padding: vw-mobile(20, 414) vw-mobile(20, 414);
+      padding: vw-mobile(20, 414) vw-mobile(20, 414) vw-mobile(20, 414) vw-mobile(40, 414);
       gap: vw-mobile(16, 414);
       min-height: vw-mobile(200, 414);
     }
@@ -285,7 +285,7 @@
     
     @include media('mobile') {
       left: vw-mobile(20, 414);
-      top: vw-mobile(30, 414);
+      top: vw-mobile(22, 414);
       width: vw-mobile(20, 414);
       height: vw-mobile(20, 414);
     }
@@ -425,7 +425,7 @@
       flex: 1 1 100%;
       height: vw-mobile(150, 414);
       border-radius: vw-mobile(15, 414);
-      padding: vw-mobile(20, 414) vw-mobile(20, 414);
+      padding: vw-mobile(20, 414) vw-mobile(20, 414) vw-mobile(20, 414) vw-mobile(40, 414);
       gap: vw-mobile(16, 414);
     }
     
@@ -446,7 +446,7 @@
       
       @include media('mobile') {
         left: vw-mobile(20, 414);
-        top: vw-mobile(30, 414);
+        top: vw-mobile(22, 414);
       }
     }
     
@@ -539,7 +539,7 @@
     }
     
     @include media('mobile') {
-      border-radius: vw-mobile(15, 414);
+      border-radius: vw-mobile(50, 414);
       width: 100%;
     }
     

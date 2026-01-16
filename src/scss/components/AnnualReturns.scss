@@ -74,8 +74,8 @@
     }
     
     @include media('mobile') {
-      grid-template-columns: 1fr;
-      gap: vw-mobile(30, 414);
+      grid-template-columns: repeat(2, 1fr);
+      gap: vw-mobile(15, 414);
     }
   }
 }

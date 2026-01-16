@@ -18,7 +18,7 @@
   
   @include media('mobile') {
     @include flex(column, stretch, stretch);
-    gap: vw-mobile(20, 414);
+    gap: vw-mobile(30, 414);
   }
 
   // Search Input Section
@@ -39,6 +39,7 @@
       width: 100%;
       height: auto;
       gap: vw-mobile(8, 414);
+      max-width: 100%;
     }
   }
 
@@ -76,6 +77,7 @@
       border-radius: vw-mobile(12, 414);
       font-size: vw-mobile(16, 414);
       line-height: vw-mobile(24, 414);
+      height: vw-mobile(50, 414);
     }
     
     &::placeholder {
@@ -131,6 +133,7 @@
       width: vw-mobile(22, 414);
       height: vw-mobile(22, 414);
       margin-right: vw-mobile(20, 414);
+      margin-top: vw-mobile(12, 414);
     }
   }
 

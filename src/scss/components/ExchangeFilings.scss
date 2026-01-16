@@ -112,8 +112,9 @@
       border-radius: vw-mobile(12, 414);
       border-width: vw-mobile(1, 414);
       white-space: normal;
-      width: 100%;
+      width: calc(50% - #{vw-mobile(6, 414)});
       min-width: auto;
+      flex: 0 0 calc(50% - #{vw-mobile(6, 414)});
     }
 
     &:hover:not(&--active) {

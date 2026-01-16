@@ -16,6 +16,7 @@
   
   @include media('mobile') {
     width: 100%;
+    max-width: 100%;
     padding-bottom: vw-mobile(25, 414);
   }
   

@@ -28,7 +28,7 @@
     }
 
     @include media('mobile') {
-      gap: vw-mobile(50, 414);
+      gap: 0;
     }
   }
 

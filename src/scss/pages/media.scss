@@ -26,7 +26,7 @@
   }
   
   @include media('mobile') {
-    padding: vw-mobile(40, 414);
+    padding: vw-mobile(0, 414) vw-mobile(20, 414) vw-mobile(40, 414) vw-mobile(20, 414);
   }
 
   .whats-new__container {
@@ -111,7 +111,7 @@
 
 // PDF Download Section
 .sectionPdfDownload {
-  padding: vw(100);
+  padding:0 vw(100) vw(100);
   width: 100%;    
   margin: 0 auto;
   

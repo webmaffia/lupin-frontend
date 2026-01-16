@@ -62,9 +62,9 @@ export default async function Home() {
         }}
       />
 
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', overflow: 'hidden' }}>
         <GoldenLine />
-        <MobileLine />
+       
         <Hero data={heroData} />
         <main>
           <OurStory data={ourStoryData} />

@@ -283,15 +283,23 @@
   
   // Sticky Notes
   &__sticky-notes {
+    position: fixed;
+    right: vw(60);
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
     @include flex(column, flex-start, flex-end);
     gap: vw(22);
-    margin-right: vw(60);
     
     @include media('mobile') {
+      position: fixed;
+      left: vw-mobile(20, 414);
+      right: auto;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
       flex-direction: column;
       gap: vw-mobile(10, 414);
-      margin-right: 0;
-      margin-top: vw-mobile(15, 414);
     }
   }
   
