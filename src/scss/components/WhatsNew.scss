@@ -17,7 +17,7 @@
   }
   
   @include media('mobile') {
-    padding: vw-mobile(40, 414) vw-mobile(0, 414) vw-mobile(70, 414) vw-mobile(20, 414);
+    padding: vw-mobile(40, 414) vw-mobile(20, 414) vw-mobile(40, 414) vw-mobile(20, 414);
   }
 
   // Light gray background variant for press releases

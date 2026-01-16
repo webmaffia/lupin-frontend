@@ -197,7 +197,7 @@
     @include media('mobile') {
       border-radius: vw-mobile(20, 414);
       padding: vw-mobile(40, 414) vw-mobile(30, 414);
-      min-height: auto;
+      min-height: vw-mobile(180, 414);
     }
   }
   
