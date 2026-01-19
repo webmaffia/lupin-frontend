@@ -1687,6 +1687,18 @@ export async function getGlobalPresence() {
 }
 
 /**
+ * Fetch global-technical-operations page data from Strapi
+ * This is a Single Type, so it returns one entry with TopBanner and content sections
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getGlobalTechnicalOperations() {
+  return fetchAPI('global-technical-operations?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
  * Map global-presence content box data from Strapi
  * 
  * @param {Object} strapiData - Raw Strapi API response
