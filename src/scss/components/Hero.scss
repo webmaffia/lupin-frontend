@@ -293,11 +293,11 @@
     
     @include media('mobile') {
       position: fixed;
-      left: vw-mobile(20, 414);
-      right: auto;
+     
+      right: vw-mobile(40, 414);
       top: 50%;
       transform: translateY(-50%);
-      z-index: 100;
+      z-index: 99999999999;
       flex-direction: column;
       gap: vw-mobile(10, 414);
     }

@@ -1674,3 +1674,15 @@ export function mapEthicsTextContentData(strapiData) {
   return paragraphs.length > 0 ? paragraphs : null;
 }
 
+/**
+ * Fetch global-presence page data from Strapi
+ * This is a Single Type, so it returns one entry with TopBanner and content sections
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getGlobalPresence() {
+  return fetchAPI('global-presence?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate=*', {
+    next: { revalidate: 60 },
+  });
+}
+

@@ -1,0 +1,47 @@
+// Global Presence Page Styles
+// Using vw() for desktop (base: 1920px) and vw-mobile() for mobile (base: 414px)
+
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
+.global-presence-content {
+  position: relative;
+  width: 100%;
+  
+  &__container {
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    padding: vw(100) vw(100);
+    
+    @include media('tablet') {
+      padding: vw(80, 768) vw(60, 768);
+    }
+    
+    @include media('mobile') {
+      padding: vw-mobile(60, 414) vw-mobile(20, 414);
+    }
+  }
+  
+  &__wrapper {
+    width: 100%;
+    @include flex(column, flex-start, center);
+  }
+  
+  &__placeholder {
+    @include flex(column, center, center);
+    min-height: vw(400);
+    padding: vw(40);
+    text-align: center;
+    color: #666;
+    font-size: vw(18);
+    
+    @include media('mobile') {
+      min-height: vw-mobile(200, 414);
+      padding: vw-mobile(20, 414);
+      font-size: vw-mobile(14, 414);
+    }
+  }
+}
+
