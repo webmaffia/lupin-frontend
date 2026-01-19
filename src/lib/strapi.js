@@ -1602,3 +1602,75 @@ export async function getLeaders() {
   });
 }
 
+/**
+ * Fetch ethics-compliance-governance page data from Strapi
+ * This is a Single Type, so it returns one entry with TopBanner, Pledge, and TextContent
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getEthicsComplianceGovernance() {
+  return fetchAPI('ethics-compliance-governance?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[Pledge][populate]=*&populate[TextContent][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map ethics-compliance-governance pledge data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object|null} Mapped pledge data
+ */
+export function mapEthicsPledgeData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return null;
+  }
+
+  const pledge = data.Pledge || data.pledge;
+  if (!pledge) {
+    return null;
+  }
+
+  return {
+    text: pledge.text || pledge.content || ''
+  };
+}
+
+/**
+ * Map ethics-compliance-governance text content data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Array|null} Mapped paragraphs array
+ */
+export function mapEthicsTextContentData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return null;
+  }
+
+  const textContent = data.TextContent || data.textContent;
+  if (!textContent) {
+    return null;
+  }
+
+  // Handle paragraphs - can be array, string with newlines, or single text field
+  let paragraphs = [];
+  
+  if (Array.isArray(textContent.paragraphs)) {
+    paragraphs = textContent.paragraphs;
+  } else if (textContent.content) {
+    // If content is a string, split by double newlines or use as single paragraph
+    if (typeof textContent.content === 'string') {
+      paragraphs = textContent.content.split(/\n\n+/).filter(p => p.trim());
+    } else if (Array.isArray(textContent.content)) {
+      paragraphs = textContent.content;
+    }
+  } else if (textContent.text) {
+    paragraphs = textContent.text.split(/\n\n+/).filter(p => p.trim());
+  }
+
+  return paragraphs.length > 0 ? paragraphs : null;
+}
+
