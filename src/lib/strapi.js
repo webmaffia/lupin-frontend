@@ -1693,9 +1693,91 @@ export async function getGlobalPresence() {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getGlobalTechnicalOperations() {
-  return fetchAPI('global-technical-operations?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate=*', {
+  return fetchAPI('global-technical-operations?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[GTOTabs][populate][tabs][populate][sections][populate][image][populate]=*&populate[GTOTabs][populate][tabs][populate][sections][populate][link][populate]=*&populate=*', {
     next: { revalidate: 60 },
   });
+}
+
+/**
+ * Map global-technical-operations tabs data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object|null} Mapped tabs data
+ */
+export function mapGTOTabsData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return null;
+  }
+
+  const gtoTabs = data.GTOTabs || data.gtoTabs;
+  if (!gtoTabs || !gtoTabs.tabs || !Array.isArray(gtoTabs.tabs)) {
+    return null;
+  }
+
+  // Map each tab
+  const mappedTabs = gtoTabs.tabs.map((tab, index) => {
+    const tabId = tab.id || tab.slug || `tab-${index + 1}`;
+    const tabLabel = tab.label || tab.title || tab.name || '';
+    
+    // Map sections for this tab
+    const sections = Array.isArray(tab.sections) 
+      ? tab.sections.map((section, sectionIndex) => {
+          // Extract heading
+          const heading = section.heading || section.title || '';
+          
+          // Extract paragraphs - can be array or string
+          let paragraphs = section.paragraphs || section.paragraph || section.text || section.description || [];
+          if (typeof paragraphs === 'string') {
+            // Split by double newlines or single newlines
+            paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
+            if (paragraphs.length === 0 && section.text) {
+              paragraphs = [section.text];
+            }
+          }
+          if (!Array.isArray(paragraphs)) {
+            paragraphs = paragraphs ? [paragraphs] : [];
+          }
+          
+          // Extract image
+          const image = section.image?.data?.attributes || section.image;
+          const imageUrl = image ? getStrapiMedia(image) : null;
+          
+          // Extract link/CTA
+          const link = section.link || section.cta;
+          const linkData = link ? {
+            text: link.text || link.label || '',
+            href: link.href || link.url || '#'
+          } : null;
+          
+          // Extract imageFirst flag (controls layout - image first or text first)
+          const imageFirst = section.imageFirst !== undefined ? section.imageFirst : undefined;
+          
+          return {
+            heading,
+            paragraphs,
+            image: imageUrl ? {
+              url: imageUrl,
+              alt: image.alternativeText || image.caption || section.imageAlt || '',
+              width: image.width,
+              height: image.height
+            } : null,
+            link: linkData,
+            imageFirst: imageFirst
+          };
+        })
+      : [];
+    
+    return {
+      id: tabId,
+      label: tabLabel,
+      dataNodeId: tab.dataNodeId || null,
+      sections: sections
+    };
+  });
+
+  return mappedTabs.length > 0 ? mappedTabs : null;
 }
 
 /**

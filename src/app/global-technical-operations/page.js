@@ -1,6 +1,6 @@
 import InnerBanner from '@/components/InnerBanner';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getGlobalTechnicalOperations, mapTopBannerData } from '@/lib/strapi';
+import { getGlobalTechnicalOperations, mapTopBannerData, mapGTOTabsData } from '@/lib/strapi';
 import GTOTabs from './components/GTOTabs';
 import '@/scss/pages/global-technical-operations.scss';
 
@@ -15,6 +15,7 @@ export const metadata = generateSEOMetadata({
 export default async function GlobalTechnicalOperationsPage() {
   // Fetch data from Strapi
   let bannerData = null;
+  let tabsData = null;
 
   try {
     const strapiData = await getGlobalTechnicalOperations();
@@ -32,6 +33,9 @@ export default async function GlobalTechnicalOperationsPage() {
         };
       }
     }
+    
+    // Map GTOTabs data
+    tabsData = mapGTOTabsData(strapiData);
   } catch (error) {
     console.error('Error fetching global-technical-operations data from Strapi:', error);
     // Will use default data below
@@ -350,7 +354,7 @@ export default async function GlobalTechnicalOperationsPage() {
       {/* Tabs Section */}
       <section className="global-technical-operations-tabs-section">
         <div className="global-technical-operations-tabs-section__container">
-          <GTOTabs />
+          <GTOTabs tabs={tabsData} />
         </div>
       </section>
     </div>
