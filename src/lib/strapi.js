@@ -1681,8 +1681,90 @@ export function mapEthicsTextContentData(strapiData) {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getGlobalPresence() {
-  return fetchAPI('global-presence?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate=*', {
+  return fetchAPI('global-presence?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[ContentBox][populate][icon][populate]=*&populate[CountrySections][populate][image][populate]=*&populate=*', {
     next: { revalidate: 60 },
   });
+}
+
+/**
+ * Map global-presence content box data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object|null} Mapped content box data
+ */
+export function mapGlobalPresenceContentBoxData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return null;
+  }
+
+  const contentBox = data.ContentBox || data.contentBox;
+  if (!contentBox) {
+    return null;
+  }
+
+  // Get icon - can be media object or URL string
+  let iconUrl = '/assets/images/icon-global-presence.svg'; // default
+  if (contentBox.icon) {
+    if (typeof contentBox.icon === 'string') {
+      iconUrl = contentBox.icon;
+    } else if (contentBox.icon.url) {
+      iconUrl = getStrapiMedia(contentBox.icon);
+    } else if (contentBox.icon.data?.attributes?.url) {
+      iconUrl = getStrapiMedia(contentBox.icon.data.attributes);
+    }
+  }
+
+  return {
+    heading: contentBox.heading || contentBox.title || '',
+    paragraph: contentBox.paragraph || contentBox.text || contentBox.description || '',
+    icon: iconUrl
+  };
+}
+
+/**
+ * Map global-presence country sections data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Array|null} Mapped country sections array
+ */
+export function mapGlobalPresenceCountrySectionsData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return null;
+  }
+
+  const countrySections = data.CountrySections || data.countrySections || data.countries;
+  if (!countrySections || !Array.isArray(countrySections)) {
+    return null;
+  }
+
+  // Map each country section
+  return countrySections.map((country, index) => {
+    // Get image - can be media object or URL string
+    let imageUrl = '/assets/global-presence/image-usa.png'; // default
+    if (country.image) {
+      if (typeof country.image === 'string') {
+        imageUrl = country.image;
+      } else if (country.image.url) {
+        imageUrl = getStrapiMedia(country.image);
+      } else if (country.image.data?.attributes?.url) {
+        imageUrl = getStrapiMedia(country.image.data.attributes);
+      }
+    }
+
+    return {
+      id: country.id || index + 1,
+      name: country.name || country.title || country.country || '',
+      description: country.description || country.text || country.paragraph || '',
+      image: imageUrl,
+      imageAlt: country.imageAlt || country.image?.alternativeText || `${country.name || 'Country'} Office`,
+      websiteUrl: country.websiteUrl || country.website || country.url || '#',
+      ctaText: country.ctaText || country.buttonText || 'Visit Website',
+      order: country.order !== undefined ? country.order : index
+    };
+  }).sort((a, b) => a.order - b.order); // Sort by order field
 }
 

@@ -27,20 +27,437 @@
   &__wrapper {
     width: 100%;
     @include flex(column, flex-start, center);
-  }
-  
-  &__placeholder {
-    @include flex(column, center, center);
-    min-height: vw(400);
-    padding: vw(40);
-    text-align: center;
-    color: #666;
-    font-size: vw(18);
+    gap: vw(30);
+    
+    @include media('tablet') {
+      gap: vw(25, 768);
+    }
     
     @include media('mobile') {
-      min-height: vw-mobile(200, 414);
-      padding: vw-mobile(20, 414);
+      gap: vw-mobile(20, 414);
+    }
+  }
+  
+  // Main Box Container
+  &__box {
+    position: relative;
+    width: 100%;
+    max-width: vw(1394);
+    padding: vw(130) vw(134);
+    margin-bottom: vw(100);
+    @include flex(column, center, center);
+    gap: vw(10);
+    
+    @include media('tablet') {
+      max-width: 100%;
+      padding: vw(100, 768) vw(80, 768);
+      margin-bottom: vw(80, 768);
+      gap: vw(10, 768);
+    }
+    
+    @include media('mobile') {
+      max-width: 100%;
+      padding: vw-mobile(60, 414) vw-mobile(20, 414);
+      margin-bottom: vw-mobile(60, 414);
+      gap: vw-mobile(10, 414);
+    }
+  }
+  
+  // Border Box
+  &__box-border {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    height: vw(450);
+    border: 1px solid #08a03f;
+    border-radius: vw(205);
+    opacity: 0.5;
+    pointer-events: none;
+    
+    @include media('tablet') {
+      height: vw(400, 768);
+      border-radius: vw(150, 768);
+    }
+    
+    @include media('mobile') {
+      height: vw-mobile(350, 414);
+      border-radius: vw-mobile(100, 414);
+    }
+  }
+  
+  // Icon at bottom
+  &__box-icon {
+    position: absolute;
+    bottom: vw(-45);
+    left: 50%;
+    transform: translateX(-50%);
+    width: vw(69);
+    height: vw(68);
+    z-index: 1;
+    
+    @include media('tablet') {
+      bottom: vw(-35, 768);
+      width: vw(50, 768);
+      height: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      bottom: vw-mobile(-25, 414);
+      width: vw-mobile(40, 414);
+      height: vw-mobile(40, 414);
+    }
+  }
+  
+  &__icon-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  // Text Content
+  &__text {
+    position: relative;
+    width: 100%;
+    max-width: vw(1122);
+    @include flex(column, center, center);
+    gap: vw(23);
+    text-align: center;
+    z-index: 1;
+    
+    @include media('tablet') {
+      max-width: 100%;
+      gap: vw(20, 768);
+    }
+    
+    @include media('mobile') {
+      max-width: 100%;
+      gap: vw-mobile(15, 414);
+    }
+  }
+  
+  // Heading
+  &__heading {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(40);
+    line-height: vw(56);
+    color: #08a03f;
+    text-transform: capitalize;
+    margin: 0;
+    width: 100%;
+    
+    @include media('tablet') {
+      font-size: vw(32, 768);
+      line-height: vw(44, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(24, 414);
+      line-height: vw-mobile(32, 414);
+    }
+  }
+  
+  // Paragraph
+  &__paragraph {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(24);
+    line-height: 1.37;
+    color: #000000;
+    opacity: 0.8;
+    margin: 0;
+    width: 100%;
+    
+    @include media('tablet') {
+      font-size: vw(20, 768);
+      line-height: 1.4;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: 1.5;
+    }
+  }
+  
+  // Country Section
+  &__country-section {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    background: #F7F7F7;
+    border-radius: vw(40);
+    padding: vw(50) vw(134);
+    @include flex(row, center, center);
+    gap: vw(142);
+    overflow: hidden;
+    
+    // First section gets margin-top
+    &:first-of-type {
+      margin-top: vw(100);
+      
+      @include media('tablet') {
+        margin-top: vw(80, 768);
+      }
+      
+      @include media('mobile') {
+        margin-top: vw-mobile(60, 414);
+      }
+    }
+    
+    @include media('tablet') {
+      flex-direction: column;
+      gap: vw(60, 768);
+      border-radius: vw(30, 768);
+      padding: vw(40, 768) vw(60, 768);
+    }
+    
+    @include media('mobile') {
+      flex-direction: column;
+      gap: vw-mobile(40, 414);
+      border-radius: vw-mobile(20, 414);
+      padding: vw-mobile(30, 414) vw-mobile(20, 414);
+    }
+    
+    // Reversed layout (content left, image right) - for even sections
+    &--reversed {
+      flex-direction: row-reverse;
+      
+      @include media('tablet') {
+        flex-direction: column;
+      }
+      
+      @include media('mobile') {
+        flex-direction: column;
+      }
+    }
+  }
+  
+  // Background Petals
+  &__country-bg-petals {
+    position: absolute;
+    bottom: 0;
+    width: vw(426);
+    height: vw(209);
+    z-index: 0;
+    pointer-events: none;
+    
+    @include media('tablet') {
+      width: vw(350, 768);
+      height: vw(172, 768);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(250, 414);
+      height: vw-mobile(123, 414);
+    }
+  }
+  
+  &__country-bg-petals-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+  
+  // Odd sections - bottom right
+  &__country-section--odd {
+    .global-presence-content__country-bg-petals {
+      right: vw(20);
+      transform: none;
+      
+      @include media('tablet') {
+        right: vw(15, 768);
+      }
+      
+      @include media('mobile') {
+        right: vw-mobile(10, 414);
+      }
+    }
+  }
+  
+  // Even sections - bottom center
+  &__country-section--even {
+    .global-presence-content__country-bg-petals {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+  
+  // Country Image Wrapper
+  &__country-image-wrapper {
+    position: relative;
+    width: vw(622);
+    height: vw(622);
+    flex-shrink: 0;
+    z-index: 1;
+    
+    @include media('tablet') {
+      width: vw(500, 768);
+      height: vw(500, 768);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      max-width: vw-mobile(350, 414);
+      height: vw-mobile(350, 414);
+    }
+  }
+  
+  // Country Image Mask (Circular)
+  &__country-image-mask {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    border: vw(1.397) solid #000000;
+    
+    @include media('tablet') {
+      border-width: vw(1, 768);
+    }
+    
+    @include media('mobile') {
+      border-width: vw-mobile(1, 414);
+    }
+  }
+  
+  &__country-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  
+  // Country Content
+  &__country-content {
+    position: relative;
+    width: vw(734);
+    @include flex(column, flex-start, flex-start);
+    flex-shrink: 0;
+    z-index: 1;
+    
+    @include media('tablet') {
+      width: 100%;
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+    }
+  }
+  
+  // Country Text
+  &__country-text {
+    @include flex(column, flex-start, flex-start);
+    gap: vw(31);
+    width: 100%;
+    margin-bottom: vw(40);
+    
+    @include media('tablet') {
+      gap: vw(25, 768);
+      margin-bottom: vw(30, 768);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(20, 414);
+      margin-bottom: vw-mobile(25, 414);
+    }
+  }
+  
+  // Country Heading
+  &__country-heading {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(65);
+    line-height: 1;
+    color: #08a03f;
+    margin: 0;
+    width: 100%;
+    
+    @include media('tablet') {
+      font-size: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(36, 414);
+    }
+  }
+  
+  // Country Paragraph
+  &__country-paragraph {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(20);
+    line-height: 1.82;
+    color: #1e1e1e;
+    opacity: 0.8;
+    margin: 0;
+    width: 100%;
+    height: auto;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      line-height: 1.8;
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: 1.75;
+    }
+  }
+  
+  // Country CTA
+  &__country-cta {
+    position: relative;
+    width: 100%;
+  }
+  
+  // Country Button
+  &__country-button {
+    position: relative;
+    display: inline-block;
+    background: #08a03f;
+    border-radius: vw(52.182);
+    width: vw(248);
+    height: vw(65);
+    @include flex(row, center, center);
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+    
+    @include media('tablet') {
+      width: vw(220, 768);
+      height: vw(55, 768);
+      border-radius: vw(40, 768);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(200, 414);
+      height: vw-mobile(50, 414);
+      border-radius: vw-mobile(35, 414);
+    }
+    
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+  
+  &__country-button-text {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(16);
+    line-height: vw(30.298);
+    color: #ffffff;
+    text-align: center;
+    white-space: nowrap;
+    
+    @include media('tablet') {
+      font-size: vw(15, 768);
+      line-height: vw(28, 768);
+    }
+    
+    @include media('mobile') {
       font-size: vw-mobile(14, 414);
+      line-height: vw-mobile(26, 414);
     }
   }
 }
