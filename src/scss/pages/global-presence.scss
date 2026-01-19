@@ -192,6 +192,7 @@
     @include flex(row, center, center);
     gap: vw(142);
     overflow: hidden;
+    transition: background-color 0.3s ease;
     
     // First section gets margin-top
     &:first-of-type {
@@ -230,6 +231,30 @@
       
       @include media('mobile') {
         flex-direction: column;
+      }
+    }
+    
+    // Hover effects
+    &:hover {
+      background: #08A03F;
+      
+      // Text becomes white on hover
+      .global-presence-content__country-heading {
+        color: #ffffff;
+      }
+      
+      .global-presence-content__country-paragraph {
+        color: #ffffff;
+        opacity: 1;
+      }
+      
+      // CTA button becomes white background with green text
+      .global-presence-content__country-button {
+        background: #ffffff;
+        
+        .global-presence-content__country-button-text {
+          color: #08A03F;
+        }
       }
     }
   }
@@ -422,7 +447,7 @@
     height: vw(65);
     @include flex(row, center, center);
     text-decoration: none;
-    transition: opacity 0.3s ease;
+    transition: background-color 0.3s ease;
     
     @include media('tablet') {
       width: vw(220, 768);
@@ -435,10 +460,6 @@
       height: vw-mobile(50, 414);
       border-radius: vw-mobile(35, 414);
     }
-    
-    &:hover {
-      opacity: 0.9;
-    }
   }
   
   &__country-button-text {
@@ -449,6 +470,7 @@
     color: #ffffff;
     text-align: center;
     white-space: nowrap;
+    transition: color 0.3s ease;
     
     @include media('tablet') {
       font-size: vw(15, 768);
