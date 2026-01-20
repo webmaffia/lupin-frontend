@@ -1,6 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import EmployeeStockOptionSchemes from '@/components/EmployeeStockOptionSchemes';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import { getEmployeeStockOptionScheme, mapEmployeeStockOptionSchemeData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the employee stock option schemes page
 export const metadata = generateSEOMetadata({
@@ -10,29 +12,54 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin employee stock option schemes, ESOP, investor relations, stock options",
 });
 
-export default function EmployeeStockOptionSchemesPage() {
-  // Custom banner data for this page
-  const bannerData = {
-    title: {
-      line1: "Employee Stock Option",
-      line2: "Schemes"
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Employee Stock Option Schemes"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
-      }
+export default async function EmployeeStockOptionSchemesPage() {
+  let schemesData = null;
+  let bannerData = null;
+  let error = null;
+  
+  try {
+    const rawData = await getEmployeeStockOptionScheme();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Employee Stock Option Schemes - Raw API data received:', {
+        hasData: !!rawData,
+        isDataObject: !Array.isArray(rawData?.data) && !!rawData?.data,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasEmployeeStockOptionSchemesSection: !!(rawData?.data?.EmployeeStockOptionSchemesSection || rawData?.EmployeeStockOptionSchemesSection),
+        schemesCount: (rawData?.data?.EmployeeStockOptionSchemesSection || rawData?.EmployeeStockOptionSchemesSection || []).length
+      });
     }
-  };
-
+    
+    if (rawData) {
+      schemesData = mapEmployeeStockOptionSchemeData(rawData);
+      
+      // Map banner data (Single Type, so TopBanner is directly on data object)
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Employee Stock Option Schemes - Mapped data:', {
+          schemesCount: schemesData?.schemes?.length || 0,
+          hasBanner: !!bannerData
+        });
+      }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Employee Stock Option Schemes - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch employee stock option schemes data from Strapi';
+    console.error('Error fetching Employee Stock Option Schemes data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+  
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <EmployeeStockOptionSchemes />
+      {bannerData && <InnerBanner data={bannerData} />}
+      <EmployeeStockOptionSchemes data={schemesData} error={error} />
     </div>
   );
 }

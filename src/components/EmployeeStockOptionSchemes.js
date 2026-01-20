@@ -5,41 +5,44 @@ import Link from 'next/link';
 import '../scss/components/Policies.scss';
 import '../scss/components/EmployeeStockOptionSchemes.scss';
 
-export default function EmployeeStockOptionSchemes({ data }) {
-  // Default data (will be replaced by Strapi)
-  const schemesData = data || {
-    schemes: [
-      {
-        id: 1,
-        title: "2025",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 2,
-        title: "2014",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 3,
-        title: "2011",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 4,
-        title: "2011",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 5,
-        title: "2011",
-        pdfUrl: "#",
-        isActive: false
-      }
-    ],
+export default function EmployeeStockOptionSchemes({ data, error = null }) {
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="policies employee-stock-option-schemes">
+        <div className="policies__container">
+          <div className="policies__content">
+            <div className="policies__placeholder">
+              <p>Unable to load employee stock option schemes at this time. Please try again later.</p>
+              {process.env.NODE_ENV === 'development' && (
+                <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                  Error: {error}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.schemes || data.schemes.length === 0) {
+    return (
+      <section className="policies employee-stock-option-schemes">
+        <div className="policies__container">
+          <div className="policies__content">
+            <div className="policies__placeholder">
+              <p>No employee stock option schemes available at this time.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const schemesData = {
+    schemes: data.schemes,
     images: {
       downloadButton: {
         active: "/assets/policies/download-button-active.svg",

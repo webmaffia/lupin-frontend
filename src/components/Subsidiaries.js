@@ -3,147 +3,39 @@
 import Link from 'next/link';
 import '../scss/components/Subsidiaries.scss';
 
-export default function Subsidiaries({ data }) {
-  // Default data (will be replaced by Strapi)
-  const subsidiariesData = data || {
-    subsidiaries: [
-      {
-        id: 1,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 2,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 3,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 4,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 5,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 6,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 7,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 8,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      },
-      {
-        id: 9,
-        name: "Lupin Pharmaceuticals, Inc., USA.",
-        years: [
-          { year: "2017", url: "#", isActive: false },
-          { year: "2018", url: "#", isActive: false },
-          { year: "2019", url: "#", isActive: false },
-          { year: "2020", url: "#", isActive: false },
-          { year: "2021", url: "#", isActive: false },
-          { year: "2022", url: "#", isActive: false },
-          { year: "2023", url: "#", isActive: false },
-          { year: "2024", url: "#", isActive: false },
-          { year: "2025", url: "#", isActive: false }
-        ]
-      }
-    ]
-  };
+export default function Subsidiaries({ data, error = null }) {
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="subsidiaries">
+        <div className="subsidiaries__container">
+          <div className="subsidiaries__placeholder">
+            <p>Unable to load subsidiaries at this time. Please try again later.</p>
+            {process.env.NODE_ENV === 'development' && (
+              <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                Error: {error}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.subsidiaries || data.subsidiaries.length === 0) {
+    return (
+      <section className="subsidiaries">
+        <div className="subsidiaries__container">
+          <div className="subsidiaries__placeholder">
+            <p>No subsidiaries available at this time.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const subsidiariesData = data;
 
   // Split years into two rows: first row (5 years) and second row (4 years)
   const getYearRows = (years) => {

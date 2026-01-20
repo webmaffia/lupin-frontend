@@ -1187,3 +1187,194 @@ export function mapFinancialData(strapiData) {
   };
 }
 
+/**
+ * Fetch subsidiary data from Strapi
+ * This is a Collection Type, so it returns an array of entries
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getSubsidiary() {
+  // Populate all nested components and media
+  // Following the structure from the screenshot and same pattern as Financial API:
+  // - TopBanner with DesktopImage and MobileImage
+  // - Subsidiaries (Repeatable Component - SubsidiaryItem) with SubsidiaryName
+  // - Documents (Repeatable Component - Subsidiary-yearly-document) nested inside Subsidiaries
+  //   with FinancialYear, DocumentFilePdf, isActive, DisplayOrder
+  // 
+  // Following the same pattern as getFinancial() which successfully handles nested components
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[Subsidiaries][populate][Documents][populate][DocumentFilePdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`subsidiary?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map subsidiary data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped subsidiary data for component
+ */
+export function mapSubsidiaryData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type, not Collection Type)
+  // Structure: data.Subsidiaries[] where each item has Documents[]
+  const data = strapiData?.data || strapiData;
+
+  // Debug logging
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapSubsidiaryData - Raw data:', {
+      hasData: !!strapiData,
+      hasDataObject: !!data,
+      isArray: Array.isArray(data),
+      keys: data ? Object.keys(data) : [],
+      subsidiaries: data?.Subsidiaries || data?.subsidiaries
+    });
+  }
+
+  // If no data, return empty array
+  if (!data) {
+    if (process.env.NODE_ENV === 'development') {
+      console.log('mapSubsidiaryData - No data found');
+    }
+    return {
+      subsidiaries: []
+    };
+  }
+
+  // Get Subsidiaries array (Repeatable Component - SubsidiaryItem)
+  // This is a Single Type, so Subsidiaries is directly on the data object
+  const subsidiariesArray = data?.Subsidiaries || data?.subsidiaries || [];
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapSubsidiaryData - Subsidiaries array:', {
+      length: subsidiariesArray.length,
+      firstSubsidiary: subsidiariesArray[0]
+    });
+  }
+
+  // Map each subsidiary item
+  // Documents are nested inside each SubsidiaryItem
+  const subsidiaries = subsidiariesArray.map((subsidiaryItem, index) => {
+    const subsidiaryName = subsidiaryItem?.SubsidiaryName || subsidiaryItem?.subsidiaryName || '';
+    
+    // Get Documents from subsidiary item (nested inside each SubsidiaryItem)
+    const documentsArray = subsidiaryItem?.Documents || subsidiaryItem?.documents || [];
+    
+    if (process.env.NODE_ENV === 'development' && index === 0) {
+      console.log('mapSubsidiaryData - First subsidiary mapping:', {
+        name: subsidiaryName,
+        documentsCount: documentsArray.length,
+        firstDocument: documentsArray[0]
+      });
+    }
+    
+    // Map documents to years format
+    const years = Array.isArray(documentsArray)
+      ? documentsArray
+          .filter(doc => doc?.isActive !== false) // Only active documents (isActive !== false)
+          .map((doc) => {
+            const financialYear = doc?.FinancialYear || doc?.financialYear || '';
+            const documentPdf = doc?.DocumentFilePdf?.data?.attributes || doc?.DocumentFilePdf || doc?.documentFilePdf?.data?.attributes || doc?.documentFilePdf;
+            const pdfUrl = documentPdf ? getStrapiMedia(documentPdf) : '#';
+            const displayOrder = doc?.DisplayOrder || doc?.displayOrder || '';
+            
+            return {
+              year: financialYear || displayOrder || '',
+              url: pdfUrl,
+              isActive: doc?.isActive !== false
+            };
+          })
+          .filter(year => year.year) // Filter out empty years
+          .sort((a, b) => {
+            // Sort by year (descending - most recent first)
+            return b.year.localeCompare(a.year);
+          })
+      : [];
+    
+    return {
+      id: subsidiaryItem?.id || index + 1,
+      name: subsidiaryName,
+      years: years
+    };
+  }).filter(subsidiary => subsidiary.name); // Only include subsidiaries with name (years can be empty)
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapSubsidiaryData - Mapped result:', {
+      subsidiariesCount: subsidiaries.length,
+      firstSubsidiary: subsidiaries[0]
+    });
+  }
+
+  return {
+    subsidiaries: subsidiaries
+  };
+}
+
+/**
+ * Fetch employee-stock-option-scheme data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getEmployeeStockOptionScheme() {
+  // Populate all nested components and media
+  // Following the structure from the screenshot and same pattern as other Single Types:
+  // - TopBanner with DesktopImage and MobileImage
+  // - EmployeeStockOptionSchemesSection (Repeatable Component - PdfCard) with Title, PublishedDate, Pdf, isActive
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[EmployeeStockOptionSchemesSection][populate][Pdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`employee-stock-option-scheme?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map employee stock option scheme data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped employee stock option scheme data for component
+ */
+export function mapEmployeeStockOptionSchemeData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty array
+  if (!data) {
+    return {
+      schemes: []
+    };
+  }
+
+  // Get EmployeeStockOptionSchemesSection array (Repeatable Component - PdfCard)
+  const schemesArray = data?.EmployeeStockOptionSchemesSection || data?.employeeStockOptionSchemesSection || [];
+
+  // Map schemes array to component format
+  const schemes = schemesArray
+    .filter(scheme => scheme?.isActive !== false) // Only active schemes
+    .map((scheme, index) => {
+      // Handle Pdf field (uppercase) or pdf (lowercase)
+      const pdf = scheme?.Pdf?.data?.attributes || scheme?.Pdf || scheme?.pdf?.data?.attributes || scheme?.pdf;
+      const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+
+      return {
+        id: scheme?.id || index + 1,
+        title: scheme?.Title || scheme?.title || '',
+        pdfUrl: pdfUrl,
+        isActive: scheme?.isActive !== false
+      };
+    })
+    .filter(scheme => scheme.title); // Only include schemes with titles
+
+  return {
+    schemes: schemes
+  };
+}
+
