@@ -1030,3 +1030,160 @@ export function mapInvestorFAQsData(strapiData) {
   };
 }
 
+/**
+ * Fetch financial data from Strapi
+ * This is a Single Type, so it returns one entry with all sections
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getFinancial() {
+  // Populate all nested components and media
+  // Following the structure from the screenshot and same pattern as reports-and-filings:
+  // - TopBanner with DesktopImage and MobileImage
+  // - RevenueProfitabilitySection with charts (FinancialMetricChart) and data (FinancialMetricItem)
+  // - Financial_Document_Item (PdfCard array) - May be top-level or nested
+  // - RelatedPartyTransactionsSection (PdfCard array) - Top-level repeatable component
+  // 
+  // Structure: RevenueProfitabilitySection -> charts (FinancialMetricChart) -> data (FinancialMetricItem)
+  // Need to explicitly populate the nested data array within charts
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    // Populate RevenueProfitabilitySection -> charts -> data (nested structure)
+    'populate[RevenueProfitabilitySection][populate][charts][populate][data][populate]=*',
+    // Financial_Document_Item is nested inside RevenueProfitabilitySection
+    'populate[RevenueProfitabilitySection][populate][Financial_Document_Item][populate][Pdf][populate]=*',
+    // RelatedPartyTransactionsSection is a top-level repeatable component (PdfCard)
+    'populate[RelatedPartyTransactionsSection][populate][Pdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`financial?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map RevenueProfitabilitySection data from Strapi
+ * 
+ * @param {Object} section - RevenueProfitabilitySection from Strapi
+ * @returns {Object} Mapped revenue profitability data for FinancialBarSection
+ */
+function mapRevenueProfitabilitySection(section) {
+  if (!section) return null;
+
+  const sectionTitle = section?.SectionTitle || section?.sectionTitle || 'Revenue and Profitability';
+  
+  // Map charts array
+  const charts = Array.isArray(section?.charts)
+    ? section.charts.map((chart) => {
+        const metricTitle = chart?.MetricTitleTitle || chart?.metricTitleTitle || chart?.MetricTitle || '';
+        const unit = chart?.Unit || chart?.unit || '';
+        const chartTitle = unit ? `${metricTitle} (${unit})` : metricTitle;
+        
+        // Map data array (FinancialMetricItem)
+        // Handle both direct data array and nested structure (data or Data)
+        const chartData = chart?.data || chart?.Data || [];
+        const data = Array.isArray(chartData)
+          ? chartData.map((item) => {
+              const financialYear = item?.FinancialYear || item?.financialYear || '';
+              const year = item?.Year || item?.year || '';
+              const amount = item?.Amount || item?.amount || '0';
+              
+              // Format label: "FY25 – 221,921" or "FY 2025-26 – 221,921"
+              const yearLabel = financialYear || year || '';
+              // Parse amount - handle string numbers with commas or spaces
+              const amountNum = typeof amount === 'string' 
+                ? parseFloat(amount.replace(/[,\s]/g, '')) 
+                : parseFloat(amount) || 0;
+              const formattedAmount = amountNum > 0 ? amountNum.toLocaleString('en-IN') : '0';
+              const label = yearLabel ? `${yearLabel} – ${formattedAmount}` : formattedAmount;
+              
+              return {
+                label: label,
+                value: amountNum
+              };
+            }).filter(item => item.value > 0 || item.label) // Filter out empty items
+          : [];
+        
+        // Only return chart if it has data
+        if (data.length === 0) return null;
+        
+        return {
+          title: chartTitle,
+          data: data
+        };
+      }).filter(chart => chart !== null) // Filter out null charts
+    : [];
+
+  return {
+    title: sectionTitle,
+    charts: charts
+  };
+}
+
+/**
+ * Map financial data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped financial data for components
+ */
+export function mapFinancialData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, throw error so page can handle it properly
+  if (!data) {
+    throw new Error('No data received from Strapi API. Check that the financial endpoint returns data.');
+  }
+
+  // Map RevenueProfitabilitySection
+  const revenueProfitabilityData = mapRevenueProfitabilitySection(
+    data?.RevenueProfitabilitySection || data?.revenueProfitabilitySection
+  );
+
+  // Map Financial_Document_Item (PdfCard array) - for financial documents
+  // Financial_Document_Item is nested inside RevenueProfitabilitySection (as confirmed by API response)
+  const financialDocumentsData = data?.RevenueProfitabilitySection?.Financial_Document_Item
+    || data?.RevenueProfitabilitySection?.FinancialDocumentItem
+    || data?.Financial_Document_Item
+    || data?.FinancialDocumentItem;
+  const financialDocuments = Array.isArray(financialDocumentsData)
+    ? financialDocumentsData.map((card, index) => {
+        // Handle Pdf field (uppercase) or pdf (lowercase)
+        const pdf = card?.Pdf?.data?.attributes || card?.Pdf || card?.pdf?.data?.attributes || card?.pdf;
+        const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+
+        return {
+          id: card?.id || index + 1,
+          title: card?.Title || card?.title || '',
+          pdfUrl: pdfUrl || '#',
+          isActive: card?.isActive !== undefined ? card.isActive : false,
+          publishedDate: card?.PublishedDate || card?.publishedDate || null
+        };
+      }).filter(card => card.title) // Only include cards with titles
+    : [];
+
+  // Map RelatedPartyTransactionsSection (PdfCard array) - for related party transactions
+  const relatedPartyTransactions = Array.isArray(data?.RelatedPartyTransactionsSection)
+    ? data.RelatedPartyTransactionsSection.map((card, index) => {
+        // Handle Pdf field (uppercase) or pdf (lowercase)
+        const pdf = card?.Pdf?.data?.attributes || card?.Pdf || card?.pdf?.data?.attributes || card?.pdf;
+        const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+
+        return {
+          id: card?.id || index + 1,
+          title: card?.Title || card?.title || '',
+          pdfUrl: pdfUrl || '#',
+          isActive: card?.isActive !== undefined ? card.isActive : false,
+          publishedDate: card?.PublishedDate || card?.publishedDate || null
+        };
+      }).filter(card => card.title) // Only include cards with titles
+    : [];
+
+  return {
+    revenueProfitability: revenueProfitabilityData,
+    financialDocuments: financialDocuments,
+    relatedPartyTransactions: relatedPartyTransactions
+  };
+}
+

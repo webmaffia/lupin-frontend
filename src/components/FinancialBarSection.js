@@ -7,52 +7,12 @@ import '../scss/components/FinancialBarSection.scss';
  * FinancialBarSection - Section component for financial bar charts
  */
 export default function FinancialBarSection({ data }) {
-  // Default data structure
-  const sectionData = data || {
-    title: "Revenue and Profitability",
-    charts: [
-      {
-        title: "Net Sales (₹ Millions)",
-        data: [
-          { label: "FY25 – 221,921", value: 221921 },
-          { label: "FY24 – 196,563", value: 196563 },
-          { label: "FY23 – 162,700", value: 162700 },
-          { label: "FY22 – 161,928", value: 161928 },
-          { label: "FY21 – 149,270", value: 149270 }
-        ]
-      },
-      {
-        title: "Profit Before Tax (₹ Millions)",
-        data: [
-          { label: "FY25 – 40,150", value: 40150 },
-          { label: "FY24 – 24,223", value: 24223 },
-          { label: "FY23 – 7,165", value: 7165 },
-          { label: "FY22 – 12,135", value: 12135 },
-          { label: "FY21 – 16,751", value: 16751 }
-        ]
-      },
-      {
-        title: "Net Profit (₹ Millions)",
-        data: [
-          { label: "FY25 – 32,816", value: 32816 },
-          { label: "FY24 – 19,145", value: 19145 },
-          { label: "FY23 – 4,301", value: 4301 },
-          { label: "FY22 – 15,280", value: 15280 },
-          { label: "FY21 – 12,165", value: 12165 }
-        ]
-      },
-      {
-        title: "EBITDA (₹ Millions)",
-        data: [
-          { label: "FY25 – 54,792", value: 54792 },
-          { label: "FY24 – 39,307", value: 39307 },
-          { label: "FY23 – 18,715", value: 18715 },
-          { label: "FY22 – 23,073", value: 23073 },
-          { label: "FY21 – 27,032", value: 27032 }
-        ]
-      }
-    ]
-  };
+  // If no data provided, don't render
+  if (!data || !data.charts || data.charts.length === 0) {
+    return null;
+  }
+
+  const sectionData = data;
 
   return (
     <section className="financial-bar-section">

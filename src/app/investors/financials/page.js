@@ -3,8 +3,8 @@ import FinancialBarSection from '@/components/FinancialBarSection';
 import SmallCard from '@/components/global/SmallCard';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-// TODO: Uncomment when ready to connect to Strapi API
-// import { getFinancial, mapFinancialData, mapTopBannerData } from '@/lib/strapi';
+import { getFinancial, mapFinancialData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 import '@/scss/pages/financials.scss';
 
 // Generate metadata for the financials page
@@ -15,232 +15,108 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin financials, financial reports, quarterly results, annual reports, financial statements, investor relations, Lupin Limited",
 });
 
-export default function FinancialsPage() {
-  // TODO: Uncomment when ready to connect to Strapi API
-  // Fetch banner data from Strapi
-  // let bannerData = null;
-  // 
-  // try {
-  //   const rawData = await getFinancial();
-  //   const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
-  //   bannerData = mapTopBannerData(topBanner);
-  // } catch (error) {
-  //   console.error('Error fetching Financial banner data from Strapi:', error);
-  // }
-
-  // Using fallback banner data (will be replaced by Strapi API later)
-  const bannerData = {
-    title: {
-      line1: "Financials",
-      line2: ""
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/Finacials.png",
-        alt: "Financials"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
+export default async function FinancialsPage() {
+  let financialData = null;
+  let bannerData = null;
+  let error = null;
+  
+  try {
+    const rawData = await getFinancial();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Financial - Raw API data received:', {
+        hasData: !!rawData,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasRevenueProfitabilitySection: !!(rawData?.data?.RevenueProfitabilitySection || rawData?.RevenueProfitabilitySection),
+        hasFinancial_Document_Item: !!(rawData?.data?.Financial_Document_Item || rawData?.Financial_Document_Item),
+        hasRelatedPartyTransactionsSection: !!(rawData?.data?.RelatedPartyTransactionsSection || rawData?.RelatedPartyTransactionsSection)
+      });
+    }
+    
+    if (rawData) {
+      financialData = mapFinancialData(rawData);
+      
+      // Map banner data
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Financial - Mapped data:', {
+          revenueProfitability: financialData?.revenueProfitability,
+          financialDocumentsCount: financialData?.financialDocuments?.length || 0,
+          relatedPartyTransactionsCount: financialData?.relatedPartyTransactions?.length || 0,
+          hasBanner: !!bannerData
+        });
       }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Financial - API returned empty response');
     }
-  };
+  } catch (err) {
+    error = err.message || 'Failed to fetch financial data from Strapi';
+    console.error('Error fetching Financial data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
 
-  // Financial document cards data
-  const financialCards = [
-    {
-      id: 1,
-      title: "Balance Sheet",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2025/07/balance-sheet-ir-2024-25.pdf",
-      isActive: false
-    },
-    {
-      id: 2,
-      title: "Profit and Loss Account",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2025/07/profit-and-loss-ir-2024-25.pdf",
-      isActive: false
-    },
-    {
-      id: 3,
-      title: "Cash Flow",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2025/07/cash-flows-ir-2024-25.pdf",
-      isActive: false
-    },
-    {
-      id: 4,
-      title: "Ten Years Financial Summary",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2025/07/ten-years-financial-summary-ir-2024-2025.pdf",
-      isActive: false
-    }
-  ];
-
-  // TODO: Uncomment when ready to connect to Strapi API
-  // Fetch Related Party Transactions data from Strapi
-  // let relatedPartyTransactions = [];
-  // 
-  // try {
-  //   const rawData = await getFinancial();
-  //   relatedPartyTransactions = mapFinancialData(rawData);
-  //   
-  //   if (process.env.NODE_ENV === 'development') {
-  //     console.log('Financial - Related Party Transactions mapped data:', relatedPartyTransactions);
-  //   }
-  // } catch (error) {
-  //   console.error('Error fetching Financial data from Strapi:', error);
-  //   // Fallback to default data if fetch fails
-  //   relatedPartyTransactions = [
-  //     {
-  //       id: 1,
-  //       title: "Half year ended September 30, 2025",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 2,
-  //       title: "Half year ended March 31, 2025",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 3,
-  //       title: "Half year ended September 30, 2024",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 4,
-  //       title: "Half year ended March 31, 2024",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 5,
-  //       title: "Half year ended September 30, 2023",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 6,
-  //       title: "Half year ended March 31, 2023",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 7,
-  //       title: "Half year ended September 30, 2022",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 8,
-  //       title: "Half year ended March 31, 2022",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     },
-  //     {
-  //       id: 9,
-  //       title: "Half year ended September 30, 2021",
-  //       pdfUrl: "#",
-  //       isActive: false
-  //     }
-  //   ];
-  // }
-
-  // Using fallback data (will be replaced by Strapi API later)
-  const relatedPartyTransactions = [
-    {
-      id: 1,
-      title: "Half year ended September 30, 2025",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2025/12/half-yearly-disclosure-on-related-party-transactions-september-30-2025.pdf",
-      isActive: false
-    },
-    {
-      id: 2,
-      title: "Half year ended March 31, 2025",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2025/05/related-party-transactions-31032025.pdf",
-      isActive: false
-    },
-    {
-      id: 3,
-      title: "Half year ended September 30, 2024",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2024/12/related-party-transaction-report-30092024-website.pdf",
-      isActive: false
-    },
-    {
-      id: 4,
-      title: "Half year ended March 31, 2024",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2024/06/rpt-mar-24-xbrl-revised.pdf",
-      isActive: false
-    },
-    {
-      id: 5,
-      title: "Half year ended September 30, 2023",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2023/11/rpt-half-year-q2-30-09-2023.pdf",
-      isActive: false
-    },
-    {
-      id: 6,
-      title: "Half year ended March 31, 2023",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2023/05/rpt-mar-23-xbrl-validated.pdf",
-      isActive: false
-    },
-    {
-      id: 7,
-      title: "Half year ended September 30, 2022",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2022/11/rpt-xrbl-sep22.pdf",
-      isActive: false
-    },
-    {
-      id: 8,
-      title: "Half year ended March 31, 2022",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2022/06/disclosure-of-related-party-transactio-31032022-3.pdf",
-      isActive: false
-    },
-    {
-      id: 9,
-      title: "Half year ended September 30, 2021",
-      pdfUrl: "https://www.lupin.com/wp-content/uploads/2021/11/consolidated-rpt-september-30-2021.pdf",
-      isActive: false
-    }
-  ];
+  // Extract data for components
+  const revenueProfitabilityData = financialData?.revenueProfitability || null;
+  const financialCards = financialData?.financialDocuments || [];
+  const relatedPartyTransactions = financialData?.relatedPartyTransactions || [];
 
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <FinancialBarSection />
+      {bannerData && <InnerBanner data={bannerData} />}
+      
+      {/* Revenue and Profitability Section */}
+      {revenueProfitabilityData && (
+        <FinancialBarSection data={revenueProfitabilityData} />
+      )}
       
       {/* Financial Documents Section */}
-      <section className="financial-documents">
-        <div className="financial-documents__container">
-          <div className="financial-documents__grid">
-            {financialCards.map((card) => (
-              <SmallCard
-                key={card.id}
-                title={card.title}
-                pdfUrl={card.pdfUrl}
-                isActive={card.isActive}
-              />
-            ))}
+      {financialCards.length > 0 && (
+        <section className="financial-documents">
+          <div className="financial-documents__container">
+            <div className="financial-documents__grid">
+              {financialCards.map((card) => (
+                <SmallCard
+                  key={card.id}
+                  title={card.title}
+                  pdfUrl={card.pdfUrl}
+                  isActive={card.isActive}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* Related Party Transactions Section */}
-      <section className="related-party-transactions">
-        <div className="related-party-transactions__container">
-          <h2 className="related-party-transactions__title">Related Party Transactions</h2>
-          <div className="related-party-transactions__grid">
-            {relatedPartyTransactions.map((card) => (
-              <SmallCard
-                key={card.id}
-                title={card.title}
-                pdfUrl={card.pdfUrl}
-                isActive={card.isActive}
-              />
-            ))}
+      {relatedPartyTransactions.length > 0 && (
+        <section className="related-party-transactions">
+          <div className="related-party-transactions__container">
+            <h2 className="related-party-transactions__title">Related Party Transactions</h2>
+            <div className="related-party-transactions__grid">
+              {relatedPartyTransactions.map((card) => (
+                <SmallCard
+                  key={card.id}
+                  title={card.title}
+                  pdfUrl={card.pdfUrl}
+                  isActive={card.isActive}
+                />
+              ))}
+            </div>
           </div>
+        </section>
+      )}
+
+      {error && process.env.NODE_ENV === 'development' && (
+        <div style={{ padding: '20px', background: '#fee', color: '#c00' }}>
+          <p>Error loading financial data: {error}</p>
         </div>
-      </section>
+      )}
 
       <SubscriberUpdated />
     </div>
