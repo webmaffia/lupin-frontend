@@ -842,3 +842,62 @@ export function mapCodeOfConductData(strapiData) {
   };
 }
 
+/**
+ * Fetch analyst-coverage data from Strapi
+ * This is a Single Type, so it returns one entry with AnalystCoverageSection array and TopBanner
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getAnalystCoverage() {
+  // Explicitly populate TopBanner DesktopImage and MobileImage (banner images)
+  // Populate AnalystCoverageSection with all fields (Institution, AnalystName, Email, DisplayOrder)
+  // Following chaining method like policies API endpoint
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[AnalystCoverageSection][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`analyst-coverage?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map analyst coverage data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Array} Mapped analyst data array
+ */
+export function mapAnalystCoverageData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, throw error so page can handle it properly
+  if (!data) {
+    throw new Error('No data received from Strapi API. Check that the analyst-coverage endpoint returns data.');
+  }
+
+  // Map AnalystCoverageSection array to component format with chaining
+  const analysts = Array.isArray(data?.AnalystCoverageSection)
+    ? data.AnalystCoverageSection.map((card, index) => ({
+        id: card?.id || index + 1,
+        institution: card?.Institution || card?.institution || card?.company_name || '',
+        analyst: card?.AnalystName || card?.analystName || card?.name || '',
+        email: card?.Email || card?.email || '',
+        isActive: card?.isActive !== undefined ? card.isActive : false,
+        displayOrder: card?.DisplayOrder || card?.displayOrder || null
+      }))
+    : [];
+
+  // Sort by displayOrder if available, otherwise keep original order
+  return analysts.sort((a, b) => {
+    if (a.displayOrder !== null && b.displayOrder !== null) {
+      return a.displayOrder - b.displayOrder;
+    }
+    if (a.displayOrder !== null) return -1;
+    if (b.displayOrder !== null) return 1;
+    return 0;
+  });
+}
+
