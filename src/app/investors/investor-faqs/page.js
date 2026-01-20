@@ -2,7 +2,8 @@ import InnerBanner from '@/components/InnerBanner';
 import InvestorFAQs from '@/components/InvestorFAQs';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { fetchAPI } from '@/lib/strapi';
+import { getInvestorFAQs, mapInvestorFAQsData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the investor FAQs page
 export const metadata = generateSEOMetadata({
@@ -13,45 +14,52 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function InvestorFAQSPage() {
-  // Fetch initial FAQs from Strapi (first 5)
-  let initialFAQs = [];
+  // Fetch investor FAQs data from Strapi (single API call for both FAQs and banner)
+  let faqsData = null;
+  let bannerData = null;
+  let error = null;
+  
   try {
-    const data = await fetchAPI('investor-faqs?pagination[start]=0&pagination[limit]=5&sort=id:asc', {
-      next: { revalidate: 60 },
-    });
+    const rawData = await getInvestorFAQs();
     
-    if (data.data && data.data.length > 0) {
-      initialFAQs = data.data.map((item, index) => ({
-        id: index,
-        question: item.attributes?.question || item.attributes?.title || '',
-        answer: item.attributes?.answer || item.attributes?.content || ''
-      }));
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Investor FAQs - Raw API data received:', {
+        hasData: !!rawData,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasFaqSection: !!(rawData?.data?.FaqSection || rawData?.FaqSection)
+      });
     }
-  } catch (error) {
-    console.error('Error fetching initial FAQs:', error);
-    // Will use default FAQs from component
-  }
-  const bannerData = {
-    title: {
-      line1: "Investor",
-      line2: "FAQs"
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Investor FAQs"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
+    
+    if (rawData) {
+      faqsData = mapInvestorFAQsData(rawData);
+      
+      // Map banner data
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Investor FAQs - Mapped data:', {
+          faqsCount: faqsData?.faqs?.length || 0,
+          hasBanner: !!bannerData
+        });
       }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Investor FAQs - API returned empty response');
     }
-  };
+  } catch (err) {
+    error = err.message || 'Failed to fetch investor FAQs data from Strapi';
+    console.error('Error fetching Investor FAQs data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
   
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <InvestorFAQs initialFAQs={initialFAQs} />
+      {bannerData && <InnerBanner data={bannerData} />}
+      <InvestorFAQs faqs={faqsData?.faqs || []} error={error} />
       <SubscriberUpdated />
     </div>
   );

@@ -1,75 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import NavigationLinks from './NavigationLinks';
 import '../scss/components/InvestorFAQs.scss';
 
-export default function InvestorFAQs({ initialFAQs = [] }) {
-  const [expandedItems, setExpandedItems] = useState(new Set([0])); // First FAQ (id: 0) is expanded by default
-  const [visibleCount, setVisibleCount] = useState(5); // Show first 5 FAQs initially (1 expanded + 4 collapsed)
-  const [faqs, setFaqs] = useState(initialFAQs.length > 0 ? initialFAQs : getDefaultFAQs()); // Use initial data or fallback
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+export default function InvestorFAQs({ faqs = [], error = null }) {
+  const [expandedItems, setExpandedItems] = useState(new Set());
+  const [visibleCount, setVisibleCount] = useState(5); // Show first 5 FAQs initially
 
-  // Default FAQs fallback - all FAQs
-  function getDefaultFAQs() {
-    return [
-      { 
-        id: 0, 
-        question: "When was Lupin formed and when did it go public?", 
-        answer: "1. Lupin Chemicals Pvt Ltd came into existence on March 1, 1983. It became a Public Limited Company on 23.12.1991.\n2. On June 24, 1993 Lupin Chemicals Limited came out with a public issue.\n3. On July 30, 2001 Lupin Laboratories Limited merged with Lupin Chemicals Limited, and the name of Lupin Chemicals Limited changed to Lupin Limited."
-      },
-      { id: 1, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." },
-      { id: 2, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." },
-      { id: 3, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." },
-      { id: 4, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." },
-      { id: 5, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." },
-      { id: 6, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." },
-      { id: 7, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." },
-      { id: 8, question: "Does Lupin pay a dividend?", answer: "Yes, Lupin pays dividends to its shareholders. The dividend policy and payment schedule are determined by the Board of Directors based on the company's financial performance and other factors." }
-    ];
-  }
-
-  // Fetch more FAQs from API
-  const loadMoreFAQs = async () => {
-    if (isLoading) return;
-    
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/investor-faqs?start=${faqs.length}&limit=4`);
-      const data = await response.json();
-      
-      if (data.faqs && data.faqs.length > 0) {
-        // Add new FAQs with proper IDs from Strapi
-        const newFAQs = data.faqs.map((faq, index) => ({
-          id: faqs.length + index,
-          question: faq.question || faq.title,
-          answer: faq.answer || faq.content
-        }));
-        setFaqs(prev => {
-          const updated = [...prev, ...newFAQs];
-          setVisibleCount(prevCount => prevCount + newFAQs.length);
-          setHasMore(data.hasMore !== false);
-          return updated;
-        });
-      } else {
-        // If API returns no FAQs (Strapi not configured), show 4 more from existing data
-        setVisibleCount(prev => {
-          const newCount = Math.min(prev + 4, faqs.length);
-          setHasMore(newCount < faqs.length);
-          return newCount;
-        });
-      }
-    } catch (error) {
-      // Silently fallback: show 4 more from existing data
-      setVisibleCount(prev => {
-        const newCount = Math.min(prev + 4, faqs.length);
-        setHasMore(newCount < faqs.length);
-        return newCount;
-      });
-    } finally {
-      setIsLoading(false);
+  // Expand first FAQ by default when FAQs are loaded
+  useEffect(() => {
+    if (faqs.length > 0 && expandedItems.size === 0) {
+      setExpandedItems(new Set([faqs[0].id]));
     }
+  }, [faqs, expandedItems.size]);
+
+  // Load more FAQs (show 4 more)
+  const loadMoreFAQs = () => {
+    setVisibleCount(prev => Math.min(prev + 4, faqs.length));
   };
 
   const toggleFAQ = (id) => {
@@ -82,6 +30,45 @@ export default function InvestorFAQs({ initialFAQs = [] }) {
       return new Set([id]);
     });
   };
+
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="investor-faqs">
+        <div className="investor-faqs__bg"></div>
+        <div className="investor-faqs__container">
+          <NavigationLinks />
+          <div className="investor-faqs__list">
+            <div className="investor-faqs__placeholder">
+              <p>Unable to load FAQs at this time. Please try again later.</p>
+              {process.env.NODE_ENV === 'development' && (
+                <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                  Error: {error}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!faqs || faqs.length === 0) {
+    return (
+      <section className="investor-faqs">
+        <div className="investor-faqs__bg"></div>
+        <div className="investor-faqs__container">
+          <NavigationLinks />
+          <div className="investor-faqs__list">
+            <div className="investor-faqs__placeholder">
+              <p>No FAQs available at this time.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="investor-faqs">
@@ -109,7 +96,10 @@ export default function InvestorFAQs({ initialFAQs = [] }) {
                 </button>
                 {isExpanded && (
                   <div className="investor-faqs__item-answer">
-                    <p style={{ whiteSpace: 'pre-line' }}>{faq.answer}</p>
+                    <div 
+                      style={{ whiteSpace: 'pre-line' }}
+                      dangerouslySetInnerHTML={{ __html: faq.answer }}
+                    />
                   </div>
                 )}
                 {!isExpanded && <div className="investor-faqs__item-divider"></div>}
@@ -119,14 +109,13 @@ export default function InvestorFAQs({ initialFAQs = [] }) {
         </div>
 
         {/* View All Link */}
-        {(visibleCount < faqs.length || hasMore) && (
+        {visibleCount < faqs.length && (
           <div className="investor-faqs__view-all">
             <button
               onClick={loadMoreFAQs}
               className="investor-faqs__view-all-link"
-              disabled={isLoading}
             >
-              {isLoading ? 'Loading...' : 'View All'}
+              View All
             </button>
           </div>
         )}

@@ -5,6 +5,7 @@ import '@/scss/components/ExchangeFilingsLinks.scss';
 
 /**
  * ExchangeFilingsLinks - Component for displaying exchange filing links in cards
+ * Groups links into sets of 5, with each set in its own container
  * 
  * @param {Array} cards - Array of card data, each containing an array of links
  * @param {string} className - Additional CSS classes (optional)
@@ -17,13 +18,33 @@ export default function ExchangeFilingsLinks({
     return null;
   }
 
+  // Flatten all links from all cards into a single array
+  const allLinks = cards.reduce((acc, card) => {
+    if (card.links && Array.isArray(card.links)) {
+      return [...acc, ...card.links];
+    }
+    return acc;
+  }, []);
+
+  if (allLinks.length === 0) {
+    return null;
+  }
+
+  // Group links into chunks of 5
+  const linksPerContainer = 5;
+  const linkChunks = [];
+  for (let i = 0; i < allLinks.length; i += linksPerContainer) {
+    linkChunks.push(allLinks.slice(i, i + linksPerContainer));
+  }
+
   return (
     <div className={`exchange-filings-links ${className}`}>
-      {cards.map((card, cardIndex) => (
-        <div key={cardIndex} className="exchange-filings-links__card">
+      {linkChunks.map((linkChunk, chunkIndex) => (
+        <div key={chunkIndex} className="exchange-filings-links__card">
           <div className="exchange-filings-links__links-container">
-            {card.links && card.links.map((link, linkIndex) => {
-              const isFirstLink = linkIndex === 0;
+            {linkChunk.map((link, linkIndex) => {
+              // First link in the first chunk gets special styling
+              const isFirstLink = chunkIndex === 0 && linkIndex === 0;
               const linkText = typeof link === 'string' ? link : (link.text || link.label || '');
               const linkHref = typeof link === 'object' ? (link.href || link.url || '#') : '#';
               

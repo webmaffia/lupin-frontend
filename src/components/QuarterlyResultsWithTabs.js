@@ -8,32 +8,45 @@ import '@/scss/components/QuarterlyResultsList.scss';
 
 /**
  * QuarterlyResultsWithTabs - Wrapper component that combines Tabs and QuarterlyResultsList
- * Shows quarterly results list when FY 2025-26 tab is active
+ * Shows quarterly results list for the active tab with different data for each tab
  * 
  * @param {Array} tabs - Array of tab labels
- * @param {Array} quarterlyItems - Array of quarterly result items to display before cards
- * @param {Array} cards - Array of card items to display after first quarterly results
- * @param {Array} quarterlyItemsAfterCards - Array of quarterly result items to display after cards
- * @param {Array} cardsAfterQ2 - Array of card items to display after Q2
+ * @param {Object} tabsData - Object mapping tab values to their quarterly data
+ * @param {Array} quarterlyItems - Array of quarterly result items (legacy - for first tab only)
+ * @param {Array} cards - Array of card items (legacy - for first tab only)
+ * @param {Array} quarterlyItemsAfterCards - Array of quarterly result items (legacy - for first tab only)
+ * @param {Array} cardsAfterQ2 - Array of card items (legacy - for first tab only)
  * @param {string} className - Additional CSS classes (optional)
  */
 export default function QuarterlyResultsWithTabs({ 
   tabs = [],
+  tabsData = {},
   quarterlyItems = [],
   cards = [],
   quarterlyItemsAfterCards = [],
   cardsAfterQ2 = [],
   className = '' 
 }) {
-  // Initialize with first tab value (which should be 'FY 2025-26')
+  // Initialize with first tab value
   const [activeTabValue, setActiveTabValue] = useState(tabs[0] || null);
 
   const handleTabChange = (tab) => {
     setActiveTabValue(tab.value);
   };
 
-  // Show quarterly results list only when FY 2025-26 tab is active
-  const shouldShowQuarterlyResults = activeTabValue === 'FY 2025-26';
+  // Get data for the active tab
+  const activeTabData = tabsData[activeTabValue];
+  
+  // Use tabsData if available, otherwise fall back to legacy props (for first tab)
+  const displayData = activeTabData || {
+    quarterlyItems: quarterlyItems,
+    cards: cards,
+    quarterlyItemsAfterCards: quarterlyItemsAfterCards,
+    cardsAfterQ2: cardsAfterQ2
+  };
+
+  // Show quarterly results list for the active tab
+  const shouldShowQuarterlyResults = activeTabValue && tabs.includes(activeTabValue);
 
   return (
     <div className={className}>
@@ -50,16 +63,16 @@ export default function QuarterlyResultsWithTabs({
       {shouldShowQuarterlyResults && (
         <>
           {/* First Quarterly Results List (Q1) */}
-          {quarterlyItems.length > 0 && (
-            <QuarterlyResultsList items={quarterlyItems} />
+          {displayData.quarterlyItems && displayData.quarterlyItems.length > 0 && (
+            <QuarterlyResultsList items={displayData.quarterlyItems} />
           )}
           
           {/* Small Cards Section for Q1 */}
-          {cards.length > 0 && (
+          {displayData.cards && displayData.cards.length > 0 && (
             <section className="quarterly-results-cards">
               <div className="quarterly-results-cards__container">
                 <div className="quarterly-results-cards__grid">
-                  {cards.map((card, index) => (
+                  {displayData.cards.map((card, index) => (
                     <SmallCard
                       key={card.id || index}
                       title={card.title}
@@ -73,16 +86,16 @@ export default function QuarterlyResultsWithTabs({
           )}
 
           {/* Second Quarterly Results List (Q2) - After Cards */}
-          {quarterlyItemsAfterCards.length > 0 && (
-            <QuarterlyResultsList items={quarterlyItemsAfterCards} />
+          {displayData.quarterlyItemsAfterCards && displayData.quarterlyItemsAfterCards.length > 0 && (
+            <QuarterlyResultsList items={displayData.quarterlyItemsAfterCards} />
           )}
 
           {/* Small Cards Section for Q2 */}
-          {cardsAfterQ2.length > 0 && (
+          {displayData.cardsAfterQ2 && displayData.cardsAfterQ2.length > 0 && (
             <section className="quarterly-results-cards">
               <div className="quarterly-results-cards__container">
                 <div className="quarterly-results-cards__grid">
-                  {cardsAfterQ2.map((card, index) => (
+                  {displayData.cardsAfterQ2.map((card, index) => (
                     <SmallCard
                       key={card.id || index}
                       title={card.title}
