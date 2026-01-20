@@ -158,12 +158,10 @@
   &__content {
     @include flex(column, center, center);
     gap: vw(20);
-    width: vw(259);
     text-align: center;
     
     @include media('mobile') {
       gap: vw-mobile(15, 414);
-      width: 100%;
     }
   }
   
