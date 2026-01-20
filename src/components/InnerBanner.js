@@ -22,6 +22,10 @@ export default function InnerBanner({ data }) {
         url: "/assets/inner-banner/freepik-enhance-42835.jpg",
         alt: "Financial documents and charts"
       },
+      bannerMobile: {
+        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        alt: "Financial documents and charts"
+      },
       petal: {
         url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
@@ -59,13 +63,30 @@ export default function InnerBanner({ data }) {
         <div className="inner-banner__overlay-3"></div>
       </div>
 
-      {/* Banner Image */}
+      {/* Banner Image - Desktop */}
       {bannerData.images?.banner && (
-        <div className="inner-banner__image">
+        <div className="inner-banner__image inner-banner__image--desktop">
           <div style={{ position: 'relative', width: '100%', height: '100%' }}>
             <Image
               src={bannerData.images.banner.url}
               alt={bannerData.images.banner.alt}
+              fill
+              className="inner-banner__image-img"
+              quality={100}
+              priority
+              sizes="100vw"
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Banner Image - Mobile */}
+      {bannerData.images?.bannerMobile && (
+        <div className="inner-banner__image inner-banner__image--mobile">
+          <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+            <Image
+              src={bannerData.images.bannerMobile.url}
+              alt={bannerData.images.bannerMobile.alt || bannerData.images.banner?.alt}
               fill
               className="inner-banner__image-img"
               quality={100}

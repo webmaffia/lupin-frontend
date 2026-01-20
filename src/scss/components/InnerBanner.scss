@@ -8,11 +8,11 @@
 .inner-banner {
   position: relative;
   width: 100%;
-  height: vw(850);
+  height: vw(720);
   overflow: hidden;
   
   @include media('mobile') {
-    height: vw-mobile(400, 414);
+    height: vw-mobile(570, 414);
   }
   
   // Background Layers
@@ -107,7 +107,23 @@
     top: 0;
     left: 0;
   }
-  
+
+  &__image--desktop {
+    display: block;
+    
+    @include media('mobile') {
+      display: none;
+    }
+  }
+
+  &__image--mobile {
+    display: none;
+    
+    @include media('mobile') {
+      display: block;
+    }
+  }
+
   &__image-img {
     object-fit: cover;
     object-position: center;

@@ -94,6 +94,10 @@ export default async function InvestorsPage() {
         url: "/assets/inner-banner/Investors.png",
         alt: "Investor Relations"
       },
+      bannerMobile: {
+        url: "/assets/images/mobile.png",
+        alt: "Financial documents and charts"
+      },
       petal: {
         url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
