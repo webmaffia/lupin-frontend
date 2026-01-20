@@ -16,7 +16,7 @@
   }
   
   @include media('mobile') {
-    padding: vw-mobile(36, 414) vw-mobile(41, 414);
+    padding: vw-mobile(36, 414) vw-mobile(20, 414);
   }
   
   &__container {
@@ -194,6 +194,10 @@
       
       .about-us-content__fold-cta {
         opacity: 0.9;
+        
+        @include media('mobile') {
+          opacity: 1;
+        }
       }
       
       .about-us-content__fold-image img {
@@ -298,6 +302,7 @@
       img {
         width: 100%;
         height: auto;
+        border-radius: vw-mobile(40, 414);
       }
     }
   }
@@ -323,8 +328,9 @@
     }
     
     @include media('mobile') {
-      width: vw-mobile(200, 414);
-      height: vw-mobile(200, 414);
+      width: vw-mobile(135, 414);
+      height: vw-mobile(135, 414);
+      opacity: 1 !important;
     }
   }
   
@@ -429,7 +435,7 @@
     }
     
     @include media('mobile') {
-      font-size: vw-mobile(40, 414);
+      font-size: vw-mobile(30, 414);
     }
   }
   
@@ -443,7 +449,9 @@
     visibility: hidden;
     transition: opacity $transition-base, visibility $transition-base;
     z-index: 3;
-    
+    @include media('mobile') {
+     position: relative;
+    }
     // Position close to the left image (starting from image edge)
     .about-us-content__fold--teal & {
       left: 50%;
@@ -463,7 +471,8 @@
       line-height: vw(32);
       color: #21AB53;
       margin: 0 0 vw(20) 0;
-      
+
+   
       &:last-child {
         margin-bottom: 0;
       }
@@ -488,6 +497,7 @@
         line-height: vw(32, 768);
         margin-bottom: vw(15, 768);
         font-weight: 500;
+      
       }
     }
     
@@ -498,12 +508,16 @@
       right: auto !important;
       transform: translate(-50%, -50%);
       text-align: left;
+      opacity: 1;
+      visibility: visible;
+      top: 34%;
       
       p {
-        font-size: vw-mobile(20, 414);
-        line-height: vw-mobile(28, 414);
+        font-size: vw-mobile(16, 414);
+        line-height: 1.2;
         margin-bottom: vw-mobile(15, 414);
         font-weight: 500;
+        color: #ffffff;
       }
     }
   }
