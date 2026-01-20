@@ -1,0 +1,591 @@
+@import '../../utils/variables';
+@import '../../utils/functions';
+@import '../../utils/mixins';
+
+.our-planet {
+  position: relative;
+  width: 100%;
+  padding: 0;
+  background-color: #f0f8f0;
+  
+  // ESG Framework Banner
+  &__esg-banner {
+    position: relative;
+    width: vw(1235);
+    height: vw(518);
+    margin: 0 auto vw(-110);
+    background: linear-gradient(180deg, #08a03f 5.283%, #059639 95.159%);
+    border-radius: vw(145);
+    padding: vw(89) vw(145);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    
+    @include media('tablet') {
+      width: 90%;
+      height: auto;
+      min-height: vw(400, 768);
+      margin-bottom: vw(-80, 768);
+      border-radius: vw(100, 768);
+      padding: vw(60, 768) vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      width: calc(100% - #{vw-mobile(40, 414)});
+      height: auto;
+      min-height: vw-mobile(300, 414);
+      margin-bottom: vw-mobile(-50, 414);
+      border-radius: vw-mobile(50, 414);
+      padding: vw-mobile(40, 414) vw-mobile(20, 414);
+    }
+  }
+  
+  &__esg-content {
+    max-width: vw(945);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: vw(20);
+    
+    @include media('mobile') {
+      gap: vw-mobile(15, 414);
+    }
+  }
+  
+  &__esg-title {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(65);
+    line-height: 1;
+    color: #ffffff;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(32, 414);
+    }
+  }
+  
+  &__esg-description {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(22);
+    line-height: vw(36);
+    color: #ffffff;
+    
+    @include media('tablet') {
+      font-size: vw(20, 768);
+      line-height: vw(32, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(24, 414);
+    }
+    
+    p {
+      margin: 0;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  // Main Section
+  &__main {
+    position: relative;
+    width: 100%;
+    padding: vw(408) 0 vw(110);
+    min-height: vw(1302);
+    
+    @include media('tablet') {
+      padding: vw(300, 768) 0 vw(80, 768);
+      min-height: auto;
+    }
+    
+    @include media('mobile') {
+      padding: vw-mobile(200, 414) 0 vw-mobile(50, 414);
+      min-height: auto;
+    }
+  }
+  
+  // Circle Section
+  &__circle-section {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: vw(404);
+    height: vw(404);
+    z-index: 2;
+    
+    @include media('tablet') {
+      width: vw(300, 768);
+      height: vw(300, 768);
+    }
+    
+    @include media('mobile') {
+      position: relative;
+      left: auto;
+      top: auto;
+      transform: none;
+      width: vw-mobile(250, 414);
+      height: vw-mobile(250, 414);
+      margin: 0 auto vw-mobile(40, 414);
+    }
+  }
+  
+  &__circle {
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: vw(2) solid #08a03f;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: vw(135) vw(40);
+    
+    @include media('tablet') {
+      border-width: vw(2, 768);
+      padding: vw(100, 768) vw(30, 768);
+    }
+    
+    @include media('mobile') {
+      border-width: vw-mobile(2, 414);
+      padding: vw-mobile(60, 414) vw-mobile(25, 414);
+    }
+  }
+  
+  &__circle-content {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: vw(9);
+    max-width: vw(324);
+    
+    @include media('tablet') {
+      gap: vw(8, 768);
+      max-width: vw(250, 768);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(8, 414);
+      max-width: 100%;
+    }
+  }
+  
+  &__circle-title {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(50);
+    line-height: 1;
+    color: #08a03f;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(40, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(28, 414);
+    }
+  }
+  
+  &__circle-subtitle {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(25);
+    line-height: vw(35);
+    color: #08a03f;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(20, 768);
+      line-height: vw(28, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(22, 414);
+    }
+  }
+  
+  // Goals Grid
+  &__goals-grid {
+    position: relative;
+    width: vw(1420);
+    max-width: 100%;
+    margin: 0 auto;
+    padding-top: vw(493);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: vw(84) vw(84);
+    
+    @include media('tablet') {
+      width: 90%;
+      padding-top: vw(350, 768);
+      gap: vw(50, 768) vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      width: calc(100% - #{vw-mobile(40, 414)});
+      padding-top: 0;
+      grid-template-columns: 1fr;
+      gap: vw-mobile(30, 414);
+    }
+  }
+  
+  // Goal Card
+  &__goal-card {
+    position: relative;
+    width: vw(668);
+    height: vw(340);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: vw(37) vw(59);
+    
+    @include media('tablet') {
+      width: 100%;
+      height: auto;
+      min-height: vw(300, 768);
+      padding: vw(30, 768) vw(40, 768);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      height: auto;
+      min-height: vw-mobile(280, 414);
+      padding: vw-mobile(25, 414) vw-mobile(20, 414);
+    }
+  }
+  
+  &__goal-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #08a03f;
+    border-radius: vw(59.643);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: vw(29) vw(240);
+    
+    @include media('tablet') {
+      border-radius: vw(50, 768);
+      padding: vw(25, 768) vw(150, 768);
+    }
+    
+    @include media('mobile') {
+      border-radius: vw-mobile(30, 414);
+      padding: vw-mobile(20, 414) vw-mobile(20, 414);
+    }
+  }
+  
+  &__goal-title {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(24);
+    line-height: 1;
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(22, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(18, 414);
+    }
+  }
+  
+  &__goal-content {
+    position: relative;
+    width: vw(502);
+    height: vw(207);
+    display: flex;
+    gap: vw(30);
+    z-index: 1;
+    
+    @include media('tablet') {
+      width: 100%;
+      height: auto;
+      gap: vw(20, 768);
+    }
+    
+    @include media('mobile') {
+      width: 100%;
+      height: auto;
+      flex-direction: column;
+      gap: vw-mobile(20, 414);
+    }
+  }
+  
+  &__goal-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: vw(6);
+    max-width: vw(274);
+    
+    @include media('tablet') {
+      max-width: 100%;
+      gap: vw(5, 768);
+    }
+    
+    @include media('mobile') {
+      max-width: 100%;
+      gap: vw-mobile(8, 414);
+    }
+  }
+  
+  &__goal-label {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(20);
+    line-height: vw(36);
+    color: #ffffff;
+    text-decoration: underline;
+    text-decoration-skip-ink: none;
+    text-decoration-thickness: vw(1.15);
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      line-height: vw(32, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(16, 414);
+      line-height: vw-mobile(24, 414);
+    }
+  }
+  
+  &__goal-description {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(20);
+    line-height: vw(25);
+    color: #ffffff;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      line-height: vw(22, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+      line-height: vw-mobile(20, 414);
+    }
+  }
+  
+  &__goal-percentage {
+    display: flex;
+    align-items: center;
+    gap: vw(20);
+    margin: vw(6) 0;
+    
+    @include media('tablet') {
+      gap: vw(15, 768);
+      margin: vw(5, 768) 0;
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(12, 414);
+      margin: vw-mobile(5, 414) 0;
+    }
+    
+    &-divider {
+      width: vw(1);
+      height: vw(41);
+      background-color: #ffffff;
+      flex-shrink: 0;
+      
+      @include media('tablet') {
+        width: vw(1, 768);
+        height: vw(35, 768);
+      }
+      
+      @include media('mobile') {
+        width: vw-mobile(1, 414);
+        height: vw-mobile(30, 414);
+      }
+    }
+    
+    &-value {
+      font-family: $font-family-base;
+      font-weight: 500;
+      font-size: vw(30);
+      line-height: vw(55);
+      color: #ffffff;
+      
+      @include media('tablet') {
+        font-size: vw(26, 768);
+        line-height: vw(48, 768);
+      }
+      
+      @include media('mobile') {
+        font-size: vw-mobile(24, 414);
+        line-height: vw-mobile(40, 414);
+      }
+    }
+  }
+  
+  &__goal-target {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(20);
+    line-height: vw(33);
+    color: #ffffff;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      line-height: vw(30, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+      line-height: vw-mobile(22, 414);
+    }
+  }
+  
+  &__goal-divider {
+    width: vw(1);
+    background-color: rgba(255, 255, 255, 0.3);
+    
+    @include media('mobile') {
+      width: 100%;
+      height: vw-mobile(1, 414);
+    }
+  }
+  
+  &__goal-status {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: vw(19);
+    min-width: vw(139);
+    
+    @include media('tablet') {
+      gap: vw(15, 768);
+      min-width: vw(120, 768);
+    }
+    
+    @include media('mobile') {
+      gap: vw-mobile(15, 414);
+      min-width: auto;
+      width: 100%;
+    }
+  }
+  
+  &__goal-status-circle {
+    width: vw(139);
+    height: vw(139);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    @include media('tablet') {
+      width: vw(120, 768);
+      height: vw(120, 768);
+    }
+    
+    @include media('mobile') {
+      width: vw-mobile(100, 414);
+      height: vw-mobile(100, 414);
+    }
+  }
+  
+  &__goal-status-text {
+    font-family: $font-family-base;
+    font-weight: 500;
+    font-size: vw(20);
+    line-height: vw(36);
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    
+    @include media('tablet') {
+      font-size: vw(18, 768);
+      line-height: vw(32, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+      line-height: vw-mobile(22, 414);
+    }
+  }
+}
+
+// Small Circular Progress Component Styles
+.small-circular-progress {
+  position: relative;
+  width: vw(47);
+  height: vw(46);
+  flex-shrink: 0;
+  
+  @include media('tablet') {
+    width: vw(40, 768);
+    height: vw(40, 768);
+  }
+  
+  @include media('mobile') {
+    width: vw-mobile(35, 414);
+    height: vw-mobile(35, 414);
+  }
+  
+  &__svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  
+  &__bg {
+    transition: fill 0.3s ease;
+  }
+  
+  &__fill {
+    transition: opacity 0.3s ease;
+    transform-origin: center;
+  }
+}
+
+// Circular Progress Component Styles
+.circular-progress {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  &__svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  
+  &__bg {
+    transition: fill 0.3s ease;
+  }
+  
+  &__fill {
+    transition: opacity 0.3s ease;
+    transform-origin: center;
+  }
+}
+
