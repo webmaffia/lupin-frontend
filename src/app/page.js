@@ -62,7 +62,7 @@ export default async function Home() {
         }}
       />
 
-      <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <div>
         <GoldenLine />
        
         <Hero data={heroData} />
