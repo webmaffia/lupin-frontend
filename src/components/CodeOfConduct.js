@@ -5,61 +5,62 @@ import Link from 'next/link';
 import NavigationLinks from './NavigationLinks';
 import '../scss/components/CodeOfConduct.scss';
 
-export default function CodeOfConduct({ data }) {
-  // Default data (will be replaced by Strapi)
-  const codeOfConductData = data || {
-    codes: [
-      {
-        id: 1,
-        title: "Lupin Secures SBTi validation for Emission ReductionTargets",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 2,
-        title: "Code of Conduct for Independent Directors",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 3,
-        title: "Code of Conduct- Directors",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 4,
-        title: "Code of Conduct-Senior Management",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 5,
-        title: "Familiarization programme for independent directors",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 6,
-        title: "Code of Practices and Procedures for fair disclosure of Unpublished Price Sensitive Information",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 7,
-        title: "Code of Conduct for Independent Directors",
-        pdfUrl: "#",
-        isActive: false
-      }
-    ],
-    images: {
-      downloadButton: {
-        active: "/assets/policies/download-button-active.svg",
-        inactive: "/assets/policies/download-button-inactive.svg"
-      },
-      decorativeGroup: "/assets/policies/group.svg"
-    }
+export default function CodeOfConduct({ data, error }) {
+  // Static image paths (not data)
+  const staticImages = {
+    downloadButton: {
+      active: "/assets/policies/download-button-active.svg",
+      inactive: "/assets/policies/download-button-inactive.svg"
+    },
+    decorativeGroup: "/assets/policies/group.svg"
   };
+
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="code-of-conduct">
+        <div className="code-of-conduct__container">
+          <NavigationLinks links={[
+            { id: 'committees', label: 'Committees of the Board', href: '/investors/committees' },
+            { id: 'code-of-conduct', label: 'Code of Conduct', href: '/investors/code-of-conduct' },
+            { id: 'policies', label: 'Policies', href: '/investors/policies' }
+          ]} />
+          <div className="code-of-conduct__content">
+            <div className="code-of-conduct__placeholder">
+              <p>Unable to load code of conduct documents at this time. Please try again later.</p>
+              {process.env.NODE_ENV === 'development' && (
+                <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                  Error: {error}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.codes || data.codes.length === 0) {
+    return (
+      <section className="code-of-conduct">
+        <div className="code-of-conduct__container">
+          <NavigationLinks links={[
+            { id: 'committees', label: 'Committees of the Board', href: '/investors/committees' },
+            { id: 'code-of-conduct', label: 'Code of Conduct', href: '/investors/code-of-conduct' },
+            { id: 'policies', label: 'Policies', href: '/investors/policies' }
+          ]} />
+          <div className="code-of-conduct__content">
+            <div className="code-of-conduct__placeholder">
+              <p>No code of conduct documents available at this time.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const codeOfConductData = data;
 
   return (
     <section className="code-of-conduct">
@@ -79,17 +80,17 @@ export default function CodeOfConduct({ data }) {
             {codeOfConductData.codes.map((code) => (
               <div
                 key={code.id}
-                className={`code-card ${code.isActive ? 'code-card--active' : ''}`}
+                className={`code-card`}
               >
                 <div className="code-card__content">
                   <h3 className="code-card__title">{code.title}</h3>
                   <div className="code-card__download">
-                    <Link href={code.pdfUrl} className="code-card__download-link">
+                    <Link href={code.pdfUrl || '#'} className="code-card__download-link">
                       Download PDF
                     </Link>
-                    <Link href={code.pdfUrl} className="code-card__download-button">
+                    <Link href={code.pdfUrl || '#'} className="code-card__download-button">
                       <Image
-                        src={code.isActive ? codeOfConductData.images.downloadButton.active : codeOfConductData.images.downloadButton.inactive}
+                        src={code.isActive ? staticImages.downloadButton.active : staticImages.downloadButton.inactive}
                         alt="Download"
                         width={104}
                         height={104}
@@ -106,7 +107,7 @@ export default function CodeOfConduct({ data }) {
           {/* Decorative Group Image */}
           <div className="code-of-conduct__decorative">
             <Image
-              src={codeOfConductData.images.decorativeGroup}
+              src={staticImages.decorativeGroup}
               alt=""
               width={319}
               height={313}

@@ -1071,12 +1071,12 @@ export function mapAnalystCoverageData(strapiData) {
  * 
  * @returns {Promise<Object>} Raw Strapi API response
  */
-export async function getPolicy() {
+/* export async function getPolicy() {
   // Populate TopBanner, PdfCard and pdf media
   return fetchAPI('policy?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[PdfCard][populate][pdf][populate]=*', {
     next: { revalidate: 60 },
   });
-}
+} */
 
 /**
  * Map policy data from Strapi
@@ -1174,23 +1174,41 @@ export function mapFinancialData(strapiData) {
  * @returns {Object|null} Mapped banner data for InnerBanner component or null
  */
 export function mapTopBannerData(topBanner) {
+  // Use chaining method with fallbacks - return null if no banner data
   if (!topBanner) return null;
 
-  // Get desktop and mobile images
-  const desktopImage = topBanner.desktop_image?.data?.attributes || topBanner.desktop_image;
-  const mobileImage = topBanner.mobile_image?.data?.attributes || topBanner.mobile_image;
+  // Get desktop and mobile images using optional chaining with fallbacks
+  // Support both direct structure (DesktopImage) and nested structure (DesktopImage.data.attributes)
+  // Also support snake_case (desktop_image) for backward compatibility
+  const desktopImage = topBanner?.DesktopImage?.data?.attributes 
+    || topBanner?.DesktopImage 
+    || topBanner?.desktop_image?.data?.attributes 
+    || topBanner?.desktop_image;
+    
+  const mobileImage = topBanner?.MobileImage?.data?.attributes 
+    || topBanner?.MobileImage 
+    || topBanner?.mobile_image?.data?.attributes 
+    || topBanner?.mobile_image;
   
-  // Use desktop image as banner, fallback to mobile if desktop not available
+  // Get URLs for both desktop and mobile images
+  const desktopImageUrl = desktopImage ? getStrapiMedia(desktopImage) : null;
+  const mobileImageUrl = mobileImage ? getStrapiMedia(mobileImage) : null;
+  
+  // Use desktop image as primary banner, fallback to mobile if desktop not available
   const bannerImage = desktopImage || mobileImage;
-  const bannerImageUrl = bannerImage ? getStrapiMedia(bannerImage) : null;
+  const bannerImageUrl = desktopImageUrl || mobileImageUrl;
 
-  // Parse BannerTitle - could be single line or two lines separated by newline/space
-  const bannerTitle = topBanner.BannerTitle || '';
-  const titleParts = bannerTitle.split(/\n|\\n/).filter(part => part.trim());
+  // Get heading and subheading using optional chaining with fallbacks
+  // Support both camelCase (Heading, SubHeading) and legacy fields (BannerTitle, subHeading)
+  const heading = topBanner?.Heading || topBanner?.heading || topBanner?.BannerTitle || '';
+  const subHeading = topBanner?.SubHeading || topBanner?.subHeading || '';
   
-  // If subHeading exists, use it as line2, otherwise split BannerTitle
-  const line1 = titleParts[0]?.trim() || topBanner.subHeading || '';
-  const line2 = topBanner.subheadingtext || titleParts[1]?.trim() || '';
+  // Parse heading - could be single line or two lines separated by newline/space
+  const titleParts = heading ? heading.split(/\n|\\n/).filter(part => part.trim()) : [];
+  
+  // Use Heading as line1, SubHeading as line2, or split Heading if SubHeading not available
+  const line1 = titleParts[0]?.trim() || subHeading || '';
+  const line2 = subHeading || titleParts[1]?.trim() || '';
 
   // Build banner data object
   const bannerData = {
@@ -1201,11 +1219,27 @@ export function mapTopBannerData(topBanner) {
     images: {}
   };
 
-  // Add banner image if available
-  if (bannerImageUrl) {
+  // Add desktop banner image if available
+  if (desktopImageUrl && desktopImage) {
     bannerData.images.banner = {
-      url: bannerImageUrl,
-      alt: bannerImage.alternativeText || bannerImage.caption || 'Banner image'
+      url: desktopImageUrl,
+      alt: desktopImage?.alternativeText || desktopImage?.caption || 'Banner image'
+    };
+  }
+  
+  // Add mobile banner image if available (for responsive display)
+  if (mobileImageUrl && mobileImage) {
+    bannerData.images.bannerMobile = {
+      url: mobileImageUrl,
+      alt: mobileImage?.alternativeText || mobileImage?.caption || 'Banner image mobile'
+    };
+  }
+  
+  // Fallback: if no desktop but mobile exists, use mobile as banner
+  if (!bannerData.images.banner && mobileImageUrl && mobileImage) {
+    bannerData.images.banner = {
+      url: mobileImageUrl,
+      alt: mobileImage?.alternativeText || mobileImage?.caption || 'Banner image'
     };
   }
 

@@ -662,3 +662,183 @@ export function transformOthersFilingsForComponent(reportFilingData) {
   };
 }
 
+/**
+ * Fetch policy data from Strapi
+ * This is a Single Type, so it returns one entry with PolicyDocumentsSection array and TopBanner
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getPolicy() {
+  // Use simpler populate format that works - populate all fields recursively
+  // This will populate TopBanner (DesktopImage, MobileImage, Heading, SubHeading) and PolicyDocumentsSection (Title, PublishedDate, Pdf, isActive)
+  return fetchAPI('policy?populate[TopBanner][populate]=*&populate[PolicyDocumentsSection][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map policy data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped policy data for component
+ */
+export function mapPolicyData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, throw error so page can handle it properly
+  if (!data) {
+    throw new Error('No data received from Strapi API. Check that the policy endpoint returns data.');
+  }
+
+  // Map PolicyDocumentsSection array to component format with chaining
+  const policies = Array.isArray(data?.PolicyDocumentsSection)
+    ? data.PolicyDocumentsSection.map((card) => {
+        let pdfUrl = null;
+
+        // Try to get PDF URL from different possible sources using chaining:
+        // 1. PDF stored as Strapi Media file (card.Pdf) - direct structure from API
+        if (card?.Pdf) {
+          // Handle both nested (data.attributes) and direct structure
+          const pdf = card.Pdf?.data?.attributes || card.Pdf;
+          if (pdf?.url || pdf) {
+            pdfUrl = getStrapiMedia(pdf);
+          }
+        }
+        
+        // 2. Fallback to lowercase field names (for backward compatibility)
+        if (!pdfUrl && card?.pdf) {
+          const pdf = card.pdf?.data?.attributes || card.pdf;
+          if (pdf?.url || pdf) {
+            pdfUrl = getStrapiMedia(pdf);
+          }
+        }
+        
+        // 3. PDF stored as external URL text field (card.pdfUrl)
+        if (!pdfUrl && card?.pdfUrl) {
+          pdfUrl = card.pdfUrl;
+        }
+        
+        // 4. PDF stored as direct URL string in Pdf field
+        if (!pdfUrl && typeof card?.Pdf === 'string' && card.Pdf.startsWith('http')) {
+          pdfUrl = card.Pdf;
+        }
+
+        // Log in development if PDF URL is missing
+        if (process.env.NODE_ENV === 'development' && !pdfUrl) {
+          console.warn(`Policy "${card?.Title || card?.title || 'Unknown'}" (ID: ${card?.id || 'N/A'}) is missing PDF URL. Available fields:`, Object.keys(card || {}));
+        }
+
+        return {
+          id: card?.id || null,
+          title: card?.Title || card?.title || '',
+          pdfUrl: pdfUrl || '#',
+          isActive: card?.isActive !== undefined ? card.isActive : false,
+          publishedDate: card?.PublishedDate || card?.publishedDate || null
+        };
+      }).filter(policy => policy.id !== null) // Filter out invalid policies
+    : [];
+
+  // Return in component-expected format (images are static assets, not from API)
+  return {
+    policies: policies,
+    images: {
+      downloadButton: {
+        active: "/assets/policies/download-button-active.svg",
+        inactive: "/assets/policies/download-button-inactive.svg"
+      },
+      decorativeGroup: "/assets/policies/group.svg"
+    }
+  };
+}
+
+/**
+ * Fetch code-of-conduct data from Strapi
+ * This is a Single Type, so it returns one entry with CodeOfConductDocumentsSection array and TopBanner
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getCodeOfConduct() {
+  // Use simpler populate format that works - populate all fields recursively
+  // This will populate TopBanner (DesktopImage, MobileImage, Heading, SubHeading) and CodeOfConductDocumentsSection (Title, PublishedDate, Pdf, isActive)
+  return fetchAPI('code-of-conduct?populate[TopBanner][populate]=*&populate[CodeOfConductDocumentsSection][populate]=*', {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map code-of-conduct data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped code of conduct data for component
+ */
+export function mapCodeOfConductData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, throw error so page can handle it properly
+  if (!data) {
+    throw new Error('No data received from Strapi API. Check that the code-of-conduct endpoint returns data.');
+  }
+
+  // Map CodeOfConductDocumentsSection array to component format with chaining
+  const codes = Array.isArray(data?.CodeOfConductDocumentsSection)
+    ? data.CodeOfConductDocumentsSection.map((card) => {
+        let pdfUrl = null;
+
+        // Try to get PDF URL from different possible sources using chaining:
+        // 1. PDF stored as Strapi Media file (card.Pdf) - direct structure from API
+        if (card?.Pdf) {
+          // Handle both nested (data.attributes) and direct structure
+          const pdf = card.Pdf?.data?.attributes || card.Pdf;
+          if (pdf?.url || pdf) {
+            pdfUrl = getStrapiMedia(pdf);
+          }
+        }
+        
+        // 2. Fallback to lowercase field names (for backward compatibility)
+        if (!pdfUrl && card?.pdf) {
+          const pdf = card.pdf?.data?.attributes || card.pdf;
+          if (pdf?.url || pdf) {
+            pdfUrl = getStrapiMedia(pdf);
+          }
+        }
+        
+        // 3. PDF stored as external URL text field (card.pdfUrl)
+        if (!pdfUrl && card?.pdfUrl) {
+          pdfUrl = card.pdfUrl;
+        }
+        
+        // 4. PDF stored as direct URL string in Pdf field
+        if (!pdfUrl && typeof card?.Pdf === 'string' && card.Pdf.startsWith('http')) {
+          pdfUrl = card.Pdf;
+        }
+
+        // Log in development if PDF URL is missing
+        if (process.env.NODE_ENV === 'development' && !pdfUrl) {
+          console.warn(`Code of Conduct "${card?.Title || card?.title || 'Unknown'}" (ID: ${card?.id || 'N/A'}) is missing PDF URL. Available fields:`, Object.keys(card || {}));
+        }
+
+        return {
+          id: card?.id || null,
+          title: card?.Title || card?.title || '',
+          pdfUrl: pdfUrl || '#',
+          isActive: card?.isActive !== undefined ? card.isActive : false,
+          publishedDate: card?.PublishedDate || card?.publishedDate || null
+        };
+      }).filter(code => code.id !== null) // Filter out invalid codes
+    : [];
+
+  // Return in component-expected format (images are static assets, not from API)
+  return {
+    codes: codes,
+    images: {
+      downloadButton: {
+        active: "/assets/policies/download-button-active.svg",
+        inactive: "/assets/policies/download-button-inactive.svg"
+      },
+      decorativeGroup: "/assets/policies/group.svg"
+    }
+  };
+}
+
