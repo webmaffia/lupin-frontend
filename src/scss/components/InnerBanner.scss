@@ -146,7 +146,8 @@
     
     @include media('mobile') {
       left: vw-mobile(20, 414);
-      top: vw-mobile(200, 414);
+      top: auto;
+      bottom: vw-mobile(68, 414);
     }
   }
   
