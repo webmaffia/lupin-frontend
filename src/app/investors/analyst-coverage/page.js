@@ -1,8 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import AnalystCoverage from '@/components/AnalystCoverage';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-// TODO: Uncomment when ready to connect to Strapi API
-// import { getAnalystCoverage, mapAnalystCoverageData, mapTopBannerData } from '@/lib/strapi';
+import { getAnalystCoverage, mapAnalystCoverageData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the analyst coverage page
 export const metadata = generateSEOMetadata({
@@ -12,60 +12,54 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin analyst coverage, investor relations, financial analysts, stock analysis",
 });
 
-export default function AnalystCoveragePage() {
-  // TODO: Uncomment when ready to connect to Strapi API
-  // Fetch analyst coverage data from Strapi
-  // let analystsData = [];
-  // 
-  // try {
-  //   const rawData = await getAnalystCoverage();
-  //   analystsData = mapAnalystCoverageData(rawData);
-  //   
-  //   if (process.env.NODE_ENV === 'development') {
-  //     console.log('Analyst Coverage - Mapped data:', analystsData);
-  //   }
-  // } catch (error) {
-  //   console.error('Error fetching Analyst Coverage data from Strapi:', error);
-  //   // Will use default data from component if fetch fails
-  // }
-
-  // TODO: Uncomment when ready to connect to Strapi API
-  // Fetch banner data from Strapi
-  // let bannerData = null;
-  // 
-  // try {
-  //   const rawData = await getAnalystCoverage();
-  //   const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
-  //   bannerData = mapTopBannerData(topBanner);
-  // } catch (error) {
-  //   console.error('Error fetching Analyst Coverage banner data from Strapi:', error);
-  // }
-
-  // Using fallback data (component will use default data when empty array is passed)
-  const analystsData = [];
-
-  // Using fallback banner data (will be replaced by Strapi API later)
-  const bannerData = {
-    title: {
-      line1: "Analyst",
-      line2: "Coverage"
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/Analys-coverage.png",
-        alt: "Financial documents and charts"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
-      }
+export default async function AnalystCoveragePage() {
+  // Fetch analyst coverage data from Strapi (single API call for both analysts and banner)
+  let analystsData = null;
+  let bannerData = null;
+  let error = null;
+  
+  try {
+    const rawData = await getAnalystCoverage();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Analyst Coverage - Raw API data received:', {
+        hasData: !!rawData,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasAnalystCoverageSection: !!(rawData?.data?.AnalystCoverageSection || rawData?.AnalystCoverageSection)
+      });
     }
-  };
+    
+    // Map analyst coverage data
+    if (rawData) {
+      analystsData = mapAnalystCoverageData(rawData);
+      
+      // Map banner data
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Analyst Coverage - Mapped data:', {
+          analystsCount: analystsData?.length || 0,
+          hasBanner: !!bannerData
+        });
+      }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Analyst Coverage - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch analyst coverage data from Strapi';
+    console.error('Error fetching Analyst Coverage data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
 
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <AnalystCoverage analysts={analystsData} />
+      {bannerData && <InnerBanner data={bannerData} />}
+      <AnalystCoverage analysts={analystsData} error={error} />
     </div>
   );
 }
