@@ -1896,3 +1896,26 @@ export function mapGlobalPresenceCountrySectionsData(strapiData) {
   }).sort((a, b) => a.order - b.order); // Sort by order field
 }
 
+/**
+ * Map our-manufacturing-sites intro section data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object|null} Mapped intro section data
+ */
+export function mapManufacturingIntroData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return null;
+  }
+
+  const introSection = data.IntroSection || data.introSection || data.Introduction || data.introduction;
+  if (!introSection) {
+    return null;
+  }
+
+  return {
+    text: introSection.text || introSection.description || introSection.content || ''
+  };
+}
+
