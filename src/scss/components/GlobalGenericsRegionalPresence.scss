@@ -214,19 +214,19 @@
     font-family: $font-family-base;
     font-weight: 600; // Semi-Bold
     font-size: vw(19.587);
-    line-height: vw(35.257);
+    line-height: 1.2;
     color: #ffffff;
     text-transform: capitalize;
     flex: 1;
 
     @include media('tablet') {
       font-size: vw(18, 768);
-      line-height: vw(32, 768);
+      line-height: 1.2;
     }
 
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
-      line-height: vw-mobile(28, 414);
+      line-height: 1.2;
     }
   }
 
