@@ -42,7 +42,7 @@
     grid-template-columns: vw(848) vw(1) 1fr;
     gap: vw(42);
     align-items: start;
-    padding: vw(207) 0;
+    padding: vw(100) 0;
 
     @include media('tablet') {
       grid-template-columns: 1fr;
