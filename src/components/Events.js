@@ -3,26 +3,41 @@
 import Link from 'next/link';
 import '../scss/components/Events.scss';
 
-export default function Events({ data }) {
-  // Default data (will be replaced by Strapi)
-  const eventsData = data || {
-    title: "Events",
-    events: [
-      {
-        id: 1,
-        date: "August 5, 2025",
-        title: "Q1 FY2026 Board meeting",
-        href: "#",
-        variant: "dark" // dark green background, white text
-      },
-      {
-        id: 2,
-        date: "August 11, 2025",
-        title: "43rd Annual General Meeting",
-        href: "#",
-        variant: "light" // light green background, dark green text
-      }
-    ]
+export default function Events({ data, error = null }) {
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="events">
+        <div className="events__container">
+          <div className="events__placeholder">
+            <p>Unable to load events at this time. Please try again later.</p>
+            {process.env.NODE_ENV === 'development' && (
+              <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                Error: {error}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.events || data.events.length === 0) {
+    return (
+      <section className="events">
+        <div className="events__container">
+          <div className="events__placeholder">
+            <p>No events available at this time.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const eventsData = {
+    title: data.title || "Events",
+    events: data.events
   };
 
   return (

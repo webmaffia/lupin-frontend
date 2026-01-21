@@ -2,7 +2,8 @@ import InnerBanner from '@/components/InnerBanner';
 import ShareholdingPattern from '@/components/ShareholdingPattern';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { fetchAPI } from '@/lib/strapi';
+import { getShareholdingPattern, mapShareholdingPatternData } from '@/lib/strapi-reports';
+import { mapTopBannerData, fetchAPI } from '@/lib/strapi';
 
 // Generate metadata for the shareholding pattern page
 export const metadata = generateSEOMetadata({
@@ -13,8 +14,48 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function ShareholdingPatternPage() {
-  // Fetch data from Strapi
   let shareholdingData = null;
+  let bannerData = null;
+  let error = null;
+  
+  try {
+    const rawData = await getShareholdingPattern();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Shareholding Pattern - Raw API data received:', {
+        hasData: !!rawData,
+        isDataObject: !Array.isArray(rawData?.data) && !!rawData?.data,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner)
+      });
+    }
+    
+    if (rawData) {
+      shareholdingData = mapShareholdingPatternData(rawData);
+      
+      // Map banner data (Single Type, so TopBanner is directly on data object)
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Shareholding Pattern - Mapped data:', {
+          hasBanner: !!bannerData
+        });
+      }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Shareholding Pattern - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch shareholding pattern data from Strapi';
+    console.error('Error fetching Shareholding Pattern data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+
+  // Fetch iframe data (keep existing iframe logic as fallback)
+  let iframeData = null;
   try {
     const data = await fetchAPI('shareholding-pattern?populate=deep', {
       next: { revalidate: 60 },
@@ -22,37 +63,26 @@ export default async function ShareholdingPatternPage() {
     
     if (data.data && data.data.attributes) {
       const attributes = data.data.attributes;
-      shareholdingData = {
+      iframeData = {
         iframeUrl: attributes.iframeUrl || attributes.iframe?.url || "",
         iframeTitle: attributes.iframeTitle || attributes.iframe?.title || "Shareholding Pattern"
       };
     }
   } catch (error) {
-    console.error('Error fetching shareholding pattern data from Strapi:', error);
-    // Will use default data from component
+    console.error('Error fetching iframe data from Strapi:', error);
   }
 
-  const bannerData = {
-    title: {
-      line1: "Shareholding",
-      line2: "Pattern"
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Shareholding Pattern"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
-      }
-    }
+  // Merge shareholding data with iframe data
+  const finalShareholdingData = {
+    ...shareholdingData,
+    iframeUrl: iframeData?.iframeUrl || "",
+    iframeTitle: iframeData?.iframeTitle || "Shareholding Pattern"
   };
   
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <ShareholdingPattern data={shareholdingData} />
+      {bannerData && <InnerBanner data={bannerData} />}
+      <ShareholdingPattern data={finalShareholdingData} error={error} />
       <SubscriberUpdated />
     </div>
   );

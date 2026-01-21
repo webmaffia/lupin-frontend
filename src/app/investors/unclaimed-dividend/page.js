@@ -1,7 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import UnclaimedDividend from '@/components/UnclaimedDividend';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { fetchAPI } from '@/lib/strapi';
+import { getUnclaimedDividend, mapUnclaimedDividendData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the unclaimed dividend page
 export const metadata = generateSEOMetadata({
@@ -12,88 +13,54 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function UnclaimedDividendPage() {
-  // Fetch data from Strapi
   let unclaimedData = null;
+  let bannerData = null;
+  let error = null;
+  
   try {
-    const data = await fetchAPI('unclaimed-dividend?populate=deep', {
-      next: { revalidate: 60 },
-    });
+    const rawData = await getUnclaimedDividend();
     
-    if (data.data && data.data.attributes) {
-      // Map Strapi data to component format
-      const attributes = data.data.attributes;
-      unclaimedData = {
-        title: attributes.title || attributes.heading,
-        form: {
-          memberIdPlaceholder: attributes.memberIdPlaceholder || attributes.form?.memberIdPlaceholder,
-          formTypePlaceholder: attributes.formTypePlaceholder || attributes.form?.formTypePlaceholder,
-          formTypeOptions: attributes.formTypeOptions || attributes.form?.formTypeOptions || [],
-          submitText: attributes.submitText || attributes.form?.submitText
-        },
-        instructions: attributes.instructions || [],
-        nodalOfficer: {
-          name: attributes.nodalOfficerName || attributes.nodalOfficer?.name,
-          email: attributes.nodalOfficerEmail || attributes.nodalOfficer?.email
-        },
-        decorativeImage: attributes.decorativeImage?.data ? {
-          url: attributes.decorativeImage.data.attributes.url,
-          alt: attributes.decorativeImage.data.attributes.alternativeText || ""
-        } : null,
-        notice: {
-          title: attributes.notice?.title || attributes.noticeTitle,
-          registrarAppointment: attributes.notice?.registrarAppointment || attributes.registrarAppointment,
-          address: {
-            company: attributes.notice?.address?.company || attributes.address?.company,
-            unit: attributes.notice?.address?.unit || attributes.address?.unit,
-            building: attributes.notice?.address?.building || attributes.address?.building,
-            street: attributes.notice?.address?.street || attributes.address?.street,
-            city: attributes.notice?.address?.city || attributes.address?.city
-          },
-          emails: {
-            label: attributes.notice?.emails?.label || attributes.emailLabel,
-            list: attributes.notice?.emails?.list || attributes.emailList || []
-          },
-          phones: attributes.notice?.phones || attributes.phones || [],
-          importantNotice: attributes.notice?.importantNotice || attributes.importantNotice,
-          iepfLink: {
-            text: attributes.notice?.iepfLink?.text || attributes.iepfLinkText,
-            url: attributes.notice?.iepfLink?.url || attributes.iepfLinkUrl
-          },
-          unclaimedDividend: {
-            label: attributes.notice?.unclaimedDividend?.label || attributes.unclaimedDividendLabel,
-            text: attributes.notice?.unclaimedDividend?.text || attributes.unclaimedDividendText,
-            linkText: attributes.notice?.unclaimedDividend?.linkText || attributes.unclaimedDividendLinkText,
-            linkUrl: attributes.notice?.unclaimedDividend?.linkUrl || attributes.unclaimedDividendLinkUrl
-          }
-        }
-      };
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Unclaimed Dividend - Raw API data received:', {
+        hasData: !!rawData,
+        isDataObject: !Array.isArray(rawData?.data) && !!rawData?.data,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasUnclaimedDivendSection: !!(rawData?.data?.UnclaimedDivendSection || rawData?.UnclaimedDivendSection)
+      });
     }
-  } catch (error) {
-    console.error('Error fetching unclaimed dividend data from Strapi:', error);
-    // Will use default data from component
+    
+    if (rawData) {
+      unclaimedData = mapUnclaimedDividendData(rawData);
+      
+      // Map banner data (Single Type, so TopBanner is directly on data object)
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Unclaimed Dividend - Mapped data:', {
+          hasSectionTitle: !!unclaimedData?.sectionTitle,
+          hasDividendInfoSection: !!unclaimedData?.dividendInfoSection,
+          hasDividendNotice: !!unclaimedData?.dividendNotice,
+          hasBanner: !!bannerData
+        });
+      }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Unclaimed Dividend - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch unclaimed dividend data from Strapi';
+    console.error('Error fetching Unclaimed Dividend data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 
-  const bannerData = {
-    title: {
-      line1: "Unclaimed Dividend",
-      line2: "& Shares"
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Unclaimed Dividend & Shares"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
-      }
-    }
-  };
-  
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <UnclaimedDividend data={unclaimedData} />
+      {bannerData && <InnerBanner data={bannerData} />}
+      <UnclaimedDividend data={unclaimedData} error={error} />
     </div>
   );
 }

@@ -4,54 +4,42 @@ import Image from 'next/image';
 import Link from 'next/link';
 import '../scss/components/Policies.scss';
 
-export default function Presentations({ data }) {
-  // Default data (will be replaced by Strapi)
-  const presentationsData = data || {
-    presentations: [
-      {
-        id: 1,
-        title: "Q1 FY2026 Earnings Presentation",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 2,
-        title: "Q2 FY2026 Earnings Presentation",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 3,
-        title: "Q3 FY2026 Earnings Presentation",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 4,
-        title: "Q4 FY2026 Earnings Presentation",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 5,
-        title: "Annual Report 2025 Presentation",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 6,
-        title: "Investor Day 2025 Presentation",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 7,
-        title: "Strategy Update Presentation",
-        pdfUrl: "#",
-        isActive: false
-      }
-    ],
-    images: {
+export default function Presentations({ data, error = null }) {
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="policies">
+        <div className="policies__container">
+          <div className="policies__placeholder">
+            <p>Unable to load presentations at this time. Please try again later.</p>
+            {process.env.NODE_ENV === 'development' && (
+              <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                Error: {error}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.presentations || data.presentations.length === 0) {
+    return (
+      <section className="policies">
+        <div className="policies__container">
+          <div className="policies__placeholder">
+            <p>No presentations available at this time.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const presentationsData = {
+    title: data.title || "Presentations",
+    presentations: data.presentations,
+    images: data.images || {
       downloadButton: {
         active: "/assets/policies/download-button-active.svg",
         inactive: "/assets/policies/download-button-inactive.svg"
@@ -65,9 +53,11 @@ export default function Presentations({ data }) {
       {/* Container */}
       <div className="policies__container">
         {/* Title */}
-        <h2 className="policies__section-title">
-          Presentations
-        </h2>
+        {presentationsData.title && (
+          <h2 className="policies__section-title">
+            {presentationsData.title}
+          </h2>
+        )}
 
         {/* Content */}
         <div className="policies__content">

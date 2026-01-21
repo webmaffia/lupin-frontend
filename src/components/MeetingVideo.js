@@ -4,43 +4,44 @@ import { useState } from 'react';
 import Image from 'next/image';
 import '../scss/components/MeetingVideo.scss';
 
-export default function MeetingVideo({ data }) {
+export default function MeetingVideo({ data, error = null }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState(null);
 
-  // Default data (will be replaced by Strapi)
-  const meetingVideoData = data || {
-    title: "Annual General Meeting",
-    videos: [
-      {
-        id: 1,
-        title: "42nd Annual General Meeting – Aug 2, 2024",
-        thumbnail: "/assets/meeting-video/Youtube-thumb.png",
-        videoUrl: "https://www.lupin.com/video/lupin-agm-2024.mp4",
-        transcriptLink: {
-          text: "42nd Annual General Meeting Transcript",
-          href: "#"
-        }
-      },
-      {
-        id: 2,
-        title: "41st Annual General Meeting – August 3, 2023",
-        thumbnail: "/assets/meeting-video/Youtube-thumb.png",
-        videoUrl: "https://www.lupin.com/video/lupin-agm-2023.mp4"
-      },
-      {
-        id: 3,
-        title: "40th Annual General Meeting – August 4, 2022",
-        thumbnail: "/assets/meeting-video/Youtube-thumb.png",
-        videoUrl: "https://www.lupin.com/video/lupin-agm-2022.mp4"
-      },
-      {
-        id: 4,
-        title: "39th Annual General Meeting – August 5, 2021",
-        thumbnail: "/assets/meeting-video/Youtube-thumb.png",
-        videoUrl: "https://www.lupin.com/video/lupin-agm-2021.mp4"
-      }
-    ]
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="meeting-video">
+        <div className="meeting-video__container">
+          <div className="meeting-video__placeholder">
+            <p>Unable to load meeting videos at this time. Please try again later.</p>
+            {process.env.NODE_ENV === 'development' && (
+              <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                Error: {error}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.videos || data.videos.length === 0) {
+    return (
+      <section className="meeting-video">
+        <div className="meeting-video__container">
+          <div className="meeting-video__placeholder">
+            <p>No meeting videos available at this time.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const meetingVideoData = {
+    title: data.title || "Annual General Meeting",
+    videos: data.videos
   };
 
   const handleVideoClick = (video) => {
@@ -80,9 +81,9 @@ export default function MeetingVideo({ data }) {
               >
                 {/* Thumbnail */}
                 <div className="meeting-video__thumbnail-wrapper">
-                  {video.thumbnail ? (
+                  {video.thumbnail || video.thumbnailUrl ? (
                     <Image
-                      src={video.thumbnail}
+                      src={video.thumbnail || video.thumbnailUrl || "/assets/meeting-video/Youtube-thumb.png"}
                       alt={video.title}
                       fill
                       className="meeting-video__thumbnail"
@@ -135,6 +136,8 @@ export default function MeetingVideo({ data }) {
                     <a
                       href={video.transcriptLink.href}
                       className="meeting-video__transcript-link"
+                      target="_blank"
+                      rel="noopener noreferrer"
                       onClick={(e) => e.stopPropagation()}
                     >
                       {video.transcriptLink.text}

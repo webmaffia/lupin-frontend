@@ -1982,3 +1982,577 @@ export function mapOtherStatutoryInformationData(strapiData) {
   };
 }
 
+/**
+ * Fetch news-and-event data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getNewsAndEvent() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - AnnualGeneralMeetingSection (Repeatable Component - AgmEventCard) with:
+  //   - MeetingTitle, MeetingDate, VideoFile, VideoUrl, Pdf, isActive, DisplayOrder
+  // - EventSection (Repeatable Component - EventCard) with:
+  //   - EventTitle, Eventdate, isActive, DisplayOrder
+  // - PresentationSection (Repeatable Component - PdfCard) with:
+  //   - Title, PublishedDate, Pdf, isActive
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[AnnualGeneralMeetingSection][populate][VideoFile][populate]=*',
+    'populate[AnnualGeneralMeetingSection][populate][VideoUrl][populate]=*',
+    'populate[AnnualGeneralMeetingSection][populate][Pdf][populate]=*',
+    'populate[EventSection][populate]=*',
+    'populate[PresentationSection][populate][Pdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`news-and-event?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map news and event data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped news and event data for components
+ */
+export function mapNewsAndEventData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {
+      meetingVideoSection: null,
+      eventsSection: null,
+      presentationsSection: null
+    };
+  }
+
+  // Map AnnualGeneralMeetingSection (Repeatable Component - AgmEventCard) -> MeetingVideo
+  const agmSectionsArray = data?.AnnualGeneralMeetingSection || data?.annualGeneralMeetingSection || [];
+  const mappedMeetingVideos = agmSectionsArray
+    .filter(section => section?.isActive !== false)
+    .map((section, index) => {
+      // Get video URL - VideoUrl might be Media or Text field, VideoFile is Media
+      let videoUrlString = '';
+      
+      // Try VideoUrl as text first (URL string)
+      if (typeof section?.VideoUrl === 'string') {
+        videoUrlString = section.VideoUrl;
+      } else {
+        // Try VideoUrl as Media
+        const videoUrlMedia = section?.VideoUrl?.data?.attributes || section?.VideoUrl || section?.videoUrl?.data?.attributes || section?.videoUrl;
+        if (videoUrlMedia && videoUrlMedia.url) {
+          videoUrlString = getStrapiMedia(videoUrlMedia);
+        } else {
+          // Fallback to VideoFile (Media)
+          const videoFile = section?.VideoFile?.data?.attributes || section?.VideoFile || section?.videoFile?.data?.attributes || section?.videoFile;
+          videoUrlString = videoFile ? getStrapiMedia(videoFile) : '';
+        }
+      }
+      
+      // Get PDF for transcript
+      const pdf = section?.Pdf?.data?.attributes || section?.Pdf || section?.pdf?.data?.attributes || section?.pdf;
+      const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+
+      // Format meeting date
+      const meetingDate = section?.MeetingDate || section?.meetingDate || '';
+      const formattedDate = meetingDate ? new Date(meetingDate).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }) : '';
+
+      // Get thumbnail from video file if available
+      const videoFile = section?.VideoFile?.data?.attributes || section?.VideoFile || section?.videoFile?.data?.attributes || section?.videoFile;
+      const thumbnail = videoFile?.formats?.thumbnail?.url 
+        ? getStrapiMedia(videoFile.formats.thumbnail) 
+        : (videoFile?.url ? getStrapiMedia(videoFile) : null);
+
+      return {
+        id: section?.id || index + 1,
+        title: section?.MeetingTitle || section?.meetingTitle || '',
+        date: formattedDate,
+        videoUrl: videoUrlString,
+        thumbnail: thumbnail,
+        transcriptLink: pdfUrl !== '#' ? {
+          text: `${section?.MeetingTitle || section?.meetingTitle || 'Meeting'} Transcript`,
+          href: pdfUrl
+        } : null,
+        displayOrder: section?.DisplayOrder || section?.displayOrder || String(index + 1)
+      };
+    })
+    .filter(video => video.title && video.videoUrl)
+    .sort((a, b) => {
+      // Sort by DisplayOrder if available
+      const orderA = a.displayOrder || '999';
+      const orderB = b.displayOrder || '999';
+      return orderB.localeCompare(orderA); // Most recent first
+    });
+
+  const meetingVideoSection = mappedMeetingVideos.length > 0 ? {
+    title: "Annual General Meeting",
+    videos: mappedMeetingVideos
+  } : null;
+
+  // Map EventSection (Repeatable Component - EventCard) -> Events
+  const eventsArray = data?.EventSection || data?.eventSection || [];
+  const mappedEvents = eventsArray
+    .filter(event => event?.isActive !== false)
+    .map((event, index) => {
+      // Format event date
+      const eventDate = event?.Eventdate || event?.eventdate || event?.EventDate || event?.eventDate || '';
+      const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+      }) : '';
+
+      // Alternate variant (dark/light) based on index
+      const variant = index % 2 === 0 ? 'dark' : 'light';
+
+      return {
+        id: event?.id || index + 1,
+        date: formattedDate,
+        title: event?.EventTitle || event?.eventTitle || '',
+        href: '#', // Events might not have links, or could be added later
+        variant: variant,
+        displayOrder: event?.DisplayOrder || event?.displayOrder || String(index + 1)
+      };
+    })
+    .filter(event => event.title)
+    .sort((a, b) => {
+      // Sort by DisplayOrder if available
+      const orderA = a.displayOrder || '999';
+      const orderB = b.displayOrder || '999';
+      return orderB.localeCompare(orderA); // Most recent first
+    });
+
+  const eventsSection = mappedEvents.length > 0 ? {
+    title: "Events",
+    events: mappedEvents
+  } : null;
+
+  // Map PresentationSection (Repeatable Component - PdfCard) -> Presentations
+  const presentationsArray = data?.PresentationSection || data?.presentationSection || [];
+  const mappedPresentations = presentationsArray
+    .filter(presentation => presentation?.isActive !== false)
+    .map((presentation, index) => {
+      const pdf = presentation?.Pdf?.data?.attributes || presentation?.Pdf || presentation?.pdf?.data?.attributes || presentation?.pdf;
+      const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+
+      return {
+        id: presentation?.id || index + 1,
+        title: presentation?.Title || presentation?.title || '',
+        pdfUrl: pdfUrl,
+        isActive: presentation?.isActive !== false && pdfUrl !== '#'
+      };
+    })
+    .filter(presentation => presentation.title);
+
+  const presentationsSection = mappedPresentations.length > 0 ? {
+    title: "Presentations",
+    presentations: mappedPresentations,
+    images: {
+      downloadButton: {
+        active: "/assets/policies/download-button-active.svg",
+        inactive: "/assets/policies/download-button-inactive.svg"
+      },
+      decorative: "/assets/egm/decorative.svg"
+    }
+  } : null;
+
+  return {
+    meetingVideoSection: meetingVideoSection,
+    eventsSection: eventsSection,
+    presentationsSection: presentationsSection
+  };
+}
+
+/**
+ * Fetch saksham-niveshak data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getSakshamNiveshak() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - Description (Rich text - Markdown)
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`saksham-niveshak?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map saksham niveshak data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped saksham niveshak data for component
+ */
+export function mapSakshamNiveshakData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {
+      description: null
+    };
+  }
+
+  // Map Description (Rich text - Markdown)
+  const description = data?.Description || data?.description || '';
+
+  return {
+    description: description || null
+  };
+}
+
+/**
+ * Fetch share-price data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getSharePrice() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - SharePriceSection (Repeatable Component - SharePriceCard) with:
+  //   - Heading (Text)
+  //   - Content (Rich text - Markdown)
+  //   - isActive (Boolean)
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[SharePriceSection][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`share-price?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map share price data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped share price data for component
+ */
+export function mapSharePriceData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {
+      sections: []
+    };
+  }
+
+  // Map SharePriceSection (Repeatable Component - SharePriceCard)
+  const sharePriceSectionsArray = data?.SharePriceSection || data?.sharePriceSection || [];
+  const mappedSections = sharePriceSectionsArray
+    .filter(section => section?.isActive !== false)
+    .map((section, index) => ({
+      id: section?.id || index + 1,
+      heading: section?.Heading || section?.heading || '',
+      content: section?.Content || section?.content || ''
+    }))
+    .filter(section => section.heading || section.content);
+
+  // Map to component structure
+  // First section -> shareCapital, Second section -> listingOfSecurities
+  const shareCapital = mappedSections[0] ? {
+    title: mappedSections[0].heading,
+    content: mappedSections[0].content
+  } : null;
+
+  const listingOfSecurities = mappedSections[1] ? {
+    title: mappedSections[1].heading,
+    content: mappedSections[1].content
+  } : null;
+
+  return {
+    shareCapital: shareCapital,
+    listingOfSecurities: listingOfSecurities,
+    sections: mappedSections // Keep all sections for potential future use
+  };
+}
+
+/**
+ * Fetch transfer-physical-share data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getTransferPhysicalShare() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - Description (Rich text - Markdown)
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`transfer-physical-share?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map transfer physical share data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped transfer physical share data for component
+ */
+export function mapTransferPhysicalShareData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {
+      description: null
+    };
+  }
+
+  // Map Description (Rich text - Markdown)
+  const description = data?.Description || data?.description || '';
+
+  return {
+    description: description || null
+  };
+}
+
+/**
+ * Fetch unclaimed-dividend data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getUnclaimedDividend() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - UnclaimedDivendSection (Component - UnclaimedDividendCard) with:
+  //   - SectionTitle (Text)
+  //   - DividendInfoSection (Rich text - Markdown)
+  //   - DividendNotice (Rich text - Markdown)
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[UnclaimedDivendSection][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`unclaimed-dividend?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map unclaimed dividend data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped unclaimed dividend data for component
+ */
+export function mapUnclaimedDividendData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {
+      sectionTitle: null,
+      dividendInfoSection: null,
+      dividendNotice: null
+    };
+  }
+
+  // Map UnclaimedDivendSection (Component - UnclaimedDividendCard)
+  const section = data?.UnclaimedDivendSection || data?.unclaimedDivendSection || {};
+
+  return {
+    sectionTitle: section?.SectionTitle || section?.sectionTitle || null,
+    dividendInfoSection: section?.DividendInfoSection || section?.dividendInfoSection || null,
+    dividendNotice: section?.DividendNotice || section?.dividendNotice || null
+  };
+}
+
+/**
+ * Fetch shareholding-pattern data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getShareholdingPattern() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`shareholding-pattern?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map shareholding pattern data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped shareholding pattern data for component
+ */
+export function mapShareholdingPatternData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {};
+  }
+
+  // This API only has TopBanner, no other fields to map
+  // Iframe data is handled separately or kept as fallback
+  return {};
+}
+
+/**
+ * Fetch committee data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getCommittee() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`committee?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Fetch leaders data from Strapi
+ * This is a Collection Type, so it returns an array
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getLeaders() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - LeaderName, ProfileImage, slug, Designation, LeadershipType, DetailDescription, EducationDetail
+  // - Age, Nationality, Tenure, Appointed, CommitteeMembership, isActive, cta, Pdf, DisplayOrder
+  const populateQuery = [
+    'populate[ProfileImage][populate]=*',
+    'populate[cta][populate]=*',
+    'populate[Pdf][populate]=*',
+    'filters[isActive][$eq]=true',
+    'sort=DisplayOrder:asc'
+  ].join('&');
+  
+  return fetchAPI(`leaders?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map committee and leaders data from Strapi
+ * Groups leaders by LeadershipType to form committees
+ * 
+ * @param {Object} leadersData - Raw Strapi API response for leaders
+ * @returns {Object} Mapped committees data for component
+ */
+export function mapCommitteesData(leadersData) {
+  // Handle Strapi v4 response structure (Collection Type)
+  const leadersArray = leadersData?.data || leadersData || [];
+
+  if (!Array.isArray(leadersArray) || leadersArray.length === 0) {
+    return {
+      committees: []
+    };
+  }
+
+  // Group leaders by LeadershipType (which represents the committee)
+  const committeesMap = new Map();
+
+  leadersArray.forEach((leader) => {
+    const leadershipType = leader?.LeadershipType || leader?.leadershipType || leader?.attributes?.LeadershipType || leader?.attributes?.leadershipType;
+    
+    if (!leadershipType) {
+      return; // Skip leaders without a LeadershipType
+    }
+
+    // Get or create committee
+    if (!committeesMap.has(leadershipType)) {
+      committeesMap.set(leadershipType, {
+        id: leadershipType,
+        title: leadershipType, // Use LeadershipType as committee title
+        members: []
+      });
+    }
+
+    const committee = committeesMap.get(leadershipType);
+
+    // Extract leader data
+    const profileImage = leader?.ProfileImage?.data?.attributes || leader?.ProfileImage || leader?.attributes?.ProfileImage?.data?.attributes || leader?.attributes?.ProfileImage;
+    const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
+
+    const slug = leader?.slug || leader?.attributes?.slug || '';
+    const leaderLink = slug ? `/leaders/${slug}` : '#';
+
+    const member = {
+      id: leader?.id || leader?.documentId || Math.random(),
+      name: leader?.LeaderName || leader?.leaderName || leader?.attributes?.LeaderName || leader?.attributes?.leaderName || '',
+      title: leader?.Designation || leader?.designation || leader?.attributes?.Designation || leader?.attributes?.designation || '',
+      image: imageUrl ? {
+        url: imageUrl,
+        alt: leader?.LeaderName || leader?.leaderName || leader?.attributes?.LeaderName || leader?.attributes?.leaderName || ''
+      } : null,
+      link: leaderLink,
+      displayOrder: leader?.DisplayOrder || leader?.displayOrder || leader?.attributes?.DisplayOrder || leader?.attributes?.displayOrder || '999'
+    };
+
+    // Only add if name exists
+    if (member.name) {
+      committee.members.push(member);
+    }
+  });
+
+  // Convert map to array and sort members by DisplayOrder
+  const committees = Array.from(committeesMap.values()).map(committee => ({
+    ...committee,
+    members: committee.members.sort((a, b) => {
+      const orderA = a.displayOrder || '999';
+      const orderB = b.displayOrder || '999';
+      return orderA.localeCompare(orderB);
+    })
+  }));
+
+  // Sort committees by title
+  committees.sort((a, b) => a.title.localeCompare(b.title));
+
+  return {
+    committees: committees
+  };
+}
+

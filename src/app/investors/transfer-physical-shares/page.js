@@ -1,6 +1,8 @@
 import InnerBanner from '@/components/InnerBanner';
 import TransferPhysicalShares from '@/components/TransferPhysicalShares';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import { getTransferPhysicalShare, mapTransferPhysicalShareData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the transfer of physical shares page
 export const metadata = generateSEOMetadata({
@@ -10,19 +12,53 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin physical shares, share transfer, re-lodgement, RTA, MUFG Intime, investor relations",
 });
 
-export default function TransferPhysicalSharesPage() {
-  // Custom banner data for this page
-  const bannerData = {
-    title: {
-      line1: "Transfer of Physical",
-      line2: "Shares (Re-lodgement)"
+export default async function TransferPhysicalSharesPage() {
+  let transferData = null;
+  let bannerData = null;
+  let error = null;
+  
+  try {
+    const rawData = await getTransferPhysicalShare();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Transfer Physical Share - Raw API data received:', {
+        hasData: !!rawData,
+        isDataObject: !Array.isArray(rawData?.data) && !!rawData?.data,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasDescription: !!(rawData?.data?.Description || rawData?.Description)
+      });
     }
-  };
+    
+    if (rawData) {
+      transferData = mapTransferPhysicalShareData(rawData);
+      
+      // Map banner data (Single Type, so TopBanner is directly on data object)
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Transfer Physical Share - Mapped data:', {
+          hasDescription: !!transferData?.description,
+          hasBanner: !!bannerData
+        });
+      }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Transfer Physical Share - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch transfer physical share data from Strapi';
+    console.error('Error fetching Transfer Physical Share data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
 
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <TransferPhysicalShares />
+      {bannerData && <InnerBanner data={bannerData} />}
+      <TransferPhysicalShares data={transferData} error={error} />
     </div>
   );
 }

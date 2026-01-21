@@ -6,6 +6,8 @@ import Presentations from '@/components/Presentations';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getHomepage } from '@/lib/strapi';
+import { getNewsAndEvent, mapNewsAndEventData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the News and Events page
 export const metadata = generateSEOMetadata({
@@ -16,23 +18,51 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function NewsAndEventsPage() {
-  // Custom banner data for this page
-  const bannerData = {
-    title: {
-      line1: "News and",
-      line2: "Events"
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "News and Events"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
-      }
+  let newsAndEventData = null;
+  let bannerData = null;
+  let error = null;
+  
+  try {
+    const rawData = await getNewsAndEvent();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('News and Event - Raw API data received:', {
+        hasData: !!rawData,
+        isDataObject: !Array.isArray(rawData?.data) && !!rawData?.data,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasAnnualGeneralMeetingSection: !!(rawData?.data?.AnnualGeneralMeetingSection || rawData?.AnnualGeneralMeetingSection),
+        hasEventSection: !!(rawData?.data?.EventSection || rawData?.EventSection),
+        hasPresentationSection: !!(rawData?.data?.PresentationSection || rawData?.PresentationSection)
+      });
     }
-  };
+    
+    if (rawData) {
+      newsAndEventData = mapNewsAndEventData(rawData);
+      
+      // Map banner data (Single Type, so TopBanner is directly on data object)
+      const topBanner = rawData?.data?.TopBanner || rawData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('News and Event - Mapped data:', {
+          hasMeetingVideoSection: !!newsAndEventData?.meetingVideoSection,
+          hasEventsSection: !!newsAndEventData?.eventsSection,
+          hasPresentationsSection: !!newsAndEventData?.presentationsSection,
+          hasBanner: !!bannerData
+        });
+      }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('News and Event - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch news and event data from Strapi';
+    console.error('Error fetching News and Event data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
 
   // Fetch What's New data from Strapi and set title to "Press Releases"
   // Default fallback card data (same structure as WhatsNew component default)
@@ -113,60 +143,14 @@ export default async function NewsAndEventsPage() {
     };
   }
 
-  // Fetch subscriber data from Strapi (optional - component has default data)
-  let subscriberData = null;
-  
-  try {
-    // This would typically fetch from a Strapi endpoint
-    // For now, component will use default data
-    // const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/subscriber-updated`);
-    // subscriberData = await response.json();
-  } catch (error) {
-    console.error('Error fetching subscriber data from Strapi:', error);
-    // Will use default data from component
-  }
-
-  // Fetch meeting video data from Strapi (optional - component has default data)
-  let meetingVideoData = null;
-  
-  try {
-    // This would typically fetch from a Strapi endpoint
-    // For now, component will use default data
-  } catch (error) {
-    console.error('Error fetching meeting video data from Strapi:', error);
-    // Will use default data from component
-  }
-
-  // Fetch events data from Strapi (optional - component has default data)
-  let eventsData = null;
-  
-  try {
-    // This would typically fetch from a Strapi endpoint
-    // For now, component will use default data
-  } catch (error) {
-    console.error('Error fetching events data from Strapi:', error);
-    // Will use default data from component
-  }
-
-  // Fetch presentations data from Strapi (optional - component has default data)
-  let presentationsData = null;
-  
-  try {
-    // This would typically fetch from a Strapi endpoint
-    // For now, component will use default data
-  } catch (error) {
-    console.error('Error fetching presentations data from Strapi:', error);
-    // Will use default data from component
-  }
-
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
+      {bannerData && <InnerBanner data={bannerData} />}
       <WhatsNew data={whatsNewData} className="whats-new--light-bg" />
-      <MeetingVideo data={meetingVideoData} />
-      <Events data={eventsData} />
-      <Presentations data={presentationsData} />
-      <SubscriberUpdated data={subscriberData} />
+      {newsAndEventData?.meetingVideoSection && <MeetingVideo data={newsAndEventData.meetingVideoSection} />}
+      {newsAndEventData?.eventsSection && <Events data={newsAndEventData.eventsSection} />}
+      {newsAndEventData?.presentationsSection && <Presentations data={newsAndEventData.presentationsSection} />}
+      <SubscriberUpdated />
     </div>
   );
 }

@@ -86,10 +86,10 @@ export default function TdsDividendSection({ data, error = null }) {
               <span>{titleLine1} </span>
               {titleLine2 && <span>{titleLine2}</span>}
             </h2>
-            <p className="tds-dividend-section__subtitle">
+            {/* <p className="tds-dividend-section__subtitle">
               <span>{subtitleLine1} </span>
               {subtitleLine2 && <span>{subtitleLine2}</span>}
-            </p>
+            </p> */}
           </div>
 
           {/* Right side - Card and Download */}

@@ -83,5 +83,70 @@
       margin-bottom: 0;
     }
   }
+
+  // Description (Rich text from API)
+  &__description {
+    font-family: $font-family-base;
+    font-weight: 400;
+    font-size: vw(20);
+    line-height: vw(30);
+    color: #000000;
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+      line-height: vw-mobile(22, 414);
+    }
+
+    // Style paragraphs within rich text
+    p {
+      margin: 0 0 vw(25) 0;
+      
+      @include media('mobile') {
+        margin-bottom: vw-mobile(18, 414);
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    // Style other common rich text elements
+    h1, h2, h3, h4, h5, h6 {
+      font-family: $font-family-base;
+      color: #000000;
+      margin: 0 0 vw(25) 0;
+      
+      @include media('mobile') {
+        margin-bottom: vw-mobile(18, 414);
+      }
+    }
+
+    ul, ol {
+      margin: 0 0 vw(25) 0;
+      padding-left: vw(30);
+      
+      @include media('mobile') {
+        margin-bottom: vw-mobile(18, 414);
+        padding-left: vw-mobile(20, 414);
+      }
+    }
+
+    li {
+      margin-bottom: vw(10);
+      
+      @include media('mobile') {
+        margin-bottom: vw-mobile(8, 414);
+      }
+    }
+
+    a {
+      color: inherit;
+      text-decoration: underline;
+      
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
 }
 
