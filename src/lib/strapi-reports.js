@@ -2431,3 +2431,128 @@ export function mapShareholdingPatternData(strapiData) {
   return {};
 }
 
+/**
+ * Fetch committee data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getCommittee() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`committee?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Fetch leaders data from Strapi
+ * This is a Collection Type, so it returns an array
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getLeaders() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - LeaderName, ProfileImage, slug, Designation, LeadershipType, DetailDescription, EducationDetail
+  // - Age, Nationality, Tenure, Appointed, CommitteeMembership, isActive, cta, Pdf, DisplayOrder
+  const populateQuery = [
+    'populate[ProfileImage][populate]=*',
+    'populate[cta][populate]=*',
+    'populate[Pdf][populate]=*',
+    'filters[isActive][$eq]=true',
+    'sort=DisplayOrder:asc'
+  ].join('&');
+  
+  return fetchAPI(`leaders?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map committee and leaders data from Strapi
+ * Groups leaders by LeadershipType to form committees
+ * 
+ * @param {Object} leadersData - Raw Strapi API response for leaders
+ * @returns {Object} Mapped committees data for component
+ */
+export function mapCommitteesData(leadersData) {
+  // Handle Strapi v4 response structure (Collection Type)
+  const leadersArray = leadersData?.data || leadersData || [];
+
+  if (!Array.isArray(leadersArray) || leadersArray.length === 0) {
+    return {
+      committees: []
+    };
+  }
+
+  // Group leaders by LeadershipType (which represents the committee)
+  const committeesMap = new Map();
+
+  leadersArray.forEach((leader) => {
+    const leadershipType = leader?.LeadershipType || leader?.leadershipType || leader?.attributes?.LeadershipType || leader?.attributes?.leadershipType;
+    
+    if (!leadershipType) {
+      return; // Skip leaders without a LeadershipType
+    }
+
+    // Get or create committee
+    if (!committeesMap.has(leadershipType)) {
+      committeesMap.set(leadershipType, {
+        id: leadershipType,
+        title: leadershipType, // Use LeadershipType as committee title
+        members: []
+      });
+    }
+
+    const committee = committeesMap.get(leadershipType);
+
+    // Extract leader data
+    const profileImage = leader?.ProfileImage?.data?.attributes || leader?.ProfileImage || leader?.attributes?.ProfileImage?.data?.attributes || leader?.attributes?.ProfileImage;
+    const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
+
+    const slug = leader?.slug || leader?.attributes?.slug || '';
+    const leaderLink = slug ? `/leaders/${slug}` : '#';
+
+    const member = {
+      id: leader?.id || leader?.documentId || Math.random(),
+      name: leader?.LeaderName || leader?.leaderName || leader?.attributes?.LeaderName || leader?.attributes?.leaderName || '',
+      title: leader?.Designation || leader?.designation || leader?.attributes?.Designation || leader?.attributes?.designation || '',
+      image: imageUrl ? {
+        url: imageUrl,
+        alt: leader?.LeaderName || leader?.leaderName || leader?.attributes?.LeaderName || leader?.attributes?.leaderName || ''
+      } : null,
+      link: leaderLink,
+      displayOrder: leader?.DisplayOrder || leader?.displayOrder || leader?.attributes?.DisplayOrder || leader?.attributes?.displayOrder || '999'
+    };
+
+    // Only add if name exists
+    if (member.name) {
+      committee.members.push(member);
+    }
+  });
+
+  // Convert map to array and sort members by DisplayOrder
+  const committees = Array.from(committeesMap.values()).map(committee => ({
+    ...committee,
+    members: committee.members.sort((a, b) => {
+      const orderA = a.displayOrder || '999';
+      const orderB = b.displayOrder || '999';
+      return orderA.localeCompare(orderB);
+    })
+  }));
+
+  // Sort committees by title
+  committees.sort((a, b) => a.title.localeCompare(b.title));
+
+  return {
+    committees: committees
+  };
+}
+
