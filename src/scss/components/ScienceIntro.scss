@@ -10,6 +10,7 @@
   position: relative;
   width: 100%;
   padding: vw(60) 0;
+  background: #f0f7f2;
   
   @include media('tablet') {
     padding: vw(50, 768) 0;
