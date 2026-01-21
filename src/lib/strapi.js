@@ -2475,3 +2475,212 @@ export function mapGlobalGenericsRegionalPresenceData(strapiData) {
   };
 }
 
+/**
+ * Map Strapi Branded Emerging Markets Intro data to BrandedEmergingMarketsIntro component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { IntroSection: { content: [...] } }
+ * 2. { introSection: { paragraphs: [...] } }
+ * 3. { Intro: { content: [...] } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted intro data with structure:
+ *   { content: [{ text: string, link?: { text: string, url: string } }] }
+ */
+export function mapBrandedEmergingMarketsIntroData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const introSection = data.IntroSection || data.introSection || data.Intro || data.intro;
+  if (!introSection) return null;
+
+  let content = [];
+  if (introSection.content && Array.isArray(introSection.content)) {
+    content = introSection.content;
+  } else if (introSection.paragraphs && Array.isArray(introSection.paragraphs)) {
+    content = introSection.paragraphs;
+  } else if (introSection.text) {
+    // If it's a single string, split by paragraphs
+    content = typeof introSection.text === 'string' 
+      ? introSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [introSection.text];
+  } else if (Array.isArray(introSection)) {
+    content = introSection;
+  }
+
+  // Map content to ensure proper structure
+  const mappedContent = content.map(item => {
+    if (typeof item === 'string') {
+      return item;
+    } else if (typeof item === 'object') {
+      return {
+        text: item.text || item.content || item.paragraph || '',
+        link: item.link || (item.linkText && item.linkUrl ? {
+          text: item.linkText,
+          url: item.linkUrl
+        } : null)
+      };
+    }
+    return item;
+  });
+
+  return {
+    content: mappedContent.length > 0 ? mappedContent : []
+  };
+}
+
+/**
+ * Map Strapi Branded Emerging Markets Markets data to BrandedEmergingMarketsMarkets component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { MarketsSection: { heading: "...", content: "..." } }
+ * 2. { marketsSection: { title: "...", text: "..." } }
+ * 3. { Markets: { heading: "...", content: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted markets data with structure:
+ *   { heading: string, content: string }
+ */
+export function mapBrandedEmergingMarketsMarketsData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const marketsSection = data.MarketsSection || data.marketsSection || data.Markets || data.markets;
+  if (!marketsSection) return null;
+
+  const heading = marketsSection.heading || marketsSection.title || marketsSection.Heading || '';
+  const content = marketsSection.content || marketsSection.text || marketsSection.paragraph || marketsSection.description || '';
+
+  return {
+    heading: heading,
+    content: content
+  };
+}
+
+/**
+ * Map Strapi Branded Emerging Markets Items data to BrandedEmergingMarketsItems component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { ItemsSection: { items: [...] } }
+ * 2. { itemsSection: { markets: [...] } }
+ * 3. { Items: [...] }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted items data with structure:
+ *   { items: [{ title: string, content: string[], link: { text: string, url: string }, image: { url: string, alt: string } }] }
+ */
+export function mapBrandedEmergingMarketsItemsData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const itemsSection = data.ItemsSection || data.itemsSection || data.Items || data.items || data.MarketsItems || data.marketsItems;
+  if (!itemsSection) return null;
+
+  let items = [];
+  if (itemsSection.items && Array.isArray(itemsSection.items)) {
+    items = itemsSection.items;
+  } else if (itemsSection.markets && Array.isArray(itemsSection.markets)) {
+    items = itemsSection.markets;
+  } else if (Array.isArray(itemsSection)) {
+    items = itemsSection;
+  }
+
+  // Map each item to ensure proper structure
+  const mappedItems = items.map(item => ({
+    title: item.title || item.name || item.heading || '',
+    content: Array.isArray(item.content) 
+      ? item.content 
+      : (item.text ? [item.text] : (item.description ? [item.description] : [])),
+    link: item.link || (item.linkText && item.linkUrl ? {
+      text: item.linkText,
+      url: item.linkUrl
+    } : null),
+    image: {
+      url: typeof item.image === 'string' 
+        ? item.image 
+        : item.image?.url || item.imageUrl || "/assets/images/branded/image1.png",
+      alt: typeof item.image === 'object' 
+        ? (item.image?.alt || item.imageAlt || '')
+        : ''
+    }
+  }));
+
+  return {
+    items: mappedItems.length > 0 ? mappedItems : []
+  };
+}
+
+/**
+ * Map Strapi Branded Emerging Markets Footer data to BrandedEmergingMarketsFooter component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { FooterSection: { heading: {...}, content: [...], image: {...} } }
+ * 2. { footerSection: { title: {...}, paragraphs: [...], imageUrl: "..." } }
+ * 3. { Footer: { heading: {...}, content: [...], image: {...} } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted footer data with structure:
+ *   { heading: { line1: string, line2: string }, content: string[], image: { url: string, alt: string } }
+ */
+export function mapBrandedEmergingMarketsFooterData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const footerSection = data.FooterSection || data.footerSection || data.Footer || data.footer;
+  if (!footerSection) return null;
+
+  // Handle heading
+  let heading = { line1: '', line2: '' };
+  if (footerSection.heading) {
+    if (typeof footerSection.heading === 'object') {
+      heading = {
+        line1: footerSection.heading.line1 || footerSection.heading.lineOne || '',
+        line2: footerSection.heading.line2 || footerSection.heading.lineTwo || ''
+      };
+    } else if (typeof footerSection.heading === 'string') {
+      // Try to split by newline or pattern
+      const parts = footerSection.heading.split(/\n+/);
+      heading = {
+        line1: parts[0] || '',
+        line2: parts[1] || ''
+      };
+    }
+  } else if (footerSection.title) {
+    const parts = footerSection.title.split(/\n+/);
+    heading = {
+      line1: parts[0] || '',
+      line2: parts[1] || ''
+    };
+  }
+
+  // Handle content
+  let content = [];
+  if (footerSection.content && Array.isArray(footerSection.content)) {
+    content = footerSection.content;
+  } else if (footerSection.paragraphs && Array.isArray(footerSection.paragraphs)) {
+    content = footerSection.paragraphs;
+  } else if (footerSection.text) {
+    content = typeof footerSection.text === 'string' 
+      ? footerSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [footerSection.text];
+  }
+
+  // Handle image
+  const image = footerSection.image || footerSection.imageData;
+  const imageUrl = typeof image === 'string' 
+    ? image 
+    : image?.url || image?.src || footerSection.imageUrl || '';
+  const imageAlt = typeof image === 'object' 
+    ? (image?.alt || image?.altText || '')
+    : '';
+
+  return {
+    heading: heading,
+    content: content.length > 0 ? content : [],
+    image: {
+      url: imageUrl,
+      alt: imageAlt
+    }
+  };
+}
+
