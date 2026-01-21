@@ -10,10 +10,7 @@ export default function WavePage() {
   return (
     <div className="wave-page">
       <div className="wave-container">
-        <h1 className="wave-title">Wave Animation</h1>
-        <p className="wave-description">
-          Smooth, organic wave motion animation using vanilla JavaScript
-        </p>
+    
         
         <div className="wave-svg-wrapper">
           <svg 

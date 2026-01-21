@@ -2151,6 +2151,215 @@ export function mapScienceArchitectureData(strapiData) {
 }
 
 /**
+ * Map Strapi Global Generics Intro data to GlobalGenericsIntro component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { IntroSection: { content: [...] } }
+ * 2. { introSection: { paragraphs: [...] } }
+ * 3. { Intro: { text: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted intro data with structure:
+ *   { content: array of strings }
+ */
+export function mapGlobalGenericsIntroData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const introSection = data.IntroSection || data.introSection || data.Intro || data.intro;
+  if (!introSection) return null;
+
+  let content = [];
+  if (introSection.content && Array.isArray(introSection.content)) {
+    content = introSection.content;
+  } else if (introSection.paragraphs && Array.isArray(introSection.paragraphs)) {
+    content = introSection.paragraphs;
+  } else if (introSection.text) {
+    // If it's a single string, split by paragraphs
+    content = typeof introSection.text === 'string' 
+      ? introSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [introSection.text];
+  } else if (Array.isArray(introSection)) {
+    content = introSection;
+  }
+
+  return {
+    content: content.length > 0 ? content : []
+  };
+}
+
+/**
+ * Map Strapi Global Generics Section data to GlobalGenericsSection component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { GenericsSection: { heading: "...", content: [...] } }
+ * 2. { genericsSection: { title: "...", paragraphs: [...] } }
+ * 3. { Section: { heading: "...", text: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted section data with structure:
+ *   { heading: string, content: array of strings }
+ */
+export function mapGlobalGenericsSectionData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const section = data.GenericsSection || data.genericsSection || data.Section || data.section;
+  if (!section) return null;
+
+  const heading = section.heading || section.title || section.Heading || '';
+  
+  let content = [];
+  if (section.content && Array.isArray(section.content)) {
+    content = section.content;
+  } else if (section.paragraphs && Array.isArray(section.paragraphs)) {
+    content = section.paragraphs;
+  } else if (section.text) {
+    // If it's a single string, split by paragraphs
+    content = typeof section.text === 'string' 
+      ? section.text.split(/\n\n+/).filter(p => p.trim())
+      : [section.text];
+  } else if (Array.isArray(section)) {
+    content = section;
+  }
+
+  return {
+    heading: heading,
+    content: content.length > 0 ? content : []
+  };
+}
+
+/**
+ * Map Strapi Global Generics Portfolio data to GlobalGenericsPortfolio component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { PortfolioSection: { description: "...", link: { text: "...", url: "..." }, image: {...} } }
+ * 2. { portfolioSection: { text: "...", linkText: "...", linkUrl: "...", imageUrl: "..." } }
+ * 3. { Portfolio: { description: "...", link: "...", image: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted portfolio data with structure:
+ *   { description: string, link: { text: string, url: string }, image: { url: string, alt: string } }
+ */
+export function mapGlobalGenericsPortfolioData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const portfolioSection = data.PortfolioSection || data.portfolioSection || data.Portfolio || data.portfolio;
+  if (!portfolioSection) return null;
+
+  const description = portfolioSection.description || portfolioSection.text || portfolioSection.content || '';
+  
+  const linkText = portfolioSection.link?.text || portfolioSection.linkText || portfolioSection.ctaText || '';
+  const linkUrl = portfolioSection.link?.url || portfolioSection.linkUrl || portfolioSection.ctaUrl || '#';
+
+  const image = portfolioSection.image || portfolioSection.imageData;
+  const imageUrl = typeof image === 'string' 
+    ? image 
+    : image?.url || image?.src || portfolioSection.imageUrl || '';
+  const imageAlt = typeof image === 'object' 
+    ? (image?.alt || image?.altText || '')
+    : '';
+
+  return {
+    description: description,
+    link: {
+      text: linkText,
+      url: linkUrl
+    },
+    image: {
+      url: imageUrl,
+      alt: imageAlt
+    }
+  };
+}
+
+/**
+ * Map Strapi Global Generics Complex data to GlobalGenericsComplex component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { ComplexSection: { content: [...], image: {...} } }
+ * 2. { complexSection: { paragraphs: [...], imageUrl: "..." } }
+ * 3. { Complex: { text: "...", image: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted complex data with structure:
+ *   { content: array of strings, image: { url: string, alt: string } }
+ */
+export function mapGlobalGenericsComplexData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const complexSection = data.ComplexSection || data.complexSection || data.Complex || data.complex;
+  if (!complexSection) return null;
+
+  let content = [];
+  if (complexSection.content && Array.isArray(complexSection.content)) {
+    content = complexSection.content;
+  } else if (complexSection.paragraphs && Array.isArray(complexSection.paragraphs)) {
+    content = complexSection.paragraphs;
+  } else if (complexSection.text) {
+    // If it's a single string, split by paragraphs
+    content = typeof complexSection.text === 'string' 
+      ? complexSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [complexSection.text];
+  } else if (Array.isArray(complexSection)) {
+    content = complexSection;
+  }
+
+  const image = complexSection.image || complexSection.imageData;
+  const imageUrl = typeof image === 'string' 
+    ? image 
+    : image?.url || image?.src || complexSection.imageUrl || '';
+  const imageAlt = typeof image === 'object' 
+    ? (image?.alt || image?.altText || '')
+    : '';
+
+  return {
+    content: content.length > 0 ? content : [],
+    image: {
+      url: imageUrl,
+      alt: imageAlt
+    }
+  };
+}
+
+/**
+ * Map Strapi Global Generics Inhalation data to GlobalGenericsInhalation component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { InhalationSection: { heading: "...", description: "...", link: {...} } }
+ * 2. { inhalationSection: { title: "...", text: "...", linkText: "...", linkUrl: "..." } }
+ * 3. { Inhalation: { heading: "...", description: "...", link: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted inhalation data with structure:
+ *   { heading: string, description: string, link: { text: string, url: string } }
+ */
+export function mapGlobalGenericsInhalationData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const inhalationSection = data.InhalationSection || data.inhalationSection || data.Inhalation || data.inhalation;
+  if (!inhalationSection) return null;
+
+  const heading = inhalationSection.heading || inhalationSection.title || inhalationSection.Heading || '';
+  const description = inhalationSection.description || inhalationSection.text || inhalationSection.content || '';
+  
+  const linkText = inhalationSection.link?.text || inhalationSection.linkText || inhalationSection.ctaText || '';
+  const linkUrl = inhalationSection.link?.url || inhalationSection.linkUrl || inhalationSection.ctaUrl || '#';
+
+  return {
+    heading: heading,
+    description: description,
+    link: {
+      text: linkText,
+      url: linkUrl
+    }
+  };
+}
+
+/**
  * Map Strapi Science Capabilities data to ScienceCapabilities component format
  * 
  * Expected Strapi data structures (any of these will work):
@@ -2189,6 +2398,80 @@ export function mapScienceCapabilitiesData(strapiData) {
 
   return {
     capabilities: mappedCapabilities.length > 0 ? mappedCapabilities : []
+  };
+}
+
+/**
+ * Map Strapi Global Generics Regional Presence data to GlobalGenericsRegionalPresence component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { RegionalPresenceSection: { heading: "...", background: {...}, regions: [...] } }
+ * 2. { regionalPresenceSection: { title: "...", backgroundImage: {...}, items: [...] } }
+ * 3. { RegionalPresence: { heading: "...", background: {...}, regions: [...] } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted regional presence data with structure:
+ *   { heading: string, background: { desktop: string, mobile: string }, regions: [...] }
+ */
+export function mapGlobalGenericsRegionalPresenceData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const regionalSection = data.RegionalPresenceSection || data.regionalPresenceSection || data.RegionalPresence || data.regionalPresence;
+  if (!regionalSection) return null;
+
+  const heading = regionalSection.heading || regionalSection.title || regionalSection.Heading || '';
+
+  // Handle background images
+  let backgroundDesktop = '';
+  let backgroundMobile = '';
+  
+  if (regionalSection.background) {
+    if (typeof regionalSection.background === 'object') {
+      backgroundDesktop = regionalSection.background.desktop || regionalSection.background.url || '';
+      backgroundMobile = regionalSection.background.mobile || regionalSection.background.urlMobile || backgroundDesktop;
+    } else {
+      backgroundDesktop = regionalSection.background;
+      backgroundMobile = backgroundDesktop;
+    }
+  } else if (regionalSection.backgroundImage) {
+    if (typeof regionalSection.backgroundImage === 'object') {
+      backgroundDesktop = regionalSection.backgroundImage.desktop || regionalSection.backgroundImage.url || '';
+      backgroundMobile = regionalSection.backgroundImage.mobile || regionalSection.backgroundImage.urlMobile || backgroundDesktop;
+    } else {
+      backgroundDesktop = regionalSection.backgroundImage;
+      backgroundMobile = backgroundDesktop;
+    }
+  }
+
+  // Handle regions/items
+  let regions = [];
+  if (regionalSection.regions && Array.isArray(regionalSection.regions)) {
+    regions = regionalSection.regions;
+  } else if (regionalSection.items && Array.isArray(regionalSection.items)) {
+    regions = regionalSection.items;
+  } else if (Array.isArray(regionalSection)) {
+    regions = regionalSection;
+  }
+
+  // Map each region to ensure proper structure
+  const mappedRegions = regions.map(region => ({
+    title: region.title || region.name || region.heading || '',
+    position: region.position || region.positionType || 'top-left',
+    backgroundColor: region.backgroundColor || region.bgColor || region.color || '#08a03f',
+    highlights: Array.isArray(region.highlights) 
+      ? region.highlights 
+      : (region.highlight ? [region.highlight] : []),
+    description: region.description || region.text || region.content || ''
+  }));
+
+  return {
+    heading: heading,
+    background: {
+      desktop: backgroundDesktop,
+      mobile: backgroundMobile
+    },
+    regions: mappedRegions.length > 0 ? mappedRegions : []
   };
 }
 
