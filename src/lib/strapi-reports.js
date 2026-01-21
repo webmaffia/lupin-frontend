@@ -1378,3 +1378,101 @@ export function mapEmployeeStockOptionSchemeData(strapiData) {
   };
 }
 
+/**
+ * Fetch investor-regulation-disclosure data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getInvestorRegulationDisclosure() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - RegulationDisclosureSection (Repeatable Component - RegulationDisclosureItem) with:
+  //   - Particular (Rich text)
+  //   - Documents (Repeatable Component - DisclosureDocumentLink) with Label, DocumentFile, Url, isActive
+  //   - isActive (Boolean)
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[RegulationDisclosureSection][populate][Documents][populate][DocumentFile][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`investor-regulation-disclosure?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map investor regulation disclosure data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped investor regulation disclosure data for component
+ */
+export function mapInvestorRegulationDisclosureData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty array
+  if (!data) {
+    return {
+      items: []
+    };
+  }
+
+  // Get RegulationDisclosureSection array (Repeatable Component - RegulationDisclosureItem)
+  const sectionsArray = data?.RegulationDisclosureSection || data?.regulationDisclosureSection || [];
+
+  // Map sections to items
+  // Each section can have multiple documents, so we'll create one item per document
+  // If a section has no documents, we'll create one item with the particular text only
+  let itemNumber = 1;
+  const items = [];
+
+  sectionsArray
+    .filter(section => section?.isActive !== false) // Only active sections
+    .forEach((section) => {
+      const particular = section?.Particular || section?.particular || '';
+      const documentsArray = section?.Documents || section?.documents || [];
+
+      if (documentsArray.length > 0) {
+        // If section has documents, create one item per document
+        documentsArray
+          .filter(doc => doc?.isActive !== false) // Only active documents
+          .forEach((doc) => {
+            // Get URL from doc.Url or from DocumentFile
+            let url = doc?.Url || doc?.url || '#';
+            
+            // If no URL but has DocumentFile, use the file URL
+            if (url === '#' && doc?.DocumentFile) {
+              const documentFile = doc?.DocumentFile?.data?.attributes || doc?.DocumentFile || doc?.documentFile?.data?.attributes || doc?.documentFile;
+              url = documentFile ? getStrapiMedia(documentFile) : '#';
+            }
+
+            items.push({
+              id: itemNumber,
+              number: String(itemNumber),
+              particulars: particular || doc?.Label || doc?.label || '',
+              url: url
+            });
+            itemNumber++;
+          });
+      } else {
+        // If section has no documents, create one item with just the particular text
+        if (particular) {
+          items.push({
+            id: itemNumber,
+            number: String(itemNumber),
+            particulars: particular,
+            url: '#'
+          });
+          itemNumber++;
+        }
+      }
+    });
+
+  return {
+    items: items
+  };
+}
+
