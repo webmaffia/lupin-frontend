@@ -19,7 +19,7 @@
     position: relative;
     width: 100%;
     margin: 0 auto;
-    padding: vw(100) vw(98);
+    padding: vw(50) vw(98);
     
     @include media('tablet') {
       padding: vw(80, 768) vw(50, 768);
