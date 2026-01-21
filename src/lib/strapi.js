@@ -1919,3 +1919,276 @@ export function mapManufacturingIntroData(strapiData) {
   };
 }
 
+/**
+ * Map Strapi Science Intro data to ScienceIntro component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { IntroSection: { headingLine1: "...", headingLine2: "...", description: "..." } }
+ * 2. { introSection: { heading: { line1: "...", line2: "..." }, description: "..." } }
+ * 3. { Introduction: { headingLine1: "...", headingLine2: "...", text: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted intro data with structure:
+ *   { heading: { line1: string, line2: string }, description: string }
+ */
+export function mapScienceIntroData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const introSection = data.IntroSection || data.introSection || data.Introduction || data.introduction;
+  if (!introSection) return null;
+
+  // Handle different heading structures
+  let headingLine1 = '';
+  let headingLine2 = '';
+  
+  if (introSection.heading) {
+    if (typeof introSection.heading === 'object') {
+      headingLine1 = introSection.heading.line1 || introSection.heading.lineOne || '';
+      headingLine2 = introSection.heading.line2 || introSection.heading.lineTwo || '';
+    } else if (Array.isArray(introSection.heading)) {
+      headingLine1 = introSection.heading[0] || '';
+      headingLine2 = introSection.heading[1] || '';
+    }
+  } else {
+    headingLine1 = introSection.headingLine1 || introSection.heading_line1 || '';
+    headingLine2 = introSection.headingLine2 || introSection.heading_line2 || '';
+  }
+
+  const description = introSection.description || introSection.text || introSection.paragraph || '';
+
+  return {
+    heading: {
+      line1: headingLine1,
+      line2: headingLine2
+    },
+    description: description
+  };
+}
+
+/**
+ * Map Strapi Science Research data to ScienceResearch component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { ResearchSection: { heading: "...", content: ["...", "..."], image: { url: "...", alt: "..." } } }
+ * 2. { researchSection: { title: "...", paragraphs: ["...", "..."], image: "..." } }
+ * 3. { Research: { heading: "...", text: "...", imageUrl: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted research data with structure:
+ *   { heading: string, content: string[], image: { url: string, alt: string } }
+ */
+export function mapScienceResearchData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const researchSection = data.ResearchSection || data.researchSection || data.Research || data.research;
+  if (!researchSection) return null;
+
+  const heading = researchSection.heading || researchSection.title || researchSection.headingLine || '';
+  
+  let content = [];
+  if (researchSection.content && Array.isArray(researchSection.content)) {
+    content = researchSection.content;
+  } else if (researchSection.paragraphs && Array.isArray(researchSection.paragraphs)) {
+    content = researchSection.paragraphs;
+  } else if (researchSection.text) {
+    // If it's a single string, split by sentences or paragraphs
+    content = typeof researchSection.text === 'string' 
+      ? researchSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [researchSection.text];
+  } else if (Array.isArray(researchSection)) {
+    content = researchSection;
+  }
+
+  const image = researchSection.image || researchSection.imageData;
+  const imageUrl = typeof image === 'string' 
+    ? image 
+    : image?.url || image?.src || researchSection.imageUrl || '';
+  const imageAlt = typeof image === 'object' 
+    ? (image?.alt || image?.altText || '')
+    : '';
+
+  return {
+    heading: heading,
+    content: content.length > 0 ? content : [],
+    image: {
+      url: imageUrl,
+      alt: imageAlt
+    }
+  };
+}
+
+/**
+ * Map Strapi Science Digital data to ScienceDigital component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { DigitalSection: { mainHeading: "...", introParagraph: "...", sectionHeading: { line1: "...", line2: "..." }, description: "...", image: { url: "...", alt: "..." } } }
+ * 2. { digitalSection: { heading: "...", intro: "...", title: { line1: "...", line2: "..." }, text: "...", image: "..." } }
+ * 3. { Digital: { mainHeading: "...", intro: "...", sectionTitle: "...", description: "...", imageUrl: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted digital data with structure:
+ *   { mainHeading: string, introParagraph: string, sectionHeading: { line1: string, line2: string }, description: string, image: { url: string, alt: string } }
+ */
+export function mapScienceDigitalData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const digitalSection = data.DigitalSection || data.digitalSection || data.Digital || data.digital;
+  if (!digitalSection) return null;
+
+  const mainHeading = digitalSection.mainHeading || digitalSection.heading || digitalSection.title || '';
+  const introParagraph = digitalSection.introParagraph || digitalSection.intro || digitalSection.introText || '';
+  
+  let sectionHeading = { line1: '', line2: '' };
+  if (digitalSection.sectionHeading) {
+    if (typeof digitalSection.sectionHeading === 'object') {
+      sectionHeading = {
+        line1: digitalSection.sectionHeading.line1 || digitalSection.sectionHeading.lineOne || '',
+        line2: digitalSection.sectionHeading.line2 || digitalSection.sectionHeading.lineTwo || ''
+      };
+    } else if (typeof digitalSection.sectionHeading === 'string') {
+      // Try to split by newline or "Our Digital" pattern
+      const parts = digitalSection.sectionHeading.split(/\n+/);
+      sectionHeading = {
+        line1: parts[0] || '',
+        line2: parts[1] || ''
+      };
+    }
+  } else if (digitalSection.sectionTitle) {
+    const parts = digitalSection.sectionTitle.split(/\n+/);
+    sectionHeading = {
+      line1: parts[0] || '',
+      line2: parts[1] || ''
+    };
+  }
+  
+  const description = digitalSection.description || digitalSection.text || digitalSection.content || '';
+  
+  const image = digitalSection.image || digitalSection.imageData;
+  const imageUrl = typeof image === 'string' 
+    ? image 
+    : image?.url || image?.src || digitalSection.imageUrl || '';
+  const imageAlt = typeof image === 'object' 
+    ? (image?.alt || image?.altText || '')
+    : '';
+
+  return {
+    mainHeading: mainHeading,
+    introParagraph: introParagraph,
+    sectionHeading: sectionHeading,
+    description: description,
+    image: {
+      url: imageUrl,
+      alt: imageAlt
+    }
+  };
+}
+
+/**
+ * Map Strapi Science Capability data to ScienceCapability component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { CapabilitySection: { text: "..." } }
+ * 2. { capabilitySection: { content: "..." } }
+ * 3. { Capability: { description: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted capability data with structure:
+ *   { text: string }
+ */
+export function mapScienceCapabilityData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const capabilitySection = data.CapabilitySection || data.capabilitySection || data.Capability || data.capability;
+  if (!capabilitySection) return null;
+
+  const text = capabilitySection.text || capabilitySection.content || capabilitySection.description || capabilitySection.paragraph || '';
+
+  return {
+    text: text
+  };
+}
+
+/**
+ * Map Strapi Science Architecture data to ScienceArchitecture component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { ArchitectureSection: { content: [...] } }
+ * 2. { architectureSection: { paragraphs: [...] } }
+ * 3. { Architecture: { text: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted architecture data with structure:
+ *   { content: array of strings or objects with text/bold/after }
+ */
+export function mapScienceArchitectureData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const architectureSection = data.ArchitectureSection || data.architectureSection || data.Architecture || data.architecture;
+  if (!architectureSection) return null;
+
+  let content = [];
+  if (architectureSection.content && Array.isArray(architectureSection.content)) {
+    content = architectureSection.content;
+  } else if (architectureSection.paragraphs && Array.isArray(architectureSection.paragraphs)) {
+    content = architectureSection.paragraphs;
+  } else if (architectureSection.text) {
+    // If it's a single string, split by paragraphs
+    content = typeof architectureSection.text === 'string' 
+      ? architectureSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [architectureSection.text];
+  } else if (Array.isArray(architectureSection)) {
+    content = architectureSection;
+  }
+
+  return {
+    content: content.length > 0 ? content : []
+  };
+}
+
+/**
+ * Map Strapi Science Capabilities data to ScienceCapabilities component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { CapabilitiesSection: { capabilities: [{ title: "...", description: "...", icon: "..." }] } }
+ * 2. { capabilitiesSection: { items: [{ title: "...", description: "...", icon: "..." }] } }
+ * 3. { Capabilities: [{ title: "...", description: "...", icon: "..." }] }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted capabilities data with structure:
+ *   { capabilities: [{ title: string, description: string, icon: string }] }
+ */
+export function mapScienceCapabilitiesData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const capabilitiesSection = data.CapabilitiesSection || data.capabilitiesSection || data.Capabilities || data.capabilities;
+  if (!capabilitiesSection) return null;
+
+  let capabilities = [];
+  if (capabilitiesSection.capabilities && Array.isArray(capabilitiesSection.capabilities)) {
+    capabilities = capabilitiesSection.capabilities;
+  } else if (capabilitiesSection.items && Array.isArray(capabilitiesSection.items)) {
+    capabilities = capabilitiesSection.items;
+  } else if (Array.isArray(capabilitiesSection)) {
+    capabilities = capabilitiesSection;
+  }
+
+  // Map each capability to ensure proper structure
+  const mappedCapabilities = capabilities.map(cap => ({
+    title: cap.title || cap.name || cap.heading || '',
+    description: cap.description || cap.text || cap.content || '',
+    icon: typeof cap.icon === 'string' 
+      ? cap.icon 
+      : cap.icon?.url || cap.iconUrl || cap.image?.url || cap.image || "/assets/images/our-sci/icon22.svg"
+  }));
+
+  return {
+    capabilities: mappedCapabilities.length > 0 ? mappedCapabilities : []
+  };
+}
+
