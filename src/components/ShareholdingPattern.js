@@ -3,12 +3,15 @@
 import NavigationLinks from './NavigationLinks';
 import '../scss/components/ShareholdingPattern.scss';
 
-export default function ShareholdingPattern({ data }) {
-  // Default data (will be replaced by Strapi)
-  const shareholdingData = data || {
+export default function ShareholdingPattern({ data, error = null }) {
+  // Fallback data (kept for future reference as requested)
+  const fallbackData = {
     iframeUrl: "https://content.dionglobal.in/lupinworldnew/ShareHolding.aspx",
     iframeTitle: "Shareholding Pattern"
   };
+
+  // Use API data if available, otherwise use fallback
+  const shareholdingData = data?.iframeUrl ? data : fallbackData;
 
   return (
     <section className="shareholding-pattern">

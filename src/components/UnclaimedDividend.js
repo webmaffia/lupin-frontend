@@ -6,13 +6,13 @@ import Image from 'next/image';
 import NavigationLinks from './NavigationLinks';
 import '../scss/components/UnclaimedDividend.scss';
 
-export default function UnclaimedDividend({ data }) {
+export default function UnclaimedDividend({ data, error = null }) {
   const [memberId, setMemberId] = useState('');
   const [formType, setFormType] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Default data (will be replaced by Strapi)
-  const unclaimedData = data || {
+  // Fallback data (kept for reference as requested)
+  const fallbackData = {
     title: "Details of Unclaimed Dividend /Equity Shares with reference to IEPF Rules, 2016",
     form: {
       memberIdPlaceholder: "Enter Member ID",
@@ -71,6 +71,26 @@ export default function UnclaimedDividend({ data }) {
       }
     }
   };
+
+  // Use API data if available, otherwise use fallback
+  // API provides: sectionTitle, dividendInfoSection, dividendNotice
+  // Component expects: title, form, instructions, nodalOfficer, decorativeImage, notice
+  const unclaimedData = data?.sectionTitle || data?.dividendInfoSection || data?.dividendNotice ? {
+    // Use API title if available, otherwise fallback
+    title: data.sectionTitle || fallbackData.title,
+    // Keep form, instructions, nodalOfficer, decorativeImage from fallback (not in API)
+    form: fallbackData.form,
+    instructions: fallbackData.instructions,
+    nodalOfficer: fallbackData.nodalOfficer,
+    decorativeImage: fallbackData.decorativeImage,
+    // Use API notice if available, otherwise fallback
+    notice: {
+      ...fallbackData.notice,
+      // Override notice content with API rich text if available
+      dividendNotice: data.dividendNotice || null,
+      dividendInfoSection: data.dividendInfoSection || null
+    }
+  } : fallbackData;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -194,69 +214,89 @@ export default function UnclaimedDividend({ data }) {
           <h3 className="unclaimed-dividend__notice-title">{unclaimedData.notice.title}</h3>
           
           <div className="unclaimed-dividend__notice-content">
-            <p className="unclaimed-dividend__notice-text">
-              <strong>Appointment of Registrar and Share Transfer Agent of the Company</strong>
-            </p>
-            
-            <p className="unclaimed-dividend__notice-text">
-              Shareholders, Beneficial Owners, Depository Participants and all other persons concerned dealing in the shares of Lupin Limited ('the Company') are hereby informed that the Company has appointed <strong>MUFG Intime India Pvt. Ltd.</strong> ('MUFG Intime') as the Registrar and Share Transfer Agent of the Company, with effect from <strong>June 15, 2018</strong>.
-            </p>
-            
-            <p className="unclaimed-dividend__notice-text">
-              All persons concerned are hereby requested to send/deliver all the documents/correspondence relating to the transmission of shares, deletion of name, change of address (physical shares), issue of duplicate share certificates, claim of unpaid dividend/unclaimed shares, dematerialization of shares etc. pertaining to shares of the Company to the MUFG Intime at the following address:
-            </p>
+            {/* Render API rich text if available, otherwise use fallback */}
+            {unclaimedData.notice.dividendNotice ? (
+              // Render API DividendNotice rich text
+              <div 
+                className="unclaimed-dividend__notice-rich-text"
+                dangerouslySetInnerHTML={{ __html: unclaimedData.notice.dividendNotice }}
+              />
+            ) : (
+              // Render fallback notice content
+              <>
+                <p className="unclaimed-dividend__notice-text">
+                  <strong>Appointment of Registrar and Share Transfer Agent of the Company</strong>
+                </p>
+                
+                <p className="unclaimed-dividend__notice-text">
+                  Shareholders, Beneficial Owners, Depository Participants and all other persons concerned dealing in the shares of Lupin Limited ('the Company') are hereby informed that the Company has appointed <strong>MUFG Intime India Pvt. Ltd.</strong> ('MUFG Intime') as the Registrar and Share Transfer Agent of the Company, with effect from <strong>June 15, 2018</strong>.
+                </p>
+                
+                <p className="unclaimed-dividend__notice-text">
+                  All persons concerned are hereby requested to send/deliver all the documents/correspondence relating to the transmission of shares, deletion of name, change of address (physical shares), issue of duplicate share certificates, claim of unpaid dividend/unclaimed shares, dematerialization of shares etc. pertaining to shares of the Company to the MUFG Intime at the following address:
+                </p>
 
-            <p className="unclaimed-dividend__notice-address">
-              {unclaimedData.notice.address.company}<br />
-              {unclaimedData.notice.address.unit}<br />
-              {unclaimedData.notice.address.building}<br />
-              {unclaimedData.notice.address.street}<br />
-              {unclaimedData.notice.address.city}
-            </p>
+                <p className="unclaimed-dividend__notice-address">
+                  {unclaimedData.notice.address.company}<br />
+                  {unclaimedData.notice.address.unit}<br />
+                  {unclaimedData.notice.address.building}<br />
+                  {unclaimedData.notice.address.street}<br />
+                  {unclaimedData.notice.address.city}
+                </p>
 
-            <p className="unclaimed-dividend__notice-text">
-              The dedicated email id for shareholders of the Company for communication with MUFG Intime is{' '}
-              {unclaimedData.notice.emails.list.map((email, index) => (
-                <span key={index}>
-                  <a href={`mailto:${email}`} className="unclaimed-dividend__notice-email">
-                    {email}
+                <p className="unclaimed-dividend__notice-text">
+                  The dedicated email id for shareholders of the Company for communication with MUFG Intime is{' '}
+                  {unclaimedData.notice.emails.list.map((email, index) => (
+                    <span key={index}>
+                      <a href={`mailto:${email}`} className="unclaimed-dividend__notice-email">
+                        {email}
+                      </a>
+                      {index < unclaimedData.notice.emails.list.length - 1 ? ' ' : ''}
+                    </span>
+                  ))}
+                </p>
+
+                {unclaimedData.notice.phones.map((phone, index) => (
+                  <p key={index} className="unclaimed-dividend__notice-text">
+                    {phone.label}{' '}
+                    <a href={`tel:${phone.number.replace(/\s/g, '')}`} className="unclaimed-dividend__notice-phone">
+                      {phone.number}
+                    </a>
+                  </p>
+                ))}
+
+                <p className="unclaimed-dividend__notice-important">
+                  {unclaimedData.notice.importantNotice}
+                </p>
+
+                <p className="unclaimed-dividend__notice-text">
+                  {unclaimedData.notice.iepfLink.text}
+                </p>
+                <p className="unclaimed-dividend__notice-text">
+                  <a href={unclaimedData.notice.iepfLink.url} target="_blank" rel="noopener noreferrer" className="unclaimed-dividend__notice-link">
+                    {unclaimedData.notice.iepfLink.url}
                   </a>
-                  {index < unclaimedData.notice.emails.list.length - 1 ? ' ' : ''}
-                </span>
-              ))}
-            </p>
+                </p>
 
-            {unclaimedData.notice.phones.map((phone, index) => (
-              <p key={index} className="unclaimed-dividend__notice-text">
-                {phone.label}{' '}
-                <a href={`tel:${phone.number.replace(/\s/g, '')}`} className="unclaimed-dividend__notice-phone">
-                  {phone.number}
-                </a>
-              </p>
-            ))}
+                <div className="unclaimed-dividend__notice-dividend">
+                  <p className="unclaimed-dividend__notice-dividend-label">{unclaimedData.notice.unclaimedDividend.label}</p>
+                  <p className="unclaimed-dividend__notice-text" style={{ whiteSpace: 'pre-line' }}>
+                    {unclaimedData.notice.unclaimedDividend.text}{' '}
+                    <Link href={unclaimedData.notice.unclaimedDividend.linkUrl} className="unclaimed-dividend__notice-link">
+                      {unclaimedData.notice.unclaimedDividend.linkText}
+                    </Link>
+                  </p>
+                </div>
+              </>
+            )}
 
-            <p className="unclaimed-dividend__notice-important">
-              {unclaimedData.notice.importantNotice}
-            </p>
-
-            <p className="unclaimed-dividend__notice-text">
-              {unclaimedData.notice.iepfLink.text}
-            </p>
-            <p className="unclaimed-dividend__notice-text">
-              <a href={unclaimedData.notice.iepfLink.url} target="_blank" rel="noopener noreferrer" className="unclaimed-dividend__notice-link">
-                {unclaimedData.notice.iepfLink.url}
-              </a>
-            </p>
-
-            <div className="unclaimed-dividend__notice-dividend">
-              <p className="unclaimed-dividend__notice-dividend-label">{unclaimedData.notice.unclaimedDividend.label}</p>
-              <p className="unclaimed-dividend__notice-text" style={{ whiteSpace: 'pre-line' }}>
-                {unclaimedData.notice.unclaimedDividend.text}{' '}
-                <Link href={unclaimedData.notice.unclaimedDividend.linkUrl} className="unclaimed-dividend__notice-link">
-                  {unclaimedData.notice.unclaimedDividend.linkText}
-                </Link>
-              </p>
-            </div>
+            {/* Render DividendInfoSection if available (could be additional content) */}
+            {unclaimedData.notice.dividendInfoSection && (
+              <div 
+                className="unclaimed-dividend__notice-info-section"
+                dangerouslySetInnerHTML={{ __html: unclaimedData.notice.dividendInfoSection }}
+              />
+            )}
           </div>
         </div>
       </div>
