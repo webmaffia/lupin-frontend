@@ -2684,3 +2684,275 @@ export function mapBrandedEmergingMarketsFooterData(strapiData) {
   };
 }
 
+/**
+ * Map Strapi India Overview data to IndiaOverview component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { OverviewSection: { heading: "...", content: [...] } }
+ * 2. { overviewSection: { title: "...", paragraphs: [...] } }
+ * 3. { Overview: { heading: "...", content: [...] } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted overview data with structure:
+ *   { heading: string, content: string[] }
+ */
+export function mapIndiaOverviewData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const overviewSection = data.OverviewSection || data.overviewSection || data.Overview || data.overview;
+  if (!overviewSection) return null;
+
+  const heading = overviewSection.heading || overviewSection.title || overviewSection.Heading || '';
+
+  let content = [];
+  if (overviewSection.content && Array.isArray(overviewSection.content)) {
+    content = overviewSection.content;
+  } else if (overviewSection.paragraphs && Array.isArray(overviewSection.paragraphs)) {
+    content = overviewSection.paragraphs;
+  } else if (overviewSection.text) {
+    // If it's a single string, split by paragraphs
+    content = typeof overviewSection.text === 'string' 
+      ? overviewSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [overviewSection.text];
+  } else if (Array.isArray(overviewSection)) {
+    content = overviewSection;
+  }
+
+  return {
+    heading: heading,
+    content: content.length > 0 ? content : []
+  };
+}
+
+/**
+ * Map Strapi India At a Glance data to IndiaAtAGlance component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { AtAGlanceSection: { heading: "...", items: [...] } }
+ * 2. { atAGlanceSection: { title: "...", list: [...] } }
+ * 3. { AtAGlance: { heading: "...", points: [...] } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted at a glance data with structure:
+ *   { heading: string, items: string[] }
+ */
+export function mapIndiaAtAGlanceData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const glanceSection = data.AtAGlanceSection || data.atAGlanceSection || data.AtAGlance || data.atAGlance || data.GlanceSection || data.glanceSection;
+  if (!glanceSection) return null;
+
+  const heading = glanceSection.heading || glanceSection.title || glanceSection.Heading || '';
+
+  let items = [];
+  if (glanceSection.items && Array.isArray(glanceSection.items)) {
+    items = glanceSection.items;
+  } else if (glanceSection.list && Array.isArray(glanceSection.list)) {
+    items = glanceSection.list;
+  } else if (glanceSection.points && Array.isArray(glanceSection.points)) {
+    items = glanceSection.points;
+  } else if (glanceSection.content && Array.isArray(glanceSection.content)) {
+    items = glanceSection.content;
+  } else if (Array.isArray(glanceSection)) {
+    items = glanceSection;
+  }
+
+  return {
+    heading: heading,
+    items: items.length > 0 ? items : []
+  };
+}
+
+/**
+ * Map Strapi India What We Do data to IndiaWhatWeDo component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { WhatWeDoSection: { heading: "...", content: [...] } }
+ * 2. { whatWeDoSection: { title: "...", paragraphs: [...] } }
+ * 3. { WhatWeDo: { heading: "...", content: [...] } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted what we do data with structure:
+ *   { heading: string, content: string[] }
+ */
+export function mapIndiaWhatWeDoData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const whatWeDoSection = data.WhatWeDoSection || data.whatWeDoSection || data.WhatWeDo || data.whatWeDo;
+  if (!whatWeDoSection) return null;
+
+  const heading = whatWeDoSection.heading || whatWeDoSection.title || whatWeDoSection.Heading || '';
+
+  let content = [];
+  if (whatWeDoSection.content && Array.isArray(whatWeDoSection.content)) {
+    content = whatWeDoSection.content;
+  } else if (whatWeDoSection.paragraphs && Array.isArray(whatWeDoSection.paragraphs)) {
+    content = whatWeDoSection.paragraphs;
+  } else if (whatWeDoSection.text) {
+    // If it's a single string, split by paragraphs
+    content = typeof whatWeDoSection.text === 'string' 
+      ? whatWeDoSection.text.split(/\n\n+/).filter(p => p.trim())
+      : [whatWeDoSection.text];
+  } else if (Array.isArray(whatWeDoSection)) {
+    content = whatWeDoSection;
+  }
+
+  return {
+    heading: heading,
+    content: content.length > 0 ? content : []
+  };
+}
+
+/**
+ * Map Strapi India Digital Initiatives data to IndiaDigitalInitiatives component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { DigitalInitiativesSection: { heading: "...", description: [...], link: {...} } }
+ * 2. { digitalInitiativesSection: { title: "...", text: [...], link: {...} } }
+ * 3. { DigitalInitiatives: { heading: "...", description: [...], link: {...} } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted digital initiatives data with structure:
+ *   { heading: string, description: string[], link: { text: string, url: string } }
+ */
+export function mapIndiaDigitalInitiativesData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const digitalSection = data.DigitalInitiativesSection || data.digitalInitiativesSection || data.DigitalInitiatives || data.digitalInitiatives;
+  if (!digitalSection) return null;
+
+  const heading = digitalSection.heading || digitalSection.title || digitalSection.Heading || '';
+
+  let description = [];
+  if (digitalSection.description && Array.isArray(digitalSection.description)) {
+    description = digitalSection.description;
+  } else if (digitalSection.text && Array.isArray(digitalSection.text)) {
+    description = digitalSection.text;
+  } else if (digitalSection.content && Array.isArray(digitalSection.content)) {
+    description = digitalSection.content;
+  } else if (digitalSection.paragraphs && Array.isArray(digitalSection.paragraphs)) {
+    description = digitalSection.paragraphs;
+  } else if (digitalSection.text && typeof digitalSection.text === 'string') {
+    description = digitalSection.text.split(/\n\n+/).filter(p => p.trim());
+  } else if (Array.isArray(digitalSection)) {
+    description = digitalSection;
+  }
+
+  const link = digitalSection.link ? {
+    text: digitalSection.link.text || digitalSection.link.linkText || '',
+    url: digitalSection.link.url || digitalSection.link.linkUrl || ''
+  } : null;
+
+  return {
+    heading: heading,
+    description: description.length > 0 ? description : [],
+    link: link
+  };
+}
+
+/**
+ * Map Strapi India Therapies data to IndiaTherapies component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { TherapiesSection: { heading: "...", description: "..." } }
+ * 2. { therapiesSection: { title: "...", text: "..." } }
+ * 3. { Therapies: { heading: "...", description: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted therapies data with structure:
+ *   { heading: string, description: string }
+ */
+export function mapIndiaTherapiesData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const therapiesSection = data.TherapiesSection || data.therapiesSection || data.Therapies || data.therapies;
+  if (!therapiesSection) return null;
+
+  const heading = therapiesSection.heading || therapiesSection.title || therapiesSection.Heading || '';
+  const description = therapiesSection.description || therapiesSection.text || therapiesSection.content || '';
+
+  return {
+    heading: heading,
+    description: description
+  };
+}
+
+/**
+ * Map Strapi India Therapy Section data to IndiaTherapySection component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { TherapySection: { ... } }
+ * 2. { therapySection: { ... } }
+ * 3. { TherapyContent: { ... } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted therapy section data
+ */
+export function mapIndiaTherapySectionData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const therapySection = data.TherapySection || data.therapySection || data.TherapyContent || data.therapyContent;
+  if (!therapySection) return null;
+
+  // Map tabs structure
+  let tabs = [];
+  if (therapySection.tabs && Array.isArray(therapySection.tabs)) {
+    tabs = therapySection.tabs;
+  } else if (therapySection.tabRows && Array.isArray(therapySection.tabRows)) {
+    tabs = therapySection.tabRows;
+  }
+
+  // Map content structure
+  let content = {};
+  if (therapySection.content && typeof therapySection.content === 'object') {
+    content = therapySection.content;
+  } else if (therapySection.therapies && typeof therapySection.therapies === 'object') {
+    content = therapySection.therapies;
+  }
+
+  return {
+    tabs: tabs.length > 0 ? tabs : null,
+    content: Object.keys(content).length > 0 ? content : null
+  };
+}
+
+/**
+ * Map Strapi India Patient Support data to IndiaPatientSupport component format
+ * 
+ * Expected Strapi data structures (any of these will work):
+ * 1. { PatientSupportSection: { heading: "...", description: "...", button: {...} } }
+ * 2. { patientSupportSection: { title: "...", text: "...", button: {...} } }
+ * 3. { PatientSupport: { heading: "...", description: "...", button: {...} } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted patient support data with structure:
+ *   { heading: string, description: string, button: { text: string, url: string } }
+ */
+export function mapIndiaPatientSupportData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const supportSection = data.PatientSupportSection || data.patientSupportSection || data.PatientSupport || data.patientSupport;
+  if (!supportSection) return null;
+
+  const heading = supportSection.heading || supportSection.title || supportSection.Heading || '';
+  const description = supportSection.description || supportSection.text || supportSection.content || '';
+
+  const button = supportSection.button ? {
+    text: supportSection.button.text || supportSection.button.buttonText || '',
+    url: supportSection.button.url || supportSection.button.linkUrl || supportSection.button.link || '#'
+  } : null;
+
+  return {
+    heading: heading,
+    description: description,
+    button: button
+  };
+}
+
