@@ -10,12 +10,12 @@
   position: relative;
   width: 100%;
   max-width: vw(801);
-  height: vw(272);
+  height: auto;
   border-radius: vw(32.2);
   overflow: hidden;
   
   @include media('tablet') {
-    height: vw(250, 768);
+    height: auto;
     border-radius: vw(28, 768);
     max-width: 100%;
   }
