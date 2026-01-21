@@ -45,10 +45,10 @@ export default function VotingResults({ data }) {
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{votingData.card.title}</h3>
                   <div className="policy-card__download">
-                    <Link href={votingData.card.pdfUrl || "#"} className="policy-card__download-link">
+                    <Link href={votingData.card.pdfUrl || "#"} className="policy-card__download-link" target="_blank" rel="noopener noreferrer">
                       Download PDF
                     </Link>
-                    <Link href={votingData.card.pdfUrl || "#"} className="policy-card__download-button">
+                    <Link href={votingData.card.pdfUrl || "#"} className="policy-card__download-button" target="_blank" rel="noopener noreferrer">
                       <Image
                         src={votingData.card.isActive ? votingData.images.downloadButton.active : votingData.images.downloadButton.inactive}
                         alt="Download"

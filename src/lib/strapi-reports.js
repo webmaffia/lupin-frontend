@@ -1424,8 +1424,7 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
   const sectionsArray = data?.RegulationDisclosureSection || data?.regulationDisclosureSection || [];
 
   // Map sections to items
-  // Each section can have multiple documents, so we'll create one item per document
-  // If a section has no documents, we'll create one item with the particular text only
+  // One row per section (Particular), using the first active document's URL or DocumentFile
   let itemNumber = 1;
   const items = [];
 
@@ -1435,44 +1434,551 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
       const particular = section?.Particular || section?.particular || '';
       const documentsArray = section?.Documents || section?.documents || [];
 
-      if (documentsArray.length > 0) {
-        // If section has documents, create one item per document
-        documentsArray
-          .filter(doc => doc?.isActive !== false) // Only active documents
-          .forEach((doc) => {
-            // Get URL from doc.Url or from DocumentFile
-            let url = doc?.Url || doc?.url || '#';
-            
-            // If no URL but has DocumentFile, use the file URL
-            if (url === '#' && doc?.DocumentFile) {
-              const documentFile = doc?.DocumentFile?.data?.attributes || doc?.DocumentFile || doc?.documentFile?.data?.attributes || doc?.documentFile;
-              url = documentFile ? getStrapiMedia(documentFile) : '#';
-            }
+      if (!particular) {
+        return; // Skip sections without particular text
+      }
 
-            items.push({
-              id: itemNumber,
-              number: String(itemNumber),
-              particulars: particular || doc?.Label || doc?.label || '',
-              url: url
-            });
-            itemNumber++;
-          });
-      } else {
-        // If section has no documents, create one item with just the particular text
-        if (particular) {
-          items.push({
-            id: itemNumber,
-            number: String(itemNumber),
-            particulars: particular,
-            url: '#'
-          });
-          itemNumber++;
+      // Find the first active document
+      const activeDocuments = documentsArray.filter(doc => doc?.isActive !== false);
+      let url = '#';
+      let label = null;
+
+      if (activeDocuments.length > 0) {
+        // Use the first active document
+        const firstDoc = activeDocuments[0];
+        
+        // Get Label if available
+        label = firstDoc?.Label || firstDoc?.label || null;
+        
+        // Priority: Url first, then DocumentFile
+        if (firstDoc?.Url || firstDoc?.url) {
+          url = firstDoc?.Url || firstDoc?.url;
+        } else if (firstDoc?.DocumentFile) {
+          // Extract DocumentFile URL
+          const documentFile = firstDoc?.DocumentFile?.data?.attributes || firstDoc?.DocumentFile || firstDoc?.documentFile?.data?.attributes || firstDoc?.documentFile;
+          url = documentFile ? getStrapiMedia(documentFile) : '#';
         }
       }
+
+      items.push({
+        id: section?.id || itemNumber,
+        number: String(itemNumber),
+        particulars: particular,
+        url: url,
+        label: label // Store label for potential future use
+      });
+      itemNumber++;
     });
 
   return {
     items: items
+  };
+}
+
+/**
+ * Fetch dividend data from Strapi
+ * This is a Single Type, so it returns one entry
+ * Note: API endpoint is "divedend" (typo in Strapi)
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getDividend() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - DividendTdsCommunicationSection (Component - DividendTdsDocumentCard) with:
+  //   - Heading, SubHeading, Description (Rich text)
+  //   - PdfCard (Component - PdfCard) with Title, PublishedDate, Pdf, isActive
+  // - DivedendHistorySection (Component - DividendHistorySection) with:
+  //   - IntroText (Rich text), DivedendHistory (Rich text), isActive
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[DividendTdsCommunicationSection][populate][PdfCard][populate][Pdf][populate]=*',
+    'populate[DivedendHistorySection][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`divedend?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map dividend data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped dividend data for components
+ */
+export function mapDividendData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {
+      tdsSection: null,
+      historySection: null
+    };
+  }
+
+  // Map DividendTdsCommunicationSection
+  const tdsSection = data?.DividendTdsCommunicationSection || data?.dividendTdsCommunicationSection;
+  let mappedTdsSection = null;
+  
+  if (tdsSection && tdsSection?.isActive !== false) {
+    const pdfCard = tdsSection?.PdfCard || tdsSection?.pdfCard;
+    const pdf = pdfCard?.Pdf?.data?.attributes || pdfCard?.Pdf || pdfCard?.pdf?.data?.attributes || pdfCard?.pdf;
+    const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+
+    mappedTdsSection = {
+      heading: tdsSection?.Heading || tdsSection?.heading || '',
+      subHeading: tdsSection?.SubHeading || tdsSection?.subHeading || '',
+      description: tdsSection?.Description || tdsSection?.description || '',
+      pdfCard: pdfCard ? {
+        title: pdfCard?.Title || pdfCard?.title || '',
+        publishedDate: pdfCard?.PublishedDate || pdfCard?.publishedDate || '',
+        pdfUrl: pdfUrl,
+        isActive: pdfCard?.isActive !== false
+      } : null
+    };
+  }
+
+  // Map DivedendHistorySection
+  const historySection = data?.DivedendHistorySection || data?.divedendHistorySection;
+  let mappedHistorySection = null;
+  
+  if (historySection && historySection?.isActive !== false) {
+    mappedHistorySection = {
+      introText: historySection?.IntroText || historySection?.introText || '',
+      dividendHistory: historySection?.DivedendHistory || historySection?.divedendHistory || ''
+    };
+  }
+
+  return {
+    tdsSection: mappedTdsSection,
+    historySection: mappedHistorySection
+  };
+}
+
+/**
+ * Convert JSON table data to HTML table format
+ * Used as fallback for dividend history table
+ * 
+ * @param {Object} tableData - Table data with headers and rows
+ * @returns {string} HTML table string
+ */
+export function convertTableDataToHTML(tableData) {
+  if (!tableData || !tableData.headers || !tableData.rows) {
+    return '';
+  }
+
+  const { headers, rows } = tableData;
+
+  // Build HTML table
+  let html = '<div class="policies__voting-table-wrapper">';
+  
+  // Header row
+  html += '<div class="policies__voting-table-header">';
+  headers.forEach((header, index) => {
+    const bgColor = header.bgColor || '#08a03f';
+    const textColor = header.textColor || '#ffffff';
+    const padding = header.padding || '17px';
+    const largePaddingClass = index === 1 ? 'policies__voting-table-header-cell--large-padding' : '';
+    
+    html += `<div class="policies__voting-table-header-cell ${largePaddingClass}" style="background-color: ${bgColor}; color: ${textColor}; padding: ${padding};">`;
+    html += `<p>${header.text || ''}</p>`;
+    html += '</div>';
+  });
+  html += '</div>';
+
+  // Data rows
+  html += '<div class="policies__voting-table-rows">';
+  rows.forEach((row) => {
+    html += '<div class="policies__voting-table-row">';
+    headers.forEach((header) => {
+      const cellValue = row[header.text] || '';
+      html += `<p class="policies__voting-table-cell">${cellValue}</p>`;
+    });
+    html += '</div>';
+  });
+  html += '</div>';
+
+  html += '</div>';
+
+  return html;
+}
+
+/**
+ * Get fallback dividend history table data
+ * Used when API data is not available
+ * 
+ * @returns {Object} Fallback table data
+ */
+export function getFallbackDividendHistoryTable() {
+  return {
+    paragraph: "Lupin track of dividends is detailed below. Dividends are remitted through the National Electronic Clearing Service (NECS), subject to availability of NECS centres and timely furnishing of complete and correct bank account details by shareowners. Dividend other than NECS is remitted by means of warrants.",
+    table: {
+      headers: [
+        { text: "Dividend period", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" },
+        { text: "Dividend (%)", bgColor: "#d9f0e1", textColor: "#08a03f", padding: "17px" },
+        { text: "Per Share (Rs.)", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" },
+        { text: "Closure/ record date(s)", bgColor: "#d9f0e1", textColor: "#08a03f", padding: "58px" },
+        { text: "Date of Declaration of Dividend", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" },
+        { text: "Dividend payment date", bgColor: "#d9f0e1", textColor: "#08a03f", padding: "17px" }
+      ],
+      rows: [
+        { "Dividend period": "2024-25", "Dividend (%)": "600", "Per Share (Rs.)": "12.00", "Closure/ record date(s)": "25.07.2025", "Date of Declaration of Dividend": "11.08.2025", "Dividend payment date": "14.08.2025" },
+        { "Dividend period": "2023-24", "Dividend (%)": "400", "Per Share (Rs.)": "8.00", "Closure/ record date(s)": "16.07.2024", "Date of Declaration of Dividend": "02.08.2024", "Dividend payment date": "07.08.2024" },
+        { "Dividend period": "2022-23", "Dividend (%)": "200", "Per Share (Rs.)": "4.00", "Closure/ record date(s)": "14.07.2023", "Date of Declaration of Dividend": "03.08.2023", "Dividend payment date": "08.08.2023" },
+        { "Dividend period": "2021-22", "Dividend (%)": "200", "Per Share (Rs.)": "4.00", "Closure/ record date(s)": "15.07.2022", "Date of Declaration of Dividend": "03.08.2022", "Dividend payment date": "05.08.2022" },
+        { "Dividend period": "2020-21", "Dividend (%)": "325", "Per Share (Rs.)": "6.50", "Closure/ record date(s)": "28.07.2021", "Date of Declaration of Dividend": "11.08.2021", "Dividend payment date": "17.08.2021" },
+        { "Dividend period": "2019-20", "Dividend (%)": "300", "Per Share (Rs.)": "6.00", "Closure/ record date(s)": "05.08.2020 – 12.08.2020", "Date of Declaration of Dividend": "12.08.2020", "Dividend payment date": "18.08.2020" },
+        { "Dividend period": "2018-19", "Dividend (%)": "250", "Per Share (Rs.)": "5.00", "Closure/ record date(s)": "31.07.2019 – 07.08.2019", "Date of Declaration of Dividend": "07.08.2019", "Dividend payment date": "13.08.2019" },
+        { "Dividend period": "2017-18", "Dividend (%)": "250.", "Per Share (Rs.)": "5.00", "Closure/ record date(s)": "01.08.2018 – 08.08.2018", "Date of Declaration of Dividend": "08.08.2018", "Dividend payment date": "13.08.2018" },
+        { "Dividend period": "2016-17", "Dividend (%)": "375", "Per Share (Rs.)": "7.50", "Closure/ record date(s)": "26.07.2017 – 02.08.2017", "Date of Declaration of Dividend": "02.08.2017", "Dividend payment date": "05.08.2017" },
+        { "Dividend period": "2015-16", "Dividend (%)": "375", "Per Share (Rs.)": "7.50", "Closure/ record date(s)": "27.07.2016 – 03.08.2016", "Date of Declaration of Dividend": "03.08.2016", "Dividend payment date": "06.08.2016" },
+        { "Dividend period": "2014-15", "Dividend (%)": "375", "Per Share (Rs.)": "7.50", "Closure/ record date(s)": "16.07.2015 – 23.07.2015", "Date of Declaration of Dividend": "23.07.2015", "Dividend payment date": "27.07.2015" },
+        { "Dividend period": "2013-14 (Final)", "Dividend (%)": "150", "Per Share (Rs.)": "3.00", "Closure/ record date(s)": "23.07.2014 – 30.07.2014", "Date of Declaration of Dividend": "30.07.2014", "Dividend payment date": "31.07.2014" },
+        { "Dividend period": "2013-14 (Interim)", "Dividend (%)": "150", "Per Share (Rs.)": "3.00", "Closure/ record date(s)": "14.02.2014", "Date of Declaration of Dividend": "03.02.2014", "Dividend payment date": "21.02.2014" },
+        { "Dividend period": "2012-2013", "Dividend (%)": "200", "Per Share (Rs.)": "4.00", "Closure/ record date(s)": "31.07.2013 – 07.08.2013", "Date of Declaration of Dividend": "07.08.2013", "Dividend payment date": "08.08.2013" },
+        { "Dividend period": "2011-2012", "Dividend (%)": "160", "Per Share (Rs.)": "3.20", "Closure/ record date(s)": "17.07.2012 – 24.07.2012", "Date of Declaration of Dividend": "24.07.2012", "Dividend payment date": "25.07.2012" },
+        { "Dividend period": "2010-2011", "Dividend (%)": "150", "Per Share (Rs.)": "3.00", "Closure/ record date(s)": "20-07-2011 – 27-07-2011", "Date of Declaration of Dividend": "27-07-2011", "Dividend payment date": "28-07-2011" },
+        { "Dividend period": "2009-2010", "Dividend (%)": "135", "Per Share (Rs.)": "13.50", "Closure/ record date(s)": "21-07-2010 – 28-07-2010", "Date of Declaration of Dividend": "28-07-2010", "Dividend payment date": "29-07-2010" },
+        { "Dividend period": "2008-2009", "Dividend (%)": "125", "Per Share (Rs.)": "12.50", "Closure/ record date(s)": "22-07-2009 – 29-07-2009", "Date of Declaration of Dividend": "29-07-2009", "Dividend payment date": "30-07-2009" },
+        { "Dividend period": "2007-2008", "Dividend (%)": "100", "Per Share (Rs.)": "10.00", "Closure/ record date(s)": "15.07.2008 – 22.07.2008", "Date of Declaration of Dividend": "22.07.2008", "Dividend payment date": "23.07.2008" },
+        { "Dividend period": "2006-2007", "Dividend (%)": "50", "Per Share (Rs.)": "5.00", "Closure/ record date(s)": "12.07.2007 – 19.07.2007", "Date of Declaration of Dividend": "19.07.2007", "Dividend payment date": "20.07.2007" },
+        { "Dividend period": "2005-2006", "Dividend (%)": "65", "Per Share (Rs.)": "6.50", "Closure/ record date(s)": "11.07.2006 – 12.07.2006", "Date of Declaration of Dividend": "25.07.2006", "Dividend payment date": "26.07.2006" },
+        { "Dividend period": "2004-2005", "Dividend (%)": "65", "Per Share (Rs.)": "6.50", "Closure/ record date(s)": "19.07.2005 – 20.07.2005", "Date of Declaration of Dividend": "28.07.2005", "Dividend payment date": "29.07.2005" },
+        { "Dividend period": "2003-2004", "Dividend (%)": "65", "Per Share (Rs.)": "6.50", "Closure/ record date(s)": "15.07.2004 – 16.07.2004", "Date of Declaration of Dividend": "29.07.2004", "Dividend payment date": "30.07.2004" },
+        { "Dividend period": "2002-2003", "Dividend (%)": "50", "Per Share (Rs.)": "5.00", "Closure/ record date(s)": "17.07.2003 – 18.07.2003", "Date of Declaration of Dividend": "06.08.2003", "Dividend payment date": "07.08.2003" },
+        { "Dividend period": "2001-2002 (Final)", "Dividend (%)": "25", "Per Share (Rs.)": "2.50", "Closure/ record date(s)": "20.08.2002 – 21.08.2002", "Date of Declaration of Dividend": "02.09.2002", "Dividend payment date": "03.09.2002" },
+        { "Dividend period": "2001-2002 (Interim)", "Dividend (%)": "25", "Per Share (Rs.)": "2.50", "Closure/ record date(s)": "07.02.2002", "Date of Declaration of Dividend": "17.01.2002\n(Board meeting)", "Dividend payment date": "15.02.2002" },
+        { "Dividend period": "2000-2001", "Dividend (%)": "35", "Per Share (Rs.)": "3.50", "Closure/ record date(s)": "13.09.2001 – 14.09.2001", "Date of Declaration of Dividend": "25.09.2001", "Dividend payment date": "26.09.2001" }
+      ]
+    }
+  };
+}
+
+/**
+ * Fetch notice data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getNotice() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - NoticeSection (Repeatable Component - NoticeCard) with:
+  //   - FinancialLabel (Text)
+  //   - Documents (Repeatable Component - NoticeDocument) with:
+  //     - LanguageLabel (Text)
+  //     - DocumentFile (Media)
+  //     - isDefault (Boolean)
+  //     - DisplayOrder (Text)
+  //   - isActive (Boolean)
+  //   - DisplayOrder (Text)
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[NoticeSection][populate][Documents][populate][DocumentFile][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`notice?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map notice data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped notice data for component
+ */
+export function mapNoticeData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty array
+  if (!data) {
+    return {
+      notices: []
+    };
+  }
+
+  // Get NoticeSection array (Repeatable Component - NoticeCard)
+  const noticeSectionsArray = data?.NoticeSection || data?.noticeSection || [];
+
+  // Map notice sections to component format
+  const notices = noticeSectionsArray
+    .filter(section => section?.isActive !== false) // Only active sections
+    .map((section, index) => {
+      const financialLabel = section?.FinancialLabel || section?.financialLabel || '';
+      const documentsArray = section?.Documents || section?.documents || [];
+
+      // Find English and Marathi documents
+      let englishDoc = null;
+      let marathiDoc = null;
+      let defaultDoc = null;
+
+      documentsArray.forEach((doc) => {
+        const languageLabel = (doc?.LanguageLabel || doc?.languageLabel || '').toLowerCase();
+        
+        // Check if it's the default document
+        if (doc?.isDefault === true) {
+          defaultDoc = doc;
+        }
+        
+        // Find by language label
+        if (languageLabel.includes('english') || languageLabel.includes('en')) {
+          englishDoc = doc;
+        } else if (languageLabel.includes('marathi') || languageLabel.includes('mr')) {
+          marathiDoc = doc;
+        }
+      });
+
+      // Use default doc if no language-specific doc found
+      if (!englishDoc && defaultDoc) {
+        englishDoc = defaultDoc;
+      }
+      if (!marathiDoc && defaultDoc && documentsArray.length > 1) {
+        // Only use default for marathi if there are multiple documents
+        marathiDoc = documentsArray.find(d => d !== englishDoc) || defaultDoc;
+      }
+
+      // Get document URLs
+      const getDocumentUrl = (doc) => {
+        if (!doc) return '#';
+        const documentFile = doc?.DocumentFile?.data?.attributes || doc?.DocumentFile || doc?.documentFile?.data?.attributes || doc?.documentFile;
+        return documentFile ? getStrapiMedia(documentFile) : '#';
+      };
+
+      const englishUrl = getDocumentUrl(englishDoc);
+      const marathiUrl = getDocumentUrl(marathiDoc);
+      const pdfUrl = englishUrl !== '#' ? englishUrl : (defaultDoc ? getDocumentUrl(defaultDoc) : '#');
+
+      return {
+        id: section?.id || index + 1,
+        financialLabel: financialLabel,
+        englishLink: englishUrl,
+        marathiLink: marathiUrl,
+        pdfUrl: pdfUrl,
+        isActive: section?.isActive !== false && pdfUrl !== '#',
+        displayOrder: section?.DisplayOrder || section?.displayOrder || String(index + 1)
+      };
+    })
+    .filter(notice => notice.financialLabel) // Only include notices with financial label
+    .sort((a, b) => {
+      // Sort by DisplayOrder if available, otherwise maintain order
+      const orderA = a.displayOrder || '999';
+      const orderB = b.displayOrder || '999';
+      return orderA.localeCompare(orderB);
+    });
+
+  return {
+    notices: notices
+  };
+}
+
+/**
+ * Fetch other-statutory-information data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getOtherStatutoryInformation() {
+  // Populate all nested components and media
+  // Following the structure:
+  // - TopBanner with DesktopImage and MobileImage
+  // - ExtraordinaryGeneralMeetingSection (Component) with SectionTitle and Documents (Repeatable PdfCard)
+  // - EvotingSection (Component) with SectionTitle, Documents, Heading (Rich text), PdfCard
+  // - DivendInfo (Repeatable Component: DividendHistorySection) with IntroText (Rich text), DividendHistory (Rich text), isActive
+  // - NoticeSection (Rich text)
+  // - PdfSection (Repeatable Component - PdfCard)
+  // - KycUpdateSection (Repeatable Component) with SectionTitle and Documents
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[ExtraordinaryGeneralMeetingSection][populate][Documents][populate][Pdf][populate]=*',
+    'populate[EvotingSection][populate][Documents][populate][Pdf][populate]=*',
+    'populate[EvotingSection][populate][PdfCard][populate][Pdf][populate]=*',
+    'populate[KycUpdateSection][populate][Documents][populate][Pdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`other-statutory-information?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map other statutory information data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped other statutory information data for components
+ */
+export function mapOtherStatutoryInformationData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
+  const data = strapiData?.data || strapiData;
+
+  // If no data, return empty structure
+  if (!data) {
+    return {
+      egmSection: null,
+      evotingSection: null,
+      dividendInfo: null,
+      noticeSection: null,
+      pdfSection: null,
+      kycSection: null
+    };
+  }
+
+  // Map ExtraordinaryGeneralMeetingSection
+  const egmSection = data?.ExtraordinaryGeneralMeetingSection || data?.extraordinaryGeneralMeetingSection;
+  let mappedEgmSection = null;
+  
+  if (egmSection) {
+    const documentsArray = egmSection?.Documents || egmSection?.documents || [];
+    const cards = documentsArray
+      .filter(doc => doc?.isActive !== false)
+      .map((doc, index) => {
+        const pdf = doc?.Pdf?.data?.attributes || doc?.Pdf || doc?.pdf?.data?.attributes || doc?.pdf;
+        const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+        
+        return {
+          id: doc?.id || index + 1,
+          title: doc?.Title || doc?.title || '',
+          pdfUrl: pdfUrl,
+          isActive: doc?.isActive !== false && pdfUrl !== '#'
+        };
+      })
+      .filter(card => card.title);
+
+    mappedEgmSection = {
+      title: egmSection?.SectionTitle || egmSection?.sectionTitle || 'Extraordinary General Meeting (EGM)',
+      cards: cards
+    };
+  }
+
+  // Map EvotingSection
+  const evotingSection = data?.EvotingSection || data?.evotingSection;
+  let mappedEvotingSection = null;
+  
+  if (evotingSection) {
+    const documentsArray = evotingSection?.Documents || evotingSection?.documents || [];
+    const cards = documentsArray
+      .filter(doc => doc?.isActive !== false)
+      .map((doc, index) => {
+        const pdf = doc?.Pdf?.data?.attributes || doc?.Pdf || doc?.pdf?.data?.attributes || doc?.pdf;
+        const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+        
+        return {
+          id: doc?.id || index + 1,
+          title: doc?.Title || doc?.title || '',
+          pdfUrl: pdfUrl,
+          isActive: doc?.isActive !== false && pdfUrl !== '#'
+        };
+      })
+      .filter(card => card.title);
+
+    // Get PdfCard (Component)
+    const pdfCard = evotingSection?.PdfCard || evotingSection?.pdfCard;
+    let mappedPdfCard = null;
+    if (pdfCard) {
+      const pdf = pdfCard?.Pdf?.data?.attributes || pdfCard?.Pdf || pdfCard?.pdf?.data?.attributes || pdfCard?.pdf;
+      const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+      mappedPdfCard = {
+        title: pdfCard?.Title || pdfCard?.title || '',
+        pdfUrl: pdfUrl,
+        isActive: pdfCard?.isActive !== false && pdfUrl !== '#'
+      };
+    }
+
+    mappedEvotingSection = {
+      title: evotingSection?.SectionTitle || evotingSection?.sectionTitle || 'Declaration of Results of E-voting',
+      cards: cards,
+      heading: evotingSection?.Heading || evotingSection?.heading || '',
+      pdfCard: mappedPdfCard
+    };
+  }
+
+  // Map DivendInfo (Repeatable Component: DividendHistorySection)
+  // Try multiple field name variations as Strapi field names can vary
+  const dividendInfoArray = data?.DivendInfo 
+    || data?.divendInfo 
+    || data?.DividendInfo 
+    || data?.dividendInfo
+    || data?.DivedendInfo
+    || data?.divedendInfo
+    || [];
+  const mappedDividendInfo = dividendInfoArray
+    .filter(info => info?.isActive !== false)
+    .map((info, index) => ({
+      id: info?.id || index + 1,
+      introText: info?.IntroText || info?.introText || '',
+      dividendHistory: info?.DividendHistory || info?.dividendHistory || ''
+    }));
+
+  // Map NoticeSection (Rich text)
+  const noticeSection = data?.NoticeSection || data?.noticeSection || '';
+
+  // Map PdfSection (Repeatable Component - PdfCard)
+  // Try multiple field name variations as Strapi field names can vary
+  const pdfSectionArray = data?.PdfSection 
+    || data?.pdfSection 
+    || data?.PdfSections
+    || data?.pdfSections
+    || [];
+  const mappedPdfSection = pdfSectionArray
+    .filter(pdf => pdf?.isActive !== false)
+    .map((pdf, index) => {
+      const pdfFile = pdf?.Pdf?.data?.attributes || pdf?.Pdf || pdf?.pdf?.data?.attributes || pdf?.pdf;
+      const pdfUrl = pdfFile ? getStrapiMedia(pdfFile) : '#';
+      
+      return {
+        id: pdf?.id || index + 1,
+        title: pdf?.Title || pdf?.title || '',
+        pdfUrl: pdfUrl,
+        isActive: pdf?.isActive !== false && pdfUrl !== '#'
+      };
+    })
+    .filter(pdf => pdf.title);
+
+  // Map KycUpdateSection (Repeatable Component)
+  const kycSectionArray = data?.KycUpdateSection || data?.kycUpdateSection || [];
+  const mappedKycSection = kycSectionArray
+    .filter(section => section?.isActive !== false)
+    .map((section, index) => {
+      const documentsArray = section?.Documents || section?.documents || [];
+      const cards = documentsArray
+        .filter(doc => doc?.isActive !== false)
+        .map((doc, docIndex) => {
+          const pdf = doc?.Pdf?.data?.attributes || doc?.Pdf || doc?.pdf?.data?.attributes || doc?.pdf;
+          const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+          
+          return {
+            id: doc?.id || docIndex + 1,
+            title: doc?.Title || doc?.title || '',
+            pdfUrl: pdfUrl,
+            isActive: doc?.isActive !== false && pdfUrl !== '#'
+          };
+        })
+        .filter(card => card.title);
+
+      return {
+        id: section?.id || index + 1,
+        title: section?.SectionTitle || section?.sectionTitle || '',
+        cards: cards
+      };
+    })
+    .filter(section => section.title);
+
+  return {
+    egmSection: mappedEgmSection,
+    evotingSection: mappedEvotingSection,
+    dividendInfo: mappedDividendInfo.length > 0 ? mappedDividendInfo : null,
+    noticeSection: noticeSection || null,
+    pdfSection: mappedPdfSection.length > 0 ? mappedPdfSection : null,
+    kycSection: mappedKycSection.length > 0 ? mappedKycSection : null
   };
 }
 

@@ -71,16 +71,23 @@ export default function IntegratedReportCard({
           </h3>
         )}
         <div className="integrated-report-card__buttons">
-          {buttons.map((button, index) => (
-            <Link
-              key={index}
-              href={button.href || "#"}
-              className={`integrated-report-card__button ${
-                button.variant === 'filled' 
-                  ? 'integrated-report-card__button--filled-white' 
-                  : 'integrated-report-card__button--outline-white'
-              }`}
-            >
+          {buttons.map((button, index) => {
+            // Check if button link is a PDF
+            const isPdfLink = (button.href || '').toLowerCase().includes('.pdf') || 
+                             button.type === 'pdf';
+            
+            return (
+              <Link
+                key={index}
+                href={button.href || "#"}
+                className={`integrated-report-card__button ${
+                  button.variant === 'filled' 
+                    ? 'integrated-report-card__button--filled-white' 
+                    : 'integrated-report-card__button--outline-white'
+                }`}
+                target={isPdfLink ? "_blank" : undefined}
+                rel={isPdfLink ? "noopener noreferrer" : undefined}
+              >
               {button.label}
               {button.variant === 'filled' && (
                 <svg
@@ -100,8 +107,9 @@ export default function IntegratedReportCard({
                   />
                 </svg>
               )}
-            </Link>
-          ))}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>

@@ -4,67 +4,44 @@ import Image from 'next/image';
 import Link from 'next/link';
 import '../scss/components/Notice.scss';
 
-export default function Notice({ data }) {
-  // Default data (will be replaced by Strapi)
-  const noticeData = data || {
-    notices: [
-      {
-        id: 1,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 2,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 3,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 4,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 5,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 6,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 7,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      },
-      {
-        id: 8,
-        englishLink: "#",
-        marathiLink: "#",
-        pdfUrl: "#",
-        isActive: false
-      }
-    ],
+export default function Notice({ data, error = null }) {
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="notice">
+        <div className="notice__container">
+          <div className="notice__content">
+            <div className="notice__placeholder">
+              <p>Unable to load notices at this time. Please try again later.</p>
+              {process.env.NODE_ENV === 'development' && (
+                <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                  Error: {error}
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.notices || data.notices.length === 0) {
+    return (
+      <section className="notice">
+        <div className="notice__container">
+          <div className="notice__content">
+            <div className="notice__placeholder">
+              <p>No notices available at this time.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const noticeData = {
+    notices: data.notices,
     images: {
       downloadButton: {
         active: "/assets/policies/download-button-active.svg",
@@ -89,18 +66,18 @@ export default function Notice({ data }) {
               >
                 <div className="notice-card__content">
                   <div className="notice-card__links">
-                    <Link href={notice.englishLink || notice.pdfUrl} className="notice-card__link">
-                      Q1 FY 2026 - English
+                    <Link href={notice.englishLink || notice.pdfUrl || "#"} className="notice-card__link" target="_blank" rel="noopener noreferrer">
+                      {notice.financialLabel ? `${notice.financialLabel} - English` : 'English'}
                     </Link>
-                    <Link href={notice.marathiLink || "#"} className="notice-card__link">
-                      Q1 FY 2026 - Marathi
+                    <Link href={notice.marathiLink || "#"} className="notice-card__link" target="_blank" rel="noopener noreferrer">
+                      {notice.financialLabel ? `${notice.financialLabel} - Marathi` : 'Marathi'}
                     </Link>
                   </div>
                   <div className="notice-card__download">
-                    <Link href={notice.pdfUrl || notice.englishLink || "#"} className="notice-card__download-link">
+                    <Link href={notice.pdfUrl || notice.englishLink || "#"} className="notice-card__download-link" target="_blank" rel="noopener noreferrer">
                       Download PDF
                     </Link>
-                    <Link href={notice.pdfUrl || notice.englishLink || "#"} className="notice-card__download-button">
+                    <Link href={notice.pdfUrl || notice.englishLink || "#"} className="notice-card__download-button" target="_blank" rel="noopener noreferrer">
                       <Image
                         src={notice.isActive ? noticeData.images.downloadButton.active : noticeData.images.downloadButton.inactive}
                         alt="Download"

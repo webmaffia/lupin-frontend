@@ -87,12 +87,12 @@ export default function AnalystCoverage({ analysts, error }) {
                 <h3 className="analyst-card__institution">{analyst.institution}</h3>
                 <div className="analyst-card__info">
                   <p className="analyst-card__name">{analyst.analyst}</p>
-                  <a
+                  {/* <a
                     href={`mailto:${analyst.email}`}
                     className="analyst-card__email"
                   >
                     {analyst.email}
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </div>

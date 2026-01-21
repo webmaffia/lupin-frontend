@@ -68,10 +68,10 @@ export default function EmployeeStockOptionSchemes({ data, error = null }) {
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{scheme.title}</h3>
                   <div className="policy-card__download">
-                    <Link href={scheme.pdfUrl} className="policy-card__download-link">
+                    <Link href={scheme.pdfUrl} className="policy-card__download-link" target="_blank" rel="noopener noreferrer">
                       Download PDF
                     </Link>
-                    <Link href={scheme.pdfUrl} className="policy-card__download-button">
+                    <Link href={scheme.pdfUrl} className="policy-card__download-button" target="_blank" rel="noopener noreferrer">
                       <Image
                         src={scheme.isActive ? schemesData.images.downloadButton.active : schemesData.images.downloadButton.inactive}
                         alt="Download"

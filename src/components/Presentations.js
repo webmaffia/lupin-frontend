@@ -81,10 +81,10 @@ export default function Presentations({ data }) {
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{presentation.title}</h3>
                   <div className="policy-card__download">
-                    <Link href={presentation.pdfUrl} className="policy-card__download-link">
+                    <Link href={presentation.pdfUrl} className="policy-card__download-link" target="_blank" rel="noopener noreferrer">
                       Download PDF
                     </Link>
-                    <Link href={presentation.pdfUrl} className="policy-card__download-button">
+                    <Link href={presentation.pdfUrl} className="policy-card__download-button" target="_blank" rel="noopener noreferrer">
                       <Image
                         src={presentation.isActive ? presentationsData.images.downloadButton.active : presentationsData.images.downloadButton.inactive}
                         alt="Download"
