@@ -14,6 +14,7 @@ import { generateMetadata as generateSEOMetadata, generateOrganizationSchema } f
 import { getHomepage, mapHomepageHeroData, mapHomepageOurStoryData, mapHomepageOurPurposeData, mapHomepageOverviewData, mapHomepageOurBusinessData, mapHomepageSustainabilityData, mapHomepageCSRData, mapHomepageLifeData, mapHomepageNewsInsightsData } from '@/lib/strapi';
 
 // Generate metadata for the home page
+//TEST RAHUL
 export const metadata = generateSEOMetadata({
   title: "Lupin - Global Pharmaceutical Leader | Innovations in Healthcare",
   description: "Lupin is a leading pharmaceutical company committed to improving lives through innovative medicines, global reach, and sustainable healthcare solutions across 100+ countries.",
