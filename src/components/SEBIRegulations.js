@@ -3,121 +3,42 @@
 import Link from 'next/link';
 import '../scss/components/SEBIRegulations.scss';
 
-export default function SEBIRegulations({ data }) {
-  // Default data (will be replaced by Strapi)
-  const regulationsData = data || {
+export default function SEBIRegulations({ data, error = null }) {
+  // Show error state if API failed
+  if (error) {
+    return (
+      <section className="sebi-regulations">
+        <div className="sebi-regulations__container">
+          <div className="sebi-regulations__placeholder">
+            <p>Unable to load regulation disclosures at this time. Please try again later.</p>
+            {process.env.NODE_ENV === 'development' && (
+              <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                Error: {error}
+              </p>
+            )}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Show empty state if no data
+  if (!data || !data.items || data.items.length === 0) {
+    return (
+      <section className="sebi-regulations">
+        <div className="sebi-regulations__container">
+          <div className="sebi-regulations__placeholder">
+            <p>No regulation disclosures available at this time.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  const regulationsData = {
     title: "Disclosure under Regulation 46 of SEBI Regulations, 2016",
     subtitle: "Disclosure under Regulation 46 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2016",
-    items: [
-      {
-        id: 1,
-        number: "1",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 2,
-        number: "2",
-        particulars: "Memorandum of Association and Articles of Association",
-        url: "#"
-      },
-      {
-        id: 3,
-        number: "3",
-        particulars: "Brief profile of board of directors including directorship and full-time positions in body corporates",
-        url: "#"
-      },
-      {
-        id: 4,
-        number: "4",
-        particulars: "Terms and conditions of appointment of independent directors",
-        url: "#"
-      },
-      {
-        id: 5,
-        number: "5",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 6,
-        number: "6",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 7,
-        number: "7",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 8,
-        number: "8",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 9,
-        number: "9",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 10,
-        number: "10",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 11,
-        number: "11",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 12,
-        number: "12",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 13,
-        number: "13",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 14,
-        number: "14",
-        particulars: "Details of its business",
-        url: "#"
-      },
-      {
-        id: 15,
-        number: "15",
-        particulars: "Shareholding pattern",
-        url: "#"
-      },
-      {
-        id: 16,
-        number: "16",
-        particulars: "Details of agreements entered into with the media companies and/or their associates",
-        url: "#"
-      },
-      {
-        id: 17,
-        number: "17",
-        particulars: "Schedule of analysts or institutional investors meet",
-        url: "#"
-      },
-      {
-        id: 18,
-        number: "18",
-        particulars: "New name and the old name of the listed entity for a continuous period of one year",
-        url: "#"
-      }
-    ]
+    items: data.items
   };
 
   return (
