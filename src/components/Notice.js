@@ -62,7 +62,7 @@ export default function Notice({ data, error = null }) {
             {noticeData.notices.map((notice) => (
               <div
                 key={notice.id}
-                className={`notice-card ${notice.isActive ? 'notice-card--active' : ''}`}
+                className={`notice-card`}
               >
                 <div className="notice-card__content">
                   <div className="notice-card__links">
