@@ -85,10 +85,10 @@ export default function Policies({ data, error }) {
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{policy.title}</h3>
                   <div className="policy-card__download">
-                    <Link href={policy.pdfUrl || '#'} className="policy-card__download-link">
+                    <Link href={policy.pdfUrl || '#'} className="policy-card__download-link" target="_blank" rel="noopener noreferrer">
                       Download PDF
                     </Link>
-                    <Link href={policy.pdfUrl || '#'} className="policy-card__download-button">
+                    <Link href={policy.pdfUrl || '#'} className="policy-card__download-button" target="_blank" rel="noopener noreferrer">
                       <Image
                         src={policy.isActive ? staticImages.downloadButton.active : staticImages.downloadButton.inactive}
                         alt="Download"

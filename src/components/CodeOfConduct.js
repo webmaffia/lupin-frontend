@@ -85,10 +85,10 @@ export default function CodeOfConduct({ data, error }) {
                 <div className="code-card__content">
                   <h3 className="code-card__title">{code.title}</h3>
                   <div className="code-card__download">
-                    <Link href={code.pdfUrl || '#'} className="code-card__download-link">
+                    <Link href={code.pdfUrl || '#'} className="code-card__download-link" target="_blank" rel="noopener noreferrer">
                       Download PDF
                     </Link>
-                    <Link href={code.pdfUrl || '#'} className="code-card__download-button">
+                    <Link href={code.pdfUrl || '#'} className="code-card__download-button" target="_blank" rel="noopener noreferrer">
                       <Image
                         src={code.isActive ? staticImages.downloadButton.active : staticImages.downloadButton.inactive}
                         alt="Download"

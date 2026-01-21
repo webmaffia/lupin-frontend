@@ -33,16 +33,16 @@ export default function BigCard({
     <div className={`big-card ${isActive ? 'big-card--active' : ''} ${className}`}>
       <div className="big-card__content">
         <div className="big-card__links">
-          <Link href={centerLink || pdfUrl} className="big-card__link">
+          <Link href={centerLink || pdfUrl} className="big-card__link" target="_blank" rel="noopener noreferrer">
             {centerText}
           </Link>
          
         </div>
         <div className="big-card__download">
-          <Link href={pdfUrl || centerLink || "#"} className="big-card__download-link">
+          <Link href={pdfUrl || centerLink || "#"} className="big-card__download-link" target="_blank" rel="noopener noreferrer">
             Download PDF
           </Link>
-          <Link href={pdfUrl || centerLink || "#"} className="big-card__download-button">
+          <Link href={pdfUrl || centerLink || "#"} className="big-card__download-button" target="_blank" rel="noopener noreferrer">
             <Image
               src={isActive ? downloadButtonActive : downloadButtonInactive}
               alt="Download"

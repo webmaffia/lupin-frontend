@@ -48,6 +48,10 @@ export default function ExchangeFilingsLinks({
               const linkText = typeof link === 'string' ? link : (link.text || link.label || '');
               const linkHref = typeof link === 'object' ? (link.href || link.url || '#') : '#';
               
+              // Check if link is a PDF (ends with .pdf or contains pdf)
+              const isPdfLink = linkHref.toLowerCase().includes('.pdf') || 
+                                (typeof link === 'object' && link.type === 'pdf');
+              
               return (
                 <Link
                   key={linkIndex}
@@ -55,6 +59,8 @@ export default function ExchangeFilingsLinks({
                   className={`exchange-filings-links__link ${
                     isFirstLink ? 'exchange-filings-links__link--first' : ''
                   }`}
+                  target={isPdfLink ? "_blank" : undefined}
+                  rel={isPdfLink ? "noopener noreferrer" : undefined}
                 >
                   <span className="exchange-filings-links__link-text">{linkText}</span>
                   <svg

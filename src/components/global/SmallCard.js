@@ -27,15 +27,15 @@ export default function SmallCard({
     <div className="small-card">
       <div className="small-card__content">
         <div className="small-card__links">
-          <Link href={pdfUrl} className="small-card__link">
+          <Link href={pdfUrl} className="small-card__link" target="_blank" rel="noopener noreferrer">
             {title}
           </Link>
         </div>
         <div className="small-card__download">
-          <Link href={pdfUrl} className="small-card__download-link">
+          <Link href={pdfUrl} className="small-card__download-link" target="_blank" rel="noopener noreferrer">
             Download PDF
           </Link>
-          <Link href={pdfUrl} className="small-card__download-button">
+          <Link href={pdfUrl} className="small-card__download-button" target="_blank" rel="noopener noreferrer">
             <Image
               src={isActive ? downloadButtonActive : downloadButtonInactive}
               alt="Download"
