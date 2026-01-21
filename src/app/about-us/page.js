@@ -6,6 +6,7 @@ import { getAboutUs, mapAboutUsTopfoldData, mapAboutUsFoldsData, mapTopBannerDat
 import '@/scss/pages/about-us.scss';
 
 // Generate metadata for the About Us page
+//test
 export const metadata = generateSEOMetadata({
   title: "About Us - Lupin | Global Pharmaceutical Leader Committed to Transforming Healthcare",
   description: "Learn about Lupin, a leading global pharmaceutical company with over five decades of experience in delivering innovative healthcare solutions. Discover our mission, values, and commitment to improving lives worldwide.",
