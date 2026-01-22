@@ -2556,3 +2556,240 @@ export function mapCommitteesData(leadersData) {
   };
 }
 
+/**
+ * Fetch investor page data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getInvestor() {
+  // Populate all nested components and media
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[CorporateGovernanceSection][populate][DesktopImage][populate]=*',
+    'populate[CorporateGovernanceSection][populate][MobileImage][populate]=*',
+    'populate[CorporateGovernanceSection][populate][Links][populate]=*',
+    'populate[ShareholderInformationSection][populate][Image][populate]=*',
+    'populate[ShareholderInformationSection][populate][ShareHolderInformation][populate][DocumentPdf][populate]=*',
+    'populate[ShareholderInformationSection][populate][ShareHolderInformation][populate][cta][populate]=*',
+    'populate[NewsSection][populate][items][populate][circleInner][populate]=*',
+    'populate[NewsSection][populate][items][populate][cta][populate]=*',
+    'populate[ReportsFilingSection][populate][FinancialHighLightCard][populate][DocumentFile][populate]=*',
+    'populate[ReportsFilingSection][populate][FinancialHighLightCard][populate][cta][populate]=*',
+    'populate[ReportsFilingSection][populate][IntegratedReport][populate][CoverImage][populate]=*',
+    'populate[ReportsFilingSection][populate][IntegratedReport][populate][ReportFile][populate]=*',
+    'populate[ReportsFilingSection][populate][NseExchangeSection][populate][PdfDocument][populate][Pdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`investor?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map investor page data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped investor data for components
+ */
+export function mapInvestorData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return {
+      introductionSection: null,
+      corporateGovernanceSection: null,
+      shareholderInformationSection: null,
+      newsSection: null,
+      reportsFilingSection: null,
+      nseExchangeSection: null
+    };
+  }
+
+  // Map IntroductionSection (Rich text - Markdown)
+  const introductionSection = data?.IntroductionSection || data?.introductionSection || null;
+
+  // Map CorporateGovernanceSection
+  const corporateGovernanceSection = data?.CorporateGovernanceSection || data?.corporateGovernanceSection;
+  let mappedCorporateGovernance = null;
+  if (corporateGovernanceSection) {
+    const desktopImage = corporateGovernanceSection?.DesktopImage?.data?.attributes || corporateGovernanceSection?.DesktopImage || corporateGovernanceSection?.desktopImage;
+    const mobileImage = corporateGovernanceSection?.MobileImage?.data?.attributes || corporateGovernanceSection?.MobileImage || corporateGovernanceSection?.mobileImage;
+    const links = Array.isArray(corporateGovernanceSection?.Links) 
+      ? corporateGovernanceSection.Links 
+      : (Array.isArray(corporateGovernanceSection?.links) ? corporateGovernanceSection.links : []);
+
+    mappedCorporateGovernance = {
+      sectionTitle: corporateGovernanceSection?.SectionTitle || corporateGovernanceSection?.sectionTitle || null,
+      desktopImage: desktopImage ? getStrapiMedia(desktopImage) : null,
+      mobileImage: mobileImage ? getStrapiMedia(mobileImage) : null,
+      links: links.map(link => ({
+        text: link?.text || link?.Text || '',
+        href: link?.href || link?.Href || '#'
+      }))
+    };
+  }
+
+  // Map ShareholderInformationSection
+  const shareholderInformationSection = data?.ShareholderInformationSection || data?.shareholderInformationSection;
+  let mappedShareholderInformation = null;
+  if (shareholderInformationSection) {
+    const centerImage = shareholderInformationSection?.Image?.data?.attributes || shareholderInformationSection?.Image || shareholderInformationSection?.image;
+    const shareholderInfo = Array.isArray(shareholderInformationSection?.ShareHolderInformation)
+      ? shareholderInformationSection.ShareHolderInformation
+      : (Array.isArray(shareholderInformationSection?.shareHolderInformation) ? shareholderInformationSection.shareHolderInformation : []);
+
+    // Filter by isActive and sort by DisplayOrder
+    const filteredInfo = shareholderInfo
+      .filter(item => item?.isActive !== false && item?.IsActive !== false)
+      .sort((a, b) => {
+        const orderA = a?.DisplayOrder || a?.displayOrder || '999';
+        const orderB = b?.DisplayOrder || b?.displayOrder || '999';
+        return orderA.localeCompare(orderB);
+      })
+      .map(item => {
+        const documentPdf = item?.DocumentPdf?.data?.attributes || item?.DocumentPdf || item?.documentPdf;
+        const cta = item?.cta || item?.Cta || {};
+        const pdfUrl = documentPdf ? getStrapiMedia(documentPdf) : null;
+        
+        return {
+          pdfTitle: item?.PdfTitle || item?.pdfTitle || '',
+          documentPdf: pdfUrl,
+          cta: {
+            text: cta?.text || cta?.Text || '',
+            href: cta?.href || cta?.Href || cta?.href || '#'
+          }
+        };
+      });
+
+    mappedShareholderInformation = {
+      sectionTitle: shareholderInformationSection?.SectionTitle || shareholderInformationSection?.sectionTitle || null,
+      image: centerImage ? getStrapiMedia(centerImage) : null,
+      shareholderInformation: filteredInfo
+    };
+  }
+
+  // Map NewsSection (but user said keep press release as is, so we might not use this)
+  const newsSection = data?.NewsSection || data?.newsSection;
+  let mappedNewsSection = null;
+  if (newsSection) {
+    const items = Array.isArray(newsSection?.items) ? newsSection.items : [];
+    mappedNewsSection = {
+      title: newsSection?.titile || newsSection?.title || null, // Note: typo in API field name "titile"
+      items: items.map(item => {
+        const circleInner = item?.circleInner?.data?.attributes || item?.circleInner || item?.CircleInner;
+        const cta = item?.cta || item?.Cta || {};
+        const imageUrl = circleInner ? getStrapiMedia(circleInner) : null;
+        
+        return {
+          date: item?.date || item?.Date || '',
+          headline: item?.headline || item?.Headline || '',
+          image: imageUrl ? {
+            url: imageUrl,
+            alt: item?.headline || item?.Headline || ''
+          } : null,
+          href: cta?.href || cta?.Href || cta?.href || '#'
+        };
+      })
+    };
+  }
+
+  // Map ReportsFilingSection
+  const reportsFilingSection = data?.ReportsFilingSection || data?.reportsFilingSection;
+  let mappedReportsFiling = null;
+  if (reportsFilingSection) {
+    const financialHighlightCard = reportsFilingSection?.FinancialHighLightCard || reportsFilingSection?.financialHighLightCard;
+    const integratedReport = reportsFilingSection?.IntegratedReport || reportsFilingSection?.integratedReport;
+    const nseExchangeSection = reportsFilingSection?.NseExchangeSection || reportsFilingSection?.nseExchangeSection;
+    
+    let mappedFinancialHighlight = null;
+    if (financialHighlightCard && financialHighlightCard?.isActive !== false && financialHighlightCard?.IsActive !== false) {
+      const documentFile = financialHighlightCard?.DocumentFile?.data?.attributes || financialHighlightCard?.DocumentFile || financialHighlightCard?.documentFile;
+      const cta = financialHighlightCard?.cta || financialHighlightCard?.Cta || {};
+      const pdfUrl = documentFile ? getStrapiMedia(documentFile) : null;
+      
+      mappedFinancialHighlight = {
+        financialYear: financialHighlightCard?.FinancialYear || financialHighlightCard?.financialYear || '',
+        grossProfit: financialHighlightCard?.GrossProfit || financialHighlightCard?.grossProfit || '',
+        grossProfitMargin: financialHighlightCard?.GrossProfitMargin || financialHighlightCard?.grossProfitMargin || '',
+        rndInvestment: financialHighlightCard?.RndInvestment || financialHighlightCard?.rndInvestment || '',
+        documentFile: pdfUrl,
+        viewAllUrl: financialHighlightCard?.ViewAllUrl || financialHighlightCard?.viewAllUrl || '#',
+        cta: {
+          text: cta?.text || cta?.Text || '',
+          href: cta?.href || cta?.Href || cta?.href || '#'
+        }
+      };
+    }
+
+    let mappedIntegratedReport = null;
+    if (integratedReport && integratedReport?.isActive !== false && integratedReport?.IsActive !== false) {
+      const coverImage = integratedReport?.CoverImage?.data?.attributes || integratedReport?.CoverImage || integratedReport?.coverImage;
+      const reportFile = integratedReport?.ReportFile?.data?.attributes || integratedReport?.ReportFile || integratedReport?.reportFile;
+      const coverImageUrl = coverImage ? getStrapiMedia(coverImage) : null;
+      const reportFileUrl = reportFile ? getStrapiMedia(reportFile) : null;
+      
+      mappedIntegratedReport = {
+        reportTitle: integratedReport?.ReportTitle || integratedReport?.reportTitle || '',
+        reportYear: integratedReport?.ReportYear || integratedReport?.reportYear || '',
+        coverImage: coverImageUrl ? {
+          url: coverImageUrl,
+          alt: integratedReport?.ReportTitle || integratedReport?.reportTitle || ''
+        } : null,
+        reportFile: reportFileUrl,
+        downloadLabel: integratedReport?.DownloadLabel || integratedReport?.downloadLabel || '',
+        viewAllLabel: integratedReport?.ViewAllLabel || integratedReport?.viewAllLabel || '',
+        viewAllUrl: integratedReport?.ViewAllUrl || integratedReport?.viewAllUrl || '#'
+      };
+    }
+
+    // Map NseExchangeSection (nested inside ReportsFilingSection)
+    let mappedNseExchange = null;
+    if (nseExchangeSection) {
+      const pdfDocuments = Array.isArray(nseExchangeSection?.PdfDocument)
+        ? nseExchangeSection.PdfDocument
+        : (Array.isArray(nseExchangeSection?.pdfDocument) ? nseExchangeSection.pdfDocument : []);
+
+      // Filter by isActive and sort by PublishedDate
+      const filteredPdfs = pdfDocuments
+        .filter(item => item?.isActive !== false && item?.IsActive !== false)
+        .sort((a, b) => {
+          const dateA = a?.PublishedDate || a?.publishedDate || '';
+          const dateB = b?.PublishedDate || b?.publishedDate || '';
+          return new Date(dateB) - new Date(dateA); // Descending order (newest first)
+        })
+        .map(item => {
+          const pdf = item?.Pdf?.data?.attributes || item?.Pdf || item?.pdf;
+          const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+          
+          return {
+            title: item?.Title || item?.title || '',
+            publishedDate: item?.PublishedDate || item?.publishedDate || null,
+            pdf: pdfUrl
+          };
+        });
+
+      mappedNseExchange = {
+        sectionTitle: nseExchangeSection?.SectionTitle || nseExchangeSection?.sectionTitle || null,
+        pdfDocuments: filteredPdfs
+      };
+    }
+
+    mappedReportsFiling = {
+      financialHighlightCard: mappedFinancialHighlight,
+      integratedReport: mappedIntegratedReport,
+      nseExchangeSection: mappedNseExchange
+    };
+  }
+
+  return {
+    introductionSection: introductionSection,
+    corporateGovernanceSection: mappedCorporateGovernance,
+    shareholderInformationSection: mappedShareholderInformation,
+    newsSection: mappedNewsSection,
+    reportsFilingSection: mappedReportsFiling
+  };
+}
+
