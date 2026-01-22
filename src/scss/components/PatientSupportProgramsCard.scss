@@ -8,14 +8,14 @@
 .patient-support-programs-card {
   position: relative;
   width: 100%;
-  padding: vw(60) vw(100);
+  padding: vw(40) vw(100);
   
   @include media('tablet') {
     padding: vw(40, 768) vw(60, 768);
   }
   
   @include media('mobile') {
-    padding: vw-mobile(30, 414) vw-mobile(20, 414);
+    padding: vw-mobile(40, 414) vw-mobile(20, 414);
   }
   
   &__container {
