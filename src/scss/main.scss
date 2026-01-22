@@ -10,8 +10,12 @@
 @import 'base/typography';
 
 // Global styles
+html,
 body {
-  background: color('background');
+  background-color: #E9FFF1;
+}
+
+body {
   color: color('text');
 }
 

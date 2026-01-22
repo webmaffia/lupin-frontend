@@ -336,15 +336,6 @@
     height: 100%;
     border-radius: 50%;
     overflow: hidden;
-    border: vw(1.397) solid #000000;
-    
-    @include media('tablet') {
-      border-width: vw(1, 768);
-    }
-    
-    @include media('mobile') {
-      border-width: vw-mobile(1, 414);
-    }
   }
   
   &__country-image {
