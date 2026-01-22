@@ -46,17 +46,44 @@ function mapPdfCard(pdfCard) {
   if (!pdfCard) return null;
 
   // Handle different field name cases: Pdf, pdf, PdfCard.pdf, etc.
+  // Check for nested structure first (data.attributes), then direct object
   const pdf = pdfCard?.Pdf?.data?.attributes 
     || pdfCard?.Pdf 
     || pdfCard?.pdf?.data?.attributes 
     || pdfCard?.pdf;
-  const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+  
+  // Extract PDF URL - handle both nested and direct structures
+  let pdfUrl = null;
+  if (pdf) {
+    if (typeof pdf === 'string') {
+      pdfUrl = getStrapiMedia(pdf);
+    } else if (pdf.url) {
+      pdfUrl = getStrapiMedia(pdf);
+    } else if (pdf.data?.attributes?.url) {
+      pdfUrl = getStrapiMedia(pdf.data.attributes);
+    }
+  }
 
   // Handle different title field cases: Title, title
   const title = pdfCard?.Title || pdfCard?.title || '';
 
+  // Generate a unique ID if not present
+  const cardId = pdfCard.id || pdfCard.documentId || pdf?.documentId || `pdf-${Math.random().toString(36).substr(2, 9)}`;
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapPdfCard - Processing card:', {
+      cardId,
+      title,
+      hasPdf: !!pdf,
+      pdfUrl,
+      pdfStructure: pdf ? Object.keys(pdf) : null,
+      isActive: pdfCard?.isActive !== undefined ? pdfCard.isActive : true
+    });
+  }
+
+  // Return card even if no PDF URL (component will handle it)
   return {
-    id: pdfCard.id || null,
+    id: cardId,
     title: title,
     pdfUrl: pdfUrl || '#',
     pdf: pdf ? {
@@ -83,11 +110,26 @@ function mapQuarterlyEarningsSection(earningsSection) {
   if (!earningsSection) return null;
 
   // PdfCard (uppercase) in QuarterlyEarningsSection
+  // Map all cards and filter out nulls (but keep cards even if they don't have IDs)
   const pdfCards = Array.isArray(earningsSection?.PdfCard)
-    ? earningsSection.PdfCard.map(mapPdfCard).filter(card => card && card.id !== null)
+    ? earningsSection.PdfCard.map(mapPdfCard).filter(card => card !== null)
     : Array.isArray(earningsSection?.pdfCard)
-    ? earningsSection.pdfCard.map(mapPdfCard).filter(card => card && card.id !== null)
+    ? earningsSection.pdfCard.map(mapPdfCard).filter(card => card !== null)
     : [];
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapQuarterlyEarningsSection - Processing section:', {
+      id: earningsSection.id,
+      quarterLabel: earningsSection?.QuarterLabel || earningsSection?.quarterLabel || '',
+      pdfCardsCount: pdfCards.length,
+      pdfCards: pdfCards.map(card => ({
+        id: card.id,
+        title: card.title,
+        pdfUrl: card.pdfUrl,
+        isActive: card.isActive
+      }))
+    });
+  }
 
   return {
     id: earningsSection.id || null,
@@ -231,13 +273,30 @@ export function mapReportFilingData(strapiData) {
     throw new Error('No data received from Strapi API. Check that the report-filing endpoint returns data.');
   }
 
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapReportFilingData - Raw data structure:', {
+      hasQuarterlyResultsSection: !!data?.QuarterlyResultsSection,
+      quarterlyResultsSectionType: Array.isArray(data?.QuarterlyResultsSection) ? 'array' : typeof data?.QuarterlyResultsSection,
+      quarterlyResultsSectionLength: Array.isArray(data?.QuarterlyResultsSection) ? data.QuarterlyResultsSection.length : 'N/A',
+      quarterlyResultsSectionKeys: data?.QuarterlyResultsSection ? Object.keys(data.QuarterlyResultsSection) : []
+    });
+  }
+
   // Map TopBanner if available
   const topBanner = mapTopBannerData(data?.TopBanner);
 
   // Map each section using new field names
-  const quarterlyResultsSections = Array.isArray(data?.QuarterlyResultsSection)
-    ? data.QuarterlyResultsSection.map(mapQuarterlyResultsSection).filter(Boolean)
-    : [];
+  // Handle both array and single object structures
+  let quarterlyResultsSections = [];
+  if (Array.isArray(data?.QuarterlyResultsSection)) {
+    quarterlyResultsSections = data.QuarterlyResultsSection.map(mapQuarterlyResultsSection).filter(Boolean);
+  } else if (data?.QuarterlyResultsSection) {
+    // Handle single object structure (if API returns single object instead of array)
+    const mapped = mapQuarterlyResultsSection(data.QuarterlyResultsSection);
+    if (mapped) {
+      quarterlyResultsSections = [mapped];
+    }
+  }
 
   const annualReportSections = Array.isArray(data?.AnnualReportSection)
     ? data.AnnualReportSection.map(mapAnnualReportSection).filter(Boolean)
@@ -256,6 +315,22 @@ export function mapReportFilingData(strapiData) {
   const otherExchangeFilingsSections = Array.isArray(data?.OtherExchangeFilingsSection)
     ? data.OtherExchangeFilingsSection.map(mapOtherExchangeFilingsSection).filter(Boolean)
     : [];
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapReportFilingData - Mapped sections:', {
+      quarterlyResultsSectionsCount: quarterlyResultsSections.length,
+      quarterlyResultsSections: quarterlyResultsSections.map(section => ({
+        id: section.id,
+        financialYear: section.financialYear,
+        earningsSectionsCount: section.earningsSections?.length || 0,
+        earningsSections: section.earningsSections?.map(e => ({
+          id: e.id,
+          quarterLabel: e.quarterLabel,
+          pdfCardsCount: e.pdfCards?.length || 0
+        })) || []
+      }))
+    });
+  }
 
   return {
     topBanner: topBanner,
@@ -454,95 +529,128 @@ export function getActiveAnnualReports(reportFilingData) {
  * @returns {Object} Formatted quarterly data for that year
  */
 function processQuarterlyDataForYear(yearData) {
-  const quarterlyItems = [];
-  const cards = [];
-  const quarterlyItemsAfterCards = [];
-  const cardsAfterQ2 = [];
+  // New structure: array of quarters, each with its own items and cards
+  const quarters = [];
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('processQuarterlyDataForYear - Input yearData:', {
+      length: yearData.length,
+      quarters: yearData.map(e => ({
+        quarterLabel: e.quarterLabel,
+        pdfCardsCount: e.pdfCards?.length || 0
+      }))
+    });
+  }
   
   if (yearData.length > 0) {
     // Process earnings sections - each section represents a quarter
-    // Sort by quarterLabel to ensure Q1 comes before Q2
+    // Sort by quarterLabel to ensure Q1 comes before Q2, Q2 before Q3, etc.
+    // Extract quarter number and sort numerically (Q1, Q2, Q3, Q4)
     const sortedEarnings = [...yearData].sort((a, b) => {
-      const aQuarter = a.quarterLabel?.match(/Q(\d+)/)?.[1] || '0';
-      const bQuarter = b.quarterLabel?.match(/Q(\d+)/)?.[1] || '0';
-      return parseInt(aQuarter) - parseInt(bQuarter);
+      const aMatch = a.quarterLabel?.match(/Q(\d+)/);
+      const bMatch = b.quarterLabel?.match(/Q(\d+)/);
+      const aQuarter = aMatch ? parseInt(aMatch[1]) : 999;
+      const bQuarter = bMatch ? parseInt(bMatch[1]) : 999;
+      return aQuarter - bQuarter; // Sort Q1, Q2, Q3, Q4 in ascending order
     });
     
-    // Process first quarter (Q1)
-    if (sortedEarnings.length > 0) {
-      const q1Earnings = sortedEarnings[0];
-      const quarterLabel = q1Earnings.quarterLabel || '';
-      
-      // Extract period from QuarterLabel (e.g., "Q1 (April-June)" -> "Q1(April-June)")
-      // or "Q2 (July– Sep)" -> "Q2(July– Sep)" - handle both en dash (–) and hyphen (-)
-      const periodMatch = quarterLabel.match(/Q\d+\s*[–-]?\s*\(([^)]+)\)/);
-      const period = periodMatch ? periodMatch[1] : '';
-      const quarterNumber = quarterLabel.match(/Q(\d+)/)?.[1] || '1';
-      
-      // Determine status from first card's isAudited field
-      const status = q1Earnings.pdfCards?.[0]?.isAudited ? 'Audited' : 'Unaudited';
-      
-      // Format period: if we have period text, use "Q1(period)", otherwise use the full quarterLabel
-      const formattedPeriod = period 
-        ? `Q${quarterNumber}(${period})` 
-        : (quarterLabel || `Q${quarterNumber}`);
-      
-      quarterlyItems.push({
-        period: formattedPeriod,
-        status: status
+    if (process.env.NODE_ENV === 'development') {
+      console.log('processQuarterlyDataForYear - Sorted earnings:', {
+        total: sortedEarnings.length,
+        quarters: sortedEarnings.map(e => ({
+          label: e.quarterLabel,
+          quarterNum: e.quarterLabel?.match(/Q(\d+)/)?.[1] || 'N/A',
+          pdfCardsCount: e.pdfCards?.length || 0
+        }))
       });
-      
-      // Add all cards from Q1
-      if (q1Earnings.pdfCards && q1Earnings.pdfCards.length > 0) {
-        cards.push(...q1Earnings.pdfCards.map(card => ({
-          id: card.id,
-          title: card.title,
-          pdfUrl: card.pdfUrl || '#',
-          isActive: card.isActive !== false
-        })));
-      }
     }
     
-    // Process second quarter (Q2)
-    if (sortedEarnings.length > 1) {
-      const q2Earnings = sortedEarnings[1];
-      const quarterLabel = q2Earnings.quarterLabel || '';
+    // Process each quarter separately
+    for (let i = 0; i < sortedEarnings.length; i++) {
+      const quarterEarnings = sortedEarnings[i];
+      // USE RAW QUARTERLABEL DIRECTLY FROM API - NO REFORMATTING
+      const quarterLabel = quarterEarnings.quarterLabel || '';
       
-      // Extract period from QuarterLabel - handle both en dash (–) and hyphen (-)
-      const periodMatch = quarterLabel.match(/Q\d+\s*[–-]?\s*\(([^)]+)\)/);
-      const period = periodMatch ? periodMatch[1] : '';
-      const quarterNumber = quarterLabel.match(/Q(\d+)/)?.[1] || '2';
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Q${i + 1} Label - Using raw from API:`, {
+          original: quarterLabel,
+          rawQuarterLabel: quarterEarnings.quarterLabel
+        });
+      }
       
       // Determine status from first card's isAudited field
-      const status = q2Earnings.pdfCards?.[0]?.isAudited ? 'Audited' : 'Unaudited';
+      const status = quarterEarnings.pdfCards?.[0]?.isAudited ? 'Audited' : 'Unaudited';
       
-      // Format period: if we have period text, use "Q2(period)", otherwise use the full quarterLabel
-      const formattedPeriod = period 
-        ? `Q${quarterNumber}(${period})` 
-        : (quarterLabel || `Q${quarterNumber}`);
+      // USE RAW QUARTERLABEL DIRECTLY - NO REFORMATTING TO PRESERVE CMS CHANGES
+      const formattedPeriod = quarterLabel || `Q${i + 1}`;
       
-      quarterlyItemsAfterCards.push({
-        period: formattedPeriod,
-        status: status
+      // Process cards for this quarter
+      const quarterCards = [];
+      if (quarterEarnings.pdfCards && quarterEarnings.pdfCards.length > 0) {
+        const activeCards = quarterEarnings.pdfCards
+          .filter(card => card && card.isActive !== false)
+          .map(card => ({
+            id: card.id,
+            title: card.title || '',
+            pdfUrl: card.pdfUrl || '#',
+            isActive: card.isActive !== false
+          }));
+        quarterCards.push(...activeCards);
+        
+        if (process.env.NODE_ENV === 'development') {
+          console.log(`Q${i + 1} cards added:`, activeCards.length);
+        }
+      }
+      
+      // Add this quarter to the quarters array
+      quarters.push({
+        items: [{
+          period: formattedPeriod,
+          status: status
+        }],
+        cards: quarterCards
       });
       
-      // Add all cards from Q2
-      if (q2Earnings.pdfCards && q2Earnings.pdfCards.length > 0) {
-        cardsAfterQ2.push(...q2Earnings.pdfCards.map(card => ({
-          id: card.id,
-          title: card.title,
-          pdfUrl: card.pdfUrl || '#',
-          isActive: card.isActive !== false
-        })));
+      if (process.env.NODE_ENV === 'development') {
+        console.log(`Q${i + 1} processed:`, {
+          quarterLabel,
+          formattedPeriod,
+          status,
+          pdfCardsCount: quarterEarnings.pdfCards?.length || 0,
+          cardsCount: quarterCards.length
+        });
       }
     }
   }
   
+  // For backward compatibility, also maintain the old structure
+  // Q1 goes to quarterlyItems and cards
+  // Q2-Q4 go to quarterlyItemsAfterCards and cardsAfterQ2
+  const quarterlyItems = quarters[0]?.items || [];
+  const cards = quarters[0]?.cards || [];
+  const quarterlyItemsAfterCards = quarters.slice(1).flatMap(q => q.items);
+  const cardsAfterQ2 = quarters.slice(1).flatMap(q => q.cards);
+  
+  if (process.env.NODE_ENV === 'development') {
+    console.log('processQuarterlyDataForYear - Final result:', {
+      quartersCount: quarters.length,
+      quarterlyItemsCount: quarterlyItems.length,
+      cardsCount: cards.length,
+      quarterlyItemsAfterCardsCount: quarterlyItemsAfterCards.length,
+      cardsAfterQ2Count: cardsAfterQ2.length,
+      quarters: quarters.map((q, idx) => ({
+        quarter: q.items[0]?.period,
+        cardsCount: q.cards.length
+      }))
+    });
+  }
+  
   return {
-    quarterlyItems,
-    cards,
-    quarterlyItemsAfterCards,
-    cardsAfterQ2
+    quarters, // New structure: array of quarters with items and cards
+    quarterlyItems, // Legacy: Q1 items
+    cards, // Legacy: Q1 cards
+    quarterlyItemsAfterCards, // Legacy: Q2-Q4 items
+    cardsAfterQ2 // Legacy: Q2-Q4 cards
   };
 }
 
@@ -557,12 +665,36 @@ export function transformQuarterlyResultsForComponent(reportFilingData) {
   const grouped = getQuarterlyResultsGrouped(reportFilingData);
   const tabs = Object.keys(grouped).sort().reverse(); // Most recent first
   
+  if (process.env.NODE_ENV === 'development') {
+    console.log('transformQuarterlyResultsForComponent - Grouped data:', {
+      years: tabs,
+      yearDataCounts: Object.keys(grouped).map(year => ({
+        year,
+        quartersCount: grouped[year]?.length || 0,
+        quarters: grouped[year]?.map(e => e.quarterLabel) || []
+      }))
+    });
+  }
+  
   // Process data for each tab/year
   const tabsData = {};
   
   tabs.forEach(year => {
     const yearData = grouped[year] || [];
     tabsData[year] = processQuarterlyDataForYear(yearData);
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`transformQuarterlyResultsForComponent - ${year} processed:`, {
+        quarterlyItemsCount: tabsData[year].quarterlyItems.length,
+        cardsCount: tabsData[year].cards.length,
+        quarterlyItemsAfterCardsCount: tabsData[year].quarterlyItemsAfterCards.length,
+        cardsAfterQ2Count: tabsData[year].cardsAfterQ2.length,
+        allQuarters: [
+          ...tabsData[year].quarterlyItems.map(i => i.period),
+          ...tabsData[year].quarterlyItemsAfterCards.map(i => i.period)
+        ]
+      });
+    }
   });
   
   // For backward compatibility, also return data for the first year
@@ -1200,12 +1332,14 @@ export async function getSubsidiary() {
   // - Subsidiaries (Repeatable Component - SubsidiaryItem) with SubsidiaryName
   // - Documents (Repeatable Component - Subsidiary-yearly-document) nested inside Subsidiaries
   //   with FinancialYear, DocumentFilePdf, isActive, DisplayOrder
+  // - PdfTitle and AnnualReturnsPdf (at SubsidiaryItem level)
   // 
   // Following the same pattern as getFinancial() which successfully handles nested components
   const populateQuery = [
     'populate[TopBanner][populate][DesktopImage][populate]=*',
     'populate[TopBanner][populate][MobileImage][populate]=*',
-    'populate[Subsidiaries][populate][Documents][populate][DocumentFilePdf][populate]=*'
+    'populate[Subsidiaries][populate][Documents][populate][DocumentFilePdf][populate]=*',
+    'populate[Subsidiaries][populate][AnnualReturnsPdf][populate]=*'
   ].join('&');
   
   return fetchAPI(`subsidiary?${populateQuery}`, {
@@ -1264,11 +1398,19 @@ export function mapSubsidiaryData(strapiData) {
     // Get Documents from subsidiary item (nested inside each SubsidiaryItem)
     const documentsArray = subsidiaryItem?.Documents || subsidiaryItem?.documents || [];
     
+    // Get PdfTitle and AnnualReturnsPdf from subsidiary item (at SubsidiaryItem level)
+    const pdfTitle = subsidiaryItem?.PdfTitle || subsidiaryItem?.pdfTitle || 'Annual Returns';
+    const annualReturnsPdf = subsidiaryItem?.AnnualReturnsPdf?.data?.attributes || subsidiaryItem?.AnnualReturnsPdf || subsidiaryItem?.annualReturnsPdf?.data?.attributes || subsidiaryItem?.annualReturnsPdf;
+    const annualReturnsPdfUrl = annualReturnsPdf ? getStrapiMedia(annualReturnsPdf) : null;
+    
     if (process.env.NODE_ENV === 'development' && index === 0) {
       console.log('mapSubsidiaryData - First subsidiary mapping:', {
         name: subsidiaryName,
         documentsCount: documentsArray.length,
-        firstDocument: documentsArray[0]
+        firstDocument: documentsArray[0],
+        pdfTitle: pdfTitle,
+        hasAnnualReturnsPdf: !!annualReturnsPdf,
+        annualReturnsPdfUrl: annualReturnsPdfUrl
       });
     }
     
@@ -1298,7 +1440,11 @@ export function mapSubsidiaryData(strapiData) {
     return {
       id: subsidiaryItem?.id || index + 1,
       name: subsidiaryName,
-      years: years
+      years: years,
+      annualReturns: annualReturnsPdfUrl ? {
+        title: pdfTitle,
+        url: annualReturnsPdfUrl
+      } : null
     };
   }).filter(subsidiary => subsidiary.name); // Only include subsidiaries with name (years can be empty)
 
@@ -1388,6 +1534,9 @@ export async function getInvestorRegulationDisclosure() {
   // Populate all nested components and media
   // Following the structure:
   // - TopBanner with DesktopImage and MobileImage
+  // - DisclosureIntroSection (Component - DisclouserIntroData) with:
+  //   - SectionTitle (Text)
+  //   - Description (Rich text - Markdown)
   // - RegulationDisclosureSection (Repeatable Component - RegulationDisclosureItem) with:
   //   - Particular (Rich text)
   //   - Documents (Repeatable Component - DisclosureDocumentLink) with Label, DocumentFile, Url, isActive
@@ -1395,6 +1544,7 @@ export async function getInvestorRegulationDisclosure() {
   const populateQuery = [
     'populate[TopBanner][populate][DesktopImage][populate]=*',
     'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[DisclosureIntroSection][populate]=*',
     'populate[RegulationDisclosureSection][populate][Documents][populate][DocumentFile][populate]=*'
   ].join('&');
   
@@ -1416,7 +1566,34 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
   // If no data, return empty array
   if (!data) {
     return {
-      items: []
+      items: [],
+      introSection: null
+    };
+  }
+
+  // Map DisclosureIntroSection (Component - DisclouserIntroData)
+  const introSection = data?.DisclosureIntroSection || data?.disclosureIntroSection;
+  let introData = null;
+  
+  if (introSection) {
+    const sectionTitle = introSection?.SectionTitle || introSection?.sectionTitle || '';
+    const description = introSection?.Description || introSection?.description || '';
+    
+    // Handle rich text (Markdown) for description
+    let descriptionText = description;
+    if (typeof description === 'object' && description !== null) {
+      if (description.markdown) {
+        descriptionText = description.markdown;
+      } else if (description.data?.markdown) {
+        descriptionText = description.data.markdown;
+      } else {
+        descriptionText = String(description);
+      }
+    }
+    
+    introData = {
+      sectionTitle: sectionTitle,
+      description: descriptionText
     };
   }
 
@@ -1424,7 +1601,7 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
   const sectionsArray = data?.RegulationDisclosureSection || data?.regulationDisclosureSection || [];
 
   // Map sections to items
-  // One row per section (Particular), using the first active document's URL or DocumentFile
+  // One row per section (Particular), with multiple documents/links
   let itemNumber = 1;
   const items = [];
 
@@ -1438,40 +1615,57 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
         return; // Skip sections without particular text
       }
 
-      // Find the first active document
+      // Get all active documents for this particular
       const activeDocuments = documentsArray.filter(doc => doc?.isActive !== false);
-      let url = '#';
-      let label = null;
+      const documents = [];
 
-      if (activeDocuments.length > 0) {
-        // Use the first active document
-        const firstDoc = activeDocuments[0];
-        
-        // Get Label if available
-        label = firstDoc?.Label || firstDoc?.label || null;
+      activeDocuments.forEach((doc) => {
+        let url = '#';
+        const label = doc?.Label || doc?.label || 'Click here to visit';
         
         // Priority: Url first, then DocumentFile
-        if (firstDoc?.Url || firstDoc?.url) {
-          url = firstDoc?.Url || firstDoc?.url;
-        } else if (firstDoc?.DocumentFile) {
+        if (doc?.Url || doc?.url) {
+          url = doc?.Url || doc?.url || '#';
+        } else if (doc?.DocumentFile) {
           // Extract DocumentFile URL
-          const documentFile = firstDoc?.DocumentFile?.data?.attributes || firstDoc?.DocumentFile || firstDoc?.documentFile?.data?.attributes || firstDoc?.documentFile;
+          const documentFile = doc?.DocumentFile?.data?.attributes || doc?.DocumentFile || doc?.documentFile?.data?.attributes || doc?.documentFile;
           url = documentFile ? getStrapiMedia(documentFile) : '#';
         }
-      }
 
+        // Add all documents - handle "NA" cases and valid links
+        documents.push({
+          id: doc?.id || null,
+          label: label,
+          url: url || '#'
+        });
+      });
+
+      // Handle rich text (Markdown) - if it's an object with markdown property, extract it
+      let particularsText = particular;
+      if (typeof particular === 'object' && particular !== null) {
+        if (particular.markdown) {
+          particularsText = particular.markdown;
+        } else if (particular.data?.markdown) {
+          particularsText = particular.data.markdown;
+        } else {
+          // Fallback: try to stringify or use empty string
+          particularsText = String(particular);
+        }
+      }
+      
+      // Add item - if no documents, add a default "NA" document
       items.push({
         id: section?.id || itemNumber,
         number: String(itemNumber),
-        particulars: particular,
-        url: url,
-        label: label // Store label for potential future use
+        particulars: particularsText,
+        documents: documents.length > 0 ? documents : [{ label: 'NA', url: '#' }] // Default to NA if no documents
       });
       itemNumber++;
     });
 
   return {
-    items: items
+    items: items,
+    introSection: introData
   };
 }
 
@@ -1716,52 +1910,46 @@ export function mapNoticeData(strapiData) {
       const financialLabel = section?.FinancialLabel || section?.financialLabel || '';
       const documentsArray = section?.Documents || section?.documents || [];
 
-      // Find English and Marathi documents
-      let englishDoc = null;
-      let marathiDoc = null;
-      let defaultDoc = null;
-
-      documentsArray.forEach((doc) => {
-        const languageLabel = (doc?.LanguageLabel || doc?.languageLabel || '').toLowerCase();
-        
-        // Check if it's the default document
-        if (doc?.isDefault === true) {
-          defaultDoc = doc;
-        }
-        
-        // Find by language label
-        if (languageLabel.includes('english') || languageLabel.includes('en')) {
-          englishDoc = doc;
-        } else if (languageLabel.includes('marathi') || languageLabel.includes('mr')) {
-          marathiDoc = doc;
-        }
-      });
-
-      // Use default doc if no language-specific doc found
-      if (!englishDoc && defaultDoc) {
-        englishDoc = defaultDoc;
-      }
-      if (!marathiDoc && defaultDoc && documentsArray.length > 1) {
-        // Only use default for marathi if there are multiple documents
-        marathiDoc = documentsArray.find(d => d !== englishDoc) || defaultDoc;
-      }
-
-      // Get document URLs
+      // Get document URLs helper
       const getDocumentUrl = (doc) => {
         if (!doc) return '#';
         const documentFile = doc?.DocumentFile?.data?.attributes || doc?.DocumentFile || doc?.documentFile?.data?.attributes || doc?.documentFile;
         return documentFile ? getStrapiMedia(documentFile) : '#';
       };
 
-      const englishUrl = getDocumentUrl(englishDoc);
-      const marathiUrl = getDocumentUrl(marathiDoc);
-      const pdfUrl = englishUrl !== '#' ? englishUrl : (defaultDoc ? getDocumentUrl(defaultDoc) : '#');
+      // Map all documents with their LanguageLabel
+      const documents = documentsArray
+        .filter(doc => doc && getDocumentUrl(doc) !== '#') // Only include documents with valid URLs
+        .map((doc) => {
+          const languageLabel = doc?.LanguageLabel || doc?.languageLabel || '';
+          const documentUrl = getDocumentUrl(doc);
+          const displayOrder = doc?.DisplayOrder || doc?.displayOrder || '999';
+          const isDefault = doc?.isDefault === true;
+
+          return {
+            id: doc?.id || null,
+            languageLabel: languageLabel,
+            url: documentUrl,
+            displayOrder: displayOrder,
+            isDefault: isDefault
+          };
+        })
+        .sort((a, b) => {
+          // Sort by DisplayOrder, with default documents first
+          if (a.isDefault && !b.isDefault) return -1;
+          if (!a.isDefault && b.isDefault) return 1;
+          return a.displayOrder.localeCompare(b.displayOrder);
+        });
+
+      // Get primary PDF URL (first document or default)
+      const defaultDoc = documentsArray.find(doc => doc?.isDefault === true);
+      const primaryDoc = documents.find(doc => doc.isDefault) || documents[0];
+      const pdfUrl = primaryDoc?.url || (defaultDoc ? getDocumentUrl(defaultDoc) : '#');
 
       return {
         id: section?.id || index + 1,
         financialLabel: financialLabel,
-        englishLink: englishUrl,
-        marathiLink: marathiUrl,
+        documents: documents, // All documents with LanguageLabel
         pdfUrl: pdfUrl,
         isActive: section?.isActive !== false && pdfUrl !== '#',
         displayOrder: section?.DisplayOrder || section?.displayOrder || String(index + 1)

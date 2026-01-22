@@ -41,6 +41,28 @@ export default function EmployeeStockOptionSchemes({ data, error = null }) {
     );
   }
 
+  // Helper function to extract year and remaining text from title
+  const parseTitle = (title) => {
+    if (!title || typeof title !== 'string') {
+      return { year: '', text: '' };
+    }
+    
+    // Match 4-digit year at the beginning of the string
+    const yearMatch = title.match(/^(\d{4})\s*(.*)$/);
+    if (yearMatch) {
+      return {
+        year: yearMatch[1], // The year (e.g., "2024", "2014")
+        text: yearMatch[2].trim() // The remaining text after the year
+      };
+    }
+    
+    // If no year found at the beginning, return the whole title as text
+    return {
+      year: '',
+      text: title
+    };
+  };
+
   const schemesData = {
     schemes: data.schemes,
     images: {
@@ -60,13 +82,17 @@ export default function EmployeeStockOptionSchemes({ data, error = null }) {
         <div className="policies__content">
           {/* Scheme Cards Grid */}
           <div className="policies__grid">
-            {schemesData.schemes.map((scheme) => (
-              <div
-                key={scheme.id}
-                className={`policy-card`}
-              >
-                <div className="policy-card__content">
-                  <h3 className="policy-card__title">{scheme.title}</h3>
+            {schemesData.schemes.map((scheme) => {
+              const { year, text } = parseTitle(scheme.title);
+              
+              return (
+                <div
+                  key={scheme.id}
+                  className={`policy-card`}
+                >
+                  <div className="policy-card__content">
+                    {year && <h3 className="policy-card__title">{year}</h3>}
+                    {text && <span className="Stocksubheading">{text}</span>}
                   <div className="policy-card__download">
                     <Link href={scheme.pdfUrl} className="policy-card__download-link" target="_blank" rel="noopener noreferrer">
                       Download PDF
@@ -84,7 +110,8 @@ export default function EmployeeStockOptionSchemes({ data, error = null }) {
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Decorative Group Image */}

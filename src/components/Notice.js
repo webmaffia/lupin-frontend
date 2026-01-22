@@ -66,18 +66,32 @@ export default function Notice({ data, error = null }) {
               >
                 <div className="notice-card__content">
                   <div className="notice-card__links">
-                    <Link href={notice.englishLink || notice.pdfUrl || "#"} className="notice-card__link" target="_blank" rel="noopener noreferrer">
-                      {notice.financialLabel ? `${notice.financialLabel} - English` : 'English'}
-                    </Link>
-                    <Link href={notice.marathiLink || "#"} className="notice-card__link" target="_blank" rel="noopener noreferrer">
-                      {notice.financialLabel ? `${notice.financialLabel} - Marathi` : 'Marathi'}
-                    </Link>
+                    {notice.documents && notice.documents.length > 0 ? (
+                      notice.documents.map((doc, docIndex) => (
+                        <Link 
+                          key={doc.id || docIndex} 
+                          href={doc.url || "#"} 
+                          className="notice-card__link" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          {notice.financialLabel && doc.languageLabel 
+                            ? `${notice.financialLabel} - ${doc.languageLabel}` 
+                            : doc.languageLabel || (notice.financialLabel || 'Document')}
+                        </Link>
+                      ))
+                    ) : (
+                      // Fallback if no documents (shouldn't happen if data is correct)
+                      <Link href={notice.pdfUrl || "#"} className="notice-card__link" target="_blank" rel="noopener noreferrer">
+                        {notice.financialLabel || 'Document'}
+                      </Link>
+                    )}
                   </div>
                   <div className="notice-card__download">
-                    <Link href={notice.pdfUrl || notice.englishLink || "#"} className="notice-card__download-link" target="_blank" rel="noopener noreferrer">
-                      Download PDF
+                    <Link href={notice.pdfUrl || "#"} className="notice-card__download-link" target="_blank" rel="noopener noreferrer">
+                      
                     </Link>
-                    <Link href={notice.pdfUrl || notice.englishLink || "#"} className="notice-card__download-button" target="_blank" rel="noopener noreferrer">
+                    <Link href={notice.pdfUrl || "#"} className="notice-card__download-button" target="_blank" rel="noopener noreferrer">
                       <Image
                         src={notice.isActive ? noticeData.images.downloadButton.active : noticeData.images.downloadButton.inactive}
                         alt="Download"

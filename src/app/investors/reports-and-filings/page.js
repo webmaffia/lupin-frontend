@@ -100,14 +100,26 @@ export default async function ReportsAndFilingsPage() {
     // Will use default data from component
   }
 
-  // Use transformed data from API or empty defaults
+  // Use transformed data from API ONLY - NO FALLBACK DATA
   const quarterlyTabs = quarterlyData?.tabs || [];
   const quarterlyTabsData = quarterlyData?.tabsData || {};
-  // Legacy props for backward compatibility (used if tabsData is empty)
+  // Legacy props - ONLY USE IF API DATA EXISTS, OTHERWISE EMPTY ARRAYS
   const quarterlyItems = quarterlyData?.quarterlyItems || [];
   const quarterlyCardsQ1 = quarterlyData?.cards || [];
   const quarterlyItemsAfterCards = quarterlyData?.quarterlyItemsAfterCards || [];
   const quarterlyCardsQ2 = quarterlyData?.cardsAfterQ2 || [];
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('ReportsAndFilingsPage - Quarterly data:', {
+      tabs: quarterlyTabs,
+      tabsDataKeys: Object.keys(quarterlyTabsData),
+      quarterlyItemsCount: quarterlyItems.length,
+      quarterlyCardsQ1Count: quarterlyCardsQ1.length,
+      quarterlyItemsAfterCardsCount: quarterlyItemsAfterCards.length,
+      quarterlyCardsQ2Count: quarterlyCardsQ2.length,
+      firstTabData: quarterlyTabsData[quarterlyTabs[0]] || null
+    });
+  }
 
   const integratedReportTabs = annualReportData?.tabs || [];
   const integratedReportTabsData = annualReportData?.tabsData || {};

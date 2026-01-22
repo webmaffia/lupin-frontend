@@ -34,16 +34,30 @@ export default function QuarterlyResultsWithTabs({
     setActiveTabValue(tab.value);
   };
 
-  // Get data for the active tab
+  // Get data for the active tab - USE ONLY API DATA, NO FALLBACK
   const activeTabData = tabsData[activeTabValue];
   
-  // Use tabsData if available, otherwise fall back to legacy props (for first tab)
+  // Use tabsData if available - NO FALLBACK TO LEGACY PROPS
+  // If no activeTabData, use empty arrays to ensure no static data is shown
   const displayData = activeTabData || {
-    quarterlyItems: quarterlyItems,
-    cards: cards,
-    quarterlyItemsAfterCards: quarterlyItemsAfterCards,
-    cardsAfterQ2: cardsAfterQ2
+    quarterlyItems: [],
+    cards: [],
+    quarterlyItemsAfterCards: [],
+    cardsAfterQ2: []
   };
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('QuarterlyResultsWithTabs - Display data:', {
+      activeTabValue,
+      hasActiveTabData: !!activeTabData,
+      quarterlyItemsCount: displayData.quarterlyItems?.length || 0,
+      cardsCount: displayData.cards?.length || 0,
+      quarterlyItemsAfterCardsCount: displayData.quarterlyItemsAfterCards?.length || 0,
+      cardsAfterQ2Count: displayData.cardsAfterQ2?.length || 0,
+      quarterlyItems: displayData.quarterlyItems,
+      quarterlyItemsAfterCards: displayData.quarterlyItemsAfterCards
+    });
+  }
 
   // Show quarterly results list for the active tab
   const shouldShowQuarterlyResults = activeTabValue && tabs.includes(activeTabValue);
@@ -62,50 +76,96 @@ export default function QuarterlyResultsWithTabs({
       
       {shouldShowQuarterlyResults && (
         <>
-          {/* First Quarterly Results List (Q1) */}
-          {displayData.quarterlyItems && displayData.quarterlyItems.length > 0 && (
-            <QuarterlyResultsList items={displayData.quarterlyItems} />
-          )}
-          
-          {/* Small Cards Section for Q1 */}
-          {displayData.cards && displayData.cards.length > 0 && (
-            <section className="quarterly-results-cards">
-              <div className="quarterly-results-cards__container">
-                <div className="quarterly-results-cards__grid">
-                  {displayData.cards.map((card, index) => (
-                    <SmallCard
-                      key={card.id || index}
-                      title={card.title}
-                      pdfUrl={card.pdfUrl || '#'}
-                      isActive={card.isActive || false}
-                    />
-                  ))}
-                </div>
+          {/* Use new quarters structure if available, otherwise fall back to legacy */}
+          {displayData.quarters && displayData.quarters.length > 0 ? (
+            // New structure: Loop through each quarter separately
+            displayData.quarters.map((quarter, quarterIndex) => (
+              <div key={quarterIndex}>
+                {/* Quarterly Results List for this quarter */}
+                {quarter.items && quarter.items.length > 0 && (
+                  <QuarterlyResultsList items={quarter.items} />
+                )}
+                
+                {/* Small Cards Section for this quarter */}
+                {quarter.cards && quarter.cards.length > 0 && (
+                  <section className="quarterly-results-cards">
+                    <div className="quarterly-results-cards__container">
+                      <div className="quarterly-results-cards__grid">
+                        {quarter.cards.map((card, index) => {
+                          if (process.env.NODE_ENV === 'development') {
+                            console.log(`QuarterlyResultsWithTabs - Rendering Q${quarterIndex + 1} card:`, {
+                              quarterIndex,
+                              index,
+                              id: card.id,
+                              title: card.title,
+                              pdfUrl: card.pdfUrl,
+                              isActive: card.isActive
+                            });
+                          }
+                          return (
+                            <SmallCard
+                              key={card.id || `${quarterIndex}-${index}`}
+                              title={card.title}
+                              pdfUrl={card.pdfUrl || '#'}
+                              isActive={card.isActive || false}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </section>
+                )}
               </div>
-            </section>
-          )}
+            ))
+          ) : (
+            // Legacy structure: Q1 separate, Q2-Q4 grouped
+            <>
+              {/* First Quarterly Results List (Q1) */}
+              {displayData.quarterlyItems && displayData.quarterlyItems.length > 0 && (
+                <QuarterlyResultsList items={displayData.quarterlyItems} />
+              )}
+              
+              {/* Small Cards Section for Q1 */}
+              {displayData.cards && displayData.cards.length > 0 && (
+                <section className="quarterly-results-cards">
+                  <div className="quarterly-results-cards__container">
+                    <div className="quarterly-results-cards__grid">
+                      {displayData.cards.map((card, index) => (
+                        <SmallCard
+                          key={card.id || index}
+                          title={card.title}
+                          pdfUrl={card.pdfUrl || '#'}
+                          isActive={card.isActive || false}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
 
-          {/* Second Quarterly Results List (Q2) - After Cards */}
-          {displayData.quarterlyItemsAfterCards && displayData.quarterlyItemsAfterCards.length > 0 && (
-            <QuarterlyResultsList items={displayData.quarterlyItemsAfterCards} />
-          )}
+              {/* Second Quarterly Results List (Q2-Q4) - After Cards */}
+              {displayData.quarterlyItemsAfterCards && displayData.quarterlyItemsAfterCards.length > 0 && (
+                <QuarterlyResultsList items={displayData.quarterlyItemsAfterCards} />
+              )}
 
-          {/* Small Cards Section for Q2 */}
-          {displayData.cardsAfterQ2 && displayData.cardsAfterQ2.length > 0 && (
-            <section className="quarterly-results-cards">
-              <div className="quarterly-results-cards__container">
-                <div className="quarterly-results-cards__grid">
-                  {displayData.cardsAfterQ2.map((card, index) => (
-                    <SmallCard
-                      key={card.id || index}
-                      title={card.title}
-                      pdfUrl={card.pdfUrl || '#'}
-                      isActive={card.isActive || false}
-                    />
-                  ))}
-                </div>
-              </div>
-            </section>
+              {/* Small Cards Section for Q2-Q4 */}
+              {displayData.cardsAfterQ2 && displayData.cardsAfterQ2.length > 0 && (
+                <section className="quarterly-results-cards">
+                  <div className="quarterly-results-cards__container">
+                    <div className="quarterly-results-cards__grid">
+                      {displayData.cardsAfterQ2.map((card, index) => (
+                        <SmallCard
+                          key={card.id || index}
+                          title={card.title}
+                          pdfUrl={card.pdfUrl || '#'}
+                          isActive={card.isActive || false}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              )}
+            </>
           )}
         </>
       )}
