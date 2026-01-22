@@ -3,8 +3,8 @@
 import '../scss/components/Policies.scss';
 
 export default function IEPFTable({ data }) {
-  // Default data (will be replaced by Strapi)
-  const tableData = data || {
+  // Always use fallback/backup data (static data)
+  const tableData = {
     paragraph: "The following unpaid dividend payment of the Company have already been transferred to the Investor Education & Protection Fund (IEPF) as under :-",
     table: {
       headers: [

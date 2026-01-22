@@ -1990,6 +1990,7 @@ export async function getOtherStatutoryInformation() {
     'populate[ExtraordinaryGeneralMeetingSection][populate][Documents][populate][Pdf][populate]=*',
     'populate[EvotingSection][populate][Documents][populate][Pdf][populate]=*',
     'populate[EvotingSection][populate][PdfCard][populate][Pdf][populate]=*',
+    'populate[EvotingSection][populate][PdfSection][populate][Pdf][populate]=*',
     'populate[KycUpdateSection][populate][Documents][populate][Pdf][populate]=*'
   ].join('&');
   
@@ -2110,26 +2111,70 @@ export function mapOtherStatutoryInformationData(strapiData) {
   const noticeSection = data?.NoticeSection || data?.noticeSection || '';
 
   // Map PdfSection (Repeatable Component - PdfCard)
-  // Try multiple field name variations as Strapi field names can vary
-  const pdfSectionArray = data?.PdfSection 
+  // PdfSection is nested under EvotingSection, not at top level
+  const evotingSectionForPdf = data?.EvotingSection || data?.evotingSection;
+  const pdfSectionArray = evotingSectionForPdf?.PdfSection 
+    || evotingSectionForPdf?.pdfSection 
+    || evotingSectionForPdf?.PdfSections
+    || evotingSectionForPdf?.pdfSections
+    || data?.PdfSection 
     || data?.pdfSection 
     || data?.PdfSections
     || data?.pdfSections
     || [];
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapOtherStatutoryInformationData - PdfSection raw data:', {
+      hasEvotingSection: !!evotingSectionForPdf,
+      hasPdfSectionInEvoting: !!evotingSectionForPdf?.PdfSection,
+      hasPdfSectionTopLevel: !!data?.PdfSection,
+      pdfSectionArrayLength: pdfSectionArray.length,
+      firstPdfItem: pdfSectionArray[0]
+    });
+  }
+
   const mappedPdfSection = pdfSectionArray
-    .filter(pdf => pdf?.isActive !== false)
+    .filter(pdf => pdf && pdf?.isActive !== false)
     .map((pdf, index) => {
-      const pdfFile = pdf?.Pdf?.data?.attributes || pdf?.Pdf || pdf?.pdf?.data?.attributes || pdf?.pdf;
+      // Try multiple ways to get the PDF file
+      const pdfFile = pdf?.Pdf?.data?.attributes 
+        || pdf?.Pdf?.data 
+        || pdf?.Pdf 
+        || pdf?.pdf?.data?.attributes 
+        || pdf?.pdf?.data 
+        || pdf?.pdf
+        || null;
+      
       const pdfUrl = pdfFile ? getStrapiMedia(pdfFile) : '#';
+      const title = pdf?.Title || pdf?.title || '';
+      
+      if (process.env.NODE_ENV === 'development' && index === 0) {
+        console.log('mapOtherStatutoryInformationData - Mapping first PDF:', {
+          id: pdf?.id,
+          title: title,
+          hasPdfFile: !!pdfFile,
+          pdfFileStructure: pdf?.Pdf ? Object.keys(pdf.Pdf) : 'no Pdf field',
+          pdfUrl: pdfUrl,
+          isActive: pdf?.isActive,
+          rawPdf: pdf?.Pdf
+        });
+      }
       
       return {
         id: pdf?.id || index + 1,
-        title: pdf?.Title || pdf?.title || '',
+        title: title,
         pdfUrl: pdfUrl,
         isActive: pdf?.isActive !== false && pdfUrl !== '#'
       };
     })
-    .filter(pdf => pdf.title);
+    .filter(pdf => pdf.title && pdf.pdfUrl !== '#'); // Only filter out items without title or valid PDF URL
+
+  if (process.env.NODE_ENV === 'development') {
+    console.log('mapOtherStatutoryInformationData - Mapped PdfSection:', {
+      mappedCount: mappedPdfSection.length,
+      mappedItems: mappedPdfSection
+    });
+  }
 
   // Map KycUpdateSection (Repeatable Component)
   const kycSectionArray = data?.KycUpdateSection || data?.kycUpdateSection || [];

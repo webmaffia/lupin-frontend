@@ -3,8 +3,8 @@
 import '../scss/components/Policies.scss';
 
 export default function VotingTable({ data }) {
-  // Default data (will be replaced by Strapi)
-  const tableData = data || {
+  // Always use fallback/backup data (static data)
+  const tableData = {
     paragraph: "Based on the consolidated results of e-voting and Ballot, the Resolution as set out in the Notice of Extraordinary General Meeting has been approved by the Shareholders with requisite majority.",
     table: {
       headers: [
