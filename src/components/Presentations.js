@@ -91,7 +91,7 @@ export default function Presentations({ data, error = null }) {
           </div>
 
           {/* Decorative Group Image */}
-          <div className="policies__decorative">
+          {/* <div className="policies__decorative">
             <Image
               src={presentationsData.images.decorativeGroup}
               alt=""
@@ -100,7 +100,7 @@ export default function Presentations({ data, error = null }) {
               className="policies__decorative-img"
               quality={100}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </section>

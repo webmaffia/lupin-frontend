@@ -2235,7 +2235,7 @@ export async function getNewsAndEvent() {
     'populate[TopBanner][populate][DesktopImage][populate]=*',
     'populate[TopBanner][populate][MobileImage][populate]=*',
     'populate[AnnualGeneralMeetingSection][populate][VideoFile][populate]=*',
-    'populate[AnnualGeneralMeetingSection][populate][VideoUrl][populate]=*',
+    'populate[AnnualGeneralMeetingSection][populate][PosterImage][populate]=*',
     'populate[AnnualGeneralMeetingSection][populate][Pdf][populate]=*',
     'populate[EventSection][populate]=*',
     'populate[PresentationSection][populate][Pdf][populate]=*'
@@ -2270,21 +2270,21 @@ export function mapNewsAndEventData(strapiData) {
   const mappedMeetingVideos = agmSectionsArray
     .filter(section => section?.isActive !== false)
     .map((section, index) => {
-      // Get video URL - VideoUrl might be Media or Text field, VideoFile is Media
+      // Get video URL - VideoFile is Media, VideoUrl might be Text field (if exists)
       let videoUrlString = '';
       
-      // Try VideoUrl as text first (URL string)
-      if (typeof section?.VideoUrl === 'string') {
+      // Try VideoUrl as text first (URL string) if it exists
+      if (section?.VideoUrl && typeof section.VideoUrl === 'string' && section.VideoUrl.trim() !== '') {
         videoUrlString = section.VideoUrl;
       } else {
-        // Try VideoUrl as Media
-        const videoUrlMedia = section?.VideoUrl?.data?.attributes || section?.VideoUrl || section?.videoUrl?.data?.attributes || section?.videoUrl;
-        if (videoUrlMedia && videoUrlMedia.url) {
-          videoUrlString = getStrapiMedia(videoUrlMedia);
-        } else {
-          // Fallback to VideoFile (Media)
-          const videoFile = section?.VideoFile?.data?.attributes || section?.VideoFile || section?.videoFile?.data?.attributes || section?.videoFile;
-          videoUrlString = videoFile ? getStrapiMedia(videoFile) : '';
+        // Use VideoFile (Media) as primary source
+        const videoFile = section?.VideoFile?.data?.attributes || section?.VideoFile || section?.videoFile?.data?.attributes || section?.videoFile;
+        if (videoFile) {
+          videoUrlString = getStrapiMedia(videoFile);
+          // Ensure videoUrlString is a valid string
+          if (!videoUrlString || typeof videoUrlString !== 'string' || videoUrlString.trim() === '') {
+            videoUrlString = '';
+          }
         }
       }
       
@@ -2300,11 +2300,32 @@ export function mapNewsAndEventData(strapiData) {
         day: 'numeric' 
       }) : '';
 
-      // Get thumbnail from video file if available
-      const videoFile = section?.VideoFile?.data?.attributes || section?.VideoFile || section?.videoFile?.data?.attributes || section?.videoFile;
-      const thumbnail = videoFile?.formats?.thumbnail?.url 
-        ? getStrapiMedia(videoFile.formats.thumbnail) 
-        : (videoFile?.url ? getStrapiMedia(videoFile) : null);
+      // Get thumbnail - prioritize PosterImage, then fallback to video file thumbnail
+      let thumbnail = null;
+      const posterImage = section?.PosterImage?.data?.attributes || section?.PosterImage || section?.posterImage?.data?.attributes || section?.posterImage;
+      if (posterImage && (posterImage.url || typeof posterImage === 'string')) {
+        thumbnail = getStrapiMedia(posterImage);
+        // Ensure thumbnail is a valid string
+        if (!thumbnail || typeof thumbnail !== 'string' || thumbnail.trim() === '') {
+          thumbnail = null;
+        }
+      }
+      
+      // Fallback to video file thumbnail if PosterImage not available or invalid
+      if (!thumbnail) {
+        const videoFile = section?.VideoFile?.data?.attributes || section?.VideoFile || section?.videoFile?.data?.attributes || section?.videoFile;
+        if (videoFile) {
+          if (videoFile.formats?.thumbnail?.url) {
+            thumbnail = getStrapiMedia(videoFile.formats.thumbnail);
+          } else if (videoFile.url) {
+            thumbnail = getStrapiMedia(videoFile);
+          }
+          // Ensure thumbnail is a valid string
+          if (!thumbnail || typeof thumbnail !== 'string' || thumbnail.trim() === '') {
+            thumbnail = null;
+          }
+        }
+      }
 
       return {
         id: section?.id || index + 1,
@@ -2335,15 +2356,29 @@ export function mapNewsAndEventData(strapiData) {
   // Map EventSection (Repeatable Component - EventCard) -> Events
   const eventsArray = data?.EventSection || data?.eventSection || [];
   const mappedEvents = eventsArray
-    .filter(event => event?.isActive !== false)
+    .filter(event => {
+      // Filter out inactive events, but allow events without isActive field
+      if (event?.isActive === false) return false;
+      // Ensure event has a title
+      const eventTitle = event?.EventTitle || event?.eventTitle || '';
+      return eventTitle && eventTitle.trim() !== '';
+    })
     .map((event, index) => {
       // Format event date
       const eventDate = event?.Eventdate || event?.eventdate || event?.EventDate || event?.eventDate || '';
-      const formattedDate = eventDate ? new Date(eventDate).toLocaleDateString('en-US', { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric' 
-      }) : '';
+      let formattedDate = '';
+      if (eventDate) {
+        try {
+          formattedDate = new Date(eventDate).toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        } catch (e) {
+          console.warn('Invalid event date format:', eventDate);
+          formattedDate = '';
+        }
+      }
 
       // Alternate variant (dark/light) based on index
       const variant = index % 2 === 0 ? 'dark' : 'light';
@@ -2357,7 +2392,6 @@ export function mapNewsAndEventData(strapiData) {
         displayOrder: event?.DisplayOrder || event?.displayOrder || String(index + 1)
       };
     })
-    .filter(event => event.title)
     .sort((a, b) => {
       // Sort by DisplayOrder if available
       const orderA = a.displayOrder || '999';
@@ -2373,10 +2407,23 @@ export function mapNewsAndEventData(strapiData) {
   // Map PresentationSection (Repeatable Component - PdfCard) -> Presentations
   const presentationsArray = data?.PresentationSection || data?.presentationSection || [];
   const mappedPresentations = presentationsArray
-    .filter(presentation => presentation?.isActive !== false)
+    .filter(presentation => {
+      // Filter out inactive presentations, but allow presentations without isActive field
+      if (presentation?.isActive === false) return false;
+      // Ensure presentation has a title
+      const presentationTitle = presentation?.Title || presentation?.title || '';
+      return presentationTitle && presentationTitle.trim() !== '';
+    })
     .map((presentation, index) => {
       const pdf = presentation?.Pdf?.data?.attributes || presentation?.Pdf || presentation?.pdf?.data?.attributes || presentation?.pdf;
-      const pdfUrl = pdf ? getStrapiMedia(pdf) : '#';
+      let pdfUrl = '#';
+      if (pdf) {
+        pdfUrl = getStrapiMedia(pdf);
+        // Ensure pdfUrl is a valid string
+        if (!pdfUrl || typeof pdfUrl !== 'string' || pdfUrl.trim() === '') {
+          pdfUrl = '#';
+        }
+      }
 
       return {
         id: presentation?.id || index + 1,
@@ -2384,8 +2431,7 @@ export function mapNewsAndEventData(strapiData) {
         pdfUrl: pdfUrl,
         isActive: presentation?.isActive !== false && pdfUrl !== '#'
       };
-    })
-    .filter(presentation => presentation.title);
+    });
 
   const presentationsSection = mappedPresentations.length > 0 ? {
     title: "Presentations",
