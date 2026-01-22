@@ -2741,6 +2741,9 @@ export async function getLeaders() {
   // Following the structure:
   // - LeaderName, ProfileImage, slug, Designation, LeadershipType, DetailDescription, EducationDetail
   // - Age, Nationality, Tenure, Appointed, CommitteeMembership, isActive, cta, Pdf, DisplayOrder
+  // - Committee boolean fields: strategy_committee, audit_committee, stakeholders_relationship_committee,
+  //   nomination_remuneration_committee, sustainability_csr_committee, risk_management_committee,
+  //   board_of_directors, management_team
   const populateQuery = [
     'populate[ProfileImage][populate]=*',
     'populate[cta][populate]=*',
@@ -2756,7 +2759,7 @@ export async function getLeaders() {
 
 /**
  * Map committee and leaders data from Strapi
- * Groups leaders by LeadershipType to form committees
+ * Groups leaders by boolean committee fields to form committees
  * 
  * @param {Object} leadersData - Raw Strapi API response for leaders
  * @returns {Object} Mapped committees data for component
@@ -2771,64 +2774,95 @@ export function mapCommitteesData(leadersData) {
     };
   }
 
-  // Group leaders by LeadershipType (which represents the committee)
+  // Map boolean field names to committee titles
+  const committeeFieldMap = {
+    strategy_committee: 'Strategy Committee',
+    audit_committee: 'Audit Committee',
+    stakeholders_relationship_committee: 'Stakeholders Relationship Committee',
+    nomination_remuneration_committee: 'Nomination & Remuneration Committee',
+    sustainability_csr_committee: 'Sustainability & CSR Committee',
+    risk_management_committee: 'Risk Management Committee',
+    board_of_directors: 'Board of Directors',
+    management_team: 'Management Team'
+  };
+
+  // Initialize committees map
   const committeesMap = new Map();
-
-  leadersArray.forEach((leader) => {
-    const leadershipType = leader?.LeadershipType || leader?.leadershipType || leader?.attributes?.LeadershipType || leader?.attributes?.leadershipType;
-    
-    if (!leadershipType) {
-      return; // Skip leaders without a LeadershipType
-    }
-
-    // Get or create committee
-    if (!committeesMap.has(leadershipType)) {
-      committeesMap.set(leadershipType, {
-        id: leadershipType,
-        title: leadershipType, // Use LeadershipType as committee title
-        members: []
-      });
-    }
-
-    const committee = committeesMap.get(leadershipType);
-
-    // Extract leader data
-    const profileImage = leader?.ProfileImage?.data?.attributes || leader?.ProfileImage || leader?.attributes?.ProfileImage?.data?.attributes || leader?.attributes?.ProfileImage;
-    const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
-
-    const slug = leader?.slug || leader?.attributes?.slug || '';
-    const leaderLink = slug ? `/leaders/${slug}` : '#';
-
-    const member = {
-      id: leader?.id || leader?.documentId || Math.random(),
-      name: leader?.LeaderName || leader?.leaderName || leader?.attributes?.LeaderName || leader?.attributes?.leaderName || '',
-      title: leader?.Designation || leader?.designation || leader?.attributes?.Designation || leader?.attributes?.designation || '',
-      image: imageUrl ? {
-        url: imageUrl,
-        alt: leader?.LeaderName || leader?.leaderName || leader?.attributes?.LeaderName || leader?.attributes?.leaderName || ''
-      } : null,
-      link: leaderLink,
-      displayOrder: leader?.DisplayOrder || leader?.displayOrder || leader?.attributes?.DisplayOrder || leader?.attributes?.displayOrder || '999'
-    };
-
-    // Only add if name exists
-    if (member.name) {
-      committee.members.push(member);
-    }
+  Object.keys(committeeFieldMap).forEach(field => {
+    committeesMap.set(field, {
+      id: field,
+      title: committeeFieldMap[field],
+      members: []
+    });
   });
 
-  // Convert map to array and sort members by DisplayOrder
-  const committees = Array.from(committeesMap.values()).map(committee => ({
-    ...committee,
-    members: committee.members.sort((a, b) => {
-      const orderA = a.displayOrder || '999';
-      const orderB = b.displayOrder || '999';
-      return orderA.localeCompare(orderB);
-    })
-  }));
+  // Process each leader and add to relevant committees based on boolean fields
+  leadersArray.forEach((leader) => {
+    // Extract leader data (handle both direct and attributes structure)
+    const leaderData = leader?.attributes || leader;
+    
+    // Extract leader basic info
+    const profileImage = leaderData?.ProfileImage?.data?.attributes || leaderData?.ProfileImage || leader?.ProfileImage?.data?.attributes || leader?.ProfileImage;
+    const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
 
-  // Sort committees by title
-  committees.sort((a, b) => a.title.localeCompare(b.title));
+    const slug = leaderData?.slug || leader?.slug || '';
+    const leaderLink = slug ? `/leaders/${slug}` : '#';
+
+    const leaderName = leaderData?.LeaderName || leader?.LeaderName || leaderData?.leaderName || leader?.leaderName || '';
+    const designation = leaderData?.Designation || leader?.Designation || leaderData?.designation || leader?.designation || '';
+    const displayOrder = leaderData?.DisplayOrder || leader?.DisplayOrder || leaderData?.displayOrder || leader?.displayOrder || '999';
+
+    // Skip if no name
+    if (!leaderName) {
+      return;
+    }
+
+    // Create member object
+    const member = {
+      id: leader?.id || leader?.documentId || Math.random(),
+      name: leaderName,
+      title: designation,
+      image: imageUrl ? {
+        url: imageUrl,
+        alt: leaderName
+      } : null,
+      link: leaderLink,
+      displayOrder: displayOrder
+    };
+
+    // Check each committee boolean field and add member if true
+    Object.keys(committeeFieldMap).forEach(field => {
+      // Check boolean value (handle both direct and attributes structure)
+      const isMember = leaderData?.[field] || leader?.[field] || false;
+      
+      if (isMember === true) {
+        const committee = committeesMap.get(field);
+        if (committee) {
+          committee.members.push(member);
+        }
+      }
+    });
+  });
+
+  // Convert map to array, filter out empty committees, and sort members by DisplayOrder
+  const committees = Array.from(committeesMap.values())
+    .filter(committee => committee.members.length > 0) // Only include committees with members
+    .map(committee => ({
+      ...committee,
+      members: committee.members.sort((a, b) => {
+        const orderA = a.displayOrder || '999';
+        const orderB = b.displayOrder || '999';
+        return orderA.localeCompare(orderB);
+      })
+    }));
+
+  // Sort committees by predefined order (maintain consistent order)
+  const committeeOrder = Object.keys(committeeFieldMap);
+  committees.sort((a, b) => {
+    const indexA = committeeOrder.indexOf(a.id);
+    const indexB = committeeOrder.indexOf(b.id);
+    return indexA - indexB;
+  });
 
   return {
     committees: committees
