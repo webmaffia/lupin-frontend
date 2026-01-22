@@ -1332,12 +1332,14 @@ export async function getSubsidiary() {
   // - Subsidiaries (Repeatable Component - SubsidiaryItem) with SubsidiaryName
   // - Documents (Repeatable Component - Subsidiary-yearly-document) nested inside Subsidiaries
   //   with FinancialYear, DocumentFilePdf, isActive, DisplayOrder
+  // - PdfTitle and AnnualReturnsPdf (at SubsidiaryItem level)
   // 
   // Following the same pattern as getFinancial() which successfully handles nested components
   const populateQuery = [
     'populate[TopBanner][populate][DesktopImage][populate]=*',
     'populate[TopBanner][populate][MobileImage][populate]=*',
-    'populate[Subsidiaries][populate][Documents][populate][DocumentFilePdf][populate]=*'
+    'populate[Subsidiaries][populate][Documents][populate][DocumentFilePdf][populate]=*',
+    'populate[Subsidiaries][populate][AnnualReturnsPdf][populate]=*'
   ].join('&');
   
   return fetchAPI(`subsidiary?${populateQuery}`, {
@@ -1396,11 +1398,19 @@ export function mapSubsidiaryData(strapiData) {
     // Get Documents from subsidiary item (nested inside each SubsidiaryItem)
     const documentsArray = subsidiaryItem?.Documents || subsidiaryItem?.documents || [];
     
+    // Get PdfTitle and AnnualReturnsPdf from subsidiary item (at SubsidiaryItem level)
+    const pdfTitle = subsidiaryItem?.PdfTitle || subsidiaryItem?.pdfTitle || 'Annual Returns';
+    const annualReturnsPdf = subsidiaryItem?.AnnualReturnsPdf?.data?.attributes || subsidiaryItem?.AnnualReturnsPdf || subsidiaryItem?.annualReturnsPdf?.data?.attributes || subsidiaryItem?.annualReturnsPdf;
+    const annualReturnsPdfUrl = annualReturnsPdf ? getStrapiMedia(annualReturnsPdf) : null;
+    
     if (process.env.NODE_ENV === 'development' && index === 0) {
       console.log('mapSubsidiaryData - First subsidiary mapping:', {
         name: subsidiaryName,
         documentsCount: documentsArray.length,
-        firstDocument: documentsArray[0]
+        firstDocument: documentsArray[0],
+        pdfTitle: pdfTitle,
+        hasAnnualReturnsPdf: !!annualReturnsPdf,
+        annualReturnsPdfUrl: annualReturnsPdfUrl
       });
     }
     
@@ -1430,7 +1440,11 @@ export function mapSubsidiaryData(strapiData) {
     return {
       id: subsidiaryItem?.id || index + 1,
       name: subsidiaryName,
-      years: years
+      years: years,
+      annualReturns: annualReturnsPdfUrl ? {
+        title: pdfTitle,
+        url: annualReturnsPdfUrl
+      } : null
     };
   }).filter(subsidiary => subsidiary.name); // Only include subsidiaries with name (years can be empty)
 

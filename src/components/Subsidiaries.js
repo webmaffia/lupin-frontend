@@ -86,6 +86,17 @@ export default function Subsidiaries({ data, error = null }) {
                           {yearItem.year}
                         </Link>
                       ))}
+                      {/* Annual Returns Link - Only show if PDF is present */}
+                      {subsidiary.annualReturns && subsidiary.annualReturns.url && (
+                        <Link 
+                          href={subsidiary.annualReturns.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="subsidiary-card__year subsidiary-card__year--annual-returns"
+                        >
+                          {subsidiary.annualReturns.title || 'Annual Returns'}
+                        </Link>
+                      )}
                     </div>
                   </div>
                 </div>
