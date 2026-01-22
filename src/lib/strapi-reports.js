@@ -1910,52 +1910,46 @@ export function mapNoticeData(strapiData) {
       const financialLabel = section?.FinancialLabel || section?.financialLabel || '';
       const documentsArray = section?.Documents || section?.documents || [];
 
-      // Find English and Marathi documents
-      let englishDoc = null;
-      let marathiDoc = null;
-      let defaultDoc = null;
-
-      documentsArray.forEach((doc) => {
-        const languageLabel = (doc?.LanguageLabel || doc?.languageLabel || '').toLowerCase();
-        
-        // Check if it's the default document
-        if (doc?.isDefault === true) {
-          defaultDoc = doc;
-        }
-        
-        // Find by language label
-        if (languageLabel.includes('english') || languageLabel.includes('en')) {
-          englishDoc = doc;
-        } else if (languageLabel.includes('marathi') || languageLabel.includes('mr')) {
-          marathiDoc = doc;
-        }
-      });
-
-      // Use default doc if no language-specific doc found
-      if (!englishDoc && defaultDoc) {
-        englishDoc = defaultDoc;
-      }
-      if (!marathiDoc && defaultDoc && documentsArray.length > 1) {
-        // Only use default for marathi if there are multiple documents
-        marathiDoc = documentsArray.find(d => d !== englishDoc) || defaultDoc;
-      }
-
-      // Get document URLs
+      // Get document URLs helper
       const getDocumentUrl = (doc) => {
         if (!doc) return '#';
         const documentFile = doc?.DocumentFile?.data?.attributes || doc?.DocumentFile || doc?.documentFile?.data?.attributes || doc?.documentFile;
         return documentFile ? getStrapiMedia(documentFile) : '#';
       };
 
-      const englishUrl = getDocumentUrl(englishDoc);
-      const marathiUrl = getDocumentUrl(marathiDoc);
-      const pdfUrl = englishUrl !== '#' ? englishUrl : (defaultDoc ? getDocumentUrl(defaultDoc) : '#');
+      // Map all documents with their LanguageLabel
+      const documents = documentsArray
+        .filter(doc => doc && getDocumentUrl(doc) !== '#') // Only include documents with valid URLs
+        .map((doc) => {
+          const languageLabel = doc?.LanguageLabel || doc?.languageLabel || '';
+          const documentUrl = getDocumentUrl(doc);
+          const displayOrder = doc?.DisplayOrder || doc?.displayOrder || '999';
+          const isDefault = doc?.isDefault === true;
+
+          return {
+            id: doc?.id || null,
+            languageLabel: languageLabel,
+            url: documentUrl,
+            displayOrder: displayOrder,
+            isDefault: isDefault
+          };
+        })
+        .sort((a, b) => {
+          // Sort by DisplayOrder, with default documents first
+          if (a.isDefault && !b.isDefault) return -1;
+          if (!a.isDefault && b.isDefault) return 1;
+          return a.displayOrder.localeCompare(b.displayOrder);
+        });
+
+      // Get primary PDF URL (first document or default)
+      const defaultDoc = documentsArray.find(doc => doc?.isDefault === true);
+      const primaryDoc = documents.find(doc => doc.isDefault) || documents[0];
+      const pdfUrl = primaryDoc?.url || (defaultDoc ? getDocumentUrl(defaultDoc) : '#');
 
       return {
         id: section?.id || index + 1,
         financialLabel: financialLabel,
-        englishLink: englishUrl,
-        marathiLink: marathiUrl,
+        documents: documents, // All documents with LanguageLabel
         pdfUrl: pdfUrl,
         isActive: section?.isActive !== false && pdfUrl !== '#',
         displayOrder: section?.DisplayOrder || section?.displayOrder || String(index + 1)
