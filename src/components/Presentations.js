@@ -66,7 +66,7 @@ export default function Presentations({ data, error = null }) {
             {presentationsData.presentations.map((presentation) => (
               <div
                 key={presentation.id}
-                className={`policy-card ${presentation.isActive ? 'policy-card--active' : ''}`}
+                className={`policy-card`}
               >
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{presentation.title}</h3>

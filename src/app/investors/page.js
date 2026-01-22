@@ -8,6 +8,8 @@ import NewsInsights from '@/components/NewsInsights';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getHomepage, mapHomepageNewsInsightsData } from '@/lib/strapi';
+import { getInvestor, mapInvestorData } from '@/lib/strapi-reports';
+import { mapTopBannerData } from '@/lib/strapi';
 
 // Generate metadata for the investors page
 export const metadata = generateSEOMetadata({
@@ -18,7 +20,177 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function InvestorsPage() {
-  // Fetch news insights data from Strapi
+  // Fetch investor page data from /api/investor
+  let investorData = null;
+  let bannerData = null;
+  let introData = null;
+  let governanceData = null;
+  let shareholderData = null;
+  let reportsFilingsData = null;
+  let error = null;
+
+  try {
+    const rawInvestorData = await getInvestor();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Investors page - Raw API data received:', {
+        hasData: !!rawInvestorData,
+        isDataObject: !Array.isArray(rawInvestorData?.data) && !!rawInvestorData?.data,
+        hasTopBanner: !!(rawInvestorData?.data?.TopBanner || rawInvestorData?.TopBanner)
+      });
+    }
+
+    if (rawInvestorData) {
+      const mappedData = mapInvestorData(rawInvestorData);
+      
+      // Map banner data
+      const topBanner = rawInvestorData?.data?.TopBanner || rawInvestorData?.TopBanner;
+      bannerData = mapTopBannerData(topBanner);
+
+      // Map introduction section (Rich text - Markdown)
+      if (mappedData.introductionSection) {
+        // Split by newlines if it's a string, or use as is if it's already processed
+        const introText = typeof mappedData.introductionSection === 'string' 
+          ? mappedData.introductionSection 
+          : mappedData.introductionSection;
+        introData = {
+          text: introText,
+          paragraphs: typeof introText === 'string' 
+            ? introText.split('\n').filter(p => p.trim())
+            : []
+        };
+      }
+
+      // Map Corporate Governance Section
+      if (mappedData.corporateGovernanceSection) {
+        const cg = mappedData.corporateGovernanceSection;
+        governanceData = {
+          title: cg.sectionTitle || "Corporate Governance",
+          backgroundImage: cg.desktopImage ? {
+            url: cg.desktopImage,
+            alt: cg.sectionTitle || "Corporate Governance"
+          } : null,
+          buttons: cg.links.map((link, index) => ({
+            id: index + 1,
+            label: link.text,
+            href: link.href,
+            isActive: false
+          }))
+        };
+      }
+
+      // Map Shareholder Information Section
+      if (mappedData.shareholderInformationSection) {
+        const sh = mappedData.shareholderInformationSection;
+        // Split shareholder information into left and right columns
+        // For now, we'll put all items in leftColumn and empty rightColumn
+        // You can adjust the logic based on your needs
+        const midPoint = Math.ceil(sh.shareholderInformation.length / 2);
+        shareholderData = {
+          title: sh.sectionTitle || "Shareholder Information",
+          centerImage: sh.image ? {
+            url: sh.image,
+            alt: sh.sectionTitle || "Shareholder Information"
+          } : null,
+          leftColumn: sh.shareholderInformation.slice(0, midPoint).map(item => ({
+            text: item.pdfTitle,
+            href: item.documentPdf || item.cta.href || '#',
+            download: !!item.documentPdf
+          })),
+          rightColumn: sh.shareholderInformation.slice(midPoint).map(item => ({
+            text: item.pdfTitle,
+            href: item.documentPdf || item.cta.href || '#',
+            download: !!item.documentPdf
+          }))
+        };
+      }
+
+      // Map Reports and Filings Section
+      if (mappedData.reportsFilingSection) {
+        const rf = mappedData.reportsFilingSection;
+        const financialHighlight = rf.financialHighlightCard;
+        const integratedReport = rf.integratedReport;
+
+        reportsFilingsData = {
+          title: "Reports and Filings",
+          leftCard: financialHighlight ? {
+            badge: financialHighlight.financialYear || "Q2 FY26",
+            items: [
+              financialHighlight.grossProfit ? `Gross Profit : ${financialHighlight.grossProfit}` : null,
+              financialHighlight.grossProfitMargin ? `Gross profit margin : ${financialHighlight.grossProfitMargin}` : null,
+              financialHighlight.rndInvestment ? `Investment in R&D : ${financialHighlight.rndInvestment}` : null
+            ].filter(Boolean),
+            buttons: [
+              {
+                label: "Download Now",
+                href: financialHighlight.documentFile || financialHighlight.cta.href || '#',
+                download: !!financialHighlight.documentFile
+              },
+              {
+                label: "View all",
+                href: financialHighlight.viewAllUrl || '#'
+              }
+            ]
+          } : null,
+          middleCard: integratedReport ? {
+            title: integratedReport.reportTitle ? integratedReport.reportTitle.split(' ') : ["Integrated", "Report"],
+            image: integratedReport.coverImage ? {
+              url: integratedReport.coverImage.url,
+              alt: integratedReport.coverImage.alt
+            } : null,
+            buttons: [
+              {
+                label: integratedReport.downloadLabel || "Download Now",
+                href: integratedReport.reportFile || '#',
+                variant: "outline",
+                download: !!integratedReport.reportFile
+              },
+              {
+                label: integratedReport.viewAllLabel || "View all",
+                href: integratedReport.viewAllUrl || '#',
+                variant: "filled"
+              }
+            ]
+          } : null,
+          rightCard: mappedData.reportsFilingSection?.nseExchangeSection ? {
+            badge: mappedData.reportsFilingSection.nseExchangeSection.sectionTitle || "Exchange filings (BSE/NSE)",
+            links: mappedData.reportsFilingSection.nseExchangeSection.pdfDocuments.map(pdf => ({
+              text: pdf.title,
+              href: pdf.pdf || '#',
+              download: !!pdf.pdf
+            })),
+            button: {
+              label: "View all",
+              href: "#"
+            }
+          } : null
+        };
+      }
+
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Investors page - Mapped data:', {
+          hasBanner: !!bannerData,
+          hasIntro: !!introData,
+          hasGovernance: !!governanceData,
+          hasShareholder: !!shareholderData,
+          hasReportsFilings: !!reportsFilingsData
+        });
+      }
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Investors page - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch investor data from Strapi';
+    console.error('Error fetching Investors page data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+  }
+
+  // Keep press release section (WhatsNew) as is - using homepage API
+  // Fetch news insights data from Strapi (from homepage)
   let newsInsightsData = null;
   
   try {
@@ -26,25 +198,14 @@ export default async function InvestorsPage() {
     // This ensures we get the same news data structure with proper population
     const homepageData = await getHomepage();
     
-    // Log raw API response for debugging
-    if (process.env.NODE_ENV === 'development') {
-      console.log('Investors page - Raw Strapi API response:', JSON.stringify(homepageData, null, 2));
-    }
-    
     // Map using the same function as homepage
     try {
       newsInsightsData = mapHomepageNewsInsightsData(homepageData);
-      
-      if (process.env.NODE_ENV === 'development') {
-        console.log('Investors page - Mapped news insights data:', JSON.stringify(newsInsightsData, null, 2));
-      }
     } catch (mapError) {
       console.error('Error mapping news insights data:', mapError);
-      // Will fall back to default data
     }
   } catch (error) {
     console.error('Error fetching homepage data from Strapi for investors page:', error);
-    // Will use default data below
   }
 
   // Default news insights data if Strapi data is not available
@@ -80,54 +241,8 @@ export default async function InvestorsPage() {
     };
   }
 
-  const bannerData = {
-    title: {
-      line1: "Investors",
-     
-    },
-    subheading: {
-      enabled: true,
-      text: "Trust and Growth Focus"
-    },
-    images: {
-      banner: {
-        url: "/assets/images/desktop.png",
-        alt: "Investor Relations"
-      },
-      bannerMobile: {
-        url: "/assets/images/mobile.png",
-        alt: "Financial documents and charts"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
-      }
-    }
-  };
-  
-  // Fetch intro section data from Strapi
-  let introData = null;
-  try {
-    const investorsPageData = await getHomepage();
-    // Extract intro data if available in Strapi
-    // Supports multiple data structures:
-    // 1. paragraphs array (preferred)
-    // 2. content array
-    // 3. text string (will be split by newlines)
-    if (investorsPageData?.data?.attributes?.intro || investorsPageData?.intro) {
-      const intro = investorsPageData?.data?.attributes?.intro || investorsPageData?.intro;
-      introData = {
-        paragraphs: intro.paragraphs || intro.content || (intro.text ? intro.text.split('\n').filter(p => p.trim()) : []),
-        content: intro.content || (intro.text ? [intro.text] : []),
-        text: intro.text || intro.content
-      };
-    }
-  } catch (error) {
-    console.error('Error fetching intro data from Strapi:', error);
-    // Will use default data from component
-  }
-
-  // Fetch What's New data from Strapi
+  // Keep What's New (Press Release) section as is - using homepage API
+  // Fetch What's New data from Strapi (from homepage)
   let whatsNewData = null;
   try {
     const investorsPageData = await getHomepage();
@@ -141,10 +256,9 @@ export default async function InvestorsPage() {
     }
   } catch (error) {
     console.error('Error fetching What\'s New data from Strapi:', error);
-    // Will use default data below
   }
 
-  // Default What's New data extracted from HTML
+  // Default What's New data (fallback) - Keep Press Release with 4 items for slider
   if (!whatsNewData || !whatsNewData.items || whatsNewData.items.length === 0) {
     whatsNewData = {
       title: "What's New",
@@ -176,240 +290,9 @@ export default async function InvestorsPage() {
           headline: "Lupin Receives EIR from US FDA for its Nagpur Injectable Facility",
           category: "Press Release",
           href: "https://www.lupin.com/lupin-receives-eir-from-us-fda-for-its-nagpur-injectable-facility/"
-        },
-        {
-          id: 5,
-          date: "December 16, 2025",
-          headline: "Lupin Secures SBTi Validation for Emission Reduction Targets",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-secures-sbti-validation-for-emission-reduction-targets/"
-        },
-        {
-          id: 6,
-          date: "December 12, 2025",
-          headline: "Lupin Manufacturing Solutions and PolyPeptide Announce Strategic Alliance to Scale Global Peptide Supply Chain",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-manufacturing-solutions-and-polypeptide-announce-strategic-alliance-to-scale-global-peptide-supply-chain/"
-        },
-        {
-          id: 7,
-          date: "December 5, 2025",
-          headline: "Lupin Receives Tentative Approval from U.S. FDA for Siponimod Tablets",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-receives-tentative-approval-from-u-s-fda-for-siponimod-tablets/"
-        },
-        {
-          id: 8,
-          date: "December 4, 2025",
-          headline: "Lupin and Valorum Enter into an Exclusive Licensing Agreement for Biosimilar Armlupeg™ (Pegfilgrastim-unne) in the United States",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-and-valorum-enter-into-an-exclusive-licensing-agreement-for-biosimilar-armlupeg-pegfilgrastim-unne-in-the-united-states/"
-        },
-        {
-          id: 9,
-          date: "December 1, 2025",
-          headline: "Lupin Receives Approval from U.S. FDA for Biosimilar Armlupeg™ (Pegfilgrastim-unne)",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-receives-approval-from-u-s-fda-for-biosimilar-armlupeg-pegfilgrastim-unne/"
-        },
-        {
-          id: 10,
-          date: "November 28, 2025",
-          headline: "Lupin Foundation Earns CRISIL's Highest VO 1A Rating for Excellence in Social Responsibility",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-foundation-earns-crisils-highest-vo-1a-rating-for-excellence-in-social-responsibility/"
-        },
-        {
-          id: 11,
-          date: "November 15, 2025",
-          headline: "Lupin Announces Closure of Inspection by U.S. FDA at its Nagpur Unit-1 Facility with No Observations",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-announces-closure-of-inspection-by-u-s-fda-at-its-nagpur-unit-1-facility-with-no-observations/"
-        },
-        {
-          id: 12,
-          date: "November 14, 2025",
-          headline: "Lupin Launches Risperidone Long-Acting Injectable with 180-day CGT exclusivity in the U.S., the First Product from its Proprietary Long-Acting Injectable Platform PrecisionSphere™",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-launches-risperidone-long-acting-injectable-with-180-day-cgt-exclusivity-in-the-u-s-the-first-product-from-its-proprietary-long-acting-injectable-platform-precisionsphere/"
-        },
-        {
-          id: 13,
-          date: "November 13, 2025",
-          headline: "Lupin Establishes a New Global Standard in Sustainable Pharma with an S&P Global ESG Score of 91",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-establishes-a-new-global-standard-in-sustainable-pharma-with-an-sp-global-esg-score-of-91/"
-        },
-        {
-          id: 14,
-          date: "November 12, 2025",
-          headline: "Lupin Receives EIR from U.S. FDA for its Aurangabad (CSN) Facility",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-receives-eir-from-u-s-fda-for-its-aurangabad-csn-facility/"
-        },
-        {
-          id: 15,
-          date: "November 12, 2025",
-          headline: "Lupin Manufacturing Solutions Unveils Dedicated Oncology Block at Vizag, India",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-manufacturing-solutions-unveils-dedicated-oncology-block-at-vizag-india/"
-        },
-        {
-          id: 16,
-          date: "November 8, 2025",
-          headline: "Lupin Bioresearch Center Receives Zero Observations from U.S. FDA After Successful Inspection and Assessment",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-bioresearch-center-receives-zero-observations-from-u-s-fda-after-successful-inspection-and-assessment/"
-        },
-        {
-          id: 17,
-          date: "November 6, 2025",
-          headline: "Lupin Q2 FY2026 Results",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-q2-fy2026-results/"
-        },
-        {
-          id: 18,
-          date: "November 5, 2025",
-          headline: "Lupin Receives EIR from U.S. FDA for its Pithampur Unit-3 Facility",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-receives-eir-from-u-s-fda-for-its-pithampur-unit-3-facility/"
-        },
-        {
-          id: 19,
-          date: "October 30, 2025",
-          headline: "Lupin Digital Health Launches VITALYFE™",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-digital-health-launches-vitalyfe/"
-        },
-        {
-          id: 20,
-          date: "October 28, 2025",
-          headline: "Governor Murphy and Local Leaders Attend Ribbon-Cutting Ceremony, Marking the Inauguration of Lupin's New Corporate Offices in Bridgewater",
-          category: "Press Release",
-          href: "https://www.lupin.com/governor-murphy-and-local-leaders-attend-ribbon-cutting-ceremony-marking-the-inauguration-of-lupins-new-corporate-offices-in-bridgewater/"
-        },
-        {
-          id: 21,
-          date: "October 24, 2025",
-          headline: "Lupin Launches Authorized Generic Version of Ravicti® in the United States",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-launches-authorized-generic-version-of-ravicti-in-the-united-states/"
-        },
-        {
-          id: 22,
-          date: "October 13, 2025",
-          headline: "Lupin Announces Presentation of Phase 1 Data on LNP3693 (STING agonist) at the ESMO Congress 2025",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-announces-presentation-of-phase-1-data-on-lnp3693-sting-agonist-at-the-esmo-congress-2025/"
-        },
-        {
-          id: 23,
-          date: "October 9, 2025",
-          headline: "Lupin Unveils Strategic Partnership Program to Expand Reach of its Long-Acting Injectable Platform",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-unveils-strategic-partnership-program-to-expand-reach-of-its-long-acting-injectable-platform/"
-        },
-        {
-          id: 24,
-          date: "October 8, 2025",
-          headline: "Lupin Announces Plans to Build a New State-of-the-Art Manufacturing Facility in Coral Springs, Florida Extending its Long-Standing Commitment to the U.S. Market",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-announces-plans-to-build-a-new-state-of-the-art-manufacturing-facility-in-coral-springs-florida/"
-        },
-        {
-          id: 25,
-          date: "October 3, 2025",
-          headline: "Lupin Launches Liraglutide Injection in the United States",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-launches-liraglutide-injection-in-the-united-states/"
-        },
-        {
-          id: 26,
-          date: "October 1, 2025",
-          headline: "Lupin Launches Rivaroxaban for Oral Suspension in the United States",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-launches-rivaroxaban-for-oral-suspension-in-the-united-states/"
-        },
-        {
-          id: 27,
-          date: "September 30, 2025",
-          headline: "Lupin Receives Approval from U.S. FDA for Rivaroxaban for Oral Suspension",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-receives-approval-from-u-s-fda-for-rivaroxaban-for-oral-suspension/"
-        },
-        {
-          id: 28,
-          date: "September 29, 2025",
-          headline: "Lupin Strengthens its Global Specialty Ophthalmology Business with Acquisition of VISUfarma from GHO Capital",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-strengthens-its-global-specialty-ophthalmology-business-with-acquisition-of-visufarma-from-gho-capital/"
-        },
-        {
-          id: 29,
-          date: "September 24, 2025",
-          headline: "Lupin Receives Tentative Approval from U.S. FDA for Bictegravir, Emtricitabine, and Tenofovir Alafenamide Tablets",
-          category: "Press Release",
-          href: "https://www.lupin.com/lupin-receives-tentative-approval-from-u-s-fda-for-bictegravir-emtricitabine-and-tenofovir-alafenamide-tablets/"
         }
       ]
     };
-  }
-
-  // Fetch Corporate Governance data from Strapi
-  let governanceData = null;
-  try {
-    const investorsPageData = await getHomepage();
-    // Extract Corporate Governance data if available in Strapi
-    if (investorsPageData?.data?.attributes?.corporateGovernance || investorsPageData?.corporateGovernance) {
-      const governance = investorsPageData?.data?.attributes?.corporateGovernance || investorsPageData?.corporateGovernance;
-      governanceData = {
-        title: governance.title || "Corporate Governance",
-        backgroundImage: governance.backgroundImage || governance.image,
-        buttons: governance.buttons || governance.items || []
-      };
-    }
-  } catch (error) {
-    console.error('Error fetching Corporate Governance data from Strapi:', error);
-    // Will use default data from component
-  }
-
-  // Fetch Shareholder Information data from Strapi
-  let shareholderData = null;
-  try {
-    const investorsPageData = await getHomepage();
-    // Extract Shareholder Information data if available in Strapi
-    if (investorsPageData?.data?.attributes?.shareholderInformation || investorsPageData?.shareholderInformation) {
-      const shareholder = investorsPageData?.data?.attributes?.shareholderInformation || investorsPageData?.shareholderInformation;
-      shareholderData = {
-        title: shareholder.title || "Shareholder Information",
-        centerImage: shareholder.centerImage || shareholder.image,
-        leftColumn: shareholder.leftColumn || shareholder.leftLinks || [],
-        rightColumn: shareholder.rightColumn || shareholder.rightLinks || []
-      };
-    }
-  } catch (error) {
-    console.error('Error fetching Shareholder Information data from Strapi:', error);
-    // Will use default data from component
-  }
-
-  // Fetch Reports and Filings data from Strapi
-  let reportsFilingsData = null;
-  try {
-    const investorsPageData = await getHomepage();
-    // Extract Reports and Filings data if available in Strapi
-    if (investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings) {
-      const reports = investorsPageData?.data?.attributes?.reportsAndFilings || investorsPageData?.reportsAndFilings;
-      reportsFilingsData = {
-        title: reports.title || "Reports and Filings",
-        leftCard: reports.leftCard || null,
-        middleCard: reports.middleCard || null,
-        rightCard: reports.rightCard || null
-      };
-    }
-  } catch (error) {
-    console.error('Error fetching Reports and Filings data from Strapi:', error);
-    // Will use default data from component
   }
 
   return (

@@ -70,7 +70,7 @@ export default function SEBIRegulations({ data, error = null }) {
                   {item.particulars}
                 </div>
                 <div className="sebi-regulations__cell sebi-regulations__cell--url">
-                  <Link href={item.url} className="sebi-regulations__link">
+                  <Link href={item.url} target="_blank" rel="noopener noreferrer" className="sebi-regulations__link">
                     <span>Click here to visit</span>
                     <svg
                       className="sebi-regulations__arrow"
@@ -79,7 +79,7 @@ export default function SEBIRegulations({ data, error = null }) {
                       viewBox="0 0 12 12"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                    >
+                     >
                       <path
                         d="M1 11L11 1M11 1H1M11 1V11"
                         stroke="currentColor"
