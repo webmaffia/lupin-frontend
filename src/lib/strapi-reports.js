@@ -1095,7 +1095,7 @@ function mapRevenueProfitabilitySection(section) {
               const amountNum = typeof amount === 'string' 
                 ? parseFloat(amount.replace(/[,\s]/g, '')) 
                 : parseFloat(amount) || 0;
-              const formattedAmount = amountNum > 0 ? amountNum.toLocaleString('en-IN') : '0';
+              const formattedAmount = amountNum > 0 ? amountNum.toLocaleString('en-US') : '0';
               const label = yearLabel ? `${yearLabel} – ${formattedAmount}` : formattedAmount;
               
               return {

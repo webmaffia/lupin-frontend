@@ -63,7 +63,7 @@ export default function EmployeeStockOptionSchemes({ data, error = null }) {
             {schemesData.schemes.map((scheme) => (
               <div
                 key={scheme.id}
-                className={`policy-card ${scheme.isActive ? 'policy-card--active' : ''}`}
+                className={`policy-card`}
               >
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{scheme.title}</h3>

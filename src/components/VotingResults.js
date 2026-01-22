@@ -40,7 +40,7 @@ export default function VotingResults({ data }) {
           {votingData.card && (
             <div className="policies__grid">
               <div
-                className={`policy-card ${votingData.card.isActive ? 'policy-card--active' : ''}`}
+                className={`policy-card`}
               >
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{votingData.card.title}</h3>

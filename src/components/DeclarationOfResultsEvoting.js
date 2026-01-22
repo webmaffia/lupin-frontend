@@ -52,7 +52,7 @@ export default function DeclarationOfResultsEvoting({ data }) {
             {declarationData.cards && declarationData.cards.map((card) => (
               <div
                 key={card.id}
-                className={`policy-card ${card.isActive ? 'policy-card--active' : ''}`}
+                className={`policy-card`}
               >
                 <div className="policy-card__content">
                   <h3 className="policy-card__title">{card.title}</h3>

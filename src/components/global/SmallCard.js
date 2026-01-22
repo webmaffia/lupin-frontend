@@ -29,6 +29,7 @@ export default function SmallCard({
         <div className="small-card__links">
           <Link href={pdfUrl} className="small-card__link" target="_blank" rel="noopener noreferrer">
             {title}
+            
           </Link>
         </div>
         <div className="small-card__download">
