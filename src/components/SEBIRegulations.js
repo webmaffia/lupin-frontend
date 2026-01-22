@@ -35,10 +35,15 @@ export default function SEBIRegulations({ data, error = null }) {
     );
   }
 
+  // Get title and description from DisclosureIntroSection (dynamic from CMS)
+  // Fallback to default values if not available
+  const title = data?.introSection?.sectionTitle || "Disclosure under Regulation 46 of SEBI Regulations, 2015";
+  const description = data?.introSection?.description || null;
+
   const regulationsData = {
-    title: "Disclosure under Regulation 46 of SEBI Regulations, 2016",
-    subtitle: "Disclosure under Regulation 46 of SEBI (Listing Obligations and Disclosure Requirements) Regulations, 2016",
-    items: data.items
+    title: title,
+    description: description,
+    items: data.items || []
   };
 
   return (
@@ -47,7 +52,12 @@ export default function SEBIRegulations({ data, error = null }) {
         {/* Header */}
         <div className="sebi-regulations__header">
           <h1 className="sebi-regulations__title">{regulationsData.title}</h1>
-          <h2 className="sebi-regulations__subtitle">{regulationsData.subtitle}</h2>
+          {regulationsData.description && (
+            <div 
+              className="sebi-regulations__description"
+              dangerouslySetInnerHTML={{ __html: regulationsData.description }}
+            />
+          )}
         </div>
 
         {/* Table */}
@@ -67,28 +77,48 @@ export default function SEBIRegulations({ data, error = null }) {
                   {item.number}
                 </div>
                 <div className="sebi-regulations__cell sebi-regulations__cell--particulars">
-                  {item.particulars}
+                  {typeof item.particulars === 'string' && item.particulars.includes('\n') ? (
+                    <div dangerouslySetInnerHTML={{ __html: item.particulars.replace(/\n/g, '<br />') }} />
+                  ) : (
+                    item.particulars
+                  )}
                 </div>
                 <div className="sebi-regulations__cell sebi-regulations__cell--url">
-                  <Link href={item.url} target="_blank" rel="noopener noreferrer" className="sebi-regulations__link">
-                    <span>Click here to visit</span>
-                    <svg
-                      className="sebi-regulations__arrow"
-                      width="12"
-                      height="12"
-                      viewBox="0 0 12 12"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                     >
-                      <path
-                        d="M1 11L11 1M11 1H1M11 1V11"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                  </Link>
+                  {item.documents && item.documents.length > 0 ? (
+                    <div className="sebi-regulations__links">
+                      {item.documents.map((doc, docIndex) => (
+                        <Link 
+                          key={doc.id || docIndex} 
+                          href={doc.url} 
+                          target={doc.url !== '#' ? "_blank" : undefined}
+                          rel={doc.url !== '#' ? "noopener noreferrer" : undefined}
+                          className={`sebi-regulations__link ${doc.url === '#' ? 'sebi-regulations__link--disabled' : ''}`}
+                        >
+                          <span>{doc.label}</span>
+                          {doc.url !== '#' && (
+                            <svg
+                              className="sebi-regulations__arrow"
+                              width="12"
+                              height="12"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M1 11L11 1M11 1H1M11 1V11"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          )}
+                        </Link>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="sebi-regulations__na">NA</span>
+                  )}
                 </div>
               </div>
             ))}

@@ -1520,6 +1520,9 @@ export async function getInvestorRegulationDisclosure() {
   // Populate all nested components and media
   // Following the structure:
   // - TopBanner with DesktopImage and MobileImage
+  // - DisclosureIntroSection (Component - DisclouserIntroData) with:
+  //   - SectionTitle (Text)
+  //   - Description (Rich text - Markdown)
   // - RegulationDisclosureSection (Repeatable Component - RegulationDisclosureItem) with:
   //   - Particular (Rich text)
   //   - Documents (Repeatable Component - DisclosureDocumentLink) with Label, DocumentFile, Url, isActive
@@ -1527,6 +1530,7 @@ export async function getInvestorRegulationDisclosure() {
   const populateQuery = [
     'populate[TopBanner][populate][DesktopImage][populate]=*',
     'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[DisclosureIntroSection][populate]=*',
     'populate[RegulationDisclosureSection][populate][Documents][populate][DocumentFile][populate]=*'
   ].join('&');
   
@@ -1548,7 +1552,34 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
   // If no data, return empty array
   if (!data) {
     return {
-      items: []
+      items: [],
+      introSection: null
+    };
+  }
+
+  // Map DisclosureIntroSection (Component - DisclouserIntroData)
+  const introSection = data?.DisclosureIntroSection || data?.disclosureIntroSection;
+  let introData = null;
+  
+  if (introSection) {
+    const sectionTitle = introSection?.SectionTitle || introSection?.sectionTitle || '';
+    const description = introSection?.Description || introSection?.description || '';
+    
+    // Handle rich text (Markdown) for description
+    let descriptionText = description;
+    if (typeof description === 'object' && description !== null) {
+      if (description.markdown) {
+        descriptionText = description.markdown;
+      } else if (description.data?.markdown) {
+        descriptionText = description.data.markdown;
+      } else {
+        descriptionText = String(description);
+      }
+    }
+    
+    introData = {
+      sectionTitle: sectionTitle,
+      description: descriptionText
     };
   }
 
@@ -1556,7 +1587,7 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
   const sectionsArray = data?.RegulationDisclosureSection || data?.regulationDisclosureSection || [];
 
   // Map sections to items
-  // One row per section (Particular), using the first active document's URL or DocumentFile
+  // One row per section (Particular), with multiple documents/links
   let itemNumber = 1;
   const items = [];
 
@@ -1570,40 +1601,57 @@ export function mapInvestorRegulationDisclosureData(strapiData) {
         return; // Skip sections without particular text
       }
 
-      // Find the first active document
+      // Get all active documents for this particular
       const activeDocuments = documentsArray.filter(doc => doc?.isActive !== false);
-      let url = '#';
-      let label = null;
+      const documents = [];
 
-      if (activeDocuments.length > 0) {
-        // Use the first active document
-        const firstDoc = activeDocuments[0];
-        
-        // Get Label if available
-        label = firstDoc?.Label || firstDoc?.label || null;
+      activeDocuments.forEach((doc) => {
+        let url = '#';
+        const label = doc?.Label || doc?.label || 'Click here to visit';
         
         // Priority: Url first, then DocumentFile
-        if (firstDoc?.Url || firstDoc?.url) {
-          url = firstDoc?.Url || firstDoc?.url;
-        } else if (firstDoc?.DocumentFile) {
+        if (doc?.Url || doc?.url) {
+          url = doc?.Url || doc?.url || '#';
+        } else if (doc?.DocumentFile) {
           // Extract DocumentFile URL
-          const documentFile = firstDoc?.DocumentFile?.data?.attributes || firstDoc?.DocumentFile || firstDoc?.documentFile?.data?.attributes || firstDoc?.documentFile;
+          const documentFile = doc?.DocumentFile?.data?.attributes || doc?.DocumentFile || doc?.documentFile?.data?.attributes || doc?.documentFile;
           url = documentFile ? getStrapiMedia(documentFile) : '#';
         }
-      }
 
+        // Add all documents - handle "NA" cases and valid links
+        documents.push({
+          id: doc?.id || null,
+          label: label,
+          url: url || '#'
+        });
+      });
+
+      // Handle rich text (Markdown) - if it's an object with markdown property, extract it
+      let particularsText = particular;
+      if (typeof particular === 'object' && particular !== null) {
+        if (particular.markdown) {
+          particularsText = particular.markdown;
+        } else if (particular.data?.markdown) {
+          particularsText = particular.data.markdown;
+        } else {
+          // Fallback: try to stringify or use empty string
+          particularsText = String(particular);
+        }
+      }
+      
+      // Add item - if no documents, add a default "NA" document
       items.push({
         id: section?.id || itemNumber,
         number: String(itemNumber),
-        particulars: particular,
-        url: url,
-        label: label // Store label for potential future use
+        particulars: particularsText,
+        documents: documents.length > 0 ? documents : [{ label: 'NA', url: '#' }] // Default to NA if no documents
       });
       itemNumber++;
     });
 
   return {
-    items: items
+    items: items,
+    introSection: introData
   };
 }
 
