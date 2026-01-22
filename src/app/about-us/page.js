@@ -114,20 +114,13 @@ export default async function AboutUsPage() {
               // Default fold data with headings and text content
               const defaultFolds = [
                 { 
-                  heading: 'Our\nStory', 
-                  color: 'teal', 
-                  svg: 'svg1', 
-                  svgPosition: 'right', 
-                  imagePosition: 'left', 
-                  text: 'Founded by Dr. Desh Bandhu Gupta in 1968, Lupin began as a simple but powerful idea: that quality healthcare should be within reach for everyone.\n\nWhat started as a small, determined venture has grown into a global pharmaceutical leader. This is the story of how that belief took shape, gained momentum, and became the Lupin you see today.'
-                },
-                { 
                   heading: 'Our Purpose', 
                   color: 'green', 
                   svg: 'svg2', 
                   svgPosition: 'left', 
                   imagePosition: 'right', 
-                  text: 'We Catalyze Treatments that Transform Hope into Healing\n\nOurs is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders'
+                  text: 'We Catalyze Treatments that Transform Hope into Healing\n\nOurs is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders',
+                  href: '/about-us/purpose'
                 },
                 { 
                   heading: 'Our\nValues', 
@@ -135,7 +128,8 @@ export default async function AboutUsPage() {
                   svg: 'svg1', 
                   svgPosition: 'right', 
                   imagePosition: 'left', 
-                  text: 'At Lupin, we pride ourselves on our promise of caring for our customers, our commitment to our employees\' growth and welfare, our continuous quality focus, and the spirit of innovation that drives each of us to discover better ways of working. This culture is shaped and driven by our values.'
+                  text: 'At Lupin, we pride ourselves on our promise of caring for our customers, our commitment to our employees\' growth and welfare, our continuous quality focus, and the spirit of innovation that drives each of us to discover better ways of working. This culture is shaped and driven by our values.',
+                  href: '/about-us/our-values'
                 },
                 { 
                   heading: 'Our\nLeadership', 
@@ -143,7 +137,8 @@ export default async function AboutUsPage() {
                   svg: 'svg2', 
                   svgPosition: 'left', 
                   imagePosition: 'right', 
-                  text: 'At Lupin, we are guided by a team that brings experience, vision, and a shared commitment to growth. We strive to create an impact, innovate, and bring meaningful change every day.'
+                  text: 'At Lupin, we are guided by a team that brings experience, vision, and a shared commitment to growth. We strive to create an impact, innovate, and bring meaningful change every day.',
+                  href: '/leaders'
                 },
                 { 
                   heading: 'Global\nPresence', 
@@ -151,7 +146,8 @@ export default async function AboutUsPage() {
                   svg: 'svg1', 
                   svgPosition: 'right', 
                   imagePosition: 'left', 
-                  text: 'From a single vision in 1968 to an organization that moves across borders, Lupin has grown into a network of 24,000+ people across 11 countries and six continents.'
+                  text: 'From a single vision in 1968 to an organization that moves across borders, Lupin has grown into a network of 24,000+ people across 11 countries and six continents.',
+                  href: '/about-us/global-presence'
                 },
                 { 
                   heading: 'Our Manufacturing\nApproach', 
@@ -159,7 +155,8 @@ export default async function AboutUsPage() {
                   svg: 'svg2', 
                   svgPosition: 'left', 
                   imagePosition: 'right', 
-                  text: 'Our manufacturing strength is built on the power of technology, advanced facilities, rigorous quality systems, and a commitment to sustainable, reliable production.'
+                  text: 'Our manufacturing strength is built on the power of technology, advanced facilities, rigorous quality systems, and a commitment to sustainable, reliable production.',
+                  href: '/about-us/our-manufacturing-sites'
                 },
                 { 
                   heading: 'Our Science', 
@@ -167,7 +164,8 @@ export default async function AboutUsPage() {
                   svg: 'svg1', 
                   svgPosition: 'right', 
                   imagePosition: 'left', 
-                  text: 'At Lupin, our Research and Development (R&D) division drives our industry positioning as a leading pharmaceutical solutions provider in the US and in India. It develops solutions that allow us to deliver on our purpose and vision.'
+                  text: 'At Lupin, our Research and Development (R&D) division drives our industry positioning as a leading pharmaceutical solutions provider in the US and in India. It develops solutions that allow us to deliver on our purpose and vision.',
+                  href: '/about-us/our-science'
                 }
               ];
               
@@ -176,6 +174,7 @@ export default async function AboutUsPage() {
                 ? foldsData.map((fold, index) => ({
                     heading: fold.heading || defaultFolds[index]?.heading || 'Our Purpose',
                     text: fold.text || defaultFolds[index]?.text || '',
+                    href: fold.href || defaultFolds[index]?.href || '#',
                     color: index % 2 === 0 ? 'teal' : 'green',
                     svg: index % 2 === 0 ? 'svg1' : 'svg2',
                     svgPosition: index % 2 === 0 ? 'right' : 'left',
@@ -198,7 +197,7 @@ export default async function AboutUsPage() {
                           height={623}
                           quality={100}
                         />
-                        <Link href="#" className="about-us-content__fold-cta">
+                        <Link href={fold.href || '#'} className="about-us-content__fold-cta">
                           <div className="about-us-content__fold-cta-circle"></div>
                           <span className="about-us-content__fold-cta-text">
                             READ<br />MORE

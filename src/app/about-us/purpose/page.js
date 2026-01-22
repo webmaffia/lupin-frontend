@@ -10,7 +10,7 @@ import '@/scss/components/Purpose.scss';
 export const metadata = generateSEOMetadata({
   title: "Our Purpose - Lupin",
   description: "We Catalyze Treatments That Transform Hope Into Healing. A purpose-driven journey of over five decades – improving lives, building sustainability, and delivering long-term value to our stakeholders.",
-  canonicalUrl: "https://www.lupin.com/purpose",
+  canonicalUrl: "https://www.lupin.com/about-us/purpose",
 });
 
 export default function PurposePage() {
@@ -42,7 +42,7 @@ export default function PurposePage() {
                 A Purpose <br />That Heals
                 </h2>
                 <p className="purpose-story__paragraph">
-                Ours is a purpose-driven journey of over five decades – improving lives, building sustainability, and delivering long-term value to our stakeholders. Guided by a clear sense of purpose, our Founder, Dr. Desh Bandhu Gupta, shaped Lupin’s mission to ensure that no one is left without access to quality healthcare they deserve. Our founder, Dr. Desh Bandhu Gupta, discovered our 'why' and established our mission – to ensure that no one is left without the quality care they deserve.
+                Ours is a purpose-driven journey of over five decades – improving lives, building sustainability, and delivering long-term value to our stakeholders. Guided by a clear sense of purpose, our Founder, Dr. Desh Bandhu Gupta, shaped Lupin's mission to ensure that no one is left without access to quality healthcare they deserve. Our founder, Dr. Desh Bandhu Gupta, discovered our 'why' and established our mission – to ensure that no one is left without the quality care they deserve.
                 </p>
                 <p className="purpose-story__paragraph">
                   It is this blend of vision, compassion, and resilience that drives us to keep moving forward, so that generations to come may benefit from the foundation we continue to build.

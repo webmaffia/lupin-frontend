@@ -10,7 +10,7 @@ import '@/scss/pages/our-manufacturing-sites.scss';
 export const metadata = generateSEOMetadata({
   title: "Our Manufacturing Sites - Lupin | State-of-the-Art Pharmaceutical Manufacturing Facilities",
   description: "Discover Lupin's state-of-the-art manufacturing facilities across the globe. Learn about our world-class production capabilities, quality standards, and commitment to pharmaceutical excellence.",
-  canonicalUrl: "https://www.lupin.com/our-manufacturing-sites",
+  canonicalUrl: "https://www.lupin.com/about-us/our-manufacturing-sites",
   keywords: "Lupin manufacturing sites, pharmaceutical manufacturing facilities, Lupin production plants, global manufacturing, pharmaceutical facilities, Lupin Limited",
 });
 

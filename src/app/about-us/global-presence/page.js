@@ -7,7 +7,7 @@ import '@/scss/pages/global-presence.scss';
 export const metadata = generateSEOMetadata({
   title: "Global Presence - Lupin | Worldwide Pharmaceutical Operations",
   description: "Discover Lupin's global presence and operations across multiple continents. Learn about our international markets, manufacturing facilities, and commitment to delivering quality healthcare worldwide.",
-  canonicalUrl: "https://www.lupin.com/global-presence",
+  canonicalUrl: "https://www.lupin.com/about-us/global-presence",
   keywords: "Lupin global presence, international operations, worldwide pharmaceutical, global markets, Lupin Limited, international healthcare",
 });
 

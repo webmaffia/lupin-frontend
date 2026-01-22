@@ -14,7 +14,7 @@ import '@/scss/pages/our-science.scss';
 export const metadata = generateSEOMetadata({
   title: "Our Science - Lupin | Pharmaceutical Research & Innovation",
   description: "Discover Lupin's commitment to pharmaceutical research, innovation, and scientific excellence. Learn about our research capabilities, development programs, and scientific breakthroughs.",
-  canonicalUrl: "https://www.lupin.com/our-science",
+  canonicalUrl: "https://www.lupin.com/about-us/our-science",
   keywords: "Lupin science, pharmaceutical research, drug development, pharmaceutical innovation, research and development, Lupin R&D, scientific excellence",
 });
 
