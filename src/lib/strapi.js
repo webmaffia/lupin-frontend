@@ -81,7 +81,19 @@ export async function fetchAPI(endpoint, options = {}) {
 export function getStrapiMedia(media) {
   if (!media) return null;
 
-  const imageUrl = typeof media === 'string' ? media : media.url;
+  // Handle direct media object from API (with url property)
+  let imageUrl = null;
+  if (typeof media === 'string') {
+    imageUrl = media;
+  } else if (media.url) {
+    imageUrl = media.url;
+  } else if (media.data?.attributes?.url) {
+    imageUrl = media.data.attributes.url;
+  } else if (media.data?.url) {
+    imageUrl = media.data.url;
+  }
+
+  if (!imageUrl) return null;
 
   // Return full URL if it's already a complete URL
   if (imageUrl.startsWith('http')) {
@@ -284,7 +296,7 @@ export async function getArticle(slug) {
 
   try {
     const articles = await fetchAPI(
-      `articles?filters[slug][$eq]=${slug}&populate=*`,
+      `articles?filters[slug][$eq]=${slug}&populate=media`,
       {
         next: { revalidate: 60 },
       }
@@ -304,8 +316,9 @@ export async function getArticle(slug) {
  */
 export async function getArticlesByCategory(categorySlug, limit = 10, sort = 'desc') {
   try {
+    // Sort by publishedOn first, then publishedAt as fallback
     const response = await fetchAPI(
-      `articles?filters[category][slug][$eq]=${categorySlug}&pagination[page]=1&pagination[pageSize]=${limit}&sort[0]=publishedAt:${sort}&populate=*`,
+      `articles?filters[category][slug][$eq]=${categorySlug}&pagination[page]=1&pagination[pageSize]=${limit}&sort[0]=publishedOn:${sort}&sort[1]=publishedAt:${sort}&populate=media`,
       {
         next: { revalidate: 60 },
       }

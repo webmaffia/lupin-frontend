@@ -4,7 +4,6 @@ import MediaCoverage from '@/components/MediaCoverage';
 import MediaContact from '@/components/global/MediaContact';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getPressReleases, getPerspectives, getStrapiMedia } from '@/lib/strapi';
-import { getStrapiImageUrl } from '@/lib/strapi-utils';
 import '@/scss/pages/media.scss';
 
 // Generate metadata for the Media page
@@ -115,12 +114,12 @@ export default async function MediaPage() {
     const perspectivesArticles = perspectivesResponse?.data || [];
 
     perspectivesData.items = perspectivesArticles.map((article) => {
-      // Get image URL if available
+      // Get image URL from media field if available
       let imageUrl = null;
-      if (article.image) {
-        imageUrl = getStrapiImageUrl(article.image) || getStrapiMedia(article.image);
+      if (article.media) {
+        imageUrl = getStrapiMedia(article.media);
       }
-      // Fallback to default image if no image in article
+      // Fallback to default image if no media in article
       if (!imageUrl) {
         imageUrl = "/assets/media-kit-card/demo2.png";
       }

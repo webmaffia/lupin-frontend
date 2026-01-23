@@ -58,7 +58,12 @@ export default async function PressReleasesPage() {
       date: formatDate(article.publishedOn || article.publishedAt),
       headline: splitTitleIntoHeadline(article.title),
       category: "Press Releases",
-      href: `/media/press-releases/${article.slug}`
+      href: `/media/press-releases/${article.slug}`,
+      // Add raw data for search and filtering
+      title: article.title || '',
+      slug: article.slug || '',
+      publishedOn: article.publishedOn || null,
+      publishedAt: article.publishedAt || null
     }));
   } catch (error) {
     console.error('Error fetching press releases from Strapi:', error);

@@ -10,8 +10,6 @@ import MediaContact from '@/components/global/MediaContact';
 import '@/scss/pages/media.scss';
 
 export default function MediaKitClient({ initialProfiles, initialPdfs }) {
-    const [searchQuery, setSearchQuery] = useState('');
-    const [selectedYear, setSelectedYear] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [activeTab, setActiveTab] = useState('all'); // 'all', 'profiles', 'pdfs'
     const itemsPerPage = 6;
@@ -43,7 +41,7 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
         ...allPdfs.map(item => ({ ...item, type: 'pdf' }))
     ];
 
-    // Filter by tab
+    // Filter by tab only
     let filteredByTab = allItems;
     if (activeTab === 'profiles') {
         filteredByTab = allItems.filter(item => item.type === 'profile');
@@ -51,35 +49,21 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
         filteredByTab = allItems.filter(item => item.type === 'pdf');
     }
 
-    // Search and filter logic
-    const filteredItems = filteredByTab.filter((item) => {
-        // Search filter - check name and title
-        const searchText = item.name || item.title || '';
-        const matchesSearch = searchQuery === '' ||
-            searchText.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase()));
-
-        // Year filter - placeholder for future year matching
-        const matchesYear = selectedYear === '' || true;
-
-        return matchesSearch && matchesYear;
-    });
-
     // Pagination logic
-    const totalItems = filteredItems.length;
+    const totalItems = filteredByTab.length;
     const totalPages = Math.ceil(totalItems / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const currentPageItems = filteredItems.slice(startIndex, endIndex);
+    const currentPageItems = filteredByTab.slice(startIndex, endIndex);
 
     // Separate current page items by type
     const currentProfiles = currentPageItems.filter(item => item.type === 'profile');
     const currentPdfs = currentPageItems.filter(item => item.type === 'pdf');
 
-    // Reset to page 1 when search, filter, or tab changes
+    // Reset to page 1 when tab changes
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchQuery, selectedYear, activeTab]);
+    }, [activeTab]);
 
     const handlePageChange = (page) => {
         if (page >= 1 && page <= totalPages) {
@@ -95,10 +79,7 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
     return (
         <div style={{ position: 'relative' }}>
             <InnerBanner data={bannerData} />
-            <MediaNavigation
-                onSearch={(query) => setSearchQuery(query)}
-                onYearChange={(year) => setSelectedYear(year)}
-            />
+            <MediaNavigation hideSearch={true} />
 
             {/* Tab Navigation */}
             {(allProfiles.length > 0 || allPdfs.length > 0) && (
@@ -168,7 +149,7 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
             )}
 
             {/* No Results Message */}
-            {filteredItems.length === 0 && (
+            {filteredByTab.length === 0 && (
                 <section className="sectionProfileCards">
                     <div className="profile-cards-container">
                         <div className="profile-cards-no-results">

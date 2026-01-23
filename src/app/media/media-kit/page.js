@@ -1,6 +1,5 @@
 import MediaKitClient from './MediaKitClient';
 import { getMediaKit, getStrapiMedia } from '@/lib/strapi';
-import { getStrapiImageUrl } from '@/lib/strapi-utils';
 
 export default async function MediaKitPage() {
   // Fetch all media-kit articles
@@ -25,12 +24,12 @@ export default async function MediaKitPage() {
         pdfUrl = article.link;
       }
 
-      // Get image URL if available
+      // Get image URL from media field if available
       let imageUrl = null;
-      if (article.image) {
-        imageUrl = getStrapiImageUrl(article.image) || getStrapiMedia(article.image);
+      if (article.media) {
+        imageUrl = getStrapiMedia(article.media);
       }
-      // Fallback to default image if no image in article
+      // Fallback to default image if no media in article
       if (!imageUrl) {
         imageUrl = "/assets/media-kit-card/demo4.png";
       }
