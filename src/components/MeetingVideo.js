@@ -39,11 +39,6 @@ export default function MeetingVideo({ data, error = null }) {
     );
   }
 
-  const meetingVideoData = {
-    title: data.title || "Annual General Meeting",
-    videos: data.videos
-  };
-
   const handleVideoClick = (video) => {
     setSelectedVideo(video);
     setIsPopupOpen(true);
@@ -65,15 +60,15 @@ export default function MeetingVideo({ data, error = null }) {
       <section className="meeting-video">
         <div className="meeting-video__container">
           {/* Title */}
-          {meetingVideoData.title && (
+          {data.title && (
             <h2 className="meeting-video__title">
-              {meetingVideoData.title}
+              {data.title}
             </h2>
           )}
 
           {/* Video Cards Grid */}
           <div className="meeting-video__grid">
-            {meetingVideoData.videos.map((video) => (
+            {data.videos.map((video) => (
               <div
                 key={video.id}
                 className="meeting-video__card"
@@ -81,10 +76,10 @@ export default function MeetingVideo({ data, error = null }) {
               >
                 {/* Thumbnail */}
                 <div className="meeting-video__thumbnail-wrapper">
-                  {video.thumbnail || video.thumbnailUrl ? (
+                  {video.thumbnail && typeof video.thumbnail === 'string' && video.thumbnail.trim() !== '' ? (
                     <Image
-                      src={video.thumbnail || video.thumbnailUrl || "/assets/meeting-video/Youtube-thumb.png"}
-                      alt={video.title}
+                      src={video.thumbnail}
+                      alt={video.title || 'Meeting video'}
                       fill
                       className="meeting-video__thumbnail"
                       quality={100}
@@ -220,4 +215,3 @@ export default function MeetingVideo({ data, error = null }) {
     </>
   );
 }
-

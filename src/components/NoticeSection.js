@@ -4,10 +4,10 @@ import Link from 'next/link';
 import '../scss/components/Policies.scss';
 
 export default function NoticeSection({ data }) {
-  // Default data matching Figma design exactly (will be replaced by Strapi)
-  const noticeData = data || {
+  // Static fallback data (keep as is for table and other static content)
+  const staticFallbackData = {
     title: "Notice",
-    mainParagraph: "Appointment of registrar and share transfer agent of the company. Shareholders, beneficial owners, depository participants, and all other persons concerned dealing in the shares of Lupin Limited (“the Company”) are hereby informed that the Company has appointed MUFG Intime India Pvt. Ltd. (“MUFG Intime”) as the registrar and share transfer agent of the Company, with effect from June 15, 2018. All persons concerned are requested to send or deliver all documents and correspondence relating to transmission of shares, deletion of name, change of address (physical shares), issue of duplicate share certificates, claim of unpaid dividend or unclaimed shares, dematerialisation of shares, etc., pertaining to the shares of the Company to MUFG Intime at the following address.",
+    mainParagraph: "Appointment of registrar and share transfer agent of the company. Shareholders, beneficial owners, depository participants, and all other persons concerned dealing in the shares of Lupin Limited (\"the Company\") are hereby informed that the Company has appointed MUFG Intime India Pvt. Ltd. (\"MUFG Intime\") as the registrar and share transfer agent of the Company, with effect from June 15, 2018. All persons concerned are requested to send or deliver all documents and correspondence relating to transmission of shares, deletion of name, change of address (physical shares), issue of duplicate share certificates, claim of unpaid dividend or unclaimed shares, dematerialisation of shares, etc., pertaining to the shares of the Company to MUFG Intime at the following address.",
     address: {
       company: "MUFG Intime India Pvt. Ltd.",
       unit: "Unit: Lupin Limited",
@@ -25,6 +25,29 @@ export default function NoticeSection({ data }) {
     }
   };
 
+  // Use API data if provided (structured object), otherwise use static fallback
+  // If data is a string (rich text from API), we'll render it directly
+  // If data is null/undefined, use static fallback
+  const noticeData = (data && typeof data === 'object' && !Array.isArray(data)) ? data : staticFallbackData;
+  const isRichText = data && typeof data === 'string' && data.trim().length > 0;
+
+  // If data is rich text (string) from API, render it directly
+  if (isRichText) {
+    return (
+      <section className="policies">
+        <div className="policies__container">
+          <div className="policies__content policies__content--no-top-margin">
+            <div 
+              className="policies__notice-content"
+              dangerouslySetInnerHTML={{ __html: data }}
+            />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Otherwise, render structured data (from API or fallback)
   return (
     <section className="policies">
       {/* Container */}

@@ -152,21 +152,16 @@ export default async function OtherStatutoryInformationPage() {
       ))}
 
       {/* Notice Section */}
-      {statutoryData?.noticeSection && (
-        <section className="policies">
-          <div className="policies__container">
-            <div className="policies__content policies__content--no-top-margin">
-              <div 
-                className="policies__notice-content"
-                dangerouslySetInnerHTML={{ __html: statutoryData.noticeSection }}
-              />
-            </div>
-          </div>
-        </section>
-      )}
+      <NoticeSection data={statutoryData?.noticeSection || null} />
+
+      {/* Voting Table - Always use backup/static data */}
+      <VotingTable />
+
+      {/* IEPF Table - Always use backup/static data */}
+      <IEPFTable />
 
       {/* Statutory Documents Section (PdfSection) */}
-      {statutoryData?.pdfSection && statutoryData.pdfSection.length > 0 && (
+      {statutoryData?.pdfSection && Array.isArray(statutoryData.pdfSection) && statutoryData.pdfSection.length > 0 && (
         <section className="statutory-documents">
           <div className="statutory-documents__container">
             <div className="statutory-documents__grid">
