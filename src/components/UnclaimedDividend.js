@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import NavigationLinks from './NavigationLinks';
 import '../scss/components/UnclaimedDividend.scss';
 
@@ -19,8 +22,8 @@ export default function UnclaimedDividend({ data, error = null }) {
       formTypePlaceholder: "Form Type",
       formTypeOptions: [
         { value: '', label: 'Form Type' },
-        { value: 'dividend', label: 'Dividend' },
-        { value: 'shares', label: 'Shares' }
+        { value: '2', label: 'IEPF Form 2 (Dividends TO BE credited to IEPF in next 7 years)' },
+        { value: '4', label: 'Equity Shares TO BE credited to IEPF under Section 124 of IEPF Rules' }
       ],
       submitText: "Submit"
     },
@@ -216,11 +219,15 @@ export default function UnclaimedDividend({ data, error = null }) {
           <div className="unclaimed-dividend__notice-content">
             {/* Render API rich text if available, otherwise use fallback */}
             {unclaimedData.notice.dividendNotice ? (
-              // Render API DividendNotice rich text
-              <div 
-                className="unclaimed-dividend__notice-rich-text"
-                dangerouslySetInnerHTML={{ __html: unclaimedData.notice.dividendNotice }}
-              />
+              // Render API DividendNotice rich text using ReactMarkdown
+              <div className="unclaimed-dividend__notice-rich-text">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                >
+                  {unclaimedData.notice.dividendNotice}
+                </ReactMarkdown>
+              </div>
             ) : (
               // Render fallback notice content
               <>
@@ -292,10 +299,14 @@ export default function UnclaimedDividend({ data, error = null }) {
 
             {/* Render DividendInfoSection if available (could be additional content) */}
             {unclaimedData.notice.dividendInfoSection && (
-              <div 
-                className="unclaimed-dividend__notice-info-section"
-                dangerouslySetInnerHTML={{ __html: unclaimedData.notice.dividendInfoSection }}
-              />
+              <div className="unclaimed-dividend__notice-info-section">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                >
+                  {unclaimedData.notice.dividendInfoSection}
+                </ReactMarkdown>
+              </div>
             )}
           </div>
         </div>
