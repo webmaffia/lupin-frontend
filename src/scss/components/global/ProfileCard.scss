@@ -16,7 +16,7 @@
   @include flex(column, flex-start, flex-start);
   transition: all $transition-base;
   cursor: pointer;
-  
+
   @include media('mobile') {
     width: 100%;
     max-width: 100%;
@@ -29,7 +29,7 @@
   &:hover {
     transform: translateY(vw(-5));
     box-shadow: 0 vw(10) vw(30) rgba(0, 0, 0, 0.1);
-    
+
     @include media('mobile') {
       transform: translateY(vw-mobile(-3, 414));
       box-shadow: 0 vw-mobile(5, 414) vw-mobile(15, 414) rgba(0, 0, 0, 0.1);
@@ -40,7 +40,7 @@
     text-decoration: none;
     color: inherit;
     display: block;
-    
+
     @include media('mobile') {
       width: 100%;
     }
@@ -63,7 +63,7 @@
     z-index: 1;
     overflow: hidden;
     border-radius: 0 0 vw(44.79) vw(44.79);
-    
+
     @include media('mobile') {
       border-radius: 0 0 vw-mobile(30, 414) vw-mobile(30, 414);
     }
@@ -81,13 +81,18 @@
     display: block;
     object-fit: cover;
     object-position: center bottom;
+    max-height: vw(400);
+
+    @include media('mobile') {
+      max-height: vw-mobile(300, 414);
+    }
   }
 
   &__text {
     @include flex(column, flex-start, flex-start);
     gap: vw(15);
     width: 100%;
-    
+
     @include media('mobile') {
       gap: vw-mobile(12, 414);
     }
@@ -101,7 +106,7 @@
     color: #08a03f;
     margin: 0;
     opacity: 0.8;
-    
+
     @include media('mobile') {
       font-size: vw-mobile(14, 414);
     }
@@ -114,7 +119,7 @@
     line-height: 1.37;
     color: #08a03f;
     margin: 0;
-    
+
     @include media('mobile') {
       font-size: vw-mobile(28, 414);
     }
@@ -124,7 +129,7 @@
   &--has-video {
     .profile-card__name {
       font-size: vw(35);
-      
+
       @include media('mobile') {
         font-size: vw-mobile(24, 414);
       }
@@ -139,7 +144,7 @@
     color: #08a03f;
     margin: 0;
     max-width: vw(329);
-    
+
     @include media('mobile') {
       font-size: vw-mobile(16, 414);
       max-width: 100%;
@@ -155,12 +160,12 @@
     height: vw(100);
     z-index: 2;
     transition: all $transition-base;
-    
+
     @include media('mobile') {
       width: vw-mobile(70, 414);
       height: vw-mobile(70, 414);
     }
-    
+
     .profile-card:hover & {
       transform: scale(1.1);
     }
@@ -179,7 +184,7 @@
   bottom: vw(47);
   left: vw(47);
   z-index: 3;
-  
+
   @include media('mobile') {
     bottom: vw-mobile(30, 414);
     left: vw-mobile(30, 414);
@@ -198,13 +203,13 @@
   cursor: pointer;
   transition: all $transition-base;
   flex-shrink: 0;
-  
+
   @include media('tablet') {
     padding: vw(12, 768) vw(18, 768);
     gap: vw(12, 768);
     border-radius: vw(50, 768);
   }
-  
+
   @include media('mobile') {
     padding: vw-mobile(10, 414) vw-mobile(15, 414);
     gap: vw-mobile(10, 414);
@@ -214,7 +219,7 @@
   &:hover {
     background: #0a8a35;
     transform: translateY(vw(-2));
-    
+
     @include media('mobile') {
       transform: translateY(vw-mobile(-1, 414));
     }
@@ -231,11 +236,11 @@
   font-size: vw(20);
   line-height: 1.2;
   color: #ffffff;
-  
+
   @include media('tablet') {
     font-size: vw(18, 768);
   }
-  
+
   @include media('mobile') {
     font-size: vw-mobile(16, 414);
   }
@@ -245,12 +250,12 @@
   width: vw(18);
   height: vw(18);
   flex-shrink: 0;
-  
+
   @include media('tablet') {
     width: vw(16, 768);
     height: vw(16, 768);
   }
-  
+
   @include media('mobile') {
     width: vw-mobile(14, 414);
     height: vw-mobile(14, 414);
@@ -264,14 +269,14 @@
   row-gap: vw(65);
   column-gap: vw(70);
   width: 100%;
-  justify-items: center;  
-  
+  justify-items: center;
+
   @include media('tablet') {
     grid-template-columns: repeat(auto-fill, minmax(vw(400, 768), 1fr));
     row-gap: vw(50, 768);
     column-gap: vw(20, 768);
   }
-  
+
   @include media('mobile') {
     grid-template-columns: 1fr;
     row-gap: vw-mobile(30, 414);
@@ -279,4 +284,3 @@
     justify-items: stretch;
   }
 }
-

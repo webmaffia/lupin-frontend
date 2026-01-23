@@ -360,12 +360,44 @@ export async function getMediaCoverage(limit = 10) {
 }
 
 /**
+ * Fetch featured articles by category slug from Strapi
+ * Example usage:
+ * const featuredArticles = await getFeaturedArticlesByCategory('media-coverage', 3);
+ */
+export async function getFeaturedArticlesByCategory(categorySlug, limit = 10, sort = 'desc') {
+  try {
+    // Filter by category and featured=true, sort by publishedOn first, then publishedAt as fallback
+    const response = await fetchAPI(
+      `articles?filters[category][slug][$eq]=${categorySlug}&filters[featured][$eq]=true&pagination[page]=1&pagination[pageSize]=${limit}&sort[0]=publishedOn:${sort}&sort[1]=publishedAt:${sort}&populate=media`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
+    // Return response with empty data array if no articles found
+    return response || { data: [], meta: { pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } } };
+  } catch (error) {
+    console.error(`Error fetching featured articles for category ${categorySlug}:`, error);
+    // Return empty structure instead of throwing
+    return { data: [], meta: { pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } } };
+  }
+}
+
+/**
  * Fetch media kit articles from Strapi
  * Example usage:
  * const mediaKit = await getMediaKit(10);
  */
 export async function getMediaKit(limit = 10) {
   return getArticlesByCategory('media-kit', limit, 'desc');
+}
+
+/**
+ * Fetch awards and recognition articles from Strapi
+ * Example usage:
+ * const awards = await getAwardsAndRecognition(100);
+ */
+export async function getAwardsAndRecognition(limit = 100) {
+  return getArticlesByCategory('awards-and-recognition', limit, 'desc');
 }
 
 /**

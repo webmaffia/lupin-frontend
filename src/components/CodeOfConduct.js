@@ -41,7 +41,7 @@ export default function CodeOfConduct({ data, error }) {
   }
 
   // Show empty state if no data
-  if (!data || !data.codes || data.codes.length === 0) {
+  if (!data || !data.documentSections || data.documentSections.length === 0) {
     return (
       <section className="code-of-conduct">
         <div className="code-of-conduct__container">
@@ -75,34 +75,52 @@ export default function CodeOfConduct({ data, error }) {
 
         {/* Content */}
         <div className="code-of-conduct__content">
-          {/* Code Cards Grid */}
-          <div className="code-of-conduct__grid">
-            {codeOfConductData.codes.map((code) => (
-              <div
-                key={code.id}
-                className={`code-card`}
-              >
-                <div className="code-card__content">
-                  <h3 className="code-card__title">{code.title}</h3>
-                  <div className="code-card__download">
-                    <Link href={code.pdfUrl || '#'} className="code-card__download-link" target="_blank" rel="noopener noreferrer">
-                      Download PDF
-                    </Link>
-                    <Link href={code.pdfUrl || '#'} className="code-card__download-button" target="_blank" rel="noopener noreferrer">
-                      <Image
-                        src={code.isActive ? staticImages.downloadButton.active : staticImages.downloadButton.inactive}
-                        alt="Download"
-                        width={104}
-                        height={104}
-                        className="code-card__download-icon"
-                        quality={100}
-                      />
-                    </Link>
+          {/* Document Sections - DocumentSection with Language PDFs */}
+          {codeOfConductData.documentSections && codeOfConductData.documentSections.length > 0 && (
+            <div className="code-of-conduct__grid">
+              {codeOfConductData.documentSections.map((section) => (
+                <div
+                  key={section.id}
+                  className={`code-card`}
+                >
+                  <div className="code-card__content">
+                    <h3 className="code-card__title">{section.pdfTitle}</h3>
+                    {/* Language PDFs as links */}
+                    {section.languagePdfs && section.languagePdfs.length > 0 && (
+                      <div className="code-card__languages">
+                        {section.languagePdfs.map((lang) => (
+                          <Link
+                            key={lang.id}
+                            href={lang.pdfUrl || '#'}
+                            className="code-card__language-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {lang.title}
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                    <div className="code-card__download">
+                      <Link href={section.pdfUrl || '#'} className="code-card__download-link" target="_blank" rel="noopener noreferrer">
+                        Download PDF
+                      </Link>
+                      <Link href={section.pdfUrl || '#'} className="code-card__download-button" target="_blank" rel="noopener noreferrer">
+                        <Image
+                          src={section.isActive ? staticImages.downloadButton.active : staticImages.downloadButton.inactive}
+                          alt="Download"
+                          width={104}
+                          height={104}
+                          className="code-card__download-icon"
+                          quality={100}
+                        />
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {/* Decorative Group Image */}
           <div className="code-of-conduct__decorative">

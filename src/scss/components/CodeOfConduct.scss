@@ -288,5 +288,42 @@
     object-fit: contain;
     display: block;
   }
+
+  &__languages {
+    @include flex(row, center, center);
+    flex-wrap: wrap;
+    gap: vw(10);
+    margin: vw(15) 0;
+    
+    @include media('mobile') {
+      gap: vw-mobile(8, 414);
+      margin: vw-mobile(10, 414) 0;
+    }
+  }
+
+  &__language-link {
+    font-family: $font-family-base;
+    font-weight: 600;
+    font-size: vw(18);
+    line-height: 1.37;
+    color: #08a03f;
+    text-decoration: underline;
+    transition: color $transition-base;
+    
+    @include media('mobile') {
+      font-size: vw-mobile(14, 414);
+    }
+    
+    &:hover {
+      color: #066a2e;
+    }
+  }
+
+  &--active,
+  &:hover {
+    .code-card__language-link {
+      color: #ffffff;
+    }
+  }
 }
 

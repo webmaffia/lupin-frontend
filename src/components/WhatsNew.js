@@ -188,7 +188,7 @@ export default function WhatsNew({ data, className, useProfileCard = false, expl
                       const categoryParts = item.category.split(' ');
                       const firstPart = categoryParts[0] || item.category;
                       const secondPart = categoryParts.slice(1).join(' ') || '';
-                      
+
                       return (
                         <Link href={item.href || "#"} className="whats-new__category-btn">
                           <div className="whats-new__category-line">

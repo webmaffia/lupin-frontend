@@ -2,7 +2,11 @@ import InnerBanner from '@/components/InnerBanner';
 import TransferPhysicalShares from '@/components/TransferPhysicalShares';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getTransferPhysicalShare, mapTransferPhysicalShareData } from '@/lib/strapi-reports';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw'
 import { mapTopBannerData } from '@/lib/strapi';
+
 
 // Generate metadata for the transfer of physical shares page
 export const metadata = generateSEOMetadata({

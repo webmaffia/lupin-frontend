@@ -969,9 +969,16 @@ export function mapPolicyData(strapiData) {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getCodeOfConduct() {
-  // Use simpler populate format that works - populate all fields recursively
-  // This will populate TopBanner (DesktopImage, MobileImage, Heading, SubHeading) and CodeOfConductDocumentsSection (Title, PublishedDate, Pdf, isActive)
-  return fetchAPI('code-of-conduct?populate[TopBanner][populate]=*&populate[CodeOfConductDocumentsSection][populate]=*', {
+  // Populate TopBanner, CodeOfConductDocumentsSection, and DocumentSection with nested LangaugePdfDocument
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[CodeOfConductDocumentsSection][populate][Pdf][populate]=*',
+    'populate[DocumentSection][populate][Pdf][populate]=*',
+    'populate[DocumentSection][populate][LangaugePdfDocument][populate][Pdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`code-of-conduct?${populateQuery}`, {
     next: { revalidate: 60 },
   });
 }
@@ -1039,9 +1046,72 @@ export function mapCodeOfConductData(strapiData) {
       }).filter(code => code.id !== null) // Filter out invalid codes
     : [];
 
+  // Map DocumentSection (new section with language PDFs)
+  const documentSections = Array.isArray(data?.DocumentSection)
+    ? data.DocumentSection
+        .filter(section => section?.isActive !== false && section?.IsActive !== false)
+        .map((section) => {
+          // Get main PDF URL
+          let mainPdfUrl = null;
+          if (section?.Pdf) {
+            const pdf = section.Pdf?.data?.attributes || section.Pdf;
+            if (pdf?.url || pdf) {
+              mainPdfUrl = getStrapiMedia(pdf);
+            }
+          }
+          if (!mainPdfUrl && section?.pdf) {
+            const pdf = section.pdf?.data?.attributes || section.pdf;
+            if (pdf?.url || pdf) {
+              mainPdfUrl = getStrapiMedia(pdf);
+            }
+          }
+
+          // Map LangaugePdfDocument (nested repeatable component)
+          const languagePdfs = Array.isArray(section?.LangaugePdfDocument)
+            ? section.LangaugePdfDocument
+                .filter(lang => lang?.isActive !== false && lang?.IsActive !== false)
+                .map((lang) => {
+                  let langPdfUrl = null;
+                  if (lang?.Pdf) {
+                    const pdf = lang.Pdf?.data?.attributes || lang.Pdf;
+                    if (pdf?.url || pdf) {
+                      langPdfUrl = getStrapiMedia(pdf);
+                    }
+                  }
+                  if (!langPdfUrl && lang?.pdf) {
+                    const pdf = lang.pdf?.data?.attributes || lang.pdf;
+                    if (pdf?.url || pdf) {
+                      langPdfUrl = getStrapiMedia(pdf);
+                    }
+                  }
+
+                  return {
+                    id: lang?.id || null,
+                    title: lang?.Title || lang?.title || '',
+                    pdfUrl: langPdfUrl || '#',
+                    isActive: lang?.isActive !== false,
+                    publishedDate: lang?.PublishedDate || lang?.publishedDate || null
+                  };
+                })
+                .filter(lang => lang.id !== null && lang.pdfUrl !== '#')
+            : [];
+
+          return {
+            id: section?.id || null,
+            pdfTitle: section?.PdfTitle || section?.pdfTitle || '',
+            pdfUrl: mainPdfUrl || '#',
+            isActive: section?.isActive !== false,
+            publishedDate: section?.PublishedDate || section?.publishedDate || null,
+            languagePdfs: languagePdfs
+          };
+        })
+        .filter(section => section.id !== null)
+    : [];
+
   // Return in component-expected format (images are static assets, not from API)
   return {
     codes: codes,
+    documentSections: documentSections,
     images: {
       downloadButton: {
         active: "/assets/policies/download-button-active.svg",
@@ -2022,20 +2092,38 @@ export function mapNoticeData(strapiData) {
     })
     .filter(notice => notice.financialLabel) // Only include notices with financial label
     .sort((a, b) => {
-      // Extract year from financialLabel (e.g., "FY 2026-27", "2026", "FY 2025-26")
-      const extractYear = (label) => {
-        if (!label) return 0;
-        // Try to find 4-digit year (e.g., 2026, 2025)
+      // Extract year and quarter from financialLabel (e.g., "Q1 FY 2023", "Q4 FY 2022")
+      const extractYearAndQuarter = (label) => {
+        if (!label) return { year: 0, quarter: 0 };
+        
+        // Extract year (4-digit year)
         const yearMatch = label.match(/\b(20\d{2})\b/);
-        return yearMatch ? parseInt(yearMatch[1]) : 0;
+        const year = yearMatch ? parseInt(yearMatch[1]) : 0;
+        
+        // Extract quarter (Q1, Q2, Q3, Q4)
+        const quarterMatch = label.match(/Q(\d+)/i);
+        const quarter = quarterMatch ? parseInt(quarterMatch[1]) : 0;
+        
+        return { year, quarter };
       };
       
-      const yearA = extractYear(a.financialLabel);
-      const yearB = extractYear(b.financialLabel);
+      const { year: yearA, quarter: quarterA } = extractYearAndQuarter(a.financialLabel);
+      const { year: yearB, quarter: quarterB } = extractYearAndQuarter(b.financialLabel);
       
-      // If both have valid years, sort by year descending (2026 first, then 2025, etc.)
+      // First sort by year descending (2023 before 2022)
       if (yearA > 0 && yearB > 0) {
-        return yearB - yearA; // Descending order (latest year first)
+        if (yearA !== yearB) {
+          return yearB - yearA; // Descending order (latest year first)
+        }
+        
+        // If same year, sort by quarter descending (Q4, Q3, Q2, Q1)
+        if (quarterA > 0 && quarterB > 0) {
+          return quarterB - quarterA; // Descending order (Q4 first, then Q3, Q2, Q1)
+        }
+        
+        // If one has quarter and other doesn't, prioritize the one with quarter
+        if (quarterA > 0 && quarterB === 0) return -1;
+        if (quarterB > 0 && quarterA === 0) return 1;
       }
       
       // If only one has a year, prioritize it
@@ -2569,6 +2657,70 @@ export async function getSakshamNiveshak() {
  * @param {Object} strapiData - Raw Strapi API response
  * @returns {Object} Mapped saksham niveshak data for component
  */
+/**
+ * Fetch tips-for-shareholder data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getTipsForShareholder() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[TipsShareHolderSectionContent][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`tips-for-shareholder?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map tips-for-shareholder data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped tips for shareholder data
+ */
+export function mapTipsForShareholderData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return {
+      banner: null,
+      sections: []
+    };
+  }
+
+  // Map TopBanner
+  const topBanner = data?.TopBanner || data?.topBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map TipsShareHolderSectionContent (Repeatable Component)
+  const sectionsArray = data?.TipsShareHolderSectionContent 
+    || data?.tipsShareHolderSectionContent 
+    || data?.TipsShareHolderSectionContents
+    || data?.tipsShareHolderSectionContents
+    || [];
+  
+  const sections = sectionsArray
+    .filter(section => section?.isActive !== false && section?.IsActive !== false)
+    .map((section, index) => {
+      return {
+        id: section?.id || `section-${index + 1}`,
+        title: section?.Title || section?.title || '',
+        content: section?.Content || section?.content || '',
+        bgColor: section?.SectionBgColor || section?.sectionBgColor || 'default',
+        isActive: section?.isActive !== false
+      };
+    });
+
+  return {
+    banner: banner,
+    sections: sections
+  };
+}
+
 export function mapSakshamNiveshakData(strapiData) {
   // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
   const data = strapiData?.data || strapiData;
@@ -3218,7 +3370,8 @@ export async function getInvestor() {
     'populate[ReportsFilingSection][populate][FinancialHighLightCard][populate][cta][populate]=*',
     'populate[ReportsFilingSection][populate][IntegratedReport][populate][CoverImage][populate]=*',
     'populate[ReportsFilingSection][populate][IntegratedReport][populate][ReportFile][populate]=*',
-    'populate[ReportsFilingSection][populate][NseExchangeSection][populate][PdfDocument][populate][Pdf][populate]=*'
+    'populate[ReportsFilingSection][populate][NseExchangeSection][populate][PdfDocument][populate][Pdf][populate]=*',
+    'populate[ReportsFilingSection][populate][NseExchangeSection][populate][cta][populate]=*'
   ].join('&');
   
   return fetchAPI(`investor?${populateQuery}`, {
@@ -3410,9 +3563,17 @@ export function mapInvestorData(strapiData) {
           };
         });
 
+      // Map CTA if available
+      const cta = nseExchangeSection?.cta || nseExchangeSection?.CTA || null;
+      const mappedCta = cta ? {
+        text: cta?.text || cta?.Text || '',
+        href: cta?.href || cta?.Href || '#'
+      } : null;
+
       mappedNseExchange = {
         sectionTitle: nseExchangeSection?.SectionTitle || nseExchangeSection?.sectionTitle || null,
-        pdfDocuments: filteredPdfs
+        pdfDocuments: filteredPdfs,
+        cta: mappedCta
       };
     }
 
