@@ -298,6 +298,12 @@
     @include media('mobile') {
       margin-top: vw-mobile(30, 414);
     }
+    
+    // Override pagination button widths for product finder only
+    .pagination__prev,
+    .pagination__next {
+      width: auto;
+    }
   }
 }
 
