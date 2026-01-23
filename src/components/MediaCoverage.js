@@ -1,3 +1,6 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import ProfileCard from '@/components/global/ProfileCard';
@@ -31,70 +34,89 @@ import '@/scss/components/MediaCoverage.scss';
  * />
  */
 export default function MediaCoverage({ data, className = '', id, exploreLink }) {
-  const defaultData = {
-    title: "Media Coverage",
-    items: [
-      {
-        id: 1,
-        date: "December 8, 2025",
-        text: "Ramesh Swaminathan at the CNBC TV18 Anniversary Ringing Bell Ceremony, Dec 8, 2025",
-        link: "/media/coverage/cnbc-tv18-anniversary"
-      },
-      {
-        id: 2,
-        date: "December 8, 2025",
-        text: "Ramesh Swaminathan in an exclusive interview with CNBC TV18 on their anniversary special episode",
-        link: "/media/coverage/cnbc-tv18-interview"
-      },
-      {
-        id: 3,
-        date: "November 10, 2025",
-        text: "Ramesh Swaminathan with CNBC Asia, Q2 FY26 Earnings, 10th November 2025",
-        link: "/media/coverage/cnbc-asia-q2-fy26"
-      },
-      {
-        id: 4,
-        date: "November 8, 2025",
-        text: "Co-authored article by Dr. Cyrus Karkaria, President – Biotech Business, and Sanjay Tiwari, Vice President – R&D (Biotech), on 'Biotech industry propels research, innovation & ethical solutions to overcome challenges in drug development' published on Pharmabiz portal on November 8, 2025.",
-        link: "/media/coverage/biotech-article-pharmabiz"
-      },
-      {
-        id: 5,
-        date: "November 7, 2025",
-        text: "Ramesh Swaminathan with Business Today TV, Q2 FY26 Earnings, 7th November 2025",
-        link: "/media/coverage/business-today-q2-fy26"
-      },
-      {
-        id: 6,
-        date: "November 7, 2025",
-        text: "Ramesh Swaminathan with NDTV Profit, Q2 FY26 Earnings, 7th November 2025",
-        link: "/media/coverage/ndtv-profit-q2-fy26"
-      },
-      {
-        id: 7,
-        date: "November 7, 2025",
-        text: "Lupin MD Nilesh Gupta, CEO Vinta Gupta, and Global CFO Ramesh Swaminathan with ET Now – Q2 FY26 earnings, 7th November 2025",
-        link: "/media/coverage/et-now-q2-fy26"
-      },
-      {
-        id: 8,
-        date: "October 29, 2025",
-        text: "Sr General Manager and Center Head, Atharv Ability, Lupin, Dr Gaurish Kenkre's authored article titled Women and Stroke – The Silent Warnings Often Ignored, published in The Health Dialogues",
-        link: "/media/coverage/women-stroke-article"
-      },
-      {
-        id: 9,
-        date: "October 27, 2025",
-        text: "Rajeev Sibal, President India Region Formulations, Lupin quoted in an Industry Story published in the Business Today on 'Business of Cancer' on 24th Oct 2025",
-        link: "/media/coverage/business-cancer-story"
-      }
-    ]
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState(null);
+  const mediaCoverageData = {
+    title: data?.title || "Media Coverage",
+    items: data?.items || [],
+    profileCards: data?.profileCards || []
   };
 
-  const mediaCoverageData = {
-    title: data?.title || defaultData.title,
-    items: data?.items || defaultData.items
+  // Helper function to check if URL is external (starts with http/https)
+  const isExternalLink = (url) => {
+    return url && (url.startsWith('http://') || url.startsWith('https://'));
   };
+
+  // Helper function to check if URL is YouTube
+  const isYouTubeUrl = (url) => {
+    return url && (url.includes('youtube.com') || url.includes('youtu.be'));
+  };
+
+  // Helper function to convert YouTube URL to embed URL
+  const getYouTubeEmbedUrl = (url) => {
+    if (!url) return '';
+    let videoId = '';
+
+    if (url.includes('youtube.com/watch?v=')) {
+      videoId = url.split('v=')[1]?.split('&')[0];
+    } else if (url.includes('youtu.be/')) {
+      videoId = url.split('youtu.be/')[1]?.split('?')[0];
+    } else if (url.includes('youtube.com/embed/')) {
+      videoId = url.split('embed/')[1]?.split('?')[0];
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+  };
+
+  // Handle video click
+  const handleVideoClick = (videoUrl) => {
+    setSelectedVideoUrl(videoUrl);
+    setIsVideoModalOpen(true);
+  };
+
+  // Handle external link click
+  const handleLinkClick = (e, link) => {
+    e.preventDefault();
+    if (link && isExternalLink(link)) {
+      window.open(link, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  // Close video modal
+  const handleCloseVideoModal = () => {
+    setIsVideoModalOpen(false);
+    setSelectedVideoUrl(null);
+  };
+
+  // Handle overlay click
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      handleCloseVideoModal();
+    }
+  };
+
+  // Prevent body scroll when modal is open
+  useEffect(() => {
+    if (isVideoModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isVideoModalOpen]);
+
+  // Handle Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isVideoModalOpen) {
+        handleCloseVideoModal();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isVideoModalOpen]);
 
   return (
     <section id={id} className={`media-coverage ${className}`}>
@@ -119,10 +141,13 @@ export default function MediaCoverage({ data, className = '', id, exploreLink })
         )}
 
         <div className="media-coverage__content">
-        <div className="media-coverage__content">
           {mediaCoverageData.items && mediaCoverageData.items.length > 0 && (
             <div className="media-coverage__list">
               {mediaCoverageData.items.map((item, index) => {
+                const hasVideo = !!item.videoLink;
+                const hasExternalLink = !!item.externalLink;
+                const isClickable = hasVideo || hasExternalLink;
+
                 const listItemContent = (
                   <>
                     <p className="media-coverage__list-text">
@@ -134,15 +159,29 @@ export default function MediaCoverage({ data, className = '', id, exploreLink })
                   </>
                 );
 
-                if (item.link) {
+                if (hasVideo) {
                   return (
-                    <Link
+                    <div
                       key={item.id || index}
-                      href={item.link}
-                      className="media-coverage__list-item media-coverage__list-item--link"
+                      className="media-coverage__list-item media-coverage__list-item--link media-coverage__list-item--video"
+                      onClick={() => handleVideoClick(item.videoLink)}
+                      style={{ cursor: 'pointer' }}
                     >
                       {listItemContent}
-                    </Link>
+                    </div>
+                  );
+                }
+
+                if (hasExternalLink) {
+                  return (
+                    <div
+                      key={item.id || index}
+                      className="media-coverage__list-item media-coverage__list-item--link"
+                      onClick={(e) => handleLinkClick(e, item.externalLink)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      {listItemContent}
+                    </div>
                   );
                 }
 
@@ -157,43 +196,30 @@ export default function MediaCoverage({ data, className = '', id, exploreLink })
 
           <div className="media-coverage__right">
             {mediaCoverageData.profileCards && mediaCoverageData.profileCards.length > 0 ? (
-              mediaCoverageData.profileCards.map((card, index) => (
-                <ProfileCard
-                  key={card.id || index}
-                  name={card.name || "Vinita Gupta"}
-                  title={card.title || "CEO, Lupin"}
-                  image={card.image || "/assets/media-kit-card/bigdemo.png"}
-                  link={card.link || "/media/coverage/vinita-gupta"}
-                  showArrow={false}
-                />
-              ))
-            ) : (
-              <>
-                <ProfileCard
-                  name={mediaCoverageData.profileCard?.name || "Vinita Gupta"}
-                  title={mediaCoverageData.profileCard?.title || "CEO, Lupin"}
-                  image={mediaCoverageData.profileCard?.image || "/assets/media-kit-card/bigdemo.png"}
-                  link={mediaCoverageData.profileCard?.link || "/media/coverage/vinita-gupta"}
-                  showArrow={false}
-                />
-                <ProfileCard
-                  name={mediaCoverageData.profileCard?.name || "Vinita Gupta"}
-                  title={mediaCoverageData.profileCard?.title || "CEO, Lupin"}
-                  image={mediaCoverageData.profileCard?.image || "/assets/media-kit-card/bigdemo.png"}
-                  link={mediaCoverageData.profileCard?.link || "/media/coverage/vinita-gupta"}
-                  showArrow={false}
-                />
-                <ProfileCard
-                  name={mediaCoverageData.profileCard?.name || "Vinita Gupta"}
-                  title={mediaCoverageData.profileCard?.title || "CEO, Lupin"}
-                  image={mediaCoverageData.profileCard?.image || "/assets/media-kit-card/bigdemo.png"}
-                  link={mediaCoverageData.profileCard?.link || "/media/coverage/vinita-gupta"}
-                  showArrow={false}
-                />
-              </>
-            )}
+              mediaCoverageData.profileCards.map((card, index) => {
+                const hasVideo = !!card.videoLink;
+                const hasExternalLink = !!card.externalLink;
+                const isClickable = hasVideo || hasExternalLink;
+
+                return (
+                  <div
+                    key={card.id || index}
+                    className={isClickable ? 'media-coverage__profile-card-wrapper media-coverage__profile-card-wrapper--clickable' : 'media-coverage__profile-card-wrapper'}
+                    onClick={hasVideo ? () => handleVideoClick(card.videoLink) : hasExternalLink ? (e) => handleLinkClick(e, card.externalLink) : undefined}
+                    style={isClickable ? { cursor: 'pointer' } : {}}
+                  >
+                    <ProfileCard
+                      name={card.name}
+                      title={card.title}
+                      image={card.image}
+                      link={hasVideo || hasExternalLink ? undefined : card.link}
+                      showArrow={false}
+                    />
+                  </div>
+                );
+              })
+            ) : null}
           </div>
-        </div>
         </div>
 
         {/* Explore Button */}
@@ -221,6 +247,62 @@ export default function MediaCoverage({ data, className = '', id, exploreLink })
           </div>
         )}
       </div>
+
+      {/* Video Modal */}
+      {isVideoModalOpen && selectedVideoUrl && (
+        <div
+          className="media-coverage__popup-overlay"
+          onClick={handleOverlayClick}
+        >
+          <div className="media-coverage__popup">
+            {/* Close Button */}
+            <button
+              className="media-coverage__close-button"
+              onClick={handleCloseVideoModal}
+              aria-label="Close video"
+            >
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M18 6L6 18M6 6L18 18"
+                  stroke="white"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            {/* Video Player */}
+            <div className="media-coverage__video-wrapper">
+              {isYouTubeUrl(selectedVideoUrl) ? (
+                <iframe
+                  className="media-coverage__video media-coverage__video--youtube"
+                  src={`${getYouTubeEmbedUrl(selectedVideoUrl)}?autoplay=1`}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title="Video"
+                />
+              ) : (
+                <video
+                  className="media-coverage__video"
+                  controls
+                  autoPlay
+                  src={selectedVideoUrl}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

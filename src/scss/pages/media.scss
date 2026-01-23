@@ -8,11 +8,11 @@
   width: 100%;
   max-width: vw(1440);
   margin: 0 auto;
-  
+
   @include media('tablet') {
     padding: vw(25, 768) vw(30, 768) vw(25, 768);
   }
-  
+
   @include media('mobile') {
     padding: vw-mobile(25, 414) vw-mobile(20, 414) vw-mobile(20, 414);
   }
@@ -20,11 +20,11 @@
 
 .sectionPressReleases {
   padding: vw(100);
-  
+
   @include media('tablet') {
     padding: vw(50, 768);
   }
-  
+
   @include media('mobile') {
     padding: vw-mobile(0, 414) vw-mobile(20, 414) vw-mobile(40, 414) vw-mobile(20, 414);
   }
@@ -43,13 +43,13 @@
     gap: vw(50);
     justify-content: space-between;
     width: 100%;
-    
+
     @include media('tablet') {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: vw(40, 768);
     }
-    
+
     @include media('mobile') {
       display: grid;
       grid-template-columns: 1fr;
@@ -60,13 +60,13 @@
   .whats-new__card {
     width: vw(495);
     height: vw(489.879);
-    
+
     @include media('tablet') {
       width: 100%;
       height: auto;
       min-height: vw(350, 768);
     }
-    
+
     @include media('mobile') {
       width: 100%;
       height: auto;
@@ -77,17 +77,17 @@
 
 // Profile Cards Section
 .sectionProfileCards {
-  padding:vw(100);
+  padding: vw(100);
   width: 100%;
 
   margin: 0 auto;
-  
+
   @include media('tablet') {
     padding: vw(50, 768);
   }
-  
+
   @include media('mobile') {
-    padding: vw-mobile(20 , 414);
+    padding: vw-mobile(20, 414);
   }
 }
 
@@ -99,11 +99,11 @@
   width: 100%;
   @include flex(row, center, center);
   margin-top: vw(60);
-  
+
   @include media('tablet') {
     margin-top: vw(50, 768);
   }
-  
+
   @include media('mobile') {
     margin-top: vw-mobile(40, 414);
   }
@@ -111,14 +111,14 @@
 
 // PDF Download Section
 .sectionPdfDownload {
-  padding:0 vw(100) vw(100);
-  width: 100%;    
+  padding: 0 vw(100) vw(100);
+  width: 100%;
   margin: 0 auto;
-  
+
   @include media('tablet') {
     padding: vw(50, 768) vw(30, 768);
   }
-  
+
   @include media('mobile') {
     padding: vw-mobile(40, 414) vw-mobile(20, 414);
   }
@@ -129,12 +129,12 @@
   @include flex(row, space-between, center);
   gap: vw(30);
 
-  
+
   @include media('tablet') {
     gap: vw(20, 768);
     @include flex(column, center, center);
   }
-  
+
   @include media('mobile') {
     gap: vw-mobile(20, 414);
     @include flex(column, center, center);
@@ -145,11 +145,11 @@
 .sectionProfileCards--media-coverage {
   .profile-card__name {
     font-size: vw(35) !important;
-    
+
     @include media('tablet') {
       font-size: vw(28, 768) !important;
     }
-    
+
     @include media('mobile') {
       font-size: vw-mobile(24, 414) !important;
     }
@@ -160,11 +160,11 @@
 .whats-new.whats-new--media-page {
   .whats-new__title {
     font-size: vw(65) !important;
-    
+
     @include media('tablet') {
       font-size: vw(48, 768) !important;
     }
-    
+
     @include media('mobile') {
       font-size: vw-mobile(32, 414) !important;
     }
@@ -175,19 +175,3 @@
 #perspectives {
   padding: 0 !important;
 }
-
-// Media Kit tabs section
-.sectionProfileCards {
-  .tabs {
-    margin-bottom: vw(60);
-    
-    @include media('tablet') {
-      margin-bottom: vw(50, 768);
-    }
-    
-    @include media('mobile') {
-      margin-bottom: vw-mobile(40, 414);
-    }
-  }
-}
-

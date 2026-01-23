@@ -3,7 +3,7 @@ import WhatsNew from '@/components/WhatsNew';
 import MediaCoverage from '@/components/MediaCoverage';
 import MediaContact from '@/components/global/MediaContact';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getPressReleases, getPerspectives, getStrapiMedia } from '@/lib/strapi';
+import { getPressReleases, getPerspectives, getMediaCoverage, getFeaturedArticlesByCategory, getStrapiMedia } from '@/lib/strapi';
 import '@/scss/pages/media.scss';
 
 // Generate metadata for the Media page
@@ -139,6 +139,72 @@ export default async function MediaPage() {
     // Fallback to empty array - component will handle gracefully
   }
 
+  // Fetch media coverage from Strapi
+  let mediaCoverageData = {
+    title: "Media Coverage",
+    items: [],
+    profileCards: []
+  };
+
+  try {
+    // Fetch top 10 articles for the list (sorted by publishedAt desc)
+    const mediaCoverageResponse = await getMediaCoverage(10);
+    const articles = mediaCoverageResponse?.data || [];
+
+    // Map articles to list items format
+    mediaCoverageData.items = articles.map((article) => {
+      // Check if article has video link
+      const videoLink = article.video || article.videoLink || null;
+      // Check if article has external link
+      const externalLink = article.link || null;
+      // Determine if link is external (starts with http/https)
+      const isExternal = externalLink && (externalLink.startsWith('http://') || externalLink.startsWith('https://'));
+
+      return {
+        id: article.id,
+        date: formatDate(article.publishedOn || article.publishedAt),
+        text: article.title?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || '',
+        link: videoLink ? null : (isExternal ? externalLink : null), // No detail page links
+        videoLink: videoLink,
+        externalLink: isExternal ? externalLink : null
+      };
+    });
+
+    // Fetch featured articles for profile cards (only articles marked as featured)
+    const featuredResponse = await getFeaturedArticlesByCategory('media-coverage', 3);
+    const featuredArticles = featuredResponse?.data || [];
+
+    // Map featured articles to profile cards format
+    mediaCoverageData.profileCards = featuredArticles.map((article) => {
+      // Get image URL from media field if available
+      let imageUrl = null;
+      if (article.media) {
+        imageUrl = getStrapiMedia(article.media);
+      }
+      // No fallback image - only show if provided by API
+
+      // Check if article has video link
+      const videoLink = article.video || article.videoLink || null;
+      // Check if article has external link
+      const externalLink = article.link || null;
+      // Determine if link is external (starts with http/https)
+      const isExternal = externalLink && (externalLink.startsWith('http://') || externalLink.startsWith('https://'));
+
+      return {
+        id: article.id,
+        name: formatDate(article.publishedOn || article.publishedAt),
+        title: article.title?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || '',
+        image: imageUrl,
+        link: videoLink ? null : (isExternal ? externalLink : null), // No detail page links
+        videoLink: videoLink,
+        externalLink: isExternal ? externalLink : null
+      };
+    });
+  } catch (error) {
+    console.error('Error fetching media coverage from Strapi:', error);
+    // Fallback to empty arrays - component will handle gracefully
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
@@ -148,9 +214,7 @@ export default async function MediaPage() {
       </section>
 
       <MediaCoverage
-        data={{
-          title: "Media Coverage"
-        }}
+        data={mediaCoverageData}
         id="media-coverage"
         exploreLink="/media/media-coverage"
       />

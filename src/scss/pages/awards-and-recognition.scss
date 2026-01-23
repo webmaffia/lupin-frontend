@@ -283,5 +283,20 @@
     margin-top: 0;
     max-width: 100%;
   }
+  
+  // Pagination container with top margin
+  .pagination-container {
+    width: 100%;
+    @include flex(row, center, center);
+    margin-top: vw(60);
+    
+    @include media('tablet') {
+      margin-top: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      margin-top: vw-mobile(40, 414);
+    }
+  }
 }
 
