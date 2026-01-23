@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/TipsForShareholders.scss';
 
 export default function TipsForShareholders({ data }) {
@@ -69,32 +72,53 @@ export default function TipsForShareholders({ data }) {
   return (
     <section className="tips-for-shareholders">
       <div className="tips-for-shareholders__container">
-        {tipsData.sections.map((section, sectionIndex) => (
-          <div key={section.id} className={`tips-for-shareholders__section ${section.id === 'ecs' ? 'tips-for-shareholders__section--ecs' : ''}`}>
-            <h2 className="tips-for-shareholders__title">{section.title}</h2>
-            <div className="tips-for-shareholders__content">
-              {section.content.map((paragraph, paraIndex) => {
-                // Handle paragraph with link object
-                if (typeof paragraph === 'object' && paragraph.link) {
-                  return (
-                    <p key={paraIndex} className="tips-for-shareholders__paragraph">
-                      {paragraph.text}
-                      <Link href={paragraph.link.url} className="tips-for-shareholders__link">
-                        {paragraph.link.text}
-                      </Link>
-                    </p>
-                  );
-                }
-                // Handle regular string paragraph
-                return (
-                  <p key={paraIndex} className="tips-for-shareholders__paragraph">
-                    {paragraph}
-                  </p>
-                );
-              })}
+        {tipsData.sections.map((section, sectionIndex) => {
+          // Determine section class based on bgColor or id
+          const sectionClass = section.bgColor === 'ecs' || section.id === 'ecs' 
+            ? 'tips-for-shareholders__section--ecs' 
+            : '';
+          
+          return (
+            <div 
+              key={section.id || sectionIndex} 
+              className={`tips-for-shareholders__section ${sectionClass}`}
+            >
+              <h2 className="tips-for-shareholders__title">{section.title}</h2>
+              <div className="tips-for-shareholders__content">
+                {section.content ? (
+                  // Render markdown content using ReactMarkdown
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {section.content}
+                  </ReactMarkdown>
+                ) : (
+                  // Fallback: render array of content items (old format)
+                  Array.isArray(section.content) && section.content.map((paragraph, paraIndex) => {
+                    // Handle paragraph with link object
+                    if (typeof paragraph === 'object' && paragraph.link) {
+                      return (
+                        <p key={paraIndex} className="tips-for-shareholders__paragraph">
+                          {paragraph.text}
+                          <Link href={paragraph.link.url} className="tips-for-shareholders__link">
+                            {paragraph.link.text}
+                          </Link>
+                        </p>
+                      );
+                    }
+                    // Handle regular string paragraph
+                    return (
+                      <p key={paraIndex} className="tips-for-shareholders__paragraph">
+                        {paragraph}
+                      </p>
+                    );
+                  })
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

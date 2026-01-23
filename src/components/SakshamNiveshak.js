@@ -2,6 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/SakshamNiveshak.scss';
 
 export default function SakshamNiveshak({ data, error = null }) {
@@ -25,20 +28,12 @@ export default function SakshamNiveshak({ data, error = null }) {
     );
   }
 
-  // Show empty state if no data
-  if (!data || !data.description) {
-    return (
-      <section className="saksham-niveshak">
-        <div className="saksham-niveshak__container">
-          <div className="saksham-niveshak__content">
-            <div className="saksham-niveshak__placeholder">
-              <p>No Saksham Niveshak information available at this time.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  // Fallback content
+  const fallbackContent = `No Saksham Niveshak information available at this time.`;
+
+  // Use API data if available, otherwise use fallback
+  const hasApiData = data?.description;
+  const contentToRender = hasApiData ? data.description : fallbackContent;
 
   // Static decorative image (not from API)
   const decorativeImage = {
@@ -50,11 +45,15 @@ export default function SakshamNiveshak({ data, error = null }) {
     <section className="saksham-niveshak" data-node-id="66:641">
       <div className="saksham-niveshak__container">
         <div className="saksham-niveshak__content">
-          {/* Render Description as Rich Text HTML */}
-          <div 
-            className="saksham-niveshak__description"
-            dangerouslySetInnerHTML={{ __html: data.description }}
-          />
+          {/* Render Description using ReactMarkdown */}
+          <div className="saksham-niveshak__description">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+            >
+              {contentToRender}
+            </ReactMarkdown>
+          </div>
         </div>
 
         {/* Decorative Image */}

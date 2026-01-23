@@ -2569,6 +2569,70 @@ export async function getSakshamNiveshak() {
  * @param {Object} strapiData - Raw Strapi API response
  * @returns {Object} Mapped saksham niveshak data for component
  */
+/**
+ * Fetch tips-for-shareholder data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getTipsForShareholder() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[TipsShareHolderSectionContent][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`tips-for-shareholder?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map tips-for-shareholder data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped tips for shareholder data
+ */
+export function mapTipsForShareholderData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+  
+  if (!data) {
+    return {
+      banner: null,
+      sections: []
+    };
+  }
+
+  // Map TopBanner
+  const topBanner = data?.TopBanner || data?.topBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map TipsShareHolderSectionContent (Repeatable Component)
+  const sectionsArray = data?.TipsShareHolderSectionContent 
+    || data?.tipsShareHolderSectionContent 
+    || data?.TipsShareHolderSectionContents
+    || data?.tipsShareHolderSectionContents
+    || [];
+  
+  const sections = sectionsArray
+    .filter(section => section?.isActive !== false && section?.IsActive !== false)
+    .map((section, index) => {
+      return {
+        id: section?.id || `section-${index + 1}`,
+        title: section?.Title || section?.title || '',
+        content: section?.Content || section?.content || '',
+        bgColor: section?.SectionBgColor || section?.sectionBgColor || 'default',
+        isActive: section?.isActive !== false
+      };
+    });
+
+  return {
+    banner: banner,
+    sections: sections
+  };
+}
+
 export function mapSakshamNiveshakData(strapiData) {
   // Handle Strapi v4 response structure (Single Type) with chaining and fallbacks
   const data = strapiData?.data || strapiData;
