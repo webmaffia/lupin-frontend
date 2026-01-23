@@ -1,0 +1,59 @@
+import InnerBanner from '@/components/InnerBanner';
+import ProductFinderSection from '@/components/ProductFinderSection';
+import ProductFinderBackgroundSection from '@/components/ProductFinderBackgroundSection';
+import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+
+// Generate metadata for the Product Finder page
+export const metadata = generateSEOMetadata({
+  title: "Product Finder - Lupin | Find Your Medication",
+  description: "Use Lupin's Product Finder to easily search and find information about our pharmaceutical products, medications, and healthcare solutions.",
+  canonicalUrl: "https://www.lupin.com/product-finder",
+  keywords: "product finder, Lupin products, medication search, pharmaceutical products, drug finder, Lupin medications, healthcare products",
+});
+
+export default function ProductFinderPage() {
+  // Banner data for InnerBanner
+  const bannerData = {
+    title: {
+      line1: "Product",
+      line2: "Finder",
+    },
+    subheading: {
+      enabled: false,
+      text: ""
+    },
+    images: {
+      banner: {
+        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        alt: "Product Finder - Lupin"
+      },
+      petal: {
+        url: "/assets/inner-banner/petal-2.svg",
+        alt: "Decorative petal"
+      }
+    }
+  };
+
+  // Section data for ProductFinderSection
+  const sectionData = {
+    button: {
+      text: "View Our API Product List",
+      href: "#",
+      target: "_blank"
+    }
+  };
+
+  // Background section data (will be updated with Figma design)
+  const backgroundSectionData = {
+    // Content will be added based on Figma design
+  };
+
+  return (
+    <div style={{ position: 'relative' }}>
+      <InnerBanner data={bannerData} />
+      <ProductFinderSection data={sectionData} />
+      <ProductFinderBackgroundSection data={backgroundSectionData} />
+    </div>
+  );
+}
+
