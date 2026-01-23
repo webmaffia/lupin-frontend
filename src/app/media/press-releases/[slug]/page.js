@@ -1,8 +1,7 @@
 import InnerBanner from '@/components/InnerBanner';
 import PressReleaseDetail from '@/components/PressReleaseDetail';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getArticle } from '@/lib/strapi';
-import { getStrapiImageUrl } from '@/lib/strapi-utils';
+import { getArticle, getStrapiMedia } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
 import '@/scss/pages/press-release-detail.scss';
 
@@ -82,12 +81,12 @@ export default async function PressReleaseDetailPage({ params }) {
       notFound();
     }
 
-    // Get author image if available
+    // Get author image from media field if available
     let authorImage = null;
-    if (article.image) {
-      authorImage = getStrapiImageUrl(article.image) || article.image?.url;
+    if (article.media) {
+      authorImage = getStrapiMedia(article.media);
     }
-    // Fallback to default if no image
+    // Fallback to default if no media
     if (!authorImage) {
       authorImage = "/assets/press/Image.png";
     }

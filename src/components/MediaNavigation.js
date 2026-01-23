@@ -6,7 +6,7 @@ import Link from 'next/link';
 import MediaSearch from './MediaSearch';
 import '../scss/components/MediaNavigation.scss';
 
-export default function MediaNavigation({ onSearch, onYearChange }) {
+export default function MediaNavigation({ onSearch, onYearChange, hideSearch = false, years = [] }) {
   const pathname = usePathname();
 
   // Media navigation links
@@ -83,13 +83,16 @@ export default function MediaNavigation({ onSearch, onYearChange }) {
         ))}
       </div>
       
-      {/* Media Search */}
-      <div className="media-navigation__search">
-        <MediaSearch 
-          onSearch={onSearch}
-          onYearChange={onYearChange}
-        />
-      </div>
+      {/* Media Search - Only show if hideSearch is false */}
+      {!hideSearch && (
+        <div className="media-navigation__search">
+          <MediaSearch 
+            onSearch={onSearch}
+            onYearChange={onYearChange}
+            years={years}
+          />
+        </div>
+      )}
     </section>
   );
 }

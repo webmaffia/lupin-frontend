@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
@@ -35,20 +35,46 @@ export default function PressReleasesClient({ initialData }) {
   // Use initial data from server
   const allPressReleases = initialData || [];
 
+  // Extract unique years from publishedOn dates (fallback to publishedAt)
+  const availableYears = useMemo(() => {
+    const yearsSet = new Set();
+    allPressReleases.forEach((item) => {
+      const dateToUse = item.publishedOn || item.publishedAt;
+      if (dateToUse) {
+        const year = new Date(dateToUse).getFullYear();
+        if (!isNaN(year)) {
+          yearsSet.add(year.toString());
+        }
+      }
+    });
+    return Array.from(yearsSet).sort((a, b) => parseInt(b) - parseInt(a)); // Sort descending
+  }, [allPressReleases]);
+
   // Search and filter logic
   const filteredPressReleases = allPressReleases.filter((item) => {
-    // Search filter - check date, headline, and category
+    // Search filter - check title and slug
+    const title = item.title || '';
+    const slug = item.slug || '';
     const headlineText = Array.isArray(item.headline)
       ? item.headline.join(' ')
       : item.headline || '';
+    
     const matchesSearch = searchQuery === '' ||
-      item.date.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      headlineText.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.category && item.category.toLowerCase().includes(searchQuery.toLowerCase()));
+      title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      headlineText.toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Year filter - extract year from date and match
-    const matchesYear = selectedYear === '' || 
-      (item.date && item.date.includes(selectedYear));
+    // Year filter - extract year from publishedOn (fallback to publishedAt) and match
+    let matchesYear = true;
+    if (selectedYear !== '') {
+      const dateToUse = item.publishedOn || item.publishedAt;
+      if (dateToUse) {
+        const itemYear = new Date(dateToUse).getFullYear();
+        matchesYear = itemYear.toString() === selectedYear;
+      } else {
+        matchesYear = false;
+      }
+    }
 
     return matchesSearch && matchesYear;
   });
@@ -82,6 +108,7 @@ export default function PressReleasesClient({ initialData }) {
       <MediaNavigation
         onSearch={(query) => setSearchQuery(query)}
         onYearChange={(year) => setSelectedYear(year)}
+        years={availableYears}
       />
 
       {/* Press Releases Grid Section */}

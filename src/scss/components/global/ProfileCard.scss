@@ -173,6 +173,90 @@
   }
 }
 
+// Explore Button Wrapper (for items without images)
+.profile-card__explore-button-wrapper {
+  position: absolute;
+  bottom: vw(47);
+  left: vw(47);
+  z-index: 3;
+  
+  @include media('mobile') {
+    bottom: vw-mobile(30, 414);
+    left: vw-mobile(30, 414);
+  }
+}
+
+.profile-card__explore-button {
+  display: inline-flex;
+  align-items: center;
+  gap: vw(15);
+  padding: vw(13) vw(20);
+  background: #08A03F;
+  border-radius: vw(63);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all $transition-base;
+  flex-shrink: 0;
+  
+  @include media('tablet') {
+    padding: vw(12, 768) vw(18, 768);
+    gap: vw(12, 768);
+    border-radius: vw(50, 768);
+  }
+  
+  @include media('mobile') {
+    padding: vw-mobile(10, 414) vw-mobile(15, 414);
+    gap: vw-mobile(10, 414);
+    border-radius: vw-mobile(40, 414);
+  }
+
+  &:hover {
+    background: #0a8a35;
+    transform: translateY(vw(-2));
+    
+    @include media('mobile') {
+      transform: translateY(vw-mobile(-1, 414));
+    }
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.profile-card__explore-text {
+  font-family: $font-family-base;
+  font-weight: 500;
+  font-size: vw(20);
+  line-height: 1.2;
+  color: #ffffff;
+  
+  @include media('tablet') {
+    font-size: vw(18, 768);
+  }
+  
+  @include media('mobile') {
+    font-size: vw-mobile(16, 414);
+  }
+}
+
+.profile-card__explore-icon {
+  width: vw(18);
+  height: vw(18);
+  flex-shrink: 0;
+  
+  @include media('tablet') {
+    width: vw(16, 768);
+    height: vw(16, 768);
+  }
+  
+  @include media('mobile') {
+    width: vw-mobile(14, 414);
+    height: vw-mobile(14, 414);
+  }
+}
+
 // Grid layout helper for multiple cards
 .profile-card-grid {
   display: grid;

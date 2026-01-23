@@ -1,7 +1,5 @@
 import MediaCoverageClient from './MediaCoverageClient';
-import { getMediaCoverage } from '@/lib/strapi';
-import { getStrapiImageUrl } from '@/lib/strapi-utils';
-import { getStrapiMedia } from '@/lib/strapi';
+import { getMediaCoverage, getStrapiMedia } from '@/lib/strapi';
 
 // Helper function to format date
 function formatDate(dateString) {
@@ -20,19 +18,19 @@ export default async function MediaCoveragePage() {
     const articles = mediaCoverageResponse?.data || [];
 
     mediaCoverageData = articles.map((article) => {
-      // Get image URL if available
+      // Get image URL from media field if available
       let imageUrl = null;
-      if (article.image) {
-        imageUrl = getStrapiImageUrl(article.image) || getStrapiMedia(article.image);
+      if (article.media) {
+        imageUrl = getStrapiMedia(article.media);
       }
-      // Fallback to default image if no image in article
-      if (!imageUrl) {
-        imageUrl = "/assets/media-kit-card/demo5.png";
-      }
+      // No fallback image - if no media exists, imageUrl will be null
 
       // Check if article has video link
       const videoLink = article.video || article.videoLink || null;
-      const link = videoLink ? null : `/media/media-coverage/${article.slug}`;
+      // Check if article has external link
+      const externalLink = article.link || null;
+      // Determine the link to use: external link if exists, otherwise internal route
+      const link = videoLink ? null : (externalLink || `/media/media-coverage/${article.slug}`);
 
       return {
         id: article.id,
@@ -42,8 +40,13 @@ export default async function MediaCoveragePage() {
         imagePosition: "bottom-right",
         showArrow: false,
         link: link,
+        externalLink: externalLink, // Store external link separately
         videoLink: videoLink,
-        date: formatDate(article.publishedOn || article.publishedAt)
+        date: formatDate(article.publishedOn || article.publishedAt),
+        // Add raw data for search and filtering
+        slug: article.slug || '',
+        publishedOn: article.publishedOn || null,
+        publishedAt: article.publishedAt || null
       };
     });
   } catch (error) {

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import InnerBanner from '@/components/InnerBanner';
 import MediaNavigation from '@/components/MediaNavigation';
 import ProfileCard from '@/components/global/ProfileCard';
@@ -9,8 +9,6 @@ import Pagination from '@/components/global/Pagination';
 import '@/scss/pages/media.scss';
 
 export default function PerspectivesClient({ initialData }) {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedYear, setSelectedYear] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
 
@@ -34,31 +32,12 @@ export default function PerspectivesClient({ initialData }) {
   // Use initial data from server
   const allPerspectives = initialData || [];
 
-  // Search and filter logic
-  const filteredPerspectives = allPerspectives.filter((item) => {
-    // Search filter - check name and title
-    const matchesSearch = searchQuery === '' ||
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase()));
-
-    // Year filter - extract year from date and match
-    const matchesYear = selectedYear === '' ||
-      (item.name && item.name.includes(selectedYear));
-
-    return matchesSearch && matchesYear;
-  });
-
   // Pagination logic
-  const totalItems = filteredPerspectives.length;
+  const totalItems = allPerspectives.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentPageItems = filteredPerspectives.slice(startIndex, endIndex);
-
-  // Reset to page 1 when search or filter changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, selectedYear]);
+  const currentPageItems = allPerspectives.slice(startIndex, endIndex);
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -74,10 +53,7 @@ export default function PerspectivesClient({ initialData }) {
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
-      <MediaNavigation
-        onSearch={(query) => setSearchQuery(query)}
-        onYearChange={(year) => setSelectedYear(year)}
-      />
+      <MediaNavigation hideSearch={true} />
 
       {/* Profile Cards Section */}
       <section className="sectionProfileCards">
