@@ -6,8 +6,9 @@ import ShareholderInformation from '@/components/ShareholderInformation';
 import ReportsAndFilings from '@/components/ReportsAndFilings';
 import NewsInsights from '@/components/NewsInsights';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
+import ShareholdingPattern from '@/components/ShareholdingPattern';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getHomepage, mapHomepageNewsInsightsData } from '@/lib/strapi';
+import { getHomepage, mapHomepageNewsInsightsData, getPressReleases, fetchAPI } from '@/lib/strapi';
 import { getInvestor, mapInvestorData } from '@/lib/strapi-reports';
 import { mapTopBannerData } from '@/lib/strapi';
 
@@ -241,21 +242,72 @@ export default async function InvestorsPage() {
     };
   }
 
-  // Keep What's New (Press Release) section as is - using homepage API
-  // Fetch What's New data from Strapi (from homepage)
+  // Fetch latest Press Releases for What's New section
   let whatsNewData = null;
+  
+  // Helper function to format date
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  }
+
+  // Helper function to split title into headline array (max 4 lines)
+  function splitTitleIntoHeadline(title) {
+    if (!title) return [];
+
+    // Remove HTML entities and tags
+    const cleanTitle = title
+      .replace(/&#038;/g, '&')
+      .replace(/&amp;/g, '&')
+      .replace(/<[^>]*>/g, '')
+      .trim();
+
+    // Split by words
+    const words = cleanTitle.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    // Try to create lines of roughly equal length
+    const avgWordsPerLine = Math.ceil(words.length / 4);
+
+    for (let i = 0; i < words.length; i++) {
+      if (currentLine && (currentLine.split(' ').length >= avgWordsPerLine || i === words.length - 1)) {
+        lines.push(currentLine.trim());
+        currentLine = words[i];
+      } else {
+        currentLine += (currentLine ? ' ' : '') + words[i];
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine.trim());
+    }
+
+    // Limit to 4 lines
+    return lines.slice(0, 4);
+  }
+
   try {
-    const investorsPageData = await getHomepage();
-    // Extract What's New data if available in Strapi
-    if (investorsPageData?.data?.attributes?.whatsNew || investorsPageData?.whatsNew) {
-      const whatsNew = investorsPageData?.data?.attributes?.whatsNew || investorsPageData?.whatsNew;
+    // Fetch latest 4 press releases for the slider
+    const pressReleasesResponse = await getPressReleases(4);
+    const articles = pressReleasesResponse?.data || [];
+
+    if (articles && articles.length > 0) {
       whatsNewData = {
-        title: whatsNew.title || "What's New",
-        items: whatsNew.items || whatsNew.news || []
+        title: "What's New",
+        items: articles.map((article) => ({
+          id: article.id,
+          date: formatDate(article.publishedOn || article.publishedAt),
+          headline: splitTitleIntoHeadline(article.title),
+          category: "Press Release",
+          href: `/media/press-releases/${article.slug}`
+        }))
       };
     }
   } catch (error) {
-    console.error('Error fetching What\'s New data from Strapi:', error);
+    console.error('Error fetching Press Releases from Strapi:', error);
   }
 
   // Default What's New data (fallback) - Keep Press Release with 4 items for slider
@@ -295,6 +347,40 @@ export default async function InvestorsPage() {
     };
   }
 
+  // Fetch shareholding pattern iframe data
+  let shareholdingPatternData = {
+    iframeUrl: "https://content.dionglobal.in/lupinworldnew/ShareHolding.aspx",
+    iframeTitle: "Shareholding Pattern"
+  };
+  
+  try {
+    const shareholdingData = await fetchAPI('shareholding-pattern?populate=*', {
+      next: { revalidate: 60 },
+    });
+    
+    // Handle different response structures (Single Type in Strapi v4)
+    // Structure can be: { data: { attributes: {...} } } or { data: {...} } or direct {...}
+    const data = shareholdingData?.data || shareholdingData;
+    const attributes = data?.attributes || data;
+    
+    if (attributes) {
+      // Try multiple possible field names
+      const iframeUrl = attributes.iframeUrl || attributes.iframe?.url || attributes.iframeUrl || "";
+      const iframeTitle = attributes.iframeTitle || attributes.iframe?.title || attributes.iframeTitle || "Shareholding Pattern";
+      
+      // Only update if we got a valid URL
+      if (iframeUrl && iframeUrl.trim() !== '' && iframeUrl !== 'null' && iframeUrl !== 'undefined') {
+        shareholdingPatternData = {
+          iframeUrl: iframeUrl,
+          iframeTitle: iframeTitle
+        };
+      }
+    }
+  } catch (error) {
+    console.error('Error fetching shareholding pattern data from Strapi:', error);
+    // Keep default URL on error
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
@@ -302,6 +388,7 @@ export default async function InvestorsPage() {
       <WhatsNew data={whatsNewData} />
       <ReportsAndFilings data={reportsFilingsData} />
       <CorporateGovernance data={governanceData} />
+      {/* <ShareholdingPattern data={shareholdingPatternData} /> */}
       <ShareholderInformation data={shareholderData} />
      
       <NewsInsights data={newsInsightsData} />

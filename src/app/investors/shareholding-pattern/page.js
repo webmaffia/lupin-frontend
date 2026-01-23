@@ -1,5 +1,6 @@
 import InnerBanner from '@/components/InnerBanner';
 import ShareholdingPattern from '@/components/ShareholdingPattern';
+import NavigationLinks from '@/components/NavigationLinks';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getShareholdingPattern, mapShareholdingPatternData } from '@/lib/strapi-reports';
@@ -57,7 +58,7 @@ export default async function ShareholdingPatternPage() {
   // Fetch iframe data (keep existing iframe logic as fallback)
   let iframeData = null;
   try {
-    const data = await fetchAPI('shareholding-pattern?populate=deep', {
+    const data = await fetchAPI('shareholding-pattern?populate=*', {
       next: { revalidate: 60 },
     });
     
@@ -82,7 +83,26 @@ export default async function ShareholdingPatternPage() {
   return (
     <div style={{ position: 'relative' }}>
       {bannerData && <InnerBanner data={bannerData} />}
-      <ShareholdingPattern data={finalShareholdingData} error={error} />
+      <section className="shareholding-pattern">
+        <div className="shareholding-pattern__container">
+          <NavigationLinks />
+          <div className="shareholding-pattern__iframe-wrapper">
+            {finalShareholdingData?.iframeUrl ? (
+              <iframe
+                src={finalShareholdingData.iframeUrl}
+                title={finalShareholdingData.iframeTitle || "Shareholding Pattern"}
+                className="shareholding-pattern__iframe"
+                allowFullScreen
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            ) : (
+              <div className="shareholding-pattern__placeholder">
+                <p>Iframe content will be displayed here</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
       <SubscriberUpdated />
     </div>
   );

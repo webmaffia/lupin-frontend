@@ -2,7 +2,8 @@ import InnerBanner from '@/components/InnerBanner';
 import LeaderProfile from '@/components/global/LeaderProfile';
 import SquareLeaderProfile from '@/components/global/SquareLeaderProfile';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getLeaders, mapTopBannerData } from '@/lib/strapi';
+import { mapTopBannerData } from '@/lib/strapi';
+import { getLeaders, getLeadership, mapLeadersData } from '@/lib/strapi-reports';
 import '@/scss/pages/leaders.scss';
 
 // Generate metadata for the Leaders page
@@ -18,23 +19,21 @@ export async function generateMetadata() {
 export default async function LeadersPage() {
   // Fetch data from Strapi
   let bannerData = null;
-  let leadersData = null;
-  let managementTeamData = null;
+  let mappedLeadersData = null;
 
   try {
-    const strapiData = await getLeaders();
-
-    // Map TopBanner data for InnerBanner
-    const data = strapiData?.data || strapiData;
-    if (data?.TopBanner) {
-      bannerData = mapTopBannerData(data.TopBanner);
+    // Fetch banner from leadership endpoint
+    const leadershipData = await getLeadership();
+    const leadershipDataObj = leadershipData?.data || leadershipData;
+    if (leadershipDataObj?.TopBanner) {
+      bannerData = mapTopBannerData(leadershipDataObj.TopBanner);
     }
 
-    // Extract leaders data
-    leadersData = data?.leaders || data?.Leaders || null;
-
-    // Extract management team data
-    managementTeamData = data?.managementTeam || data?.ManagementTeam || null;
+    // Fetch leaders data
+    const leadersStrapiData = await getLeaders();
+    
+    // Map leaders data (separates into boardOfDirectors and managementTeam)
+    mappedLeadersData = mapLeadersData(leadersStrapiData);
   } catch (error) {
     console.error('Error fetching leaders data from Strapi:', error);
     // Will use default data below
@@ -59,8 +58,10 @@ export default async function LeadersPage() {
     };
   }
 
-  // Default leaders data if Strapi data is not available
-  const defaultLeaders = leadersData || [
+  // Use mapped leaders data or fallback to defaults
+  const boardOfDirectors = mappedLeadersData?.boardOfDirectors && mappedLeadersData.boardOfDirectors.length > 0
+    ? mappedLeadersData.boardOfDirectors
+    : [
     {
       id: 1,
       name: "Manju D Gupta",
@@ -143,8 +144,9 @@ export default async function LeadersPage() {
     }
   ];
 
-  // Default management team data if Strapi data is not available
-  const defaultManagementTeam = managementTeamData || [
+  const managementTeam = mappedLeadersData?.managementTeam && mappedLeadersData.managementTeam.length > 0
+    ? mappedLeadersData.managementTeam
+    : [
     {
       id: 1,
       name: "Dr. Abdelaziz Toumi",
@@ -230,41 +232,45 @@ export default async function LeadersPage() {
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
-      <section className="board-of-directors">
-        <div className="board-of-directors__container">
-          <h2 className="board-of-directors__heading">Board of Directors</h2>
-          <div className="board-of-directors__grid">
-            {defaultLeaders.map((leader) => (
-              <LeaderProfile
-                key={leader.id || leader.name}
-                id={leader.id}
-                name={leader.name}
-                title={leader.title || leader.position}
-                image={leader.image || { url: '/assets/placeholder.png', alt: leader.name }}
-                link={leader.link || `/leaders/${leader.slug || leader.id}`}
-              />
-            ))}
+      {boardOfDirectors.length > 0 && (
+        <section className="board-of-directors">
+          <div className="board-of-directors__container">
+            <h2 className="board-of-directors__heading">Board of Directors</h2>
+            <div className="board-of-directors__grid">
+              {boardOfDirectors.map((leader) => (
+                <LeaderProfile
+                  key={leader.id || leader.name}
+                  id={leader.id}
+                  name={leader.name}
+                  title={leader.title || leader.position}
+                  image={leader.image || { url: '/assets/placeholder.png', alt: leader.name }}
+                  link={leader.link || `/leaders/${leader.slug || leader.id}`}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="board-of-directors management-team">
-        <div className="board-of-directors__container">
-          <h2 className="board-of-directors__heading">The Management Team</h2>
-          <div className="board-of-directors__grid">
-            {defaultManagementTeam.map((leader) => (
-              <SquareLeaderProfile
-                key={leader.id || leader.name}
-                id={leader.id}
-                name={leader.name}
-                title={leader.title || leader.position}
-                image={leader.image || { url: '/assets/placeholder.png', alt: leader.name }}
-                link={leader.link || `/leaders/${leader.slug || leader.id}`}
-              />
-            ))}
+      {managementTeam.length > 0 && (
+        <section className="board-of-directors management-team">
+          <div className="board-of-directors__container">
+            <h2 className="board-of-directors__heading">The Management Team</h2>
+            <div className="board-of-directors__grid">
+              {managementTeam.map((leader) => (
+                <SquareLeaderProfile
+                  key={leader.id || leader.name}
+                  id={leader.id}
+                  name={leader.name}
+                  title={leader.title || leader.position}
+                  image={leader.image || { url: '/assets/placeholder.png', alt: leader.name }}
+                  link={leader.link || `/leaders/${leader.slug || leader.id}`}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

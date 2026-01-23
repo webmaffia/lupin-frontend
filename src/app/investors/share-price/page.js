@@ -60,7 +60,7 @@ export default async function SharePricePage() {
   // Fetch iframe data (keep existing iframe logic)
   let iframeData = null;
   try {
-    const data = await fetchAPI('share-price?populate=deep', {
+    const data = await fetchAPI('share-price?populate=*', {
       next: { revalidate: 60 },
     });
     

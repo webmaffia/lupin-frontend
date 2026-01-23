@@ -2731,6 +2731,24 @@ export async function getCommittee() {
 }
 
 /**
+ * Fetch leadership page data from Strapi
+ * This is a Single Type, so it returns one entry with TopBanner
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getLeadership() {
+  // Populate TopBanner with DesktopImage and MobileImage
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`leadership?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
  * Fetch leaders data from Strapi
  * This is a Collection Type, so it returns an array
  * 
@@ -2755,6 +2773,224 @@ export async function getLeaders() {
   return fetchAPI(`leaders?${populateQuery}`, {
     next: { revalidate: 60 },
   });
+}
+
+/**
+ * Fetch a single leader by slug from Strapi
+ * 
+ * @param {string} slug - Leader slug
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getLeaderBySlug(slug) {
+  if (!slug) {
+    return null;
+  }
+
+  const populateQuery = [
+    'populate[ProfileImage][populate]=*',
+    'populate[cta][populate]=*',
+    'populate[Pdf][populate]=*',
+    `filters[slug][$eq]=${slug}`,
+    'filters[isActive][$eq]=true'
+  ].join('&');
+  
+  return fetchAPI(`leaders?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map leaders data for listing page
+ * Separates leaders into Board of Directors and Management Team
+ * 
+ * @param {Object} leadersData - Raw Strapi API response for leaders
+ * @returns {Object} Mapped leaders data with boardOfDirectors and managementTeam
+ */
+export function mapLeadersData(leadersData) {
+  // Handle Strapi v4 response structure (Collection Type)
+  // Data can be in leadersData.data (array) or directly in leadersData (array)
+  // Based on the API response structure: { data: [...], meta: {...} }
+  const leadersArray = leadersData?.data || (Array.isArray(leadersData) ? leadersData : []);
+
+  if (!Array.isArray(leadersArray) || leadersArray.length === 0) {
+    return {
+      boardOfDirectors: [],
+      managementTeam: []
+    };
+  }
+
+  const boardOfDirectors = [];
+  const managementTeam = [];
+
+  leadersArray.forEach((leader) => {
+    // Extract leader data (handle both direct and attributes structure)
+    // Based on the API response, data is directly on the leader object, not in attributes
+    // Structure: { id, documentId, LeaderName, slug, Designation, board_of_directors, management_team, ... }
+    const leaderData = leader?.attributes || leader;
+    
+    // Extract leader basic info
+    // ProfileImage can be null or an object with direct properties or nested in data.attributes
+    const profileImage = leaderData?.ProfileImage?.data?.attributes || leaderData?.ProfileImage || leader?.ProfileImage?.data?.attributes || leader?.ProfileImage;
+    const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
+
+    const slug = leaderData?.slug || leader?.slug || '';
+    const leaderLink = slug ? `/leaders/${slug}` : '#';
+
+    const leaderName = leaderData?.LeaderName || leader?.LeaderName || leaderData?.leaderName || leader?.leaderName || '';
+    const designation = leaderData?.Designation || leader?.Designation || leaderData?.designation || leader?.designation || '';
+
+    // Skip if no name
+    if (!leaderName) {
+      return;
+    }
+
+    // Create leader object
+    const leaderObj = {
+      id: leader?.id || leader?.documentId || Math.random(),
+      name: leaderName,
+      title: designation,
+      image: imageUrl ? {
+        url: imageUrl,
+        alt: leaderName
+      } : null,
+      link: leaderLink,
+      slug: slug
+    };
+
+    // Check if leader is in board_of_directors or management_team
+    // Only add if the boolean value is explicitly true (not null, not false)
+    // Values can be: null, false, or true - we only want true
+    const isBoardMember = leaderData?.board_of_directors === true || leader?.board_of_directors === true;
+    const isManagementMember = leaderData?.management_team === true || leader?.management_team === true;
+
+    // Add to board of directors if board_of_directors is explicitly true
+    if (isBoardMember) {
+      boardOfDirectors.push(leaderObj);
+    }
+    
+    // Add to management team if management_team is explicitly true
+    // Note: A leader can be in both if both booleans are true
+    if (isManagementMember) {
+      managementTeam.push(leaderObj);
+    }
+  });
+
+  return {
+    boardOfDirectors: boardOfDirectors,
+    managementTeam: managementTeam
+  };
+}
+
+/**
+ * Map single leader data for detail page
+ * 
+ * @param {Object} leaderData - Raw Strapi API response for a single leader
+ * @returns {Object|null} Mapped leader detail data
+ */
+export function mapLeaderDetailData(leaderData) {
+  // Handle Strapi v4 response structure (Collection Type - single item)
+  const leadersArray = leaderData?.data || (leaderData ? [leaderData] : []);
+  
+  if (!Array.isArray(leadersArray) || leadersArray.length === 0) {
+    return null;
+  }
+
+  const leader = leadersArray[0];
+  const leaderDataObj = leader?.attributes || leader;
+
+  // Extract profile image
+  const profileImage = leaderDataObj?.ProfileImage?.data?.attributes || leaderDataObj?.ProfileImage || leader?.ProfileImage?.data?.attributes || leader?.ProfileImage;
+  const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
+
+  // Extract basic info
+  const name = leaderDataObj?.LeaderName || leader?.LeaderName || leaderDataObj?.leaderName || leader?.leaderName || '';
+  const designation = leaderDataObj?.Designation || leader?.Designation || leaderDataObj?.designation || leader?.designation || '';
+  
+  // Extract biography/description
+  const biography = leaderDataObj?.DetailDescription || leader?.DetailDescription || leaderDataObj?.detailDescription || leader?.detailDescription || '';
+
+  // Extract education (Rich text - Markdown, can be string or array)
+  let education = [];
+  const educationData = leaderDataObj?.EducationDetail || leader?.EducationDetail || leaderDataObj?.educationDetail || leader?.educationDetail;
+  if (educationData) {
+    if (typeof educationData === 'string') {
+      // Split by newlines if it's a string
+      education = educationData.split('\n').filter(line => line.trim());
+    } else if (Array.isArray(educationData)) {
+      education = educationData;
+    }
+  }
+
+  // Extract info items
+  const infoItems = [];
+  
+  const age = leaderDataObj?.Age || leader?.Age || leaderDataObj?.age || leader?.age;
+  if (age) {
+    infoItems.push({
+      label: 'Age',
+      value: age
+    });
+  }
+
+  const nationality = leaderDataObj?.Nationality || leader?.Nationality || leaderDataObj?.nationality || leader?.nationality;
+  if (nationality) {
+    infoItems.push({
+      label: 'Nationality',
+      value: nationality
+    });
+  }
+
+  const appointed = leaderDataObj?.Appointed || leader?.Appointed || leaderDataObj?.appointed || leader?.appointed;
+  if (appointed) {
+    try {
+      const appointedDate = new Date(appointed).toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+      infoItems.push({
+        label: 'Appointed',
+        value: appointedDate
+      });
+    } catch (e) {
+      infoItems.push({
+        label: 'Appointed',
+        value: appointed
+      });
+    }
+  }
+
+  const tenure = leaderDataObj?.Tenure || leader?.Tenure || leaderDataObj?.tenure || leader?.tenure;
+  if (tenure) {
+    infoItems.push({
+      label: 'Tenure',
+      value: tenure
+    });
+  }
+
+  // Extract committee membership
+  const committeeMembership = leaderDataObj?.CommitteeMembership || leader?.CommitteeMembership || leaderDataObj?.committeeMembership || leader?.committeeMembership || '';
+
+  // Extract PDF if available
+  const pdf = leaderDataObj?.Pdf?.data?.attributes || leaderDataObj?.Pdf || leader?.Pdf?.data?.attributes || leader?.Pdf;
+  const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+
+  return {
+    name: name,
+    title: designation,
+    image: imageUrl ? {
+      url: imageUrl,
+      alt: name
+    } : null,
+    biography: biography,
+    education: education,
+    infoItems: infoItems,
+    committeeMembership: committeeMembership,
+    pdf: pdfUrl ? {
+      url: pdfUrl,
+      title: leaderDataObj?.PdfTitle || leader?.PdfTitle || leaderDataObj?.pdfTitle || leader?.pdfTitle || 'Download PDF'
+    } : null
+  };
 }
 
 /**
