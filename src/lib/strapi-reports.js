@@ -2092,20 +2092,38 @@ export function mapNoticeData(strapiData) {
     })
     .filter(notice => notice.financialLabel) // Only include notices with financial label
     .sort((a, b) => {
-      // Extract year from financialLabel (e.g., "FY 2026-27", "2026", "FY 2025-26")
-      const extractYear = (label) => {
-        if (!label) return 0;
-        // Try to find 4-digit year (e.g., 2026, 2025)
+      // Extract year and quarter from financialLabel (e.g., "Q1 FY 2023", "Q4 FY 2022")
+      const extractYearAndQuarter = (label) => {
+        if (!label) return { year: 0, quarter: 0 };
+        
+        // Extract year (4-digit year)
         const yearMatch = label.match(/\b(20\d{2})\b/);
-        return yearMatch ? parseInt(yearMatch[1]) : 0;
+        const year = yearMatch ? parseInt(yearMatch[1]) : 0;
+        
+        // Extract quarter (Q1, Q2, Q3, Q4)
+        const quarterMatch = label.match(/Q(\d+)/i);
+        const quarter = quarterMatch ? parseInt(quarterMatch[1]) : 0;
+        
+        return { year, quarter };
       };
       
-      const yearA = extractYear(a.financialLabel);
-      const yearB = extractYear(b.financialLabel);
+      const { year: yearA, quarter: quarterA } = extractYearAndQuarter(a.financialLabel);
+      const { year: yearB, quarter: quarterB } = extractYearAndQuarter(b.financialLabel);
       
-      // If both have valid years, sort by year descending (2026 first, then 2025, etc.)
+      // First sort by year descending (2023 before 2022)
       if (yearA > 0 && yearB > 0) {
-        return yearB - yearA; // Descending order (latest year first)
+        if (yearA !== yearB) {
+          return yearB - yearA; // Descending order (latest year first)
+        }
+        
+        // If same year, sort by quarter descending (Q4, Q3, Q2, Q1)
+        if (quarterA > 0 && quarterB > 0) {
+          return quarterB - quarterA; // Descending order (Q4 first, then Q3, Q2, Q1)
+        }
+        
+        // If one has quarter and other doesn't, prioritize the one with quarter
+        if (quarterA > 0 && quarterB === 0) return -1;
+        if (quarterB > 0 && quarterA === 0) return 1;
       }
       
       // If only one has a year, prioritize it
