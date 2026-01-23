@@ -1803,6 +1803,71 @@ export function convertTableDataToHTML(tableData) {
 }
 
 /**
+ * Get fallback dividend transfer table data (first table)
+ * Used when API data is not available
+ * This is the table showing dividends to be transferred to IEPF (2018-19 onwards)
+ * 
+ * @returns {Object} Fallback table data in VotingTable.js format
+ */
+export function getFallbackDividendTransferTable() {
+  return {
+    headers: [
+      { text: "Year of Dividend", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" },
+      { text: "Date of Declaration of Dividend", bgColor: "#d9f0e1", textColor: "#08a03f", padding: "58px" },
+      { text: "Due Date for transfer to IEPF", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" }
+    ],
+    rows: [
+      { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
+      { "Year of Dividend": "2023-2024", "Date of Declaration of Dividend": "02.08.2024", "Due Date for transfer to IEPF": "07.09.2031" },
+      { "Year of Dividend": "2022-2023", "Date of Declaration of Dividend": "03.08.2023", "Due Date for transfer to IEPF": "08.09.2030" },
+      { "Year of Dividend": "2021-2022", "Date of Declaration of Dividend": "03.08.2022", "Due Date for transfer to IEPF": "08.09.2029" },
+      { "Year of Dividend": "2020–2021", "Date of Declaration of Dividend": "11.08.2021", "Due Date for transfer to IEPF": "16.09.2028" },
+      { "Year of Dividend": "2019-2020", "Date of Declaration of Dividend": "12.08.2020", "Due Date for transfer to IEPF": "17.09.2027" },
+      { "Year of Dividend": "2018-2019", "Date of Declaration of Dividend": "07.08.2019", "Due Date for transfer to IEPF": "12.09.2026" }
+    ]
+  };
+}
+
+/**
+ * Get fallback IEPF table data (second table)
+ * Used when API data is not available
+ * This is the table showing dividends already transferred to IEPF
+ * 
+ * @returns {Object} Fallback table data in IEPFTable.js format
+ */
+export function getFallbackIEPFTable() {
+  return {
+    headers: [
+      { text: "Year of Dividend", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" },
+      { text: "Date of Dividend", bgColor: "#d9f0e1", textColor: "#08a03f", padding: "58px" },
+      { text: "Date of Transfer", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" }
+    ],
+    rows: [
+      { "Year of Dividend": "2017-18", "Date of Dividend": "08.08.2018", "Date of Transfer": "01.10.2025" },
+      { "Year of Dividend": "2016-17", "Date of Dividend": "05.08.2017", "Date of Transfer": "25.09.2024" },
+      { "Year of Dividend": "2015-16", "Date of Dividend": "06.08.2016", "Date of Transfer": "14.09.2023" },
+      { "Year of Dividend": "2014-15", "Date of Dividend": "27.07.2015", "Date of Transfer": "19.09.2022" },
+      { "Year of Dividend": "2013 – 14 (Final)", "Date of Dividend": "31.07.2014", "Date of Transfer": "14.09.2021" },
+      { "Year of Dividend": "2013-2014 (Interim)", "Date of Dividend": "21.02.2014", "Date of Transfer": "25.03.2021" },
+      { "Year of Dividend": "2012-2013", "Date of Dividend": "07.08.2013", "Date of Transfer": "07.10.2020" },
+      { "Year of Dividend": "2011-2012", "Date of Dividend": "25.07.2012", "Date of Transfer": "19.09.2019" },
+      { "Year of Dividend": "2010-2011", "Date of Dividend": "28.07.2011", "Date of Transfer": "21.09.2018" },
+      { "Year of Dividend": "2009-2010", "Date of Dividend": "29.07.2010", "Date of Transfer": "08.09.2017" },
+      { "Year of Dividend": "2008-2009", "Date of Dividend": "30.07.2009", "Date of Transfer": "07.09.2016" },
+      { "Year of Dividend": "2007-2008", "Date of Dividend": "23.07.2008", "Date of Transfer": "03.09.2015" },
+      { "Year of Dividend": "2006-2007", "Date of Dividend": "20.07.2007", "Date of Transfer": "25.08.2014" },
+      { "Year of Dividend": "2005-2006", "Date of Dividend": "26.07.2006", "Date of Transfer": "30.08.2013" },
+      { "Year of Dividend": "2004-2005", "Date of Dividend": "29.07.2005", "Date of Transfer": "27.08.2012" },
+      { "Year of Dividend": "2003-2004", "Date of Dividend": "30.07.2004", "Date of Transfer": "29.08.2011" },
+      { "Year of Dividend": "2002-2003", "Date of Dividend": "08.08.2003", "Date of Transfer": "15.09.2010" },
+      { "Year of Dividend": "2001-2002 (Final)", "Date of Dividend": "03.09.2002", "Date of Transfer": "14.10.2009" },
+      { "Year of Dividend": "2001-2002 (Interim)", "Date of Dividend": "15.02.2002", "Date of Transfer": "13.03.2009" },
+      { "Year of Dividend": "2000-2001", "Date of Dividend": "26.09.2001", "Date of Transfer": "04.11.2008" }
+    ]
+  };
+}
+
+/**
  * Get fallback dividend history table data
  * Used when API data is not available
  * 
@@ -2128,7 +2193,12 @@ export function mapOtherStatutoryInformationData(strapiData) {
     }));
 
   // Map NoticeSection (Rich text)
-  const noticeSection = data?.NoticeSection || data?.noticeSection || '';
+  // Note: VotingTable and IEPFTable are rendered as separate components on the page
+  // So we don't add the tables to the noticeSection HTML to avoid duplication
+  let noticeSection = data?.NoticeSection || data?.noticeSection || '';
+  
+  // Tables are now rendered as separate components (VotingTable and IEPFTable)
+  // So we only use the API noticeSection content without adding tables
 
   // Map PdfSection (Repeatable Component - PdfCard)
   // PdfSection is nested under EvotingSection, not at top level
