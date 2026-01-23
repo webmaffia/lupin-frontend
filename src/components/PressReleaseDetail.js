@@ -26,8 +26,8 @@ export default function PressReleaseDetail({ data }) {
 
           {/* Header Section with Author */}
           <div className="press-release-detail__header">
-            <div className="press-release-detail__author-image">
-              {pressRelease.author?.image && (
+            {pressRelease.author?.image && (
+              <div className="press-release-detail__author-image">
                 <Image
                   src={pressRelease.author.image}
                   alt={pressRelease.author.name || "Author"}
@@ -36,8 +36,8 @@ export default function PressReleaseDetail({ data }) {
                   className="press-release-detail__author-img"
                   quality={100}
                 />
-              )}
-            </div>
+              </div>
+            )}
             <div className="press-release-detail__author-info">
               {pressRelease.date && (
                 <p className="press-release-detail__date">{pressRelease.date}</p>

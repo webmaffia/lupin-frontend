@@ -176,3 +176,18 @@
   padding: 0 !important;
 }
 
+// Media Kit tabs section
+.sectionProfileCards {
+  .tabs {
+    margin-bottom: vw(60);
+    
+    @include media('tablet') {
+      margin-bottom: vw(50, 768);
+    }
+    
+    @include media('mobile') {
+      margin-bottom: vw-mobile(40, 414);
+    }
+  }
+}
+

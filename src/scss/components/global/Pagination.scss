@@ -95,7 +95,6 @@
 .pagination__prev,
 .pagination__next {
   @include flex(row, center, center);
-  width: vw(106);
   height: vw(54);
   padding: vw(10) vw(25);
   border: none;
@@ -110,9 +109,9 @@
   transition: all $transition-base;
   white-space: nowrap;
   position: relative;
+  box-sizing: border-box;
   
   @include media('tablet') {
-    width: vw(95, 768);
     height: vw(48, 768);
     padding: vw(8, 768) vw(22, 768);
     border-radius: vw(8, 768);
@@ -120,11 +119,41 @@
   }
   
   @include media('mobile') {
-    width: vw-mobile(90, 414);
     height: vw-mobile(44, 414);
     padding: vw-mobile(8, 414) vw-mobile(20, 414);
     border-radius: vw-mobile(8, 414);
     font-size: vw-mobile(20, 414);
+  }
+}
+
+.pagination__prev {
+  width: auto;
+  min-width: vw(106);
+  padding-left: vw(20);
+  padding-right: vw(20);
+  
+  @include media('tablet') {
+    min-width: vw(95, 768);
+    padding-left: vw(18, 768);
+    padding-right: vw(18, 768);
+  }
+  
+  @include media('mobile') {
+    min-width: vw-mobile(90, 414);
+    padding-left: vw-mobile(16, 414);
+    padding-right: vw-mobile(16, 414);
+  }
+}
+
+.pagination__next {
+  width: vw(106);
+  
+  @include media('tablet') {
+    width: vw(95, 768);
+  }
+  
+  @include media('mobile') {
+    width: vw-mobile(90, 414);
   }
   
   &:hover {

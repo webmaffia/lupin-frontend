@@ -1,7 +1,7 @@
 import InnerBanner from '@/components/InnerBanner';
 import PressReleaseDetail from '@/components/PressReleaseDetail';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getArticle, getStrapiMedia } from '@/lib/strapi';
+import { getArticle } from '@/lib/strapi';
 import { notFound } from 'next/navigation';
 import '@/scss/pages/press-release-detail.scss';
 
@@ -81,22 +81,12 @@ export default async function PressReleaseDetailPage({ params }) {
       notFound();
     }
 
-    // Get author image from media field if available
-    let authorImage = null;
-    if (article.media) {
-      authorImage = getStrapiMedia(article.media);
-    }
-    // Fallback to default if no media
-    if (!authorImage) {
-      authorImage = "/assets/press/Image.png";
-    }
-
     pressReleaseData = {
       title: article.title?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || '',
       date: formatDate(article.publishedOn || article.publishedAt),
       author: {
         name: article.author?.name || article.author?.username || '',
-        image: authorImage
+        image: null // Don't show profile image for press releases
       },
       content: article.content || '',
       activeCategory: 'press-releases'

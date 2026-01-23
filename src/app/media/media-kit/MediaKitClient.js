@@ -8,6 +8,7 @@ import PdfDownload from '@/components/global/PdfDownload';
 import Pagination from '@/components/global/Pagination';
 import MediaContact from '@/components/global/MediaContact';
 import '@/scss/pages/media.scss';
+import '@/scss/components/global/Tabs.scss';
 
 export default function MediaKitClient({ initialProfiles, initialPdfs }) {
     const [currentPage, setCurrentPage] = useState(1);
@@ -83,51 +84,71 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
 
             {/* Tab Navigation */}
             {(allProfiles.length > 0 || allPdfs.length > 0) && (
-                <section className="media-kit-tabs" style={{ padding: '40px 0', textAlign: 'center' }}>
-                    <div className="media-kit-tabs__container">
-                        <button
-                            className={`media-kit-tabs__tab ${activeTab === 'all' ? 'media-kit-tabs__tab--active' : ''}`}
-                            onClick={() => setActiveTab('all')}
-                        >
-                            All ({allItems.length})
-                        </button>
-                        {allProfiles.length > 0 && (
+                <section className="sectionProfileCards">
+                    <div className="tabs">
+                        <div className="tabs__container">
                             <button
-                                className={`media-kit-tabs__tab ${activeTab === 'profiles' ? 'media-kit-tabs__tab--active' : ''}`}
-                                onClick={() => setActiveTab('profiles')}
+                                className={`tabs__tab ${activeTab === 'all' ? 'tabs__tab--active' : ''}`}
+                                onClick={() => setActiveTab('all')}
                             >
-                                Profiles ({allProfiles.length})
+                                All ({allItems.length})
                             </button>
-                        )}
-                        {allPdfs.length > 0 && (
-                            <button
-                                className={`media-kit-tabs__tab ${activeTab === 'pdfs' ? 'media-kit-tabs__tab--active' : ''}`}
-                                onClick={() => setActiveTab('pdfs')}
-                            >
-                                Documents ({allPdfs.length})
-                            </button>
-                        )}
+                            {allProfiles.length > 0 && (
+                                <button
+                                    className={`tabs__tab ${activeTab === 'profiles' ? 'tabs__tab--active' : ''}`}
+                                    onClick={() => setActiveTab('profiles')}
+                                >
+                                    Profiles ({allProfiles.length})
+                                </button>
+                            )}
+                            {allPdfs.length > 0 && (
+                                <button
+                                    className={`tabs__tab ${activeTab === 'pdfs' ? 'tabs__tab--active' : ''}`}
+                                    onClick={() => setActiveTab('pdfs')}
+                                >
+                                    Documents ({allPdfs.length})
+                                </button>
+                            )}
+                        </div>
                     </div>
                 </section>
             )}
 
-            {/* Profile Cards Section */}
-            {currentProfiles.length > 0 && (
+            {/* Profile Cards Section - Same structure as Perspectives */}
+            {(activeTab === 'all' || activeTab === 'profiles') && (
                 <section className="sectionProfileCards">
                     <div className="profile-cards-container">
                         <div className="profile-card-grid">
-                            {currentProfiles.map((profile) => (
-                                <ProfileCard
-                                    key={profile.id}
-                                    name={profile.name}
-                                    title={profile.title}
-                                    link={profile.link}
-                                    image={profile.image}
-                                    showArrow={true}
-                                />
-                            ))}
+                            {currentProfiles.length > 0 ? (
+                                currentProfiles.map((profile) => (
+                                    <ProfileCard
+                                        key={profile.id}
+                                        name={profile.name}
+                                        title={profile.title}
+                                        link={profile.link}
+                                        image={profile.image}
+                                        imagePosition="bottom-right"
+                                        showArrow={false}
+                                    />
+                                ))
+                            ) : (
+                                <div className="profile-cards-no-results">
+                                    <p>No profiles found.</p>
+                                </div>
+                            )}
                         </div>
                     </div>
+
+                    {/* Pagination - Inside section like Perspectives */}
+                    {totalPages > 1 && (
+                        <div className="pagination-container">
+                            <Pagination
+                                currentPage={currentPage}
+                                totalPages={totalPages}
+                                onPageChange={handlePageChange}
+                            />
+                        </div>
+                    )}
                 </section>
             )}
 
@@ -148,8 +169,8 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
                 </section>
             )}
 
-            {/* No Results Message */}
-            {filteredByTab.length === 0 && (
+            {/* No Results Message - Only for all tab when no items */}
+            {filteredByTab.length === 0 && activeTab === 'all' && (
                 <section className="sectionProfileCards">
                     <div className="profile-cards-container">
                         <div className="profile-cards-no-results">
@@ -157,17 +178,6 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
                         </div>
                     </div>
                 </section>
-            )}
-
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="pagination-container" style={{ padding: '40px 0' }}>
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                </div>
             )}
 
             <MediaContact
