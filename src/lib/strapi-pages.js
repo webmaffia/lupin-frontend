@@ -138,3 +138,65 @@ export function mapAboutUsData(strapiData) {
   };
 }
 
+/**
+ * Fetch ethics-and-compliance data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * Structure:
+ * - TopBanner (Component - InnerBanner)
+ *   - DesktopImage, MobileImage, Heading, SubHeading, SubHeadingText
+ * - PageIntroSection (Component - IntroSection)
+ *   - SectionTitle, IntroDetail (Rich text Markdown), DetailDescription (Rich text Markdown)
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getEthicsAndCompliance() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[PageIntroSection][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`ethics-and-compliance?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map ethics-and-compliance data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped ethics and compliance data for component
+ */
+export function mapEthicsAndComplianceData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return {
+      banner: null,
+      pageIntro: null
+    };
+  }
+
+  // Map TopBanner
+  const topBanner = data?.TopBanner || data?.topBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map PageIntroSection
+  const pageIntroSection = data?.PageIntroSection || data?.pageIntroSection;
+  let pageIntro = null;
+  if (pageIntroSection) {
+    pageIntro = {
+      sectionTitle: pageIntroSection?.SectionTitle || pageIntroSection?.sectionTitle || '',
+      introDetail: pageIntroSection?.IntroDetail || pageIntroSection?.introDetail || '',
+      detailDescription: pageIntroSection?.DetailDescription || pageIntroSection?.detailDescription || ''
+    };
+  }
+
+  return {
+    banner: banner,
+    pageIntro: pageIntro
+  };
+}
+

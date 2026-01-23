@@ -53,6 +53,30 @@
     }
   }
   
+  // Section Title
+  &__section-title {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(32);
+    line-height: vw(40);
+    color: #126430;
+    text-align: center;
+    margin: 0 0 vw(40) 0;
+    width: 100%;
+    
+    @include media('tablet') {
+      font-size: vw(28, 768);
+      line-height: vw(35, 768);
+      margin-bottom: vw(35, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(20, 414);
+      line-height: vw-mobile(26, 414);
+      margin-bottom: vw-mobile(25, 414);
+    }
+  }
+
   // P.L.E.D.G.E. Text
   &__pledge-text {
     font-family: $font-family-base;
@@ -64,6 +88,11 @@
     opacity: 0.8;
     margin: 0;
     width: 100%;
+    
+    // ReactMarkdown styles
+    p {
+      margin: 0;
+    }
     
     @include media('tablet') {
       font-size: vw(18, 768);
@@ -111,6 +140,44 @@
     max-width: vw(1640);
     z-index: 1;
     
+    // ReactMarkdown styles
+    p {
+      font-family: $font-family-base;
+      font-weight: 500;
+      font-size: vw(25);
+      line-height: vw(48);
+      color: #434343;
+      margin: 0 0 vw(20) 0;
+      text-align: center;
+      
+      @include media('tablet') {
+        font-size: vw(22, 768);
+        line-height: vw(40, 768);
+        margin-bottom: vw(18, 768);
+      }
+      
+      @include media('mobile') {
+        font-size: vw-mobile(16, 414);
+        line-height: vw-mobile(28, 414);
+        margin-bottom: vw-mobile(15, 414);
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+    
+    // Handle empty paragraphs (spacing)
+    p:empty {
+      height: vw(20);
+      margin-bottom: vw(20);
+      
+      @include media('mobile') {
+        height: vw-mobile(15, 414);
+        margin-bottom: vw-mobile(15, 414);
+      }
+    }
+    
     @include media('tablet') {
       max-width: 100%;
     }
@@ -120,7 +187,7 @@
     }
   }
   
-  // Text paragraphs
+  // Text paragraphs (legacy support)
   &__text-paragraph {
     font-family: $font-family-base;
     font-weight: 500;
