@@ -1,6 +1,5 @@
 'use client';
 
-import NavigationLinks from './NavigationLinks';
 import '../scss/components/ShareholdingPattern.scss';
 
 export default function ShareholdingPattern({ data, error = null }) {
@@ -10,16 +9,19 @@ export default function ShareholdingPattern({ data, error = null }) {
     iframeTitle: "Shareholding Pattern"
   };
 
-  // Use API data if available, otherwise use fallback
-  const shareholdingData = data?.iframeUrl ? data : fallbackData;
+  // Use API data if available and has valid iframeUrl, otherwise use fallback
+  const hasValidUrl = data?.iframeUrl && 
+    typeof data.iframeUrl === 'string' && 
+    data.iframeUrl.trim() !== '' && 
+    data.iframeUrl !== 'null' && 
+    data.iframeUrl !== 'undefined';
+  
+  const shareholdingData = hasValidUrl ? data : fallbackData;
 
   return (
     <section className="shareholding-pattern">
       {/* Container */}
       <div className="shareholding-pattern__container">
-        {/* Navigation Links */}
-        <NavigationLinks />
-
         {/* Iframe Section */}
         <div className="shareholding-pattern__iframe-wrapper">
           {shareholdingData.iframeUrl ? (
@@ -28,6 +30,7 @@ export default function ShareholdingPattern({ data, error = null }) {
               title={shareholdingData.iframeTitle}
               className="shareholding-pattern__iframe"
               allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
             />
           ) : (
             <div className="shareholding-pattern__placeholder">

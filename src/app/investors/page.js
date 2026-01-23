@@ -388,7 +388,7 @@ export default async function InvestorsPage() {
       <WhatsNew data={whatsNewData} />
       <ReportsAndFilings data={reportsFilingsData} />
       <CorporateGovernance data={governanceData} />
-      {/* <ShareholdingPattern data={shareholdingPatternData} /> */}
+      <ShareholdingPattern data={shareholdingPatternData} />
       <ShareholderInformation data={shareholderData} />
      
       <NewsInsights data={newsInsightsData} />

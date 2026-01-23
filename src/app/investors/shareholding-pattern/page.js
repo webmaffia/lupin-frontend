@@ -74,9 +74,19 @@ export default async function ShareholdingPatternPage() {
   }
 
   // Merge shareholding data with iframe data
+  // Ensure we always have a valid iframe URL
+  const iframeUrlValue = iframeData?.iframeUrl;
+  const validIframeUrl = (iframeUrlValue && 
+    typeof iframeUrlValue === 'string' && 
+    iframeUrlValue.trim() !== '' && 
+    iframeUrlValue !== 'null' && 
+    iframeUrlValue !== 'undefined') 
+    ? iframeUrlValue 
+    : "https://content.dionglobal.in/lupinworldnew/ShareHolding.aspx";
+  
   const finalShareholdingData = {
     ...shareholdingData,
-    iframeUrl: iframeData?.iframeUrl || "",
+    iframeUrl: validIframeUrl,
     iframeTitle: iframeData?.iframeTitle || "Shareholding Pattern"
   };
   

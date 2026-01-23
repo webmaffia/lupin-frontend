@@ -544,14 +544,14 @@ function processQuarterlyDataForYear(yearData) {
   
   if (yearData.length > 0) {
     // Process earnings sections - each section represents a quarter
-    // Sort by quarterLabel to ensure Q1 comes before Q2, Q2 before Q3, etc.
-    // Extract quarter number and sort numerically (Q1, Q2, Q3, Q4)
+    // Sort by quarterLabel to ensure Q4 (latest) comes first, then Q3, Q2, Q1
+    // Extract quarter number and sort numerically in descending order (Q4, Q3, Q2, Q1)
     const sortedEarnings = [...yearData].sort((a, b) => {
       const aMatch = a.quarterLabel?.match(/Q(\d+)/);
       const bMatch = b.quarterLabel?.match(/Q(\d+)/);
       const aQuarter = aMatch ? parseInt(aMatch[1]) : 999;
       const bQuarter = bMatch ? parseInt(bMatch[1]) : 999;
-      return aQuarter - bQuarter; // Sort Q1, Q2, Q3, Q4 in ascending order
+      return bQuarter - aQuarter; // Sort Q4, Q3, Q2, Q1 in descending order (latest first)
     });
     
     if (process.env.NODE_ENV === 'development') {
