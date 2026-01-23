@@ -80,8 +80,10 @@
     height: auto;
     display: block;
     object-fit: cover;
-    object-position: center bottom;
-    max-height: vw(400);
+    object-position: center top;
+    max-height: vw(350);
+    // border-top-left-radius: vw(500);
+    // border-top-right-radius: vw(500);
 
     @include media('mobile') {
       max-height: vw-mobile(300, 414);
