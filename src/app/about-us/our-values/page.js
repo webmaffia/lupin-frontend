@@ -1,5 +1,5 @@
 import OurValuesContent from '@/components/OurValuesContent';
-import { getOurValues, mapOurValuesContentData, mapTopBannerData } from '@/lib/strapi';
+import { getOurValue, mapOurValueData } from '@/lib/strapi-pages';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import '@/scss/pages/our-values.scss';
 
@@ -11,56 +11,47 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function OurValuesPage() {
-  // Fetch data from Strapi
-  let bannerData = null;
-  let contentData = null;
-
+  let ourValueData = null;
+  let error = null;
+  
   try {
-    const strapiData = await getOurValues();
-    bannerData = mapTopBannerData(strapiData?.data?.TopBanner || strapiData?.TopBanner);
-    contentData = mapOurValuesContentData(strapiData);
-  } catch (error) {
-    console.error('Error fetching our-values data from Strapi:', error);
-    // Will use default data below
-  }
-
-  // Default banner data if Strapi data is not available
-  if (!bannerData) {
-    bannerData = {
-      title: {
-        line1: "Our Values",
-      },
-      subheading: {
-        enabled: true,
-        text: "Core Beliefs That Guide Our Decisions and Behavior"
-      },
-      images: {
-        banner: {
-          url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-          alt: "Our Values - Lupin"
-        },
-        petal: {
-          url: "/assets/inner-banner/petal-2.svg",
-          alt: "Decorative petal"
-        }
+    const rawData = await getOurValue();
+    
+    if (process.env.NODE_ENV === 'development') {
+      console.log('Our Value - Raw API data received:', {
+        hasData: !!rawData,
+        isDataObject: !Array.isArray(rawData?.data) && !!rawData?.data,
+        hasTopBanner: !!(rawData?.data?.TopBanner || rawData?.TopBanner),
+        hasIntroSection: !!(rawData?.data?.OurValueIntroSection || rawData?.OurValueIntroSection),
+        hasValuesOverview: !!(rawData?.data?.ValuesOverviewSection || rawData?.ValuesOverviewSection),
+        hasVideoSection: !!(rawData?.data?.CulturePrinciplesVideoSection || rawData?.CulturePrinciplesVideoSection)
+      });
+    }
+    
+    if (rawData) {
+      ourValueData = mapOurValueData(rawData);
+      
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Our Value - Mapped data:', {
+          hasBanner: !!ourValueData?.banner,
+          hasIntroSection: !!ourValueData?.introSection,
+          valuesCount: ourValueData?.valuesOverview?.length || 0,
+          hasVideoSection: !!ourValueData?.videoSection
+        });
       }
-    };
+    } else {
+      error = 'No data received from Strapi API';
+      console.error('Our Value - API returned empty response');
+    }
+  } catch (err) {
+    error = err.message || 'Failed to fetch our value data from Strapi';
+    console.error('Error fetching Our Value data from Strapi:', err);
+    console.error('Error details:', {
+      message: err.message,
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
   }
 
-  // Default content data if Strapi data is not available
-  if (!contentData) {
-    contentData = {
-      heading: "Core values that define us",
-      description: "At Lupin, we pride ourselves on our promise of caring for our customers, our commitment to our employees' growth and welfare, our continuous quality focus, and the spirit of innovation that drives each of us to discover better ways of working. This culture is shaped and driven by our values.",
-      decoration: {
-        url: "/assets/our-values/decoration.svg",
-        alt: "Decorative element",
-        width: 1228,
-        height: 576
-      }
-    };
-  }
-
-  return <OurValuesContent bannerData={bannerData} contentData={contentData} />;
+  return <OurValuesContent data={ourValueData} error={error} />;
 }
 

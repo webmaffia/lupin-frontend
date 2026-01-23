@@ -200,3 +200,119 @@ export function mapEthicsAndComplianceData(strapiData) {
   };
 }
 
+/**
+ * Fetch our-value data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * Structure:
+ * - TopBanner (Component - InnerBanner)
+ *   - DesktopImage, MobileImage, Heading, SubHeading, SubHeadingText
+ * - OurValueIntroSection (Component - IntroOurValue)
+ *   - Heading, DetailDescription (Rich text Markdown)
+ * - ValuesOverviewSection (Repeatable Component - CoreValueCard)
+ *   - Heading, Description (Rich text Markdown), Image, isActive
+ * - CulturePrinciplesVideoSection (Component - CulturePrinciples)
+ *   - SectionTitle, DesktopPosterImage, MobilePosterImage, YoutubeLink
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getOurValue() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[OurValueIntroSection][populate]=*',
+    'populate[ValuesOverviewSection][populate][Image][populate]=*',
+    'populate[CulturePrinciplesVideoSection][populate][DesktopPosterImage][populate]=*',
+    'populate[CulturePrinciplesVideoSection][populate][MobilePosterImage][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`our-value?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map our-value data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped our-value data for component
+ */
+export function mapOurValueData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return {
+      banner: null,
+      introSection: null,
+      valuesOverview: [],
+      videoSection: null
+    };
+  }
+
+  // Map TopBanner
+  const topBanner = data?.TopBanner || data?.topBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map OurValueIntroSection
+  const introSection = data?.OurValueIntroSection || data?.ourValueIntroSection;
+  let introData = null;
+  if (introSection) {
+    introData = {
+      heading: introSection?.Heading || introSection?.heading || '',
+      detailDescription: introSection?.DetailDescription || introSection?.detailDescription || ''
+    };
+  }
+
+  // Map ValuesOverviewSection (Repeatable Component)
+  const valuesOverviewArray = data?.ValuesOverviewSection || data?.valuesOverviewSection || [];
+  const valuesOverview = valuesOverviewArray
+    .filter(value => value?.isActive !== false)
+    .map((value, index) => {
+      const valueImage = value?.Image?.data?.attributes || value?.Image || value?.image?.data?.attributes || value?.image;
+      const imageUrl = valueImage ? getStrapiMedia(valueImage) : null;
+
+      return {
+        id: value?.id || index + 1,
+        heading: value?.Heading || value?.heading || '',
+        description: value?.Description || value?.description || '', // Markdown
+        image: imageUrl ? {
+          url: imageUrl,
+          alt: valueImage?.alternativeText || valueImage?.caption || value?.Heading || value?.heading || 'Value'
+        } : null,
+        isActive: value?.isActive !== false
+      };
+    });
+
+  // Map CulturePrinciplesVideoSection
+  const videoSection = data?.CulturePrinciplesVideoSection || data?.culturePrinciplesVideoSection;
+  let videoData = null;
+  if (videoSection) {
+    const desktopPoster = videoSection?.DesktopPosterImage?.data?.attributes || videoSection?.DesktopPosterImage || videoSection?.desktopPosterImage?.data?.attributes || videoSection?.desktopPosterImage;
+    const desktopPosterUrl = desktopPoster ? getStrapiMedia(desktopPoster) : null;
+
+    const mobilePoster = videoSection?.MobilePosterImage?.data?.attributes || videoSection?.MobilePosterImage || videoSection?.mobilePosterImage?.data?.attributes || videoSection?.mobilePosterImage;
+    const mobilePosterUrl = mobilePoster ? getStrapiMedia(mobilePoster) : null;
+
+    videoData = {
+      sectionTitle: videoSection?.SectionTitle || videoSection?.sectionTitle || '',
+      desktopPosterImage: desktopPosterUrl ? {
+        url: desktopPosterUrl,
+        alt: desktopPoster?.alternativeText || desktopPoster?.caption || 'Video poster'
+      } : null,
+      mobilePosterImage: mobilePosterUrl ? {
+        url: mobilePosterUrl,
+        alt: mobilePoster?.alternativeText || mobilePoster?.caption || 'Video poster'
+      } : null,
+      youtubeLink: videoSection?.YoutubeLink || videoSection?.youtubeLink || ''
+    };
+  }
+
+  return {
+    banner: banner,
+    introSection: introData,
+    valuesOverview: valuesOverview,
+    videoSection: videoData
+  };
+}
+

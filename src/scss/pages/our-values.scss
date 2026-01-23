@@ -306,7 +306,24 @@
     margin: 0;
     max-width: vw(607);
     width: 100%;
-    white-space: pre-wrap;
+    
+    // ReactMarkdown styles
+    p {
+      margin: 0;
+      font-family: $font-family-base;
+      font-weight: 600;
+      font-size: vw(25);
+      line-height: 1.37;
+      color: #0f6a31;
+      
+      @include media('tablet') {
+        font-size: vw(20, 768);
+      }
+      
+      @include media('mobile') {
+        font-size: vw-mobile(16, 414);
+      }
+    }
     
     @include media('tablet') {
       font-size: vw(20, 768);
