@@ -5,7 +5,7 @@ import Events from '@/components/Events';
 import Presentations from '@/components/Presentations';
 import SubscriberUpdated from '@/components/SubscriberUpdated';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getHomepage } from '@/lib/strapi';
+import { getPressReleases } from '@/lib/strapi';
 import { getNewsAndEvent, mapNewsAndEventData } from '@/lib/strapi-reports';
 import { mapTopBannerData } from '@/lib/strapi';
 
@@ -64,7 +64,53 @@ export default async function NewsAndEventsPage() {
     });
   }
 
-  // Fetch What's New data from Strapi and set title to "Press Releases"
+  // Fetch Press Releases for What's New section
+  let whatsNewData = null;
+  
+  // Helper function to format date
+  function formatDate(dateString) {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  }
+
+  // Helper function to split title into headline array (max 4 lines)
+  function splitTitleIntoHeadline(title) {
+    if (!title) return [];
+
+    // Remove HTML entities and tags
+    const cleanTitle = title
+      .replace(/&#038;/g, '&')
+      .replace(/&amp;/g, '&')
+      .replace(/<[^>]*>/g, '')
+      .trim();
+
+    // Split by words
+    const words = cleanTitle.split(' ');
+    const lines = [];
+    let currentLine = '';
+
+    // Try to create lines of roughly equal length
+    const avgWordsPerLine = Math.ceil(words.length / 4);
+
+    for (let i = 0; i < words.length; i++) {
+      if (currentLine && (currentLine.split(' ').length >= avgWordsPerLine || i === words.length - 1)) {
+        lines.push(currentLine.trim());
+        currentLine = words[i];
+      } else {
+        currentLine += (currentLine ? ' ' : '') + words[i];
+      }
+    }
+
+    if (currentLine) {
+      lines.push(currentLine.trim());
+    }
+
+    // Limit to 4 lines
+    return lines.slice(0, 4);
+  }
+
   // Default fallback card data (same structure as WhatsNew component default)
   const defaultWhatsNewItems = [
     {
@@ -117,26 +163,29 @@ export default async function NewsAndEventsPage() {
     }
   ];
 
-  let whatsNewData = null;
   try {
-    const investorsPageData = await getHomepage();
-    // Extract What's New data if available in Strapi
-    if (investorsPageData?.data?.attributes?.whatsNew || investorsPageData?.whatsNew) {
-      const whatsNew = investorsPageData?.data?.attributes?.whatsNew || investorsPageData?.whatsNew;
-      whatsNewData = {
-        title: "Press Releases", // Custom title for this page
-        items: whatsNew.items && whatsNew.items.length > 0 ? whatsNew.items : (whatsNew.news && whatsNew.news.length > 0 ? whatsNew.news : defaultWhatsNewItems)
-      };
-    } else {
-      // Provide default data with custom title if Strapi data not available
+    // Fetch latest press releases for the slider
+    const pressReleasesResponse = await getPressReleases(10); // Fetch more for slider
+    const articles = pressReleasesResponse?.data || [];
+
+    if (articles && articles.length > 0) {
       whatsNewData = {
         title: "Press Releases",
-        items: defaultWhatsNewItems
+        items: articles.map((article) => ({
+          id: article.id,
+          date: formatDate(article.publishedOn || article.publishedAt),
+          headline: splitTitleIntoHeadline(article.title),
+          category: "Press Release",
+          href: `/media/press-releases/${article.slug}`
+        }))
       };
     }
   } catch (error) {
-    console.error('Error fetching What\'s New data from Strapi:', error);
-    // Provide default data with custom title
+    console.error('Error fetching Press Releases from Strapi:', error);
+  }
+
+  // Default fallback data if API fails
+  if (!whatsNewData || !whatsNewData.items || whatsNewData.items.length === 0) {
     whatsNewData = {
       title: "Press Releases",
       items: defaultWhatsNewItems
