@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, startTransition } from 'react';
 import Pagination from '@/components/global/Pagination';
 import '../scss/components/ProductFinderResults.scss';
 
@@ -78,7 +78,7 @@ export default function ProductFinderResults({
     // Add additional filters here as needed
 
     return filtered;
-  }, [allProducts, searchTerm, selectedLetter, geography, category, oncology]);
+  }, [allProducts, searchTerm, selectedLetter]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -87,8 +87,22 @@ export default function ProductFinderResults({
   const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
   // Reset to page 1 when filters change
+  const prevFiltersRef = useRef({ searchTerm, selectedLetter, geography, category, oncology });
   useEffect(() => {
-    setCurrentPage(1);
+    const prevFilters = prevFiltersRef.current;
+    const filtersChanged = 
+      prevFilters.searchTerm !== searchTerm ||
+      prevFilters.selectedLetter !== selectedLetter ||
+      prevFilters.geography !== geography ||
+      prevFilters.category !== category ||
+      prevFilters.oncology !== oncology;
+    
+    if (filtersChanged) {
+      prevFiltersRef.current = { searchTerm, selectedLetter, geography, category, oncology };
+      startTransition(() => {
+        setCurrentPage(1);
+      });
+    }
   }, [searchTerm, selectedLetter, geography, category, oncology]);
 
   const handlePageChange = (page) => {
