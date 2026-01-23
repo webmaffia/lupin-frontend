@@ -29,6 +29,20 @@
   // BigCard wrapper styling
   &__big-card {
     width: 100%;
+    
+    @include media('mobile') {
+      .big-card__content {
+        min-height: vw-mobile(180, 414);
+      }
+      
+      .big-card__link {
+        font-size: vw-mobile(12, 414);
+      }
+      
+      .big-card__download-link {
+        font-size: vw-mobile(12, 414);
+      }
+    }
   }
 }
 
