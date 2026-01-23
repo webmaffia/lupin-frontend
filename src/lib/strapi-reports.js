@@ -969,9 +969,16 @@ export function mapPolicyData(strapiData) {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getCodeOfConduct() {
-  // Use simpler populate format that works - populate all fields recursively
-  // This will populate TopBanner (DesktopImage, MobileImage, Heading, SubHeading) and CodeOfConductDocumentsSection (Title, PublishedDate, Pdf, isActive)
-  return fetchAPI('code-of-conduct?populate[TopBanner][populate]=*&populate[CodeOfConductDocumentsSection][populate]=*', {
+  // Populate TopBanner, CodeOfConductDocumentsSection, and DocumentSection with nested LangaugePdfDocument
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[CodeOfConductDocumentsSection][populate][Pdf][populate]=*',
+    'populate[DocumentSection][populate][Pdf][populate]=*',
+    'populate[DocumentSection][populate][LangaugePdfDocument][populate][Pdf][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`code-of-conduct?${populateQuery}`, {
     next: { revalidate: 60 },
   });
 }
@@ -1039,9 +1046,72 @@ export function mapCodeOfConductData(strapiData) {
       }).filter(code => code.id !== null) // Filter out invalid codes
     : [];
 
+  // Map DocumentSection (new section with language PDFs)
+  const documentSections = Array.isArray(data?.DocumentSection)
+    ? data.DocumentSection
+        .filter(section => section?.isActive !== false && section?.IsActive !== false)
+        .map((section) => {
+          // Get main PDF URL
+          let mainPdfUrl = null;
+          if (section?.Pdf) {
+            const pdf = section.Pdf?.data?.attributes || section.Pdf;
+            if (pdf?.url || pdf) {
+              mainPdfUrl = getStrapiMedia(pdf);
+            }
+          }
+          if (!mainPdfUrl && section?.pdf) {
+            const pdf = section.pdf?.data?.attributes || section.pdf;
+            if (pdf?.url || pdf) {
+              mainPdfUrl = getStrapiMedia(pdf);
+            }
+          }
+
+          // Map LangaugePdfDocument (nested repeatable component)
+          const languagePdfs = Array.isArray(section?.LangaugePdfDocument)
+            ? section.LangaugePdfDocument
+                .filter(lang => lang?.isActive !== false && lang?.IsActive !== false)
+                .map((lang) => {
+                  let langPdfUrl = null;
+                  if (lang?.Pdf) {
+                    const pdf = lang.Pdf?.data?.attributes || lang.Pdf;
+                    if (pdf?.url || pdf) {
+                      langPdfUrl = getStrapiMedia(pdf);
+                    }
+                  }
+                  if (!langPdfUrl && lang?.pdf) {
+                    const pdf = lang.pdf?.data?.attributes || lang.pdf;
+                    if (pdf?.url || pdf) {
+                      langPdfUrl = getStrapiMedia(pdf);
+                    }
+                  }
+
+                  return {
+                    id: lang?.id || null,
+                    title: lang?.Title || lang?.title || '',
+                    pdfUrl: langPdfUrl || '#',
+                    isActive: lang?.isActive !== false,
+                    publishedDate: lang?.PublishedDate || lang?.publishedDate || null
+                  };
+                })
+                .filter(lang => lang.id !== null && lang.pdfUrl !== '#')
+            : [];
+
+          return {
+            id: section?.id || null,
+            pdfTitle: section?.PdfTitle || section?.pdfTitle || '',
+            pdfUrl: mainPdfUrl || '#',
+            isActive: section?.isActive !== false,
+            publishedDate: section?.PublishedDate || section?.publishedDate || null,
+            languagePdfs: languagePdfs
+          };
+        })
+        .filter(section => section.id !== null)
+    : [];
+
   // Return in component-expected format (images are static assets, not from API)
   return {
     codes: codes,
+    documentSections: documentSections,
     images: {
       downloadButton: {
         active: "/assets/policies/download-button-active.svg",
