@@ -22,7 +22,7 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/AGM.png",
         alt: "Annual General Meeting and Postal Ballot - Lupin"
       },
       petal: {

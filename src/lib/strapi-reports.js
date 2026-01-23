@@ -3218,7 +3218,8 @@ export async function getInvestor() {
     'populate[ReportsFilingSection][populate][FinancialHighLightCard][populate][cta][populate]=*',
     'populate[ReportsFilingSection][populate][IntegratedReport][populate][CoverImage][populate]=*',
     'populate[ReportsFilingSection][populate][IntegratedReport][populate][ReportFile][populate]=*',
-    'populate[ReportsFilingSection][populate][NseExchangeSection][populate][PdfDocument][populate][Pdf][populate]=*'
+    'populate[ReportsFilingSection][populate][NseExchangeSection][populate][PdfDocument][populate][Pdf][populate]=*',
+    'populate[ReportsFilingSection][populate][NseExchangeSection][populate][cta][populate]=*'
   ].join('&');
   
   return fetchAPI(`investor?${populateQuery}`, {
@@ -3410,9 +3411,17 @@ export function mapInvestorData(strapiData) {
           };
         });
 
+      // Map CTA if available
+      const cta = nseExchangeSection?.cta || nseExchangeSection?.CTA || null;
+      const mappedCta = cta ? {
+        text: cta?.text || cta?.Text || '',
+        href: cta?.href || cta?.Href || '#'
+      } : null;
+
       mappedNseExchange = {
         sectionTitle: nseExchangeSection?.SectionTitle || nseExchangeSection?.sectionTitle || null,
-        pdfDocuments: filteredPdfs
+        pdfDocuments: filteredPdfs,
+        cta: mappedCta
       };
     }
 
