@@ -1,19 +1,24 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import '../scss/components/ProductFinderLetterFilter.scss';
 
-export default function ProductFinderLetterFilter({ 
-  data, 
+export default function ProductFinderLetterFilter({
+  data,
   onLetterSelect,
   selectedLetter: externalSelectedLetter = ''
 }) {
   const [selectedLetter, setSelectedLetter] = useState(externalSelectedLetter || '');
 
+  // Sync with external prop changes
+  useEffect(() => {
+    setSelectedLetter(externalSelectedLetter || '');
+  }, [externalSelectedLetter]);
+
   // Generate alphabet A-Z
   const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
-  
+
   // Group letters into rows
   const letterRows = [
     alphabet.slice(0, 8),   // A-H
@@ -48,7 +53,7 @@ export default function ProductFinderLetterFilter({
 
         {/* Heading */}
         <h2 className="product-finder-letter-filter__heading" data-node-id="2953:3864">
-          Filter by Letters
+          Filter by Active Ingredient
         </h2>
 
         {/* Alphabet Grid */}
@@ -57,15 +62,14 @@ export default function ProductFinderLetterFilter({
             <div key={rowIndex} className="product-finder-letter-filter__row">
               {row.map((letter, letterIndex) => {
                 const isSelected = selectedLetter === letter;
-                
+
                 return (
                   <button
                     key={letter}
                     type="button"
                     onClick={() => handleLetterClick(letter)}
-                    className={`product-finder-letter-filter__letter ${
-                      isSelected ? 'product-finder-letter-filter__letter--selected' : ''
-                    }`}
+                    className={`product-finder-letter-filter__letter ${isSelected ? 'product-finder-letter-filter__letter--selected' : ''
+                      }`}
                     data-node-id={`2953:${3866 + rowIndex * 8 + letterIndex}`}
                   >
                     {letter}

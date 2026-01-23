@@ -50,7 +50,8 @@ export default async function PressReleasesPage() {
   let pressReleasesData = [];
 
   try {
-    const pressReleasesResponse = await getPressReleases(100); // Fetch more for listing page
+    // Fetch all press releases (handles pagination automatically if > 100 records)
+    const pressReleasesResponse = await getPressReleases(100); // Will fetch all pages if needed
     const articles = pressReleasesResponse?.data || [];
 
     pressReleasesData = articles.map((article) => ({

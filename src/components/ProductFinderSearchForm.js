@@ -4,8 +4,8 @@ import { useState } from 'react';
 import Image from 'next/image';
 import '../scss/components/ProductFinderSearchForm.scss';
 
-export default function ProductFinderSearchForm({ 
-  data, 
+export default function ProductFinderSearchForm({
+  data,
   onSearch,
   searchTerm: externalSearchTerm = '',
   geography: externalGeography = '',
@@ -17,8 +17,8 @@ export default function ProductFinderSearchForm({
   const [category, setCategory] = useState(externalCategory);
   const [oncology, setOncology] = useState(externalOncology);
 
-  // Default data structure
-  const formData = data || {
+  // Default data structure with proper fallbacks
+  const defaultFormData = {
     heading: {
       line1: "Search for Lupin Generics",
       line2: "or products from other categories here:"
@@ -29,20 +29,33 @@ export default function ProductFinderSearchForm({
     oncologyOptions: []
   };
 
+  // Merge provided data with defaults, ensuring heading is always present
+  const formData = {
+    ...defaultFormData,
+    ...data,
+    heading: {
+      ...defaultFormData.heading,
+      ...(data?.heading || {})
+    },
+    geographyOptions: data?.geographyOptions || defaultFormData.geographyOptions,
+    categoryOptions: data?.categoryOptions || defaultFormData.categoryOptions,
+    oncologyOptions: data?.oncologyOptions || defaultFormData.oncologyOptions
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Validate form - at least one field must have a value
     const hasSearchTerm = searchTerm && searchTerm.trim() !== '';
     const hasGeography = geography && geography.trim() !== '';
     const hasCategory = category && category.trim() !== '';
     const hasOncology = oncology && oncology.trim() !== '';
-    
+
     if (!hasSearchTerm && !hasGeography && !hasCategory && !hasOncology) {
       // Form is empty, don't submit
       return;
     }
-    
+
     if (onSearch) {
       onSearch({ searchTerm, geography, category, oncology });
     }
@@ -103,7 +116,7 @@ export default function ProductFinderSearchForm({
             </select>
             <div className="product-finder-search-form__select-arrow" data-node-id="2953:3825">
               <svg width="18" height="11" viewBox="0 0 18 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L9 9L17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M1 1L9 9L17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>
@@ -125,7 +138,7 @@ export default function ProductFinderSearchForm({
             </select>
             <div className="product-finder-search-form__select-arrow" data-node-id="2953:3829">
               <svg width="18" height="11" viewBox="0 0 18 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L9 9L17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M1 1L9 9L17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>
@@ -150,7 +163,7 @@ export default function ProductFinderSearchForm({
             </select>
             <div className="product-finder-search-form__select-arrow" data-node-id="2953:3843">
               <svg width="18" height="11" viewBox="0 0 18 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M1 1L9 9L17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <path d="M1 1L9 9L17 1" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
           </div>

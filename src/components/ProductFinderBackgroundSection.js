@@ -14,7 +14,37 @@ export default function ProductFinderBackgroundSection({ data }) {
   const [geography, setGeography] = useState('');
   const [category, setCategory] = useState('');
   const [oncology, setOncology] = useState('');
+  const [filterOptions, setFilterOptions] = useState({
+    geographyOptions: [],
+    categoryOptions: [],
+    oncologyOptions: []
+  });
+  const [loadingFilters, setLoadingFilters] = useState(true);
   const resultsSectionRef = useRef(null);
+
+  // Fetch filter options from API
+  useEffect(() => {
+    const fetchFilterOptions = async () => {
+      try {
+        const response = await fetch('/api/products/filters');
+        const data = await response.json();
+
+        if (data) {
+          setFilterOptions({
+            geographyOptions: data.geography || [],
+            categoryOptions: data.category || [],
+            oncologyOptions: data.oncology || []
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching filter options:', error);
+      } finally {
+        setLoadingFilters(false);
+      }
+    };
+
+    fetchFilterOptions();
+  }, []);
 
   // Default data structure
   const sectionData = data || {
@@ -24,9 +54,9 @@ export default function ProductFinderBackgroundSection({ data }) {
         line2: "or products from other categories here:"
       },
       searchPlaceholder: "Search by Active Ingredient or Brand Name",
-      geographyOptions: [],
-      categoryOptions: [],
-      oncologyOptions: []
+      geographyOptions: filterOptions.geographyOptions,
+      categoryOptions: filterOptions.categoryOptions,
+      oncologyOptions: filterOptions.oncologyOptions
     },
     letterFilter: {}
   };
@@ -40,21 +70,14 @@ export default function ProductFinderBackgroundSection({ data }) {
 
   // Handlers to update state
   const handleSearchSubmit = (searchData) => {
-    const hasSearchTerm = searchData.searchTerm && searchData.searchTerm.trim() !== '';
-    const hasGeography = searchData.geography && searchData.geography.trim() !== '';
-    const hasCategory = searchData.category && searchData.category.trim() !== '';
-    const hasOncology = searchData.oncology && searchData.oncology.trim() !== '';
-    
-    // Only proceed if at least one field has a value
-    if (!hasSearchTerm && !hasGeography && !hasCategory && !hasOncology) {
-      return; // Don't update state or scroll if form is empty
-    }
-    
+    // Always update state, even if all fields are empty (for clear functionality)
+    // This allows showing all products when form is cleared
     setSearchTerm(searchData.searchTerm || '');
     setGeography(searchData.geography || '');
     setCategory(searchData.category || '');
     setOncology(searchData.oncology || '');
-    // Scroll to results after search (only if form has valid input)
+
+    // Scroll to results after search
     setTimeout(() => {
       scrollToResults();
     }, 100);
@@ -92,8 +115,17 @@ export default function ProductFinderBackgroundSection({ data }) {
         <div className="product-finder-background-section__content-wrapper">
           {/* Search Form - Left Side */}
           <div className="product-finder-background-section__left">
-            <ProductFinderSearchForm 
-              data={sectionData.searchForm}
+            <ProductFinderSearchForm
+              data={{
+                heading: sectionData.searchForm?.heading || {
+                  line1: "Search for Lupin Generics",
+                  line2: "or products from other categories here:"
+                },
+                searchPlaceholder: sectionData.searchForm?.searchPlaceholder || "Search by Active Ingredient or Brand Name",
+                geographyOptions: filterOptions.geographyOptions,
+                categoryOptions: filterOptions.categoryOptions,
+                oncologyOptions: filterOptions.oncologyOptions
+              }}
               onSearch={handleSearchSubmit}
               searchTerm={searchTerm}
               geography={geography}
@@ -104,7 +136,7 @@ export default function ProductFinderBackgroundSection({ data }) {
 
           {/* Letter Filter - Right Side */}
           <div className="product-finder-background-section__right">
-            <ProductFinderLetterFilter 
+            <ProductFinderLetterFilter
               data={sectionData.letterFilter}
               onLetterSelect={handleLetterSelect}
               selectedLetter={selectedLetter}

@@ -333,29 +333,125 @@ export async function getArticlesByCategory(categorySlug, limit = 10, sort = 'de
 }
 
 /**
- * Fetch press releases from Strapi
+ * Fetch all articles by category from Strapi (handles pagination automatically)
+ * This function fetches all pages to get all records, handling Strapi's 100 record limit per request
+ * 
+ * @param {string} categorySlug - Category slug to filter by
+ * @param {string} sort - Sort order ('asc' or 'desc')
+ * @returns {Promise<Object>} Combined response with all articles
+ * 
  * Example usage:
- * const pressReleases = await getPressReleases(10);
+ * const allPressReleases = await getAllArticlesByCategory('press-releases', 'desc');
+ */
+export async function getAllArticlesByCategory(categorySlug, sort = 'desc') {
+  try {
+    const pageSize = 100; // Strapi's maximum per request
+    let allData = [];
+    let currentPage = 1;
+    let totalPages = 1;
+    let total = 0;
+
+    // Fetch first page to get total count
+    const firstPageResponse = await fetchAPI(
+      `articles?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${currentPage}&pagination[pageSize]=${pageSize}&sort[0]=publishedOn:${sort}&sort[1]=publishedAt:${sort}&populate=media`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!firstPageResponse || !firstPageResponse.data) {
+      return { data: [], meta: { pagination: { page: 1, pageSize: pageSize, pageCount: 0, total: 0 } } };
+    }
+
+    allData = [...firstPageResponse.data];
+    total = firstPageResponse.meta?.pagination?.total || 0;
+    totalPages = firstPageResponse.meta?.pagination?.pageCount || 1;
+
+    // If there are more pages, fetch them all
+    if (totalPages > 1) {
+      const remainingPages = [];
+      for (let page = 2; page <= totalPages; page++) {
+        remainingPages.push(
+          fetchAPI(
+            `articles?filters[category][slug][$eq]=${categorySlug}&pagination[page]=${page}&pagination[pageSize]=${pageSize}&sort[0]=publishedOn:${sort}&sort[1]=publishedAt:${sort}&populate=media`,
+            {
+              next: { revalidate: 60 },
+            }
+          )
+        );
+      }
+
+      // Fetch all remaining pages in parallel
+      const remainingResponses = await Promise.all(remainingPages);
+
+      // Combine all data
+      remainingResponses.forEach((response) => {
+        if (response && response.data) {
+          allData = [...allData, ...response.data];
+        }
+      });
+    }
+
+    return {
+      data: allData,
+      meta: {
+        pagination: {
+          page: 1,
+          pageSize: total,
+          pageCount: 1,
+          total: total
+        }
+      }
+    };
+  } catch (error) {
+    console.error(`Error fetching all articles for category ${categorySlug}:`, error);
+    // Return empty structure instead of throwing
+    return { data: [], meta: { pagination: { page: 1, pageSize: 100, pageCount: 0, total: 0 } } };
+  }
+}
+
+/**
+ * Fetch press releases from Strapi
+ * If limit is 100 or more, fetches all pages automatically
+ * Example usage:
+ * const pressReleases = await getPressReleases(10); // Fetches 10 items
+ * const allPressReleases = await getPressReleases(100); // Fetches all items across multiple pages
  */
 export async function getPressReleases(limit = 10) {
+  // If limit is 100 or more, fetch all pages
+  if (limit >= 100) {
+    return getAllArticlesByCategory('press-releases', 'desc');
+  }
   return getArticlesByCategory('press-releases', limit, 'desc');
 }
 
 /**
  * Fetch perspectives articles from Strapi
+ * If limit is 100 or more, fetches all pages automatically
  * Example usage:
- * const perspectives = await getPerspectives(10);
+ * const perspectives = await getPerspectives(10); // Fetches 10 items
+ * const allPerspectives = await getPerspectives(100); // Fetches all items across multiple pages
  */
 export async function getPerspectives(limit = 10) {
+  // If limit is 100 or more, fetch all pages
+  if (limit >= 100) {
+    return getAllArticlesByCategory('perspectives', 'desc');
+  }
   return getArticlesByCategory('perspectives', limit, 'desc');
 }
 
 /**
  * Fetch media coverage articles from Strapi
+ * If limit is 100 or more, fetches all pages automatically
  * Example usage:
- * const mediaCoverage = await getMediaCoverage(10);
+ * const mediaCoverage = await getMediaCoverage(10); // Fetches 10 items
+ * const allMediaCoverage = await getMediaCoverage(100); // Fetches all items across multiple pages
  */
 export async function getMediaCoverage(limit = 10) {
+  // If limit is 100 or more, fetch all pages
+  if (limit >= 100) {
+    return getAllArticlesByCategory('media-coverage', 'desc');
+  }
   return getArticlesByCategory('media-coverage', limit, 'desc');
 }
 
@@ -384,19 +480,30 @@ export async function getFeaturedArticlesByCategory(categorySlug, limit = 10, so
 
 /**
  * Fetch media kit articles from Strapi
+ * If limit is 100 or more, fetches all pages automatically
  * Example usage:
- * const mediaKit = await getMediaKit(10);
+ * const mediaKit = await getMediaKit(10); // Fetches 10 items
+ * const allMediaKit = await getMediaKit(100); // Fetches all items across multiple pages
  */
 export async function getMediaKit(limit = 10) {
+  // If limit is 100 or more, fetch all pages
+  if (limit >= 100) {
+    return getAllArticlesByCategory('media-kit', 'desc');
+  }
   return getArticlesByCategory('media-kit', limit, 'desc');
 }
 
 /**
  * Fetch awards and recognition articles from Strapi
+ * If limit is 100 or more, fetches all pages automatically
  * Example usage:
- * const awards = await getAwardsAndRecognition(100);
+ * const awards = await getAwardsAndRecognition(100); // Fetches all items across multiple pages
  */
 export async function getAwardsAndRecognition(limit = 100) {
+  // If limit is 100 or more, fetch all pages
+  if (limit >= 100) {
+    return getAllArticlesByCategory('awards-and-recognition', 'desc');
+  }
   return getArticlesByCategory('awards-and-recognition', limit, 'desc');
 }
 
