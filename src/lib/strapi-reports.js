@@ -1957,7 +1957,27 @@ export function mapNoticeData(strapiData) {
     })
     .filter(notice => notice.financialLabel) // Only include notices with financial label
     .sort((a, b) => {
-      // Sort by DisplayOrder if available, otherwise maintain order
+      // Extract year from financialLabel (e.g., "FY 2026-27", "2026", "FY 2025-26")
+      const extractYear = (label) => {
+        if (!label) return 0;
+        // Try to find 4-digit year (e.g., 2026, 2025)
+        const yearMatch = label.match(/\b(20\d{2})\b/);
+        return yearMatch ? parseInt(yearMatch[1]) : 0;
+      };
+      
+      const yearA = extractYear(a.financialLabel);
+      const yearB = extractYear(b.financialLabel);
+      
+      // If both have valid years, sort by year descending (2026 first, then 2025, etc.)
+      if (yearA > 0 && yearB > 0) {
+        return yearB - yearA; // Descending order (latest year first)
+      }
+      
+      // If only one has a year, prioritize it
+      if (yearA > 0 && yearB === 0) return -1;
+      if (yearB > 0 && yearA === 0) return 1;
+      
+      // If neither has a year, fall back to DisplayOrder sorting
       const orderA = a.displayOrder || '999';
       const orderB = b.displayOrder || '999';
       return orderA.localeCompare(orderB);
