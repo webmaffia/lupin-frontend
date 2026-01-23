@@ -23,7 +23,7 @@ export default async function LeadersPage() {
 
   try {
     const strapiData = await getLeaders();
-    
+
     // Map TopBanner data for InnerBanner
     const data = strapiData?.data || strapiData;
     if (data?.TopBanner) {
@@ -32,7 +32,7 @@ export default async function LeadersPage() {
 
     // Extract leaders data
     leadersData = data?.leaders || data?.Leaders || null;
-    
+
     // Extract management team data
     managementTeamData = data?.managementTeam || data?.ManagementTeam || null;
   } catch (error) {

@@ -41,7 +41,7 @@ export async function fetchAPI(endpoint, options = {}) {
 
   try {
     const response = await fetch(requestUrl, mergedOptions);
-    
+
     if (!response.ok) {
       // Get error details from response
       let errorMessage = `HTTP error! status: ${response.status}`;
@@ -54,17 +54,17 @@ export async function fetchAPI(endpoint, options = {}) {
         // If response is not JSON, use status text
         errorMessage += ` - ${response.statusText}`;
       }
-      
+
       // Provide helpful error messages
       if (response.status === 403) {
         errorMessage += '\n\n403 Forbidden: Check that STRAPI_API_TOKEN is set in your .env.local file and has proper permissions.';
       } else if (response.status === 401) {
         errorMessage += '\n\n401 Unauthorized: Check that your STRAPI_API_TOKEN is valid.';
       }
-      
+
       throw new Error(errorMessage);
     }
-    
+
     const data = await response.json();
     return data;
   } catch (error) {
@@ -80,14 +80,14 @@ export async function fetchAPI(endpoint, options = {}) {
  */
 export function getStrapiMedia(media) {
   if (!media) return null;
-  
+
   const imageUrl = typeof media === 'string' ? media : media.url;
-  
+
   // Return full URL if it's already a complete URL
   if (imageUrl.startsWith('http')) {
     return imageUrl;
   }
-  
+
   // Otherwise prepend Strapi URL
   return `${STRAPI_URL}${imageUrl}`;
 }
@@ -125,7 +125,7 @@ export function mapHomepageHeroData(strapiData) {
   // For single types: data.hero.heading (no attributes wrapper)
   // For collection types: data.attributes.hero.heading
   const data = strapiData?.data || strapiData;
-  
+
   // Log the structure we're working with
   console.log('Mapping Strapi data. Full response:', JSON.stringify(strapiData, null, 2));
   console.log('Data object:', JSON.stringify(data, null, 2));
@@ -146,7 +146,7 @@ export function mapHomepageHeroData(strapiData) {
     });
 
     const heading = data.hero?.heading || data.heading;
-    
+
     // If heading is already an array, return it
     if (Array.isArray(heading)) {
       console.log('Found heading as array:', heading);
@@ -155,7 +155,7 @@ export function mapHomepageHeroData(strapiData) {
       }
       return heading.filter(line => line && line.trim());
     }
-    
+
     // If heading is an object with line1/line2, convert to array
     if (heading && typeof heading === 'object') {
       if (heading.line1 && heading.line2) {
@@ -166,7 +166,7 @@ export function mapHomepageHeroData(strapiData) {
         throw new Error('Heading has line1 but missing line2. Please provide both line1 and line2 in Strapi, or use an array format.');
       }
     }
-    
+
     // If heading is a string, split it (try common separators)
     if (typeof heading === 'string' && heading.trim()) {
       console.log('Found heading as string:', heading);
@@ -178,7 +178,7 @@ export function mapHomepageHeroData(strapiData) {
       }
       throw new Error(`Heading is a single string "${heading}" but could not be split. Expected array, object with line1/line2, or string with separator (newline, comma, dash).`);
     }
-    
+
     throw new Error(`Heading data not found in Strapi response. Available keys: ${Object.keys(data).join(', ')}. Please add heading field to your homepage content.`);
   };
 
@@ -230,18 +230,18 @@ export function mapHomepageHeroData(strapiData) {
     if (!image) {
       throw new Error('Image not found in Strapi response. Please add image field to your hero component in Strapi.');
     }
-    
+
     if (!image.url) {
       throw new Error('Image URL is missing in Strapi response. Please ensure the image is properly uploaded in Strapi.');
     }
-    
+
     // Get full image URL using getStrapiMedia
     const imageUrl = getStrapiMedia(image);
-    
+
     if (!imageUrl) {
       throw new Error('Failed to generate image URL from Strapi data.');
     }
-    
+
     return {
       url: imageUrl,
       alt: image.alternativeText || image.caption || '',
@@ -275,15 +275,84 @@ export async function getArticles() {
  * Fetch single article by slug
  * Example usage:
  * const article = await getArticle('my-article-slug');
+ * Returns null if article doesn't exist or on error
  */
 export async function getArticle(slug) {
-  const articles = await fetchAPI(
-    `articles?filters[slug][$eq]=${slug}&populate=*`,
-    {
-      next: { revalidate: 60 },
-    }
-  );
-  return articles.data?.[0];
+  if (!slug) {
+    return null;
+  }
+
+  try {
+    const articles = await fetchAPI(
+      `articles?filters[slug][$eq]=${slug}&populate=*`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
+    return articles?.data?.[0] || null;
+  } catch (error) {
+    console.error(`Error fetching article with slug ${slug}:`, error);
+    return null;
+  }
+}
+
+/**
+ * Fetch articles by category slug from Strapi
+ * Example usage:
+ * const articles = await getArticlesByCategory('press-releases', 10);
+ * Returns empty data structure if category doesn't exist or has no articles
+ */
+export async function getArticlesByCategory(categorySlug, limit = 10, sort = 'desc') {
+  try {
+    const response = await fetchAPI(
+      `articles?filters[category][slug][$eq]=${categorySlug}&pagination[page]=1&pagination[pageSize]=${limit}&sort[0]=publishedAt:${sort}&populate=*`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
+    // Return response with empty data array if no articles found
+    return response || { data: [], meta: { pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } } };
+  } catch (error) {
+    console.error(`Error fetching articles for category ${categorySlug}:`, error);
+    // Return empty structure instead of throwing
+    return { data: [], meta: { pagination: { page: 1, pageSize: limit, pageCount: 0, total: 0 } } };
+  }
+}
+
+/**
+ * Fetch press releases from Strapi
+ * Example usage:
+ * const pressReleases = await getPressReleases(10);
+ */
+export async function getPressReleases(limit = 10) {
+  return getArticlesByCategory('press-releases', limit, 'desc');
+}
+
+/**
+ * Fetch perspectives articles from Strapi
+ * Example usage:
+ * const perspectives = await getPerspectives(10);
+ */
+export async function getPerspectives(limit = 10) {
+  return getArticlesByCategory('perspectives', limit, 'desc');
+}
+
+/**
+ * Fetch media coverage articles from Strapi
+ * Example usage:
+ * const mediaCoverage = await getMediaCoverage(10);
+ */
+export async function getMediaCoverage(limit = 10) {
+  return getArticlesByCategory('media-coverage', limit, 'desc');
+}
+
+/**
+ * Fetch media kit articles from Strapi
+ * Example usage:
+ * const mediaKit = await getMediaKit(10);
+ */
+export async function getMediaKit(limit = 10) {
+  return getArticlesByCategory('media-kit', limit, 'desc');
 }
 
 /**
@@ -296,10 +365,10 @@ export async function getArticle(slug) {
 export function mapHomepageOurStoryData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   // Log for debugging
   console.log('Mapping OurStory data. Full response:', JSON.stringify(strapiData, null, 2));
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -318,7 +387,7 @@ export function mapHomepageOurStoryData(strapiData) {
   if (!sectionData.heading) {
     throw new Error('Heading not found in ourStory sectionData. Please add heading field in Strapi.');
   }
-  const heading = typeof sectionData.heading === 'string' 
+  const heading = typeof sectionData.heading === 'string'
     ? sectionData.heading.split('\n').filter(line => line.trim())
     : sectionData.heading;
 
@@ -378,10 +447,10 @@ export function mapHomepageOurStoryData(strapiData) {
 export function mapHomepageOurPurposeData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   // Log for debugging
   console.log('Mapping OurPurpose data. Full response:', JSON.stringify(strapiData, null, 2));
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -405,7 +474,7 @@ export function mapHomepageOurPurposeData(strapiData) {
   if (!sectionData.heading) {
     throw new Error('Heading not found in ourPurpose sectionData. Please add heading field in Strapi.');
   }
-  const heading = typeof sectionData.heading === 'string' 
+  const heading = typeof sectionData.heading === 'string'
     ? sectionData.heading.split('\n').filter(line => line.trim())
     : sectionData.heading;
 
@@ -485,10 +554,10 @@ export function mapHomepageOurPurposeData(strapiData) {
 export function mapHomepageOverviewData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   // Log for debugging
   console.log('Mapping Overview data. Full response:', JSON.stringify(strapiData, null, 2));
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -512,7 +581,7 @@ export function mapHomepageOverviewData(strapiData) {
   if (!sectionData.heading) {
     throw new Error('Heading not found in overview sectionData. Please add heading field in Strapi.');
   }
-  const heading = typeof sectionData.heading === 'string' 
+  const heading = typeof sectionData.heading === 'string'
     ? sectionData.heading.split('\n').filter(line => line.trim())
     : sectionData.heading;
 
@@ -535,7 +604,7 @@ export function mapHomepageOverviewData(strapiData) {
     // Otherwise default to "+"
     let number = stat.number.toString().trim();
     let suffix = '+';
-    
+
     // Check if number ends with a non-digit character (like +, %, etc.)
     const suffixMatch = number.match(/[^\d]+$/);
     if (suffixMatch) {
@@ -592,10 +661,10 @@ export function mapHomepageOverviewData(strapiData) {
 export function mapHomepageOurBusinessData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   // Log for debugging
   console.log('Mapping OurBusiness data. Full response:', JSON.stringify(strapiData, null, 2));
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -614,7 +683,7 @@ export function mapHomepageOurBusinessData(strapiData) {
   if (!sectionData.heading) {
     throw new Error('Heading not found in ourBusiness sectionData. Please add heading field in Strapi.');
   }
-  const heading = typeof sectionData.heading === 'string' 
+  const heading = typeof sectionData.heading === 'string'
     ? sectionData.heading.split('\n').filter(line => line.trim())
     : sectionData.heading;
 
@@ -670,10 +739,10 @@ export function mapHomepageOurBusinessData(strapiData) {
 export function mapHomepageSustainabilityData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   // Log for debugging
   console.log('Mapping Sustainability data. Full response:', JSON.stringify(strapiData, null, 2));
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -697,7 +766,7 @@ export function mapHomepageSustainabilityData(strapiData) {
   if (!sectionData.heading) {
     throw new Error('Heading not found in sustainability sectionData. Please add heading field in Strapi.');
   }
-  const heading = typeof sectionData.heading === 'string' 
+  const heading = typeof sectionData.heading === 'string'
     ? sectionData.heading.split('\n').filter(line => line.trim())
     : sectionData.heading;
 
@@ -752,10 +821,10 @@ export function mapHomepageSustainabilityData(strapiData) {
 export function mapHomepageCSRData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   // Log for debugging
   console.log('Mapping CSR data. Full response:', JSON.stringify(strapiData, null, 2));
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -779,7 +848,7 @@ export function mapHomepageCSRData(strapiData) {
   if (!sectionData.heading) {
     throw new Error('Heading not found in CSR sectionData. Please add heading field in Strapi.');
   }
-  const heading = typeof sectionData.heading === 'string' 
+  const heading = typeof sectionData.heading === 'string'
     ? sectionData.heading.split('\n').filter(line => line.trim())
     : sectionData.heading;
 
@@ -840,10 +909,10 @@ export function mapHomepageCSRData(strapiData) {
 export function mapHomepageLifeData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   // Log for debugging
   console.log('Mapping Life data. Full response:', JSON.stringify(strapiData, null, 2));
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -862,7 +931,7 @@ export function mapHomepageLifeData(strapiData) {
   if (!sectionData.heading) {
     throw new Error('Heading not found in life sectionData. Please add heading field in Strapi.');
   }
-  const heading = typeof sectionData.heading === 'string' 
+  const heading = typeof sectionData.heading === 'string'
     ? sectionData.heading.split('\n').filter(line => line.trim())
     : sectionData.heading;
 
@@ -935,7 +1004,7 @@ export function mapHomepageLifeData(strapiData) {
 export function mapHomepageNewsInsightsData(strapiData) {
   // Handle Strapi v4 response structure
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     throw new Error('No data received from Strapi API. Check that the homepage endpoint returns data.');
   }
@@ -1054,12 +1123,12 @@ export function mapAnalystCoverageData(strapiData) {
   // Map AnalystCard array to component format
   const analystCards = Array.isArray(data.AnalystCard)
     ? data.AnalystCard.map((card, index) => ({
-        id: card.id || index + 1,
-        institution: card.company_name || '',
-        analyst: card.name || '',
-        email: card.email || '',
-        isActive: false // Default to false, can be set in Strapi if needed
-      }))
+      id: card.id || index + 1,
+      institution: card.company_name || '',
+      analyst: card.name || '',
+      email: card.email || '',
+      isActive: false // Default to false, can be set in Strapi if needed
+    }))
     : [];
 
   return analystCards;
@@ -1095,17 +1164,17 @@ export function mapPolicyData(strapiData) {
   // Map PdfCard array to component format
   const policies = Array.isArray(data.PdfCard)
     ? data.PdfCard.map((card) => {
-        const pdf = card.pdf?.data?.attributes || card.pdf;
-        const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+      const pdf = card.pdf?.data?.attributes || card.pdf;
+      const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
 
-        return {
-          id: card.id,
-          title: card.title || '',
-          pdfUrl: pdfUrl || '#',
-          isActive: card.isActive !== undefined ? card.isActive : false,
-          publishedDate: card.publishedDate || null
-        };
-      })
+      return {
+        id: card.id,
+        title: card.title || '',
+        pdfUrl: pdfUrl || '#',
+        isActive: card.isActive !== undefined ? card.isActive : false,
+        publishedDate: card.publishedDate || null
+      };
+    })
     : [];
 
   // Return in component-expected format
@@ -1151,17 +1220,17 @@ export function mapFinancialData(strapiData) {
   // Map PdfCard array to component format
   const relatedPartyTransactions = Array.isArray(data.PdfCard)
     ? data.PdfCard.map((card) => {
-        const pdf = card.pdf?.data?.attributes || card.pdf;
-        const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+      const pdf = card.pdf?.data?.attributes || card.pdf;
+      const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
 
-        return {
-          id: card.id,
-          title: card.title || '',
-          pdfUrl: pdfUrl || '#',
-          isActive: card.isActive !== undefined ? card.isActive : false,
-          publishedDate: card.publishedDate || null
-        };
-      })
+      return {
+        id: card.id,
+        title: card.title || '',
+        pdfUrl: pdfUrl || '#',
+        isActive: card.isActive !== undefined ? card.isActive : false,
+        publishedDate: card.publishedDate || null
+      };
+    })
     : [];
 
   return relatedPartyTransactions;
@@ -1180,20 +1249,20 @@ export function mapTopBannerData(topBanner) {
   // Get desktop and mobile images using optional chaining with fallbacks
   // Support both direct structure (DesktopImage) and nested structure (DesktopImage.data.attributes)
   // Also support snake_case (desktop_image) for backward compatibility
-  const desktopImage = topBanner?.DesktopImage?.data?.attributes 
-    || topBanner?.DesktopImage 
-    || topBanner?.desktop_image?.data?.attributes 
+  const desktopImage = topBanner?.DesktopImage?.data?.attributes
+    || topBanner?.DesktopImage
+    || topBanner?.desktop_image?.data?.attributes
     || topBanner?.desktop_image;
-    
-  const mobileImage = topBanner?.MobileImage?.data?.attributes 
-    || topBanner?.MobileImage 
-    || topBanner?.mobile_image?.data?.attributes 
+
+  const mobileImage = topBanner?.MobileImage?.data?.attributes
+    || topBanner?.MobileImage
+    || topBanner?.mobile_image?.data?.attributes
     || topBanner?.mobile_image;
-  
+
   // Get URLs for both desktop and mobile images
   const desktopImageUrl = desktopImage ? getStrapiMedia(desktopImage) : null;
   const mobileImageUrl = mobileImage ? getStrapiMedia(mobileImage) : null;
-  
+
   // Use desktop image as primary banner, fallback to mobile if desktop not available
   const bannerImage = desktopImage || mobileImage;
   const bannerImageUrl = desktopImageUrl || mobileImageUrl;
@@ -1202,10 +1271,10 @@ export function mapTopBannerData(topBanner) {
   // Support both camelCase (Heading, SubHeading) and legacy fields (BannerTitle, subHeading)
   const heading = topBanner?.Heading || topBanner?.heading || topBanner?.BannerTitle || '';
   const subHeading = topBanner?.SubHeading || topBanner?.subHeading || '';
-  
+
   // Parse heading - could be single line or two lines separated by newline/space
   const titleParts = heading ? heading.split(/\n|\\n/).filter(part => part.trim()) : [];
-  
+
   // Use Heading as line1, SubHeading as line2, or split Heading if SubHeading not available
   const line1 = titleParts[0]?.trim() || subHeading || '';
   const line2 = subHeading || titleParts[1]?.trim() || '';
@@ -1226,7 +1295,7 @@ export function mapTopBannerData(topBanner) {
       alt: desktopImage?.alternativeText || desktopImage?.caption || 'Banner image'
     };
   }
-  
+
   // Add mobile banner image if available (for responsive display)
   if (mobileImageUrl && mobileImage) {
     bannerData.images.bannerMobile = {
@@ -1234,7 +1303,7 @@ export function mapTopBannerData(topBanner) {
       alt: mobileImage?.alternativeText || mobileImage?.caption || 'Banner image mobile'
     };
   }
-  
+
   // Fallback: if no desktop but mobile exists, use mobile as banner
   if (!bannerData.images.banner && mobileImageUrl && mobileImage) {
     bannerData.images.banner = {
@@ -1319,7 +1388,7 @@ export function mapAboutUsFoldsData(strapiData) {
 
   // Check if folds is an array or object
   const folds = data.folds || data.Folds;
-  
+
   if (!folds) {
     return null;
   }
@@ -1345,7 +1414,7 @@ export function mapAboutUsFoldsData(strapiData) {
       }
     };
   }
-  
+
   // If folds is an array of fold objects
   if (Array.isArray(folds) && folds.length > 0) {
     return folds.map((fold, index) => ({
@@ -1542,7 +1611,7 @@ export function mapLivelihoodTabsData(strapiData) {
   // Map each tab
   const mappedTabs = livelihoodTabs.tabs.map((tab, index) => {
     const tabId = tab.id || index + 1;
-    
+
     // Extract title - handle newlines
     let title = tab.title || tab.name || '';
     if (typeof title === 'string' && title.includes('\n')) {
@@ -1554,10 +1623,10 @@ export function mapLivelihoodTabsData(strapiData) {
     let content = null;
     if (tab.content) {
       const contentData = tab.content;
-      
+
       // Extract heading
       const heading = contentData.heading || contentData.title || '';
-      
+
       // Extract paragraphs
       let paragraphs = contentData.paragraphs || contentData.paragraph || [];
       if (typeof paragraphs === 'string') {
@@ -1615,7 +1684,7 @@ export function mapKeyHighlightsData(strapiData) {
   // Map each highlight
   const mappedHighlights = keyHighlights.highlights.map((highlight, index) => {
     const highlightId = highlight.id || index + 1;
-    
+
     return {
       id: highlightId,
       number: highlight.number || highlight.metric || '',
@@ -1656,7 +1725,7 @@ export async function getEthicsComplianceGovernance() {
  */
 export function mapEthicsPledgeData(strapiData) {
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     return null;
   }
@@ -1679,7 +1748,7 @@ export function mapEthicsPledgeData(strapiData) {
  */
 export function mapEthicsTextContentData(strapiData) {
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     return null;
   }
@@ -1691,7 +1760,7 @@ export function mapEthicsTextContentData(strapiData) {
 
   // Handle paragraphs - can be array, string with newlines, or single text field
   let paragraphs = [];
-  
+
   if (Array.isArray(textContent.paragraphs)) {
     paragraphs = textContent.paragraphs;
   } else if (textContent.content) {
@@ -1740,7 +1809,7 @@ export async function getGlobalTechnicalOperations() {
  */
 export function mapGTOTabsData(strapiData) {
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     return null;
   }
@@ -1754,55 +1823,55 @@ export function mapGTOTabsData(strapiData) {
   const mappedTabs = gtoTabs.tabs.map((tab, index) => {
     const tabId = tab.id || tab.slug || `tab-${index + 1}`;
     const tabLabel = tab.label || tab.title || tab.name || '';
-    
+
     // Map sections for this tab
-    const sections = Array.isArray(tab.sections) 
+    const sections = Array.isArray(tab.sections)
       ? tab.sections.map((section, sectionIndex) => {
-          // Extract heading
-          const heading = section.heading || section.title || '';
-          
-          // Extract paragraphs - can be array or string
-          let paragraphs = section.paragraphs || section.paragraph || section.text || section.description || [];
-          if (typeof paragraphs === 'string') {
-            // Split by double newlines or single newlines
-            paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
-            if (paragraphs.length === 0 && section.text) {
-              paragraphs = [section.text];
-            }
+        // Extract heading
+        const heading = section.heading || section.title || '';
+
+        // Extract paragraphs - can be array or string
+        let paragraphs = section.paragraphs || section.paragraph || section.text || section.description || [];
+        if (typeof paragraphs === 'string') {
+          // Split by double newlines or single newlines
+          paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
+          if (paragraphs.length === 0 && section.text) {
+            paragraphs = [section.text];
           }
-          if (!Array.isArray(paragraphs)) {
-            paragraphs = paragraphs ? [paragraphs] : [];
-          }
-          
-          // Extract image
-          const image = section.image?.data?.attributes || section.image;
-          const imageUrl = image ? getStrapiMedia(image) : null;
-          
-          // Extract link/CTA
-          const link = section.link || section.cta;
-          const linkData = link ? {
-            text: link.text || link.label || '',
-            href: link.href || link.url || '#'
-          } : null;
-          
-          // Extract imageFirst flag (controls layout - image first or text first)
-          const imageFirst = section.imageFirst !== undefined ? section.imageFirst : undefined;
-          
-          return {
-            heading,
-            paragraphs,
-            image: imageUrl ? {
-              url: imageUrl,
-              alt: image.alternativeText || image.caption || section.imageAlt || '',
-              width: image.width,
-              height: image.height
-            } : null,
-            link: linkData,
-            imageFirst: imageFirst
-          };
-        })
+        }
+        if (!Array.isArray(paragraphs)) {
+          paragraphs = paragraphs ? [paragraphs] : [];
+        }
+
+        // Extract image
+        const image = section.image?.data?.attributes || section.image;
+        const imageUrl = image ? getStrapiMedia(image) : null;
+
+        // Extract link/CTA
+        const link = section.link || section.cta;
+        const linkData = link ? {
+          text: link.text || link.label || '',
+          href: link.href || link.url || '#'
+        } : null;
+
+        // Extract imageFirst flag (controls layout - image first or text first)
+        const imageFirst = section.imageFirst !== undefined ? section.imageFirst : undefined;
+
+        return {
+          heading,
+          paragraphs,
+          image: imageUrl ? {
+            url: imageUrl,
+            alt: image.alternativeText || image.caption || section.imageAlt || '',
+            width: image.width,
+            height: image.height
+          } : null,
+          link: linkData,
+          imageFirst: imageFirst
+        };
+      })
       : [];
-    
+
     return {
       id: tabId,
       label: tabLabel,
@@ -1822,7 +1891,7 @@ export function mapGTOTabsData(strapiData) {
  */
 export function mapGlobalPresenceContentBoxData(strapiData) {
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     return null;
   }
@@ -1859,7 +1928,7 @@ export function mapGlobalPresenceContentBoxData(strapiData) {
  */
 export function mapGlobalPresenceCountrySectionsData(strapiData) {
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     return null;
   }
@@ -1904,7 +1973,7 @@ export function mapGlobalPresenceCountrySectionsData(strapiData) {
  */
 export function mapManufacturingIntroData(strapiData) {
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     return null;
   }
@@ -1941,7 +2010,7 @@ export function mapScienceIntroData(strapiData) {
   // Handle different heading structures
   let headingLine1 = '';
   let headingLine2 = '';
-  
+
   if (introSection.heading) {
     if (typeof introSection.heading === 'object') {
       headingLine1 = introSection.heading.line1 || introSection.heading.lineOne || '';
@@ -1986,7 +2055,7 @@ export function mapScienceResearchData(strapiData) {
   if (!researchSection) return null;
 
   const heading = researchSection.heading || researchSection.title || researchSection.headingLine || '';
-  
+
   let content = [];
   if (researchSection.content && Array.isArray(researchSection.content)) {
     content = researchSection.content;
@@ -1994,7 +2063,7 @@ export function mapScienceResearchData(strapiData) {
     content = researchSection.paragraphs;
   } else if (researchSection.text) {
     // If it's a single string, split by sentences or paragraphs
-    content = typeof researchSection.text === 'string' 
+    content = typeof researchSection.text === 'string'
       ? researchSection.text.split(/\n\n+/).filter(p => p.trim())
       : [researchSection.text];
   } else if (Array.isArray(researchSection)) {
@@ -2002,10 +2071,10 @@ export function mapScienceResearchData(strapiData) {
   }
 
   const image = researchSection.image || researchSection.imageData;
-  const imageUrl = typeof image === 'string' 
-    ? image 
+  const imageUrl = typeof image === 'string'
+    ? image
     : image?.url || image?.src || researchSection.imageUrl || '';
-  const imageAlt = typeof image === 'object' 
+  const imageAlt = typeof image === 'object'
     ? (image?.alt || image?.altText || '')
     : '';
 
@@ -2040,7 +2109,7 @@ export function mapScienceDigitalData(strapiData) {
 
   const mainHeading = digitalSection.mainHeading || digitalSection.heading || digitalSection.title || '';
   const introParagraph = digitalSection.introParagraph || digitalSection.intro || digitalSection.introText || '';
-  
+
   let sectionHeading = { line1: '', line2: '' };
   if (digitalSection.sectionHeading) {
     if (typeof digitalSection.sectionHeading === 'object') {
@@ -2063,14 +2132,14 @@ export function mapScienceDigitalData(strapiData) {
       line2: parts[1] || ''
     };
   }
-  
+
   const description = digitalSection.description || digitalSection.text || digitalSection.content || '';
-  
+
   const image = digitalSection.image || digitalSection.imageData;
-  const imageUrl = typeof image === 'string' 
-    ? image 
+  const imageUrl = typeof image === 'string'
+    ? image
     : image?.url || image?.src || digitalSection.imageUrl || '';
-  const imageAlt = typeof image === 'object' 
+  const imageAlt = typeof image === 'object'
     ? (image?.alt || image?.altText || '')
     : '';
 
@@ -2138,7 +2207,7 @@ export function mapScienceArchitectureData(strapiData) {
     content = architectureSection.paragraphs;
   } else if (architectureSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof architectureSection.text === 'string' 
+    content = typeof architectureSection.text === 'string'
       ? architectureSection.text.split(/\n\n+/).filter(p => p.trim())
       : [architectureSection.text];
   } else if (Array.isArray(architectureSection)) {
@@ -2176,7 +2245,7 @@ export function mapGlobalGenericsIntroData(strapiData) {
     content = introSection.paragraphs;
   } else if (introSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof introSection.text === 'string' 
+    content = typeof introSection.text === 'string'
       ? introSection.text.split(/\n\n+/).filter(p => p.trim())
       : [introSection.text];
   } else if (Array.isArray(introSection)) {
@@ -2208,7 +2277,7 @@ export function mapGlobalGenericsSectionData(strapiData) {
   if (!section) return null;
 
   const heading = section.heading || section.title || section.Heading || '';
-  
+
   let content = [];
   if (section.content && Array.isArray(section.content)) {
     content = section.content;
@@ -2216,7 +2285,7 @@ export function mapGlobalGenericsSectionData(strapiData) {
     content = section.paragraphs;
   } else if (section.text) {
     // If it's a single string, split by paragraphs
-    content = typeof section.text === 'string' 
+    content = typeof section.text === 'string'
       ? section.text.split(/\n\n+/).filter(p => p.trim())
       : [section.text];
   } else if (Array.isArray(section)) {
@@ -2249,15 +2318,15 @@ export function mapGlobalGenericsPortfolioData(strapiData) {
   if (!portfolioSection) return null;
 
   const description = portfolioSection.description || portfolioSection.text || portfolioSection.content || '';
-  
+
   const linkText = portfolioSection.link?.text || portfolioSection.linkText || portfolioSection.ctaText || '';
   const linkUrl = portfolioSection.link?.url || portfolioSection.linkUrl || portfolioSection.ctaUrl || '#';
 
   const image = portfolioSection.image || portfolioSection.imageData;
-  const imageUrl = typeof image === 'string' 
-    ? image 
+  const imageUrl = typeof image === 'string'
+    ? image
     : image?.url || image?.src || portfolioSection.imageUrl || '';
-  const imageAlt = typeof image === 'object' 
+  const imageAlt = typeof image === 'object'
     ? (image?.alt || image?.altText || '')
     : '';
 
@@ -2300,7 +2369,7 @@ export function mapGlobalGenericsComplexData(strapiData) {
     content = complexSection.paragraphs;
   } else if (complexSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof complexSection.text === 'string' 
+    content = typeof complexSection.text === 'string'
       ? complexSection.text.split(/\n\n+/).filter(p => p.trim())
       : [complexSection.text];
   } else if (Array.isArray(complexSection)) {
@@ -2308,10 +2377,10 @@ export function mapGlobalGenericsComplexData(strapiData) {
   }
 
   const image = complexSection.image || complexSection.imageData;
-  const imageUrl = typeof image === 'string' 
-    ? image 
+  const imageUrl = typeof image === 'string'
+    ? image
     : image?.url || image?.src || complexSection.imageUrl || '';
-  const imageAlt = typeof image === 'object' 
+  const imageAlt = typeof image === 'object'
     ? (image?.alt || image?.altText || '')
     : '';
 
@@ -2345,7 +2414,7 @@ export function mapGlobalGenericsInhalationData(strapiData) {
 
   const heading = inhalationSection.heading || inhalationSection.title || inhalationSection.Heading || '';
   const description = inhalationSection.description || inhalationSection.text || inhalationSection.content || '';
-  
+
   const linkText = inhalationSection.link?.text || inhalationSection.linkText || inhalationSection.ctaText || '';
   const linkUrl = inhalationSection.link?.url || inhalationSection.linkUrl || inhalationSection.ctaUrl || '#';
 
@@ -2391,8 +2460,8 @@ export function mapScienceCapabilitiesData(strapiData) {
   const mappedCapabilities = capabilities.map(cap => ({
     title: cap.title || cap.name || cap.heading || '',
     description: cap.description || cap.text || cap.content || '',
-    icon: typeof cap.icon === 'string' 
-      ? cap.icon 
+    icon: typeof cap.icon === 'string'
+      ? cap.icon
       : cap.icon?.url || cap.iconUrl || cap.image?.url || cap.image || "/assets/images/our-sci/icon22.svg"
   }));
 
@@ -2425,7 +2494,7 @@ export function mapGlobalGenericsRegionalPresenceData(strapiData) {
   // Handle background images
   let backgroundDesktop = '';
   let backgroundMobile = '';
-  
+
   if (regionalSection.background) {
     if (typeof regionalSection.background === 'object') {
       backgroundDesktop = regionalSection.background.desktop || regionalSection.background.url || '';
@@ -2459,8 +2528,8 @@ export function mapGlobalGenericsRegionalPresenceData(strapiData) {
     title: region.title || region.name || region.heading || '',
     position: region.position || region.positionType || 'top-left',
     backgroundColor: region.backgroundColor || region.bgColor || region.color || '#08a03f',
-    highlights: Array.isArray(region.highlights) 
-      ? region.highlights 
+    highlights: Array.isArray(region.highlights)
+      ? region.highlights
       : (region.highlight ? [region.highlight] : []),
     description: region.description || region.text || region.content || ''
   }));
@@ -2501,7 +2570,7 @@ export function mapBrandedEmergingMarketsIntroData(strapiData) {
     content = introSection.paragraphs;
   } else if (introSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof introSection.text === 'string' 
+    content = typeof introSection.text === 'string'
       ? introSection.text.split(/\n\n+/).filter(p => p.trim())
       : [introSection.text];
   } else if (Array.isArray(introSection)) {
@@ -2588,18 +2657,18 @@ export function mapBrandedEmergingMarketsItemsData(strapiData) {
   // Map each item to ensure proper structure
   const mappedItems = items.map(item => ({
     title: item.title || item.name || item.heading || '',
-    content: Array.isArray(item.content) 
-      ? item.content 
+    content: Array.isArray(item.content)
+      ? item.content
       : (item.text ? [item.text] : (item.description ? [item.description] : [])),
     link: item.link || (item.linkText && item.linkUrl ? {
       text: item.linkText,
       url: item.linkUrl
     } : null),
     image: {
-      url: typeof item.image === 'string' 
-        ? item.image 
+      url: typeof item.image === 'string'
+        ? item.image
         : item.image?.url || item.imageUrl || "/assets/images/branded/image1.png",
-      alt: typeof item.image === 'object' 
+      alt: typeof item.image === 'object'
         ? (item.image?.alt || item.imageAlt || '')
         : ''
     }
@@ -2660,17 +2729,17 @@ export function mapBrandedEmergingMarketsFooterData(strapiData) {
   } else if (footerSection.paragraphs && Array.isArray(footerSection.paragraphs)) {
     content = footerSection.paragraphs;
   } else if (footerSection.text) {
-    content = typeof footerSection.text === 'string' 
+    content = typeof footerSection.text === 'string'
       ? footerSection.text.split(/\n\n+/).filter(p => p.trim())
       : [footerSection.text];
   }
 
   // Handle image
   const image = footerSection.image || footerSection.imageData;
-  const imageUrl = typeof image === 'string' 
-    ? image 
+  const imageUrl = typeof image === 'string'
+    ? image
     : image?.url || image?.src || footerSection.imageUrl || '';
-  const imageAlt = typeof image === 'object' 
+  const imageAlt = typeof image === 'object'
     ? (image?.alt || image?.altText || '')
     : '';
 
@@ -2712,7 +2781,7 @@ export function mapIndiaOverviewData(strapiData) {
     content = overviewSection.paragraphs;
   } else if (overviewSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof overviewSection.text === 'string' 
+    content = typeof overviewSection.text === 'string'
       ? overviewSection.text.split(/\n\n+/).filter(p => p.trim())
       : [overviewSection.text];
   } else if (Array.isArray(overviewSection)) {
@@ -2793,7 +2862,7 @@ export function mapIndiaWhatWeDoData(strapiData) {
     content = whatWeDoSection.paragraphs;
   } else if (whatWeDoSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof whatWeDoSection.text === 'string' 
+    content = typeof whatWeDoSection.text === 'string'
       ? whatWeDoSection.text.split(/\n\n+/).filter(p => p.trim())
       : [whatWeDoSection.text];
   } else if (Array.isArray(whatWeDoSection)) {

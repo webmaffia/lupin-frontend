@@ -59,10 +59,16 @@ export default function PressReleaseDetail({ data }) {
         {/* Sidebar Navigation */}
         <aside className="press-release-detail__sidebar">
           <nav className="press-release-detail__nav">
-            <Link href="/media/press-releases" className="press-release-detail__nav-link">
+            <Link 
+              href="/media/press-releases" 
+              className={`press-release-detail__nav-link ${pressRelease.activeCategory === 'press-releases' ? 'press-release-detail__nav-link--active' : ''}`}
+            >
               Press Releases
             </Link>
-            <Link href="/media/perspectives" className="press-release-detail__nav-link press-release-detail__nav-link--active">
+            <Link 
+              href="/media/perspectives" 
+              className={`press-release-detail__nav-link ${pressRelease.activeCategory === 'perspectives' ? 'press-release-detail__nav-link--active' : ''}`}
+            >
               perspectives
             </Link>
             <Link href="/media/media-coverage" className="press-release-detail__nav-link">
