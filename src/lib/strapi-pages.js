@@ -316,3 +316,96 @@ export function mapOurValueData(strapiData) {
   };
 }
 
+/**
+ * Fetch global-presence data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * Structure:
+ * - PageIntroSection (Component - IntroSection)
+ *   - Heading, IntroDescription (Rich text Markdown)
+ * - GlobalPresenceSection (Repeatable Component - PresenceCard)
+ *   - CountryName, Description (Rich text Markdown), Image, ImagePosition, cta, isActive, DisplayOrder
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getGlobalPresence() {
+  const populateQuery = [
+    'populate[PageIntroSection][populate]=*',
+    'populate[GlobalPresenceSection][populate][Image][populate]=*',
+    'populate[GlobalPresenceSection][populate][cta][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`global-presence?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map global-presence data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped global-presence data for component
+ */
+export function mapGlobalPresenceData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return {
+      pageIntro: null,
+      globalPresenceSections: []
+    };
+  }
+
+  // Map PageIntroSection
+  const pageIntroSection = data?.PageIntroSection || data?.pageIntroSection;
+  let pageIntro = null;
+  if (pageIntroSection) {
+    pageIntro = {
+      heading: pageIntroSection?.Heading || pageIntroSection?.heading || '',
+      introDescription: pageIntroSection?.IntroDescription || pageIntroSection?.introDescription || ''
+    };
+  }
+
+  // Map GlobalPresenceSection (Repeatable Component)
+  const globalPresenceArray = data?.GlobalPresenceSection || data?.globalPresenceSection || [];
+  const globalPresenceSections = globalPresenceArray
+    .filter(section => section?.isActive !== false)
+    .map((section, index) => {
+      const sectionImage = section?.Image?.data?.attributes || section?.Image || section?.image?.data?.attributes || section?.image;
+      const imageUrl = sectionImage ? getStrapiMedia(sectionImage) : null;
+
+      const cta = section?.cta || section?.CTA;
+      const ctaData = cta ? {
+        text: cta?.text || '',
+        href: cta?.href || '#'
+      } : null;
+
+      const imagePosition = section?.ImagePosition || section?.imagePosition || 'left';
+
+      return {
+        id: section?.id || index + 1,
+        countryName: section?.CountryName || section?.countryName || '',
+        description: section?.Description || section?.description || '', // Markdown
+        image: imageUrl ? {
+          url: imageUrl,
+          alt: sectionImage?.alternativeText || sectionImage?.caption || section?.CountryName || section?.countryName || 'Country'
+        } : null,
+        imagePosition: imagePosition.toLowerCase(), // 'left' or 'right'
+        cta: ctaData,
+        isActive: section?.isActive !== false,
+        displayOrder: section?.DisplayOrder || section?.displayOrder || String(index + 1)
+      };
+    })
+    .sort((a, b) => {
+      const orderA = a.displayOrder || '999';
+      const orderB = b.displayOrder || '999';
+      return orderA.localeCompare(orderB);
+    });
+
+  return {
+    pageIntro: pageIntro,
+    globalPresenceSections: globalPresenceSections
+  };
+}
+
