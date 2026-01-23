@@ -23,10 +23,10 @@ export async function generateMetadata({ params }) {
 
     if (!slug) {
       return generateSEOMetadata({
-        title: "Press Release - Lupin | Corporate Communications",
-        description: "Read the latest press releases and corporate communications from Lupin Limited.",
-        canonicalUrl: `${siteUrl}/media/press-releases/${slug || ''}`,
-        keywords: "Lupin press release, corporate communications, Lupin Limited",
+        title: "Perspective - Lupin | Corporate Communications",
+        description: "Read insights and perspectives from the leading minds in our industry.",
+        canonicalUrl: `${siteUrl}/media/perspectives/${slug || ''}`,
+        keywords: "Lupin perspectives, industry insights, Lupin Limited",
       });
     }
 
@@ -34,37 +34,37 @@ export async function generateMetadata({ params }) {
 
     if (!article) {
       return generateSEOMetadata({
-        title: "Press Release - Lupin | Corporate Communications",
-        description: "Read the latest press releases and corporate communications from Lupin Limited.",
-        canonicalUrl: `${siteUrl}/media/press-releases/${slug}`,
-        keywords: "Lupin press release, corporate communications, Lupin Limited",
+        title: "Perspective - Lupin | Corporate Communications",
+        description: "Read insights and perspectives from the leading minds in our industry.",
+        canonicalUrl: `${siteUrl}/media/perspectives/${slug}`,
+        keywords: "Lupin perspectives, industry insights, Lupin Limited",
       });
     }
 
-    const title = article.title?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || 'Press Release';
+    const title = article.title?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || 'Perspective';
     const excerpt = article.excerpt?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || '';
 
     return generateSEOMetadata({
-      title: `${title} - Lupin | Press Release`,
-      description: excerpt || "Read the latest press releases and corporate communications from Lupin Limited.",
-      canonicalUrl: `${siteUrl}/media/press-releases/${slug}`,
-      keywords: "Lupin press release, corporate communications, Lupin Limited",
+      title: `${title} - Lupin | Perspective`,
+      description: excerpt || "Read insights and perspectives from the leading minds in our industry.",
+      canonicalUrl: `${siteUrl}/media/perspectives/${slug}`,
+      keywords: "Lupin perspectives, industry insights, Lupin Limited",
     });
   } catch (error) {
     console.error('Error generating metadata:', error);
     const resolvedParams = await params;
     const slug = resolvedParams?.slug || '';
     return generateSEOMetadata({
-      title: "Press Release - Lupin | Corporate Communications",
-      description: "Read the latest press releases and corporate communications from Lupin Limited.",
-      canonicalUrl: `${siteUrl}/media/press-releases/${slug}`,
-      keywords: "Lupin press release, corporate communications, Lupin Limited",
+      title: "Perspective - Lupin | Corporate Communications",
+      description: "Read insights and perspectives from the leading minds in our industry.",
+      canonicalUrl: `${siteUrl}/media/perspectives/${slug}`,
+      keywords: "Lupin perspectives, industry insights, Lupin Limited",
     });
   }
 }
 
-export default async function PressReleaseDetailPage({ params }) {
-  let pressReleaseData = null;
+export default async function PerspectiveDetailPage({ params }) {
+  let perspectiveData = null;
 
   try {
     const resolvedParams = await params;
@@ -92,7 +92,7 @@ export default async function PressReleaseDetailPage({ params }) {
       authorImage = "/assets/press/Image.png";
     }
 
-    pressReleaseData = {
+    perspectiveData = {
       title: article.title?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || '',
       date: formatDate(article.publishedOn || article.publishedAt),
       author: {
@@ -100,23 +100,23 @@ export default async function PressReleaseDetailPage({ params }) {
         image: authorImage
       },
       content: article.content || '',
-      activeCategory: 'press-releases'
+      activeCategory: 'perspectives'
     };
   } catch (error) {
-    console.error('Error fetching press release from Strapi:', error);
+    console.error('Error fetching perspective from Strapi:', error);
     // Only call notFound if it's a real error, not just missing data
     notFound();
   }
 
   const bannerData = {
     title: {
-      line1: "Press Releases",
+      line1: "Perspectives",
       line2: ""
     },
     images: {
       banner: {
         url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Press Releases"
+        alt: "Perspectives"
       },
       petal: {
         url: "/assets/inner-banner/petal-2.svg",
@@ -128,7 +128,7 @@ export default async function PressReleaseDetailPage({ params }) {
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
-      <PressReleaseDetail data={pressReleaseData} />
+      <PressReleaseDetail data={perspectiveData} />
     </div>
   );
 }
