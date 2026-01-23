@@ -92,6 +92,7 @@
   }
 }
 
+.pagination__prev,
 .pagination__next {
   @include flex(row, center, center);
   width: vw(106);
@@ -160,6 +161,30 @@
       background: #1ea04a;
       transform: none;
     }
+  }
+}
+
+.pagination__ellipsis {
+  @include flex(row, center, center);
+  width: vw(54);
+  height: vw(54);
+  color: #08a03f;
+  font-family: $font-family-base;
+  font-weight: 600;
+  font-size: vw(25);
+  line-height: 1.37;
+  user-select: none;
+  
+  @include media('tablet') {
+    width: vw(48, 768);
+    height: vw(48, 768);
+    font-size: vw(22, 768);
+  }
+  
+  @include media('mobile') {
+    width: vw-mobile(44, 414);
+    height: vw-mobile(44, 414);
+    font-size: vw-mobile(20, 414);
   }
 }
 

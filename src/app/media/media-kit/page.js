@@ -1,125 +1,79 @@
-'use client';
+import MediaKitClient from './MediaKitClient';
+import { getMediaKit, getStrapiMedia } from '@/lib/strapi';
+import { getStrapiImageUrl } from '@/lib/strapi-utils';
 
-import { useState, useEffect } from 'react';
-import InnerBanner from '@/components/InnerBanner';
-import MediaNavigation from '@/components/MediaNavigation';
-import ProfileCard from '@/components/global/ProfileCard';
-import PdfDownload from '@/components/global/PdfDownload';
-import MediaContact from '@/components/global/MediaContact';
-import '@/scss/pages/media.scss';
+export default async function MediaKitPage() {
+  // Fetch all media-kit articles
+  let allMediaKitData = [];
 
-export default function MediaKitPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedYear, setSelectedYear] = useState('');
-  // Banner data for Media Kit page
-  const bannerData = {
-    title: {
-      line1: "Media Kit",
-    },
-    images: {
-      banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Media kit"
-      },
-      petal: {
-        url: "/assets/inner-banner/petal-2.svg",
-        alt: "Decorative petal"
+  try {
+    const mediaKitResponse = await getMediaKit(100);
+    const articles = mediaKitResponse?.data || [];
+
+    // Separate into profiles and PDFs based on article structure
+    const profilesData = [];
+    const pdfsData = [];
+
+    articles.forEach((article) => {
+      // Get PDF/link URL
+      let pdfUrl = null;
+      if (article.pdf || article.Pdf) {
+        const pdf = article.pdf || article.Pdf;
+        const pdfData = pdf?.data?.attributes || pdf;
+        pdfUrl = pdfData?.url ? getStrapiMedia(pdfData) : (pdf?.url || null);
+      } else if (article.link) {
+        pdfUrl = article.link;
       }
-    }
-  };
 
-  // Profile data
-  const allProfiles = [
-    {
-      id: 1,
-      name: "Vinita Gupta",
-      title: "Chief Executive Officer",
-      link: "/about/vinita-gupta"
-    },
-    {
-      id: 2,
-      name: "John Doe",
-      title: "Chief Financial Officer",
-      link: "/about/john-doe"
-    },
-    {
-      id: 3,
-      name: "Jane Smith",
-      title: "Chief Technology Officer",
-      link: "/about/jane-smith"
-    },
-  ];
+      // Get image URL if available
+      let imageUrl = null;
+      if (article.image) {
+        imageUrl = getStrapiImageUrl(article.image) || getStrapiMedia(article.image);
+      }
+      // Fallback to default image if no image in article
+      if (!imageUrl) {
+        imageUrl = "/assets/media-kit-card/demo4.png";
+      }
 
-  // Search and filter logic
-  const filteredProfiles = allProfiles.filter((item) => {
-    // Search filter - check name and title
-    const matchesSearch = searchQuery === '' || 
-      item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (item.title && item.title.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    // Year filter - placeholder for future year matching
-    const matchesYear = selectedYear === '' || true;
-    
-    return matchesSearch && matchesYear;
-  });
+      const title = article.title?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || '';
+      const excerpt = article.excerpt?.replace(/&#038;/g, '&').replace(/&amp;/g, '&').replace(/<[^>]*>/g, '') || '';
 
-  // Reset filters when search changes
-  useEffect(() => {
-    // This ensures the component re-renders when search changes
-  }, [searchQuery, selectedYear]);
+      // If article has excerpt (like "Chief Executive Officer"), it's a profile
+      // Otherwise, it's a PDF/document
+      if (excerpt && pdfUrl) {
+        // This is a profile card
+        profilesData.push({
+          id: article.id,
+          name: title,
+          title: excerpt,
+          link: pdfUrl,
+          image: imageUrl
+        });
+      } else if (pdfUrl) {
+        // This is a PDF download
+        pdfsData.push({
+          id: article.id,
+          title: title || 'Document',
+          pdfUrl: pdfUrl,
+          image: imageUrl,
+          imageAlt: title || 'PDF Download'
+        });
+      }
+    });
 
-  return (
-    <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
-      <MediaNavigation 
-        onSearch={(query) => setSearchQuery(query)}
-        onYearChange={(year) => setSelectedYear(year)}
-      />
+    allMediaKitData = {
+      profiles: profilesData,
+      pdfs: pdfsData
+    };
+  } catch (error) {
+    console.error('Error fetching media kit articles from Strapi:', error);
+    // Fallback to empty arrays
+    allMediaKitData = {
+      profiles: [],
+      pdfs: []
+    };
+  }
 
-      {/* Profile Cards Section */}
-      <section className="sectionProfileCards">
-        <div className="profile-cards-container">
-          <div className="profile-card-grid">
-            {filteredProfiles.map((profile) => (
-              <ProfileCard
-                key={profile.id}
-                name={profile.name}
-                title={profile.title}
-                link={profile.link}
-                showArrow={true}
-              />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* PDF Download Section */}
-      <section className="sectionPdfDownload">
-        <div className="pdf-download-container">
-          <PdfDownload
-            title="Lupin Corporate Presentation"
-            pdfUrl="/documents/corporate-presentation.pdf"
-            image="/assets/media-kit-card/demo4.png"
-            imageAlt="Lupin Corporate Presentation"
-          />
-          <PdfDownload
-            title="Lupin Corporate Presentation"
-            pdfUrl="/documents/corporate-presentation.pdf"
-            image="/assets/media-kit-card/demo4.png"
-            imageAlt="Lupin Corporate Presentation"
-          />
-        </div>
-      </section>
-
-      <MediaContact 
-        contact={{
-          name: "Rajalakshmi Azariah",
-          title: "Vice President & Global Head – Corporate Communications",
-          email: "rajalakshmiazariah@lupin.com"
-        }}
-        mediaKitLink="/media/media-kit"
-      />
-    </div>
-  );
+  return <MediaKitClient initialProfiles={allMediaKitData.profiles} initialPdfs={allMediaKitData.pdfs} />;
 }
 
