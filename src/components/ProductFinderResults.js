@@ -101,6 +101,9 @@ export default function ProductFinderResults({
 
   return (
     <div ref={resultsRef} className="product-finder-results" data-node-id="2953:3897">
+      {/* Mobile Heading */}
+      <h2 className="product-finder-results__mobile-heading">Search Results</h2>
+      
       {/* Table Header */}
       <div className="product-finder-results__header">
         <div className="product-finder-results__header-cell product-finder-results__header-cell--green" data-node-id="2953:3899">
@@ -122,6 +125,7 @@ export default function ProductFinderResults({
         {currentProducts.length > 0 ? (
           currentProducts.map((product, index) => (
             <div key={product.id} className="product-finder-results__row" data-node-id={`2953:${3910 + index * 9}`}>
+              {/* Desktop Table Cells */}
               <div className="product-finder-results__cell product-finder-results__cell--brand" data-node-id={`2953:${3912 + index * 9}`}>
                 {product.brandName}
               </div>
@@ -133,6 +137,26 @@ export default function ProductFinderResults({
               </div>
               <div className="product-finder-results__cell product-finder-results__cell--form" data-node-id={`2953:${3915 + index * 9}`}>
                 {product.form}
+              </div>
+              
+              {/* Mobile Card Format */}
+              <div className="product-finder-results__mobile-card">
+                <div className="product-finder-results__mobile-item">
+                  <span className="product-finder-results__mobile-label">Brand Name :</span>
+                  <span className="product-finder-results__mobile-value">{product.brandName}</span>
+                </div>
+                <div className="product-finder-results__mobile-item">
+                  <span className="product-finder-results__mobile-label">Active Ingredient :</span>
+                  <span className="product-finder-results__mobile-value">{product.activeIngredient}</span>
+                </div>
+                <div className="product-finder-results__mobile-item">
+                  <span className="product-finder-results__mobile-label">Therapy Area :</span>
+                  <span className="product-finder-results__mobile-value">{product.therapyArea}</span>
+                </div>
+                <div className="product-finder-results__mobile-item">
+                  <span className="product-finder-results__mobile-label">Form :</span>
+                  <span className="product-finder-results__mobile-value">{product.form}</span>
+                </div>
               </div>
             </div>
           ))
