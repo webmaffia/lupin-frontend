@@ -2924,7 +2924,7 @@ export function mapLeadersData(leadersData) {
     const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
 
     const slug = leaderData?.slug || leader?.slug || '';
-    const leaderLink = slug ? `/leaders/${slug}` : '#';
+    const leaderLink = slug ? `/about-us/leadership/${slug}` : '#';
 
     const leaderName = leaderData?.LeaderName || leader?.LeaderName || leaderData?.leaderName || leader?.leaderName || '';
     const designation = leaderData?.Designation || leader?.Designation || leaderData?.designation || leader?.designation || '';
@@ -3132,7 +3132,7 @@ export function mapCommitteesData(leadersData) {
     const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
 
     const slug = leaderData?.slug || leader?.slug || '';
-    const leaderLink = slug ? `/leaders/${slug}` : '#';
+    const leaderLink = slug ? `/about-us/leadership/${slug}` : '#';
 
     const leaderName = leaderData?.LeaderName || leader?.LeaderName || leaderData?.leaderName || leader?.leaderName || '';
     const designation = leaderData?.Designation || leader?.Designation || leaderData?.designation || leader?.designation || '';

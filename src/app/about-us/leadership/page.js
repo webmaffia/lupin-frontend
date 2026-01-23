@@ -70,7 +70,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     },
     {
       id: 2,
@@ -80,7 +80,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     },
     {
       id: 3,
@@ -90,7 +90,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     },
     {
       id: 4,
@@ -100,7 +100,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     },
     {
       id: 5,
@@ -110,7 +110,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     },
     {
       id: 6,
@@ -120,7 +120,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     },
     {
       id: 7,
@@ -130,7 +130,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     },
     {
       id: 8,
@@ -140,7 +140,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/manju-gupta 1.png",
         alt: "Manju D Gupta"
       },
-      link: "/leaders/manju-d-gupta"
+      link: "/about-us/leadership/manju-d-gupta"
     }
   ];
 
@@ -155,7 +155,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     },
     {
       id: 2,
@@ -165,7 +165,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     },
     {
       id: 3,
@@ -175,7 +175,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     },
     {
       id: 4,
@@ -185,7 +185,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     },
     {
       id: 5,
@@ -195,7 +195,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     },
     {
       id: 6,
@@ -205,7 +205,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     },
     {
       id: 7,
@@ -215,7 +215,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     },
     {
       id: 8,
@@ -225,7 +225,7 @@ export default async function LeadersPage() {
         url: "/assets/leaders/a7b770ae42eb8e5fe8892577ae654536fc4d12b1.png",
         alt: "Dr. Abdelaziz Toumi"
       },
-      link: "/leaders/abdelaziz-toumi"
+      link: "/about-us/leadership/abdelaziz-toumi"
     }
   ];
 
@@ -244,7 +244,7 @@ export default async function LeadersPage() {
                   name={leader.name}
                   title={leader.title || leader.position}
                   image={leader.image || { url: '/assets/placeholder.png', alt: leader.name }}
-                  link={leader.link || `/leaders/${leader.slug || leader.id}`}
+                  link={leader.link || `/about-us/leadership/${leader.slug || leader.id}`}
                 />
               ))}
             </div>
@@ -264,7 +264,7 @@ export default async function LeadersPage() {
                   name={leader.name}
                   title={leader.title || leader.position}
                   image={leader.image || { url: '/assets/placeholder.png', alt: leader.name }}
-                  link={leader.link || `/leaders/${leader.slug || leader.id}`}
+                  link={leader.link || `/about-us/leadership/${leader.slug || leader.id}`}
                 />
               ))}
             </div>

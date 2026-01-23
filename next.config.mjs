@@ -57,6 +57,16 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: '/leaders/:slug*',
+        destination: '/about-us/leadership/:slug*',
+        permanent: true,
+      },
+      {
+        source: '/leaders/:slug*',
+        destination: '/about-us/leadership/:slug*',
+        permanent: true,
+      },
+      {
         source: '/awards-and-recognition',
         destination: '/about-us/awards-and-recognition',
         permanent: true,

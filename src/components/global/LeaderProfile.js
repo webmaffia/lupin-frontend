@@ -18,7 +18,7 @@ import '@/scss/components/global/LeaderProfile.scss';
  *   name="Manju D Gupta"
  *   title="Chairperson (Non-Executive)"
  *   image={{ url: "/assets/leaders/manju-gupta 1.png", alt: "Manju D Gupta" }}
- *   link="/leaders/manju-d-gupta"
+ *   link="/about-us/leadership/manju-d-gupta"
  * />
  */
 export default function LeaderProfile({ 
