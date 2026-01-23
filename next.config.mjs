@@ -42,6 +42,95 @@ const nextConfig = {
   // Add empty turbopack config to silence the warning
   turbopack: {},
   
+  // Redirects for moved pages
+  async redirects() {
+    return [
+      // About Us redirects
+      {
+        source: '/about-us/purpose',
+        destination: '/about-us/our-purpose',
+        permanent: true,
+      },
+      {
+        source: '/leaders',
+        destination: '/about-us/leadership',
+        permanent: true,
+      },
+      {
+        source: '/awards-and-recognition',
+        destination: '/about-us/awards-and-recognition',
+        permanent: true,
+      },
+      {
+        source: '/global-technical-operations',
+        destination: '/about-us/global-technical-operations',
+        permanent: true,
+      },
+      // Our Business redirects
+      {
+        source: '/global-generics',
+        destination: '/our-business/global-generics',
+        permanent: true,
+      },
+      {
+        source: '/branded-emerging-markets',
+        destination: '/our-business/branded-emerging-markets',
+        permanent: true,
+      },
+      {
+        source: '/india',
+        destination: '/our-business/india',
+        permanent: true,
+      },
+      {
+        source: '/patient-support-programs',
+        destination: '/our-business/india/patient-support-programs',
+        permanent: true,
+      },
+      {
+        source: '/specialty',
+        destination: '/our-business/specialty',
+        permanent: true,
+      },
+      // Investors redirects
+      {
+        source: '/investors/committees',
+        destination: '/investors/committees-of-the-board',
+        permanent: true,
+      },
+      {
+        source: '/investors/disclosure-under-regulation-46-of-sebi-regulations-2016',
+        destination: '/investors/disclosure-under-regulation-46-of-sebi-regulations-2015',
+        permanent: true,
+      },
+      {
+        source: '/investors/saksham-niveshak',
+        destination: '/investors/iepf-saksham-niveshak',
+        permanent: true,
+      },
+      {
+        source: '/investors/news-and-events',
+        destination: '/investors/news-events',
+        permanent: true,
+      },
+      {
+        source: '/investors/notice',
+        destination: '/investors/notices',
+        permanent: true,
+      },
+      {
+        source: '/investors/reports-and-filings',
+        destination: '/investors/reports-filings',
+        permanent: true,
+      },
+      {
+        source: '/investors/transfer-physical-shares',
+        destination: '/investors/transfer-of-physical-shares-re-lodgement',
+        permanent: true,
+      },
+    ];
+  },
+  
   // Image optimization settings
   images: {
     formats: ['image/webp'],

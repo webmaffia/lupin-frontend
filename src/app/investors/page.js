@@ -160,7 +160,10 @@ export default async function InvestorsPage() {
               href: pdf.pdf || '#',
               download: !!pdf.pdf
             })),
-            button: {
+            button: mappedData.reportsFilingSection.nseExchangeSection.cta ? {
+              label: mappedData.reportsFilingSection.nseExchangeSection.cta.text || "View all",
+              href: mappedData.reportsFilingSection.nseExchangeSection.cta.href || "#"
+            } : {
               label: "View all",
               href: "#"
             }

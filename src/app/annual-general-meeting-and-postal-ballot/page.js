@@ -22,7 +22,7 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/AGM.png",
         alt: "Annual General Meeting and Postal Ballot - Lupin"
       },
       petal: {
@@ -40,18 +40,43 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
       cards: [
         {
           id: 1,
-          title: 'AGM Notice',
-          pdfUrl: '#'
+          title: 'AGM Transcript',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/agm-transcript.pdf'
         },
         {
           id: 2,
-          title: 'Code of Conduct for Independent Directors',
-          pdfUrl: '#'
+          title: 'Outcome of AGM and e-voting Results',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/se-intimation-for-outcome-of-agm.pdf'
         },
         {
           id: 3,
-          title: 'Outcome of AGM and E-voting results',
-          pdfUrl: '#'
+          title: 'Newspaper Advertisement (post-dispatch)',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/letter-for-newspaper-publication.pdf'
+        },
+        {
+          id: 4,
+          title: 'Integrated Report',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/integrated-report-consolidated.pdf'
+        },
+        {
+          id: 5,
+          title: 'AGM Notice',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/notice-forty-third-agm.pdf'
+        },
+        {
+          id: 6,
+          title: 'Draft Articles of Association',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/draft-articles-of-association.pdf'
+        },
+        {
+          id: 7,
+          title: 'Annual Returns',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/10/form-mgt-7-ll-final.pdf'
+        },
+        {
+          id: 8,
+          title: 'Newspaper Advertisement (Pre-dispatch)',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/nse-letter-for-newspaper-publication.pdf'
         }
       ]
     },
@@ -59,18 +84,28 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
       cards: [
         {
           id: 1,
-          title: 'AGM Notice',
-          pdfUrl: '#'
+          title: 'Integrated Report',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2024/07/integrated-report-consolidated.pdf'
         },
         {
           id: 2,
-          title: 'Code of Conduct for Independent Directors',
-          pdfUrl: '#'
+          title: 'AGM Notice',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/lupin-2024-agm-notice.pdf'
         },
         {
           id: 3,
           title: 'Outcome of AGM and E-voting results',
-          pdfUrl: '#'
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/outcome-of-agm-and-e-voting-results.pdf'
+        },
+        {
+          id: 4,
+          title: 'AGM Transcript',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/agm-transcript.pdf'
+        },
+        {
+          id: 5,
+          title: 'Annual Return',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/annual-return.pdf'
         }
       ]
     },
@@ -79,17 +114,17 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
         {
           id: 1,
           title: 'AGM Notice',
-          pdfUrl: '#'
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/agm-notice-2023-final.pdf'
         },
         {
           id: 2,
-          title: 'Code of Conduct for Independent Directors',
-          pdfUrl: '#'
+          title: 'Outcome of AGM and E-voting results',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/outcome-of-agm-and-e-voting-results-2.pdf'
         },
         {
           id: 3,
-          title: 'Outcome of AGM and E-voting results',
-          pdfUrl: '#'
+          title: 'Annual Return',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/annual-return-2023.pdf'
         }
       ]
     },
@@ -98,17 +133,17 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
         {
           id: 1,
           title: 'AGM Notice',
-          pdfUrl: '#'
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/AGM-Notice-Consolidated-Final-21-22.pdf'
         },
         {
           id: 2,
-          title: 'Code of Conduct for Independent Directors',
-          pdfUrl: '#'
+          title: 'Outcome of AGM and E-voting results',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/Outcome-of-AGM-and-E-voting-results-1.pdf'
         },
         {
           id: 3,
-          title: 'Outcome of AGM and E-voting results',
-          pdfUrl: '#'
+          title: 'Annual Return',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/07/Annual-Return-1.pdf'
         }
       ]
     },
@@ -160,13 +195,13 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
       cards: [
         {
           id: 1,
-          title: 'Code of Conduct for Independent Directors',
-          pdfUrl: '#'
+          title: 'Newspaper Advertisement',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2026/01/seintimation-newspaper-advt.pdf'
         },
         {
           id: 2,
-          title: 'Outcome of AGM and E-voting results',
-          pdfUrl: '#'
+          title: 'Notice of Postal Ballot',
+          pdfUrl: 'https://www.lupin.com/wp-content/uploads/2026/01/notice-of-postal-ballot.pdf'
         }
       ]
     }
@@ -201,18 +236,18 @@ export default function AnnualGeneralMeetingAndPostalBallotPage() {
             cards: [
               {
                 id: 1,
-                title: 'Code of Conduct for Independent Directors',
-                pdfUrl: '#'
+                title: 'Voting Results and Scrutinzer\'s Report',
+                pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/09/seintimation-scrutinizer-report.pdf'
               },
               {
                 id: 2,
-                title: 'Code of Conduct for Independent Directors',
-                pdfUrl: '#'
+                title: 'Newspaper Advertisement',
+                pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/seintimation-newspaperadvt.pdf'
               },
               {
                 id: 3,
-                title: 'Outcome of AGM and E-voting results',
-                pdfUrl: '#'
+                title: 'Notice of Postal Ballot',
+                pdfUrl: 'https://www.lupin.com/wp-content/uploads/2025/08/postal-ballot-notice.pdf'
               }
             ]
           }

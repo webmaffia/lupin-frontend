@@ -14,9 +14,9 @@ export default function NavigationLinks({ links }) {
     { id: 'shareholding-pattern', label: 'Shareholding Pattern', href: '/investors/shareholding-pattern' },
     { id: 'dividend', label: 'Dividend', href: '/investors/dividend' },
     { id: 'unclaimed-dividend', label: 'Unclaimed Dividend & Shares', href: '/investors/unclaimed-dividend' },
-    { id: 'memorandum', label: 'Memorandum & Articles of Association', href: '/investors/memorandum' },
+    { id: 'memorandum', label: 'Memorandum & Articles of Association', href: '/assets/share-price/Lupin-Revised-MOA-AOA-Lupin-Limited.pdf', target: '_blank' },
     { id: 'investor-faqs', label: 'Investor FAQs', href: '/investors/investor-faqs' },
-    { id: 'business-responsibility', label: 'Business Responsibility', href: '/investors/business-responsibility' }
+    { id: 'business-responsibility', label: 'Business Responsibility', href: '/assets/share-price/business-responsiblity-report.pdf', target: '_blank' }
   ];
 
   // Use provided links or default links
@@ -29,6 +29,7 @@ export default function NavigationLinks({ links }) {
           <Link
             key={link.id}
             href={link.href}
+            target={link.target || undefined}
             className={`navigation-links__tab ${pathname === link.href ? 'navigation-links__tab--active' : ''}`}
           >
             {link.label}
@@ -41,6 +42,7 @@ export default function NavigationLinks({ links }) {
             <Link
               key={link.id}
               href={link.href}
+              target={link.target || undefined}
               className={`navigation-links__tab ${pathname === link.href ? 'navigation-links__tab--active' : ''}`}
             >
               {link.label}

@@ -1,28 +1,14 @@
 'use client';
 
 import '../scss/components/Policies.scss';
+import { getFallbackDividendTransferTable } from '@/lib/strapi-reports';
 
 export default function VotingTable({ data }) {
   // Always use fallback/backup data (static data)
+  // Fetch data from helper function to ensure consistency
   const tableData = {
-    paragraph: "Based on the consolidated results of e-voting and Ballot, the Resolution as set out in the Notice of Extraordinary General Meeting has been approved by the Shareholders with requisite majority.",
-    table: {
-      headers: [
-        { text: "Year of Dividend", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" },
-        { text: "Date of Declaration of Dividend", bgColor: "#d9f0e1", textColor: "#08a03f", padding: "58px" },
-        { text: "Due Date for transfer to IEPF", bgColor: "#08a03f", textColor: "#ffffff", padding: "17px" }
-      ],
-      rows: [
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" },
-        { "Year of Dividend": "2024-2025", "Date of Declaration of Dividend": "11.08.2025", "Due Date for transfer to IEPF": "16.09.2032" }
-      ]
-    }
+    paragraph: "Unclaimed/unpaid dividends for the year 2018-19 onwards will be transferred to the IEPF, as under: –",
+    table: getFallbackDividendTransferTable()
   };
 
   return (

@@ -151,14 +151,16 @@ export default async function OtherStatutoryInformationPage() {
         </div>
       ))}
 
-      {/* Notice Section */}
-      <NoticeSection data={statutoryData?.noticeSection || null} />
-
       {/* Voting Table - Always use backup/static data */}
       <VotingTable />
 
       {/* IEPF Table - Always use backup/static data */}
       <IEPFTable />
+
+      {/* Notice Section */}
+      <NoticeSection data={statutoryData?.noticeSection || null} />
+
+     
 
       {/* Statutory Documents Section (PdfSection) */}
       {statutoryData?.pdfSection && Array.isArray(statutoryData.pdfSection) && statutoryData.pdfSection.length > 0 && (
