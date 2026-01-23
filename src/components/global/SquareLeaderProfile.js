@@ -18,7 +18,7 @@ import '@/scss/components/global/SquareLeaderProfile.scss';
  *   name="Dr. Abdelaziz Toumi"
  *   title="CEO - Lupin Manufacturing\nSolutions"
  *   image={{ url: "/assets/leaders/leader.png", alt: "Dr. Abdelaziz Toumi" }}
- *   link="/leaders/abdelaziz-toumi"
+ *   link="/about-us/leadership/abdelaziz-toumi"
  * />
  */
 export default function SquareLeaderProfile({ 
