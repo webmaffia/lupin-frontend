@@ -15,25 +15,25 @@ export default function SitemapContent({ data }) {
         title: "About Us",
         links: [
           { text: "About Us", href: "/about-us" },
-          { text: "Our Purpose", href: "/about-us/purpose" },
+          { text: "Our Purpose", href: "/about-us/our-purpose" },
           { text: "Our Values", href: "/about-us/our-values" },
           { text: "Global Presence", href: "/about-us/global-presence" },
           { text: "Our Manufacturing Sites", href: "/about-us/our-manufacturing-sites" },
           { text: "Our Science", href: "/about-us/our-science" },
-          { text: "Our Leadership", href: "/leaders" },
-          { text: "Awards and Recognition", href: "/awards-and-recognition" }
+          { text: "Our Leadership", href: "/about-us/leadership" },
+          { text: "Awards and Recognition", href: "/about-us/awards-and-recognition" }
         ]
       },
       {
         title: "Our Business",
         links: [
           { text: "Our Business", href: "/our-business" },
-          { text: "Global Generics", href: "/global-generics" },
-          { text: "Branded & Emerging Markets", href: "/branded-emerging-markets" },
-          { text: "Specialty", href: "/specialty" },
-          { text: "Global Technical Operations", href: "/global-technical-operations" },
+          { text: "Global Generics", href: "/our-business/global-generics" },
+          { text: "Branded & Emerging Markets", href: "/our-business/branded-emerging-markets" },
+          { text: "Specialty", href: "/our-business/specialty" },
+          { text: "Global Technical Operations", href: "/about-us/global-technical-operations" },
           { text: "WAVE", href: "/wave" },
-          { text: "India", href: "/india" }
+          { text: "India", href: "/our-business/india" }
         ]
       },
       {
@@ -51,7 +51,7 @@ export default function SitemapContent({ data }) {
       {
         title: "Patient Support Programs",
         links: [
-          { text: "Patient Support Programs", href: "/patient-support-programs" }
+          { text: "Patient Support Programs", href: "/our-business/india/patient-support-programs" }
         ]
       },
       {
@@ -59,26 +59,26 @@ export default function SitemapContent({ data }) {
         links: [
           { text: "Investors", href: "/investors" },
           { text: "Financials", href: "/investors/financials" },
-          { text: "Reports & Filings", href: "/investors/reports-and-filings" },
-          { text: "Committees", href: "/investors/committees" },
+          { text: "Reports & Filings", href: "/investors/reports-filings" },
+          { text: "Committees", href: "/investors/committees-of-the-board" },
           { text: "Code of Conduct", href: "/investors/code-of-conduct" },
           { text: "Policies", href: "/investors/policies" },
           { text: "Share Price", href: "/investors/share-price" },
           { text: "Shareholding Pattern", href: "/investors/shareholding-pattern" },
           { text: "Dividend", href: "/investors/dividend" },
           { text: "Unclaimed Dividend", href: "/investors/unclaimed-dividend" },
-          { text: "Transfer Physical Shares", href: "/investors/transfer-physical-shares" },
+          { text: "Transfer Physical Shares", href: "/investors/transfer-of-physical-shares-re-lodgement" },
           { text: "Memorandum & Articles", href: "/investors/memorandum" },
           { text: "Employee Stock Option Schemes", href: "/investors/employee-stock-option-schemes" },
-          { text: "News & Events", href: "/investors/news-and-events" },
+          { text: "News & Events", href: "/investors/news-events" },
           { text: "Business Responsibility", href: "/investors/business-responsibility" },
           { text: "Analyst Coverage", href: "/investors/analyst-coverage" },
           { text: "Investor FAQs", href: "/investors/investor-faqs" },
           { text: "Subsidiaries", href: "/investors/subsidiaries" },
           { text: "Other Statutory Information", href: "/investors/other-statutory-information" },
-          { text: "Saksham Niveshak", href: "/investors/saksham-niveshak" },
+          { text: "Saksham Niveshak", href: "/investors/iepf-saksham-niveshak" },
           { text: "Tips for Shareholders", href: "/investors/tips-for-shareholders" },
-          { text: "Notice", href: "/investors/notice" }
+          { text: "Notice", href: "/investors/notices" }
         ]
       },
       {
