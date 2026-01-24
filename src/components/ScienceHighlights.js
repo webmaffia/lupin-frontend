@@ -36,11 +36,14 @@ export default function ScienceHighlights({ data }) {
   const highlightsData = data || defaultData;
   const items = highlightsData?.items || highlightsData?.highlights || highlightsData?.cards || defaultData.items;
 
+  const backgroundImage = highlightsData?.backgroundImage?.desktop || highlightsData?.backgroundImage || '/assets/images/Background.png';
+  const backgroundImageMobile = highlightsData?.backgroundImage?.mobile || backgroundImage;
+
   return (
     <section className="science-highlights" data-node-id="3089:473">
       <div className="science-highlights__background">
         <Image
-          src="/assets/images/Background.png"
+          src={backgroundImage}
           alt=""
           fill
           className="science-highlights__bg-image"

@@ -1,5 +1,8 @@
 'use client';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/ScienceArchitecture.scss';
 
 export default function ScienceArchitecture({ data }) {
@@ -32,6 +35,22 @@ export default function ScienceArchitecture({ data }) {
   const architectureData = data || defaultData;
   const content = architectureData?.content || architectureData?.paragraphs || architectureData?.text || defaultData.content;
 
+  // If content is a string (markdown), render it directly
+  if (typeof content === 'string') {
+    return (
+      <section className="science-architecture" data-node-id="3102:601">
+        <div className="science-architecture__container">
+          <div className="science-architecture__content">
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+              {content}
+            </ReactMarkdown>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Otherwise, use the structured format
   const renderParagraph = (item, index) => {
     if (typeof item === 'string') {
       // Skip empty strings or whitespace-only strings

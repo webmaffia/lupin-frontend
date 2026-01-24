@@ -2,6 +2,9 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import KeyHighlights from '@/components/community/KeyHighlights';
 import MarketQuote from '@/components/community/MarketQuote';
 import '@/scss/components/community/LivelihoodTabs.scss';
@@ -10,44 +13,138 @@ import '@/scss/components/community/LivelihoodTabs.scss';
 const TabContent = ({ contentData, defaultImage }) => {
   // If contentData is provided (from Strapi), use it
   if (contentData && typeof contentData === 'object' && !React.isValidElement(contentData)) {
-    const { heading, paragraphs, image } = contentData;
-    const displayImage = image || defaultImage;
+    const sectionHeading = contentData.heading;
+    const sectionData = contentData.sectionData;
+    const keyHighlights = contentData.keyHighlights || [];
 
     return (
-      <div className="livelihood-tabs__panel-content">
-        <div className="livelihood-tabs__panel-left">
-          <div className="livelihood-tabs__panel-text">
-            {heading && (
-              <h2 className="livelihood-tabs__panel-heading">
-                {heading}
-              </h2>
-            )}
-            {paragraphs && paragraphs.length > 0 && (
-              <div className="livelihood-tabs__panel-paragraphs">
-                {paragraphs.map((paragraph, index) => (
-                  <p key={index} className="livelihood-tabs__panel-paragraph">
-                    {paragraph}
-                  </p>
-                ))}
+      <>
+        {/* SectionHeading */}
+        {sectionHeading && (
+          <div className="livelihood-tabs__panel-content">
+            <div className={`livelihood-tabs__panel-left ${sectionHeading.imagePosition === 'left' ? 'livelihood-tabs__panel-left--image-left' : ''}`}>
+              {sectionHeading.image && sectionHeading.imagePosition === 'left' && (
+                <div className="livelihood-tabs__panel-image-wrapper">
+                  <Image
+                    src={sectionHeading.image.url}
+                    alt={sectionHeading.image.alt || 'Section Image'}
+                    width={sectionHeading.image.width || 600}
+                    height={sectionHeading.image.height || 600}
+                    className="livelihood-tabs__panel-image"
+                    quality={100}
+                  />
+                </div>
+              )}
+              <div className="livelihood-tabs__panel-text">
+                {sectionHeading.heading && (
+                  <h2 className="livelihood-tabs__panel-heading">
+                    {sectionHeading.heading}
+                  </h2>
+                )}
+                {sectionHeading.description && (
+                  <div className="livelihood-tabs__panel-paragraphs">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw]}
+                    >
+                      {sectionHeading.description}
+                    </ReactMarkdown>
+                  </div>
+                )}
+              </div>
+            </div>
+            {sectionHeading.image && sectionHeading.imagePosition === 'right' && (
+              <div className="livelihood-tabs__panel-right">
+                <div className="livelihood-tabs__panel-image-wrapper">
+                  <Image
+                    src={sectionHeading.image.url}
+                    alt={sectionHeading.image.alt || 'Section Image'}
+                    width={sectionHeading.image.width || 600}
+                    height={sectionHeading.image.height || 600}
+                    className="livelihood-tabs__panel-image"
+                    quality={100}
+                  />
+                </div>
               </div>
             )}
           </div>
-        </div>
-        {displayImage && (
-          <div className="livelihood-tabs__panel-right">
-            <div className="livelihood-tabs__panel-image-wrapper">
-              <Image
-                src={displayImage.url}
-                alt={displayImage.alt || 'Tab Image'}
-                width={displayImage.width || 600}
-                height={displayImage.height || 600}
-                className="livelihood-tabs__panel-image"
-                quality={100}
-              />
+        )}
+
+        {/* KeyHighlights */}
+        {keyHighlights && keyHighlights.length > 0 && (
+          <KeyHighlights highlights={keyHighlights.map((h) => {
+            // Ensure value is properly formatted
+            let displayValue = '';
+            if (h.value !== null && h.value !== undefined) {
+              if (typeof h.value === 'string') {
+                displayValue = h.value;
+              } else if (typeof h.value === 'number') {
+                displayValue = h.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+              } else {
+                displayValue = String(h.value);
+              }
+            }
+            
+            return {
+              id: h.id || Math.random(),
+              number: displayValue || h.number || '',
+              description: h.description || '',
+              icon: '/assets/community/key1.svg' // Use static icon
+            };
+          })} />
+        )}
+
+        {/* SectionData */}
+        {sectionData && (
+          <div className="livelihood-tabs__panel-content">
+            <div className={`livelihood-tabs__panel-left ${sectionData.imagePosition === 'left' ? 'livelihood-tabs__panel-left--image-left' : ''}`}>
+              {sectionData.image && sectionData.imagePosition === 'left' && (
+                <div className="livelihood-tabs__panel-image-wrapper">
+                  <Image
+                    src={sectionData.image.url}
+                    alt={sectionData.image.alt || 'Section Image'}
+                    width={sectionData.image.width || 600}
+                    height={sectionData.image.height || 600}
+                    className="livelihood-tabs__panel-image"
+                    quality={100}
+                  />
+                </div>
+              )}
+              <div className="livelihood-tabs__panel-text">
+                {sectionData.heading && (
+                  <h2 className="livelihood-tabs__panel-heading">
+                    {sectionData.heading}
+                  </h2>
+                )}
+                {sectionData.description && (
+                  <div className="livelihood-tabs__panel-paragraphs">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw]}
+                    >
+                      {sectionData.description}
+                    </ReactMarkdown>
+                  </div>
+                )}
+              </div>
             </div>
+            {sectionData.image && sectionData.imagePosition === 'right' && (
+              <div className="livelihood-tabs__panel-right">
+                <div className="livelihood-tabs__panel-image-wrapper">
+                  <Image
+                    src={sectionData.image.url}
+                    alt={sectionData.image.alt || 'Section Image'}
+                    width={sectionData.image.width || 600}
+                    height={sectionData.image.height || 600}
+                    className="livelihood-tabs__panel-image"
+                    quality={100}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
-      </div>
+      </>
     );
   }
 
@@ -66,62 +163,143 @@ const TabContent = ({ contentData, defaultImage }) => {
 
 // Agriculture tab content component (default with Strapi support)
 const AgricultureTabContent = ({ contentData }) => {
-  // Default content data
-  const defaultContent = {
-    heading: 'Agriculture-Based Livelihood Empowerment (ABLE) Program',
-    paragraphs: [
-      'The program was launched in 2024 and aims to support marginal farmers in building resilient, income-generating livelihoods. Implemented across Alwar in Rajasthan and Dhule in Maharashtra, this program specifically targets farmers with minimum agricultural infrastructure, enabling optimal capacity building and knowledge transfer.',
-      'A key pillar is the Lupin Farmer School (LFS) model, which promotes peer learning through hands-on demonstrations and collective problem-solving. Together, these initiatives improve agricultural productivity, enhance climate resilience, and create sustainable income opportunities for farming communities.'
-    ],
-    image: {
-      url: '/assets/community/agriright.png',
-      alt: 'Agriculture-Based Livelihood Empowerment',
-      width: 600,
-      height: 600
-    }
-  };
+  if (!contentData) {
+    return null;
+  }
 
-  // Use Strapi data if provided, otherwise use defaults
-  const content = contentData || defaultContent;
-  const { heading, paragraphs, image, highlights } = content;
+  const sectionHeading = contentData.heading;
+  const sectionData = contentData.sectionData;
+  const keyHighlights = contentData.keyHighlights || [];
 
   return (
     <>
-      <div className="livelihood-tabs__panel-content">
-        <div className="livelihood-tabs__panel-left">
-          <div className="livelihood-tabs__panel-text">
-            {heading && (
-              <h2 className="livelihood-tabs__panel-heading">
-                {heading}
-              </h2>
-            )}
-            {paragraphs && paragraphs.length > 0 && (
-              <div className="livelihood-tabs__panel-paragraphs">
-                {paragraphs.map((paragraph, index) => (
-                  <p key={index} className="livelihood-tabs__panel-paragraph">
-                    {paragraph}
-                  </p>
-                ))}
+      {/* SectionHeading */}
+      {sectionHeading && (
+        <div className="livelihood-tabs__panel-content">
+          <div className={`livelihood-tabs__panel-left ${sectionHeading.imagePosition === 'left' ? 'livelihood-tabs__panel-left--image-left' : ''}`}>
+            {sectionHeading.image && sectionHeading.imagePosition === 'left' && (
+              <div className="livelihood-tabs__panel-image-wrapper">
+                <Image
+                  src={sectionHeading.image.url}
+                  alt={sectionHeading.image.alt || 'Section Image'}
+                  width={sectionHeading.image.width || 600}
+                  height={sectionHeading.image.height || 600}
+                  className="livelihood-tabs__panel-image"
+                  quality={100}
+                />
               </div>
             )}
-          </div>
-        </div>
-        {image && (
-          <div className="livelihood-tabs__panel-right">
-            <div className="livelihood-tabs__panel-image-wrapper">
-              <Image
-                src={image.url}
-                alt={image.alt || 'Agriculture-Based Livelihood Empowerment'}
-                width={image.width || 600}
-                height={image.height || 600}
-                className="livelihood-tabs__panel-image"
-                quality={100}
-              />
+            <div className="livelihood-tabs__panel-text">
+              {sectionHeading.heading && (
+                <h2 className="livelihood-tabs__panel-heading">
+                  {sectionHeading.heading}
+                </h2>
+              )}
+              {sectionHeading.description && (
+                <div className="livelihood-tabs__panel-paragraphs">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {sectionHeading.description}
+                  </ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
-      <KeyHighlights highlights={highlights} />
+          {sectionHeading.image && sectionHeading.imagePosition === 'right' && (
+            <div className="livelihood-tabs__panel-right">
+              <div className="livelihood-tabs__panel-image-wrapper">
+                <Image
+                  src={sectionHeading.image.url}
+                  alt={sectionHeading.image.alt || 'Section Image'}
+                  width={sectionHeading.image.width || 600}
+                  height={sectionHeading.image.height || 600}
+                  className="livelihood-tabs__panel-image"
+                  quality={100}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* KeyHighlights */}
+      {keyHighlights && keyHighlights.length > 0 && (
+        <KeyHighlights highlights={keyHighlights.map((h) => {
+          // Value is already formatted from the mapping function, but ensure it's a string
+          let displayValue = '';
+          if (h.value !== null && h.value !== undefined) {
+            if (typeof h.value === 'string') {
+              displayValue = h.value;
+            } else if (typeof h.value === 'number') {
+              // Format number with commas if it's still a number
+              displayValue = h.value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            } else {
+              displayValue = String(h.value);
+            }
+          }
+          
+          return {
+            id: h.id || Math.random(),
+            number: displayValue,
+            description: h.description || '',
+            icon: '/assets/community/key1.svg' // Use static icon
+          };
+        })} />
+      )}
+
+      {/* SectionData */}
+      {sectionData && (
+        <div className="livelihood-tabs__panel-content">
+          <div className={`livelihood-tabs__panel-left ${sectionData.imagePosition === 'left' ? 'livelihood-tabs__panel-left--image-left' : ''}`}>
+            {sectionData.image && sectionData.imagePosition === 'left' && (
+              <div className="livelihood-tabs__panel-image-wrapper">
+                <Image
+                  src={sectionData.image.url}
+                  alt={sectionData.image.alt || 'Section Image'}
+                  width={sectionData.image.width || 600}
+                  height={sectionData.image.height || 600}
+                  className="livelihood-tabs__panel-image"
+                  quality={100}
+                />
+              </div>
+            )}
+            <div className="livelihood-tabs__panel-text">
+              {sectionData.heading && (
+                <h2 className="livelihood-tabs__panel-heading">
+                  {sectionData.heading}
+                </h2>
+              )}
+              {sectionData.description && (
+                <div className="livelihood-tabs__panel-paragraphs">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {sectionData.description}
+                  </ReactMarkdown>
+                </div>
+              )}
+            </div>
+          </div>
+          {sectionData.image && sectionData.imagePosition === 'right' && (
+            <div className="livelihood-tabs__panel-right">
+              <div className="livelihood-tabs__panel-image-wrapper">
+                <Image
+                  src={sectionData.image.url}
+                  alt={sectionData.image.alt || 'Section Image'}
+                  width={sectionData.image.width || 600}
+                  height={sectionData.image.height || 600}
+                  className="livelihood-tabs__panel-image"
+                  quality={100}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
       <MarketQuote quoteData={contentData?.quote} />
     </>
   );

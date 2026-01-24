@@ -47,16 +47,18 @@ export default function ImpactAtGlance({ impactData = null }) {
           <p className="impact-at-glance__subtitle">{content.subtitle}</p>
         </div>
         <div className="impact-at-glance__content">
-          <div className="impact-at-glance__map-wrapper">
-            <Image
-              src="/assets/community/map.png"
-              alt="India Map"
-              width={660}
-              height={660}
-              className="impact-at-glance__map"
-              quality={100}
-            />
-          </div>
+          {content.map && (
+            <div className="impact-at-glance__map-wrapper">
+              <Image
+                src={content.map}
+                alt="India Map"
+                width={660}
+                height={660}
+                className="impact-at-glance__map"
+                quality={100}
+              />
+            </div>
+          )}
           <div className="impact-at-glance__metrics">
             {content.metrics.map((metric, index) => {
               // Different left positions for each metric based on Figma design
@@ -68,14 +70,34 @@ export default function ImpactAtGlance({ impactData = null }) {
               ];
               const positionClass = positionClasses[index] || '';
               
+              // Format number with commas
+              const formatNumber = (num) => {
+                if (typeof num === 'string') {
+                  // Remove any existing commas and format
+                  const cleanNum = num.replace(/,/g, '');
+                  return cleanNum.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                }
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+              };
+              
+              const formattedNumber = formatNumber(metric.number);
+              
               return (
                 <div 
                   key={metric.id} 
                   className={`impact-at-glance__metric ${positionClass}`}
                 >
                   <div className="impact-at-glance__icon-wrapper">
-                    <Image
+                    {/* Use static key1.svg icon - commented out dynamic icon */}
+                    {/* <Image
                       src={metric.icon}
+                      alt="Impact icon"
+                      width={100}
+                      height={100}
+                      className="impact-at-glance__icon"
+                    /> */}
+                    <Image
+                      src="/assets/community/key1.svg"
                       alt="Impact icon"
                       width={100}
                       height={100}
@@ -83,7 +105,7 @@ export default function ImpactAtGlance({ impactData = null }) {
                     />
                   </div>
                   <div className="impact-at-glance__text-wrapper">
-                    <div className="impact-at-glance__number">{metric.number}</div>
+                    <div className="impact-at-glance__number">{formattedNumber}</div>
                     <p className="impact-at-glance__description">{metric.description}</p>
                     <div className="impact-at-glance__divider"></div>
                   </div>

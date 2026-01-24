@@ -46,7 +46,38 @@ export default function KeyHighlights({ highlights = [] }) {
     }
   ];
 
-  const highlightsData = highlights.length > 0 ? highlights : defaultHighlights;
+  // Filter out highlights with empty values and ensure proper structure
+  const validHighlights = highlights
+    .filter((h) => {
+      // Include if it has a description (required) or a valid number
+      const hasDescription = h.description && h.description.trim() !== '';
+      const hasNumber = (h.number !== null && h.number !== undefined && h.number !== '') ||
+                       (h.value !== null && h.value !== undefined && h.value !== '');
+      return hasDescription || hasNumber;
+    })
+    .map((h) => {
+      // Use number if available, otherwise use value
+      const displayNumber = h.number !== undefined && h.number !== null && h.number !== '' 
+        ? h.number 
+        : (h.value !== undefined && h.value !== null && h.value !== '' ? h.value : '');
+      
+      return {
+        id: h.id || Math.random(),
+        number: String(displayNumber),
+        description: h.description || '',
+        icon: h.icon || '/assets/community/key1.svg' // Use static icon
+      };
+    });
+
+  // Use valid highlights if available, otherwise use defaults
+  const highlightsData = validHighlights.length > 0 ? validHighlights : defaultHighlights;
+  
+  // Debug logging in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('KeyHighlights - highlights prop:', highlights);
+    console.log('KeyHighlights - validHighlights:', validHighlights);
+    console.log('KeyHighlights - highlightsData:', highlightsData);
+  }
 
   return (
     <section className="key-highlights">

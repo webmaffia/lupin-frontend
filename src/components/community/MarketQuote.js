@@ -16,7 +16,13 @@ export default function MarketQuote({ quoteData = null }) {
     }
   };
 
+  // Use API data if available, otherwise use default
   const quote = quoteData || defaultQuote;
+  
+  // Don't render if no quote data is available
+  if (!quote || !quote.quote) {
+    return null;
+  }
 
   return (
     <section className="market-quote">
