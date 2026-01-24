@@ -1,6 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/ScienceDigital.scss';
 
 export default function ScienceDigital({ data }) {
@@ -43,18 +46,22 @@ export default function ScienceDigital({ data }) {
             <h2 className="science-digital__main-heading">
               {mainHeading}
             </h2>
-            <p className="science-digital__intro">
-              {introParagraph}
-            </p>
+            <div className="science-digital__intro">
+              <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                {introParagraph}
+              </ReactMarkdown>
+            </div>
             <div className="science-digital__section">
               <h3 className="science-digital__section-heading">
                 <span className="science-digital__section-heading-line">{sectionHeading.line1}</span>
                 <span className="science-digital__section-heading-line">{sectionHeading.line2}</span>
               </h3>
               <div className="science-digital__divider"></div>
-              <p className="science-digital__description">
-                {description}
-              </p>
+              <div className="science-digital__description">
+                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                  {description}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         </div>

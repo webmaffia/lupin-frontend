@@ -1,6 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/ScienceResearch.scss';
 
 export default function ScienceResearch({ data }) {
@@ -24,14 +27,6 @@ export default function ScienceResearch({ data }) {
   const content = researchData?.content || researchData?.paragraphs || researchData?.text || defaultData.content;
   const imageUrl = researchData?.image?.url || researchData?.image || defaultData.image.url;
   const imageAlt = researchData?.image?.alt || researchData?.imageAlt || defaultData.image.alt;
-
-  // Process content to handle bold numbers
-  const processContent = (text) => {
-    if (!text) return '';
-    
-    // Replace bold numbers (41, 52, 87, 6, 81)
-    return text.replace(/\b(41|52|87|6|81)\b/g, '<strong>$1</strong>');
-  };
 
   return (
     <section className="science-research" data-node-id="2952:3478">
@@ -64,17 +59,18 @@ export default function ScienceResearch({ data }) {
             <div className="science-research__text">
               {Array.isArray(content) ? (
                 content.map((paragraph, index) => (
-                  <p 
-                    key={index} 
-                    className="science-research__paragraph"
-                    dangerouslySetInnerHTML={{ __html: processContent(paragraph) }}
-                  />
+                  <div key={index} className="science-research__paragraph">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                      {paragraph}
+                    </ReactMarkdown>
+                  </div>
                 ))
               ) : (
-                <p 
-                  className="science-research__paragraph"
-                  dangerouslySetInnerHTML={{ __html: processContent(content) }}
-                />
+                <div className="science-research__paragraph">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                    {content}
+                  </ReactMarkdown>
+                </div>
               )}
             </div>
           </div>

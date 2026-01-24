@@ -1,5 +1,8 @@
 'use client';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/ScienceIntro.scss';
 
 export default function ScienceIntro({ data }) {
@@ -23,9 +26,11 @@ export default function ScienceIntro({ data }) {
           <span className="science-intro__heading-line">{headingLine2}</span>
         </h2>
         {description && (
-          <p className="science-intro__description" data-node-id="2952:3549">
-            {description}
-          </p>
+          <div className="science-intro__description" data-node-id="2952:3549">
+            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+              {description}
+            </ReactMarkdown>
+          </div>
         )}
       </div>
     </section>

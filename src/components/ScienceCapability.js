@@ -1,5 +1,8 @@
 'use client';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/ScienceCapability.scss';
 
 export default function ScienceCapability({ data }) {
@@ -10,19 +13,14 @@ export default function ScienceCapability({ data }) {
   const capabilityData = data || defaultData;
   const text = capabilityData?.text || capabilityData?.content || capabilityData?.description || defaultData.text;
 
-  // Process text to handle bold "Core-Common-Distinct"
-  const processText = (text) => {
-    if (!text) return '';
-    return text.replace(/\bCore-Common-Distinct\b/g, '<strong>$&</strong>');
-  };
-
   return (
     <section className="science-capability" data-node-id="3098:522">
       <div className="science-capability__container">
-        <p 
-          className="science-capability__text"
-          dangerouslySetInnerHTML={{ __html: processText(text) }}
-        />
+        <div className="science-capability__text">
+          <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+            {text}
+          </ReactMarkdown>
+        </div>
       </div>
     </section>
   );
