@@ -25,10 +25,14 @@ export default function ProductFinderPage() {
     images: {
       banner: {
         url: "/assets/inner-banner/product-finder.png",
-        alt: "Product Finder - Lupin"
+        alt: "Product Finder"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/product-finder-mobile.png",
+        alt: "Product Finder"
       },
       petal: {
-        url: "/assets/inner-banner/product-finder-mobile.png",
+        url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
       }
     }

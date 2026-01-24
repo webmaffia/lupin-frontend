@@ -20,10 +20,14 @@ export default function PerspectivesClient({ initialData }) {
     images: {
       banner: {
         url: "/assets/inner-banner/perspectives.png",
-        alt: "Perspectives"
+        alt: "Product Finder"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/perspectives-mobile.png",
+        alt: "Product Finder"
       },
       petal: {
-        url: "/assets/inner-banner/perspectives-mobile.png",
+        url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
       }
     }

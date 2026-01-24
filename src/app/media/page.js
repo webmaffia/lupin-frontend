@@ -71,10 +71,14 @@ export default async function MediaPage() {
     images: {
       banner: {
         url: "/assets/inner-banner/media.png",
-        alt: "Media contacts"
+        alt: "Product Finder"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/media-mobile.png",
+        alt: "Product Finder"
       },
       petal: {
-        url: "/assets/inner-banner/media-mobile.png",
+        url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
       }
     }

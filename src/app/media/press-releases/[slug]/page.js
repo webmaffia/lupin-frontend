@@ -105,10 +105,14 @@ export default async function PressReleaseDetailPage({ params }) {
     images: {
       banner: {
         url: "/assets/inner-banner/press-releases.png",
-        alt: "Press Releases"
+        alt: "Product Finder"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/press-releases-mobile.png",
+        alt: "Product Finder"
       },
       petal: {
-        url: "/assets/inner-banner/press-releases-mobile.png",
+        url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
       }
     }

@@ -25,10 +25,14 @@ export default function MediaCoverageClient({ initialData }) {
     images: {
       banner: {
         url: "/assets/inner-banner/media-coverage.png",
-        alt: "Media Coverage"
+        alt: "Product Finder"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/media-coverage-mobile.png",
+        alt: "Product Finder"
       },
       petal: {
-        url: "/assets/inner-banner/media-coverage-mobile.png",
+        url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
       }
     }

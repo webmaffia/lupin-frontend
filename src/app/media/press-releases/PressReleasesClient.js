@@ -22,8 +22,12 @@ export default function PressReleasesClient({ initialData }) {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Press Releases"
+        url: "/assets/inner-banner/press-releases.png",
+        alt: "Product Finder"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/press-releases-mobile.png",
+        alt: "Product Finder"
       },
       petal: {
         url: "/assets/inner-banner/petal-2.svg",
@@ -58,7 +62,7 @@ export default function PressReleasesClient({ initialData }) {
     const headlineText = Array.isArray(item.headline)
       ? item.headline.join(' ')
       : item.headline || '';
-    
+
     const matchesSearch = searchQuery === '' ||
       title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       slug.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -182,7 +186,7 @@ export default function PressReleasesClient({ initialData }) {
             </div>
           </div>
         </div>
-        
+
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="pagination-container">

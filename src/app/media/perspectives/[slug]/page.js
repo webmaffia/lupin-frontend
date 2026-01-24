@@ -114,8 +114,12 @@ export default async function PerspectiveDetailPage({ params }) {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Perspectives"
+        url: "/assets/inner-banner/perspectives.png",
+        alt: "Product Finder"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/perspectives-mobile.png",
+        alt: "Product Finder"
       },
       petal: {
         url: "/assets/inner-banner/petal-2.svg",

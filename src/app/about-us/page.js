@@ -27,19 +27,19 @@ export default async function AboutUsPage() {
 
   try {
     const strapiData = await getAboutUs();
-    
+
     // Map all data using the new mapping function
     const mappedData = mapAboutUsData(strapiData);
-    
+
     // Map TopBanner data for InnerBanner
     bannerData = mappedData.banner;
-    
+
     // Map PageIntroSection (Topfold)
     pageIntroData = mappedData.pageIntro;
-    
+
     // Map AboutOverviewSection (Folds)
     overviewSections = mappedData.overviewSections || [];
-    
+
     // Map RedirectSection
     redirectSection = mappedData.redirectSection;
   } catch (error) {
@@ -48,6 +48,7 @@ export default async function AboutUsPage() {
   }
 
   // Default banner data if Strapi data is not available
+  console.log('Banner Data:', bannerData);
   if (!bannerData) {
     bannerData = {
       title: {
@@ -88,7 +89,7 @@ export default async function AboutUsPage() {
               <div className="about-us-content__topfold-content">
                 {pageIntroData?.heading && (
                   <h1 className="about-us-content__topfold-heading">
-                    {Array.isArray(pageIntroData.heading) 
+                    {Array.isArray(pageIntroData.heading)
                       ? pageIntroData.heading.join(' ')
                       : pageIntroData.heading
                     }
@@ -110,91 +111,91 @@ export default async function AboutUsPage() {
                 )}
               </div>
             </div>
-        
+
             {(() => {
               // Default fold data with headings and text content
               const defaultFolds = [
-                { 
-                  title: 'Our Purpose', 
-                  color: 'green', 
-                  svg: 'svg2', 
-                  svgPosition: 'left', 
-                  imagePosition: 'right', 
+                {
+                  title: 'Our Purpose',
+                  color: 'green',
+                  svg: 'svg2',
+                  svgPosition: 'left',
+                  imagePosition: 'right',
                   description: 'We Catalyze Treatments that Transform Hope into Healing\n\nOurs is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders',
                   href: '/about-us/our-purpose'
                 },
-                { 
-                  title: 'Our\nValues', 
-                  color: 'teal', 
-                  svg: 'svg1', 
-                  svgPosition: 'right', 
-                  imagePosition: 'left', 
+                {
+                  title: 'Our\nValues',
+                  color: 'teal',
+                  svg: 'svg1',
+                  svgPosition: 'right',
+                  imagePosition: 'left',
                   description: 'At Lupin, we pride ourselves on our promise of caring for our customers, our commitment to our employees\' growth and welfare, our continuous quality focus, and the spirit of innovation that drives each of us to discover better ways of working. This culture is shaped and driven by our values.',
                   href: '/about-us/our-values'
                 },
-                { 
-                  title: 'Our\nLeadership', 
-                  color: 'green', 
-                  svg: 'svg2', 
-                  svgPosition: 'left', 
-                  imagePosition: 'right', 
+                {
+                  title: 'Our\nLeadership',
+                  color: 'green',
+                  svg: 'svg2',
+                  svgPosition: 'left',
+                  imagePosition: 'right',
                   description: 'At Lupin, we are guided by a team that brings experience, vision, and a shared commitment to growth. We strive to create an impact, innovate, and bring meaningful change every day.',
                   href: '/about-us/leadership'
                 },
-                { 
-                  title: 'Global\nPresence', 
-                  color: 'teal', 
-                  svg: 'svg1', 
-                  svgPosition: 'right', 
-                  imagePosition: 'left', 
+                {
+                  title: 'Global\nPresence',
+                  color: 'teal',
+                  svg: 'svg1',
+                  svgPosition: 'right',
+                  imagePosition: 'left',
                   description: 'From a single vision in 1968 to an organization that moves across borders, Lupin has grown into a network of 24,000+ people across 11 countries and six continents.',
                   href: '/about-us/global-presence'
                 },
-                { 
-                  title: 'Our Manufacturing\nApproach', 
-                  color: 'green', 
-                  svg: 'svg2', 
-                  svgPosition: 'left', 
-                  imagePosition: 'right', 
+                {
+                  title: 'Our Manufacturing\nApproach',
+                  color: 'green',
+                  svg: 'svg2',
+                  svgPosition: 'left',
+                  imagePosition: 'right',
                   description: 'Our manufacturing strength is built on the power of technology, advanced facilities, rigorous quality systems, and a commitment to sustainable, reliable production.',
                   href: '/about-us/our-manufacturing-sites'
                 },
-                { 
-                  title: 'Our Science', 
-                  color: 'teal', 
-                  svg: 'svg1', 
-                  svgPosition: 'right', 
-                  imagePosition: 'left', 
+                {
+                  title: 'Our Science',
+                  color: 'teal',
+                  svg: 'svg1',
+                  svgPosition: 'right',
+                  imagePosition: 'left',
                   description: 'At Lupin, our Research and Development (R&D) division drives our industry positioning as a leading pharmaceutical solutions provider in the US and in India. It develops solutions that allow us to deliver on our purpose and vision.',
                   href: '/about-us/our-science'
                 }
               ];
-              
+
               // Use Strapi data if available, otherwise use defaults
               // Follow the defaultFolds structure and use colors from defaultFolds
               const foldsToRender = Array.isArray(overviewSections) && overviewSections.length > 0
                 ? overviewSections.map((section, index) => {
-                    // Get default fold for this index to use its color, svg, and positions
-                    const defaultFold = defaultFolds[index] || defaultFolds[0];
-                    
-                    return {
-                      title: section.title || defaultFold.title || 'Our Purpose',
-                      description: section.description || defaultFold.description || '',
-                      href: section.cta?.href || defaultFold.href || '#',
-                      image: section.image || null,
-                      icon: section.icon || null,
-                      // Use color, svg, svgPosition, and imagePosition from defaultFolds
-                      color: defaultFold.color || (index % 2 === 0 ? 'teal' : 'green'),
-                      svg: defaultFold.svg || (index % 2 === 0 ? 'svg1' : 'svg2'),
-                      svgPosition: defaultFold.svgPosition || (index % 2 === 0 ? 'right' : 'left'),
-                      imagePosition: section.imagePosition || defaultFold.imagePosition || (index % 2 === 0 ? 'left' : 'right')
-                    };
-                  })
+                  // Get default fold for this index to use its color, svg, and positions
+                  const defaultFold = defaultFolds[index] || defaultFolds[0];
+
+                  return {
+                    title: section.title || defaultFold.title || 'Our Purpose',
+                    description: section.description || defaultFold.description || '',
+                    href: section.cta?.href || defaultFold.href || '#',
+                    image: section.image || null,
+                    icon: section.icon || null,
+                    // Use color, svg, svgPosition, and imagePosition from defaultFolds
+                    color: defaultFold.color || (index % 2 === 0 ? 'teal' : 'green'),
+                    svg: defaultFold.svg || (index % 2 === 0 ? 'svg1' : 'svg2'),
+                    svgPosition: defaultFold.svgPosition || (index % 2 === 0 ? 'right' : 'left'),
+                    imagePosition: section.imagePosition || defaultFold.imagePosition || (index % 2 === 0 ? 'left' : 'right')
+                  };
+                })
                 : defaultFolds;
-              
+
               return foldsToRender.map((fold, index) => {
                 const headingLines = fold.title.split(/\s+/).filter(word => word.trim());
-                
+
                 return (
                   <section key={index} className={`about-us-content__fold about-us-content__fold--${fold.color}`}>
                     <div className="about-us-content__fold-container">
@@ -247,7 +248,7 @@ export default async function AboutUsPage() {
                             .replace(/#{1,6}\s/g, '')
                             .split('\n\n')
                             .filter(para => para.trim());
-                          
+
                           return paragraphs.map((paragraph, paraIndex) => (
                             <p key={paraIndex}>{paragraph.trim()}</p>
                           ));
@@ -258,7 +259,7 @@ export default async function AboutUsPage() {
                 );
               });
             })()}
-            
+
             {/* View All CTA */}
             {redirectSection && (
               <div className="about-us-content__view-all">

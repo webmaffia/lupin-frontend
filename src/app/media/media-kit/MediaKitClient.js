@@ -22,10 +22,14 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
         images: {
             banner: {
                 url: "/assets/inner-banner/media-kit.png",
-                alt: "Media kit"
+                alt: "Product Finder"
+            },
+            bannerMobile: {
+                url: "/assets/inner-banner/media-kit-mobile.png",
+                alt: "Product Finder"
             },
             petal: {
-                url: "/assets/inner-banner/media-kit-mobile.png",
+                url: "/assets/inner-banner/petal-2.svg",
                 alt: "Decorative petal"
             }
         }
