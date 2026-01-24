@@ -7,6 +7,7 @@ function getLinkUrl(label, category) {
   const linkMap = {
     aboutUs: {
       "Lupin Story": "/about-us",
+      "Our Story": "/about-us/our-story",
       "Our Purpose": "/about-us/our-purpose",
       "Our Values": "/about-us/our-values",
       "Ethics, Compliance and Governance": "/ethics-compliance-governance",
@@ -57,6 +58,7 @@ export default function Footer({ data }) {
     links: {
       aboutUs: [
         "Lupin Story",
+        "Our Story",
         "Our Purpose",
         "Our Values",
         "Ethics, Compliance and Governance",

@@ -74,7 +74,7 @@ export default async function GlobalPresencePage() {
 
   return (
     <div style={{ position: 'relative' }}>
-      <InnerBanner data={bannerData} />
+     
       <GlobalPresenceMap />
       <GlobalPresenceContent data={globalPresenceData} error={error} />
     </div>

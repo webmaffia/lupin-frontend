@@ -1355,3 +1355,90 @@ export function mapOurScienceData(strapiData) {
   };
 }
 
+/**
+ * Fetch our-story data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * Structure:
+ * - TopBanner (Component - InnerBanner)
+ *   - DesktopImage, MobileImage, Heading, SubHeading, SubHeadingText
+ * - IntroSection (Component)
+ *   - Heading, Description
+ * - TimelineSection (Repeatable Component)
+ *   - Year, Title, Description
+ * - MilestonesSection (Repeatable Component)
+ *   - Title, Value, Description
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getOurStory() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[IntroSection][populate]=*',
+    'populate[TimelineSection][populate]=*',
+    'populate[MilestonesSection][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`our-story?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map our-story data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped our-story data for component
+ */
+export function mapOurStoryData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  // Map TopBanner for InnerBanner
+  const banner = mapTopBannerData(data.TopBanner);
+
+  // Map IntroSection
+  const introSection = data?.IntroSection;
+  let intro = null;
+  if (introSection) {
+    intro = {
+      heading: introSection?.Heading || '',
+      description: introSection?.Description || ''
+    };
+  }
+
+  // Map TimelineSection
+  const timelineSection = data?.TimelineSection;
+  let timeline = null;
+  if (timelineSection && Array.isArray(timelineSection)) {
+    timeline = timelineSection.map((item) => ({
+      year: item?.Year || '',
+      title: item?.Title || '',
+      description: item?.Description || ''
+    }));
+  }
+
+  // Map MilestonesSection
+  const milestonesSection = data?.MilestonesSection;
+  let milestones = null;
+  if (milestonesSection && Array.isArray(milestonesSection)) {
+    milestones = milestonesSection.map((item) => ({
+      title: item?.Title || '',
+      value: item?.Value || '',
+      description: item?.Description || ''
+    }));
+  }
+
+  return {
+    banner,
+    intro,
+    timeline,
+    milestones
+  };
+}
+

@@ -1,12 +1,8 @@
 'use client';
 
-import { useRef } from 'react';
-import WaveAnimation from '@/components/WaveAnimation';
 import '@/scss/pages/wave.scss';
 
 export default function WavePage() {
-  const svgRef = useRef(null);
-
   return (
     <div className="wave-page">
       <div className="wave-container">
@@ -14,7 +10,6 @@ export default function WavePage() {
         
         <div className="wave-svg-wrapper">
           <svg 
-            ref={svgRef}
             id="wave-svg"
             xmlns="http://www.w3.org/2000/svg" 
             viewBox="0 0 1920 1080"
@@ -94,15 +89,6 @@ export default function WavePage() {
             <path className="cls-1" d="M-107.78,428.88s130.77,154.49,449.06,117.34c176.44-20.87,445.57-187.04,847.3-60.7,414.98,130.5,627.86,52.2,715.59-27.31"/>
             <path className="cls-1" d="M-108.03,418.97s128.54,155.4,448.94,118.95c176.64-20.1,443.18-188.02,846.07-61.39,416.46,130.89,628.85,53.12,716.58-26.39"/>
           </svg>
-          
-          {/* WaveAnimation component - animates all paths in the SVG */}
-          <WaveAnimation 
-            target={svgRef}
-            speed={5}
-            amplitude={25}
-            waveLength={300}
-            pathSelector="path.cls-1"
-          />
         </div>
       </div>
     </div>

@@ -15,6 +15,7 @@ export default function SitemapContent({ data }) {
         title: "About Us",
         links: [
           { text: "About Us", href: "/about-us" },
+          { text: "Our Story", href: "/about-us/our-story" },
           { text: "Our Purpose", href: "/about-us/our-purpose" },
           { text: "Our Values", href: "/about-us/our-values" },
           { text: "Global Presence", href: "/about-us/global-presence" },
