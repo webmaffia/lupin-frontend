@@ -3253,15 +3253,16 @@ export function mapCommitteesData(leadersData) {
   }
 
   // Map boolean field names to committee titles
+  // Note: board_of_directors and management_team are excluded as they belong to Leadership page
   const committeeFieldMap = {
     strategy_committee: 'Strategy Committee',
     audit_committee: 'Audit Committee',
     stakeholders_relationship_committee: 'Stakeholders Relationship Committee',
     nomination_remuneration_committee: 'Nomination & Remuneration Committee',
     sustainability_csr_committee: 'Sustainability & CSR Committee',
-    risk_management_committee: 'Risk Management Committee',
-    board_of_directors: 'Board of Directors',
-    management_team: 'Management Team'
+    risk_management_committee: 'Risk Management Committee'
+    // board_of_directors: 'Board of Directors', // Excluded - belongs to Leadership page
+    // management_team: 'Management Team' // Excluded - belongs to Leadership page
   };
 
   // Initialize committees map
