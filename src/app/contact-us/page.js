@@ -3,6 +3,7 @@ import ContactUsSection from '@/components/ContactUsSection';
 import ContactUsLocationSlider from '@/components/ContactUsLocationSlider';
 import ContactUsForm from '@/components/ContactUsForm';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
+import { getContactUs, mapContactUsData } from '@/lib/strapi-pages';
 
 // Generate metadata for the Contact Us page
 export const metadata = generateSEOMetadata({
@@ -12,9 +13,22 @@ export const metadata = generateSEOMetadata({
   keywords: "contact Lupin, Lupin contact, pharmaceutical contact, Lupin Limited contact, customer support, inquiry, get in touch",
 });
 
-export default function ContactUsPage() {
+export default async function ContactUsPage() {
+  let contactUsData = {
+    banner: null,
+    contactInfoSection: null,
+    globalPresenceSection: []
+  };
+
+  try {
+    const strapiData = await getContactUs();
+    contactUsData = mapContactUsData(strapiData);
+  } catch (error) {
+    console.error('Error fetching contact-us data from Strapi:', error);
+  }
+
   // Banner data for InnerBanner
-  const bannerData = {
+  const bannerData = contactUsData.banner || {
     title: {
       line1: "Contact",
       line2: "Us",
@@ -36,7 +50,7 @@ export default function ContactUsPage() {
   };
 
   // Section data for ContactUsSection
-  const sectionData = {
+  const sectionData = contactUsData.contactInfoSection || {
     heading: "Get In Touch",
     subheading: "Write to us",
     contacts: [
@@ -57,118 +71,40 @@ export default function ContactUsPage() {
 
   // Location slider data
   const locationSliderData = {
-    locations: [
-      {
-        id: 'india',
-        name: 'INDIA',
-        label: 'India',
-        image: '/assets/images/contact/india.png',
-        addresses: [
+    locations: contactUsData.globalPresenceSection.length > 0 
+      ? contactUsData.globalPresenceSection 
+      : [
           {
-            title: 'Corporate Office',
-            address: [
-              'Lupin Limited, 3rd Floor, Kalpataru Inspire,',
-              'Off. Western Expressway Highway,',
-              'Santacruz (East), Mumbai, India. 400 055',
-              'Phone: +91 22 6640 2323 Email: info@lupin.com'
-            ]
-          },
-          {
-            title: 'Registered Office',
-            address: [
-              'Lupin Limited, 3rd Floor, Kalpataru Inspire,',
-              'Off. Western Expressway Highway,',
-              'Santacruz (East), Mumbai, India. 400 055',
-              'Phone: +91 22 6640 2323 Email: info@lupin.com'
-            ]
-          },
-          {
-            title: 'Corporate Identity Number (CIN):',
-            address: ['L24100MH1983PLC029442']
-          },
-          {
-            title: 'DRUG SAFETY CONTACT INFORMATION:',
-            address: [
-              'Patients and other consumers should contact their physician with questions about prescription products and their indications. To obtain medical information or to report an adverse event or product complaint, please call on the toll-free numbers 1800-209-2505 / 1800-266-7400 or email us at dsrm@lupin.com'
+            id: 'india',
+            name: 'INDIA',
+            label: 'India',
+            image: '/assets/images/contact/india.png',
+            addresses: [
+              {
+                title: 'Corporate Office',
+                address: [
+                  'Lupin Limited, 3rd Floor, Kalpataru Inspire,',
+                  'Off. Western Expressway Highway,',
+                  'Santacruz (East), Mumbai, India. 400 055',
+                  'Phone: +91 22 6640 2323 Email: info@lupin.com'
+                ]
+              }
             ]
           }
         ]
-      },
-      {
-        id: 'us',
-        name: 'U.S.',
-        label: 'U.S.',
-        image: '/assets/images/contact/india.png',
-        addresses: [
-          {
-            title: 'Head Office',
-            address: [
-              'Lupin Pharmaceuticals Inc.',
-              '3 Parkway North, Suite 400',
-              'Deerfield, IL 60015, USA',
-              'Phone: +1 847-948-3300 Email: info@lupin.com'
-            ]
-          }
-        ]
-      },
-      {
-        id: 'latam',
-        name: 'LATAM',
-        label: 'LATAM',
-        image: '/assets/images/contact/india.png',
-        addresses: [
-          {
-            title: 'Regional Office',
-            address: [
-              'Lupin Latin America',
-              'Address details to be added',
-              'Phone: Email:'
-            ]
-          }
-        ]
-      },
-      {
-        id: 'apac',
-        name: 'APAC',
-        label: 'APAC',
-        image: '/assets/images/contact/india.png',
-        addresses: [
-          {
-            title: 'Regional Office',
-            address: [
-              'Lupin Asia Pacific',
-              'Address details to be added',
-              'Phone: Email:'
-            ]
-          }
-        ]
-      },
-      {
-        id: 'emea',
-        name: 'EMEA',
-        label: 'EMEA',
-        image: '/assets/images/contact/india.png',
-        addresses: [
-          {
-            title: 'Regional Office',
-            address: [
-              'Lupin Europe, Middle East & Africa',
-              'Address details to be added',
-              'Phone: Email:'
-            ]
-          }
-        ]
-      }
-    ]
   };
 
-      return (
-        <div style={{ position: 'relative' }}>
-          <InnerBanner data={bannerData} />
-          <ContactUsSection data={sectionData} />
-          <ContactUsLocationSlider data={locationSliderData} />
-          <ContactUsForm />
-        </div>
-      );
+  return (
+    <div style={{ position: 'relative' }}>
+      <InnerBanner data={bannerData} />
+      {contactUsData.contactInfoSection && (
+        <ContactUsSection data={sectionData} />
+      )}
+      {contactUsData.globalPresenceSection.length > 0 && (
+        <ContactUsLocationSlider data={locationSliderData} />
+      )}
+      <ContactUsForm />
+    </div>
+  );
 }
 
