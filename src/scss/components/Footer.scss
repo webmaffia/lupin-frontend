@@ -270,18 +270,30 @@
     font-family: $font-family-base;
     font-weight: 400;
     font-size: vw(14);
-    line-height: 2;
+    line-height: 1.2;
     color: #FFFFFF;
     white-space: pre-wrap;
     
     @include media('mobile') {
       font-size: vw-mobile(12, 414);
-      line-height: 1.8;
+      line-height: 1.2;
       font-weight: 300;
     }
     
     li {
-      margin: 0;
+      margin: 0 0 vw(10) 0;
+      
+      @include media('tablet') {
+        margin-bottom: vw(10, 768);
+      }
+      
+      @include media('mobile') {
+        margin-bottom: vw-mobile(10, 414);
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
   

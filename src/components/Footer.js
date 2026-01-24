@@ -2,6 +2,47 @@ import Link from 'next/link';
 import Image from 'next/image';
 import '../scss/components/Footer.scss';
 
+// Helper function to map link labels to URLs
+function getLinkUrl(label, category) {
+  const linkMap = {
+    aboutUs: {
+      "Lupin Story": "/about-us",
+      "Our Purpose": "/about-us/our-purpose",
+      "Our Values": "/about-us/our-values",
+      "Ethics, Compliance and Governance": "/ethics-compliance-governance",
+      "Global Presence": "/about-us/global-presence",
+      "Our Manufacturing Approach": "/about-us/our-manufacturing-sites",
+      "Our Science": "/about-us/our-science",
+      "Our Leadership": "/about-us/leadership",
+      "Awards and Recognition": "/about-us/awards-and-recognition"
+    },
+    ourBusiness: {
+      "Global Generics": "/our-business/global-generics",
+      "Branded Emerging Markets": "/our-business/branded-emerging-markets",
+      "India": "/our-business/india",
+      "Specialty / Innovation": "/our-business/specialty",
+      "Biosimilars": "/our-business/biosimilars",
+      "Allied Business": "/allied-business"
+    },
+    investors: {
+      "Investors FAQ": "/investors/investor-faqs",
+      "News and Events": "/investors/news-events",
+      "Policies": "/investors/policies",
+      "Reports and Filings": "/investors/reports-filings",
+      "Tips for shareholders": "/investors/tips-for-shareholders"
+    },
+    media: {
+      "Media Listing": "/media",
+      "Media Coverage": "/media/media-coverage",
+      "Media Kit": "/media/media-kit",
+      "Perspectives": "/media/perspectives",
+      "Press Releases": "/media/press-releases"
+    }
+  };
+
+  return linkMap[category]?.[label] || "#";
+}
+
 export default function Footer({ data }) {
   // Default data (will be replaced by Strapi)
   const footerData = data || {
@@ -18,9 +59,9 @@ export default function Footer({ data }) {
         "Lupin Story",
         "Our Purpose",
         "Our Values",
-        "Governing Principle",
+        "Ethics, Compliance and Governance",
         "Global Presence",
-        "Our Manufacturing Excellence",
+        "Our Manufacturing Approach",
         "Our Science",
         "Our Leadership",
         "Awards and Recognition"
@@ -29,9 +70,9 @@ export default function Footer({ data }) {
         "Global Generics",
         "Branded Emerging Markets",
         "India",
-        "Specialty",
+        "Specialty / Innovation",
         "Biosimilars",
-        "Patient Centric Initiatives"
+        "Allied Business"
       ],
       investors: [
         "Investors FAQ",
@@ -144,7 +185,7 @@ export default function Footer({ data }) {
             <ul className="footer__column-links" data-node-id="2018:29">
               {footerData.links.aboutUs.map((link, index) => (
                 <li key={index}>
-                  <Link href={`#${link.toLowerCase().replace(/\s+/g, '-')}`} className="footer__link">
+                  <Link href={getLinkUrl(link, 'aboutUs')} className="footer__link">
                     {link}
                   </Link>
                 </li>
@@ -158,7 +199,7 @@ export default function Footer({ data }) {
             <ul className="footer__column-links" data-node-id="2018:32">
               {footerData.links.ourBusiness.map((link, index) => (
                 <li key={index}>
-                  <Link href={`#${link.toLowerCase().replace(/\s+/g, '-')}`} className="footer__link">
+                  <Link href={getLinkUrl(link, 'ourBusiness')} className="footer__link">
                     {link}
                   </Link>
                 </li>
@@ -172,7 +213,7 @@ export default function Footer({ data }) {
             <ul className="footer__column-links" data-node-id="2018:35">
               {footerData.links.investors.map((link, index) => (
                 <li key={index}>
-                  <Link href={`#${link.toLowerCase().replace(/\s+/g, '-')}`} className="footer__link">
+                  <Link href={getLinkUrl(link, 'investors')} className="footer__link">
                     {link}
                   </Link>
                 </li>
@@ -186,7 +227,7 @@ export default function Footer({ data }) {
             <ul className="footer__column-links" data-node-id="2018:38">
               {footerData.links.media.map((link, index) => (
                 <li key={index}>
-                  <Link href={`#${link.toLowerCase().replace(/\s+/g, '-')}`} className="footer__link">
+                  <Link href={getLinkUrl(link, 'media')} className="footer__link">
                     {link}
                   </Link>
                 </li>
@@ -243,4 +284,3 @@ export default function Footer({ data }) {
     </footer>
   );
 }
-
