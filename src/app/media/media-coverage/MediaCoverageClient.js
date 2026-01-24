@@ -24,7 +24,7 @@ export default function MediaCoverageClient({ initialData }) {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/media-coverage.png",
         alt: "Media Coverage"
       },
       petal: {
@@ -66,7 +66,7 @@ export default function MediaCoverageClient({ initialData }) {
   const getYouTubeEmbedUrl = (url) => {
     if (!url) return '';
     let videoId = '';
-    
+
     if (url.includes('youtube.com/watch?v=')) {
       videoId = url.split('v=')[1]?.split('&')[0];
     } else if (url.includes('youtu.be/')) {
@@ -74,7 +74,7 @@ export default function MediaCoverageClient({ initialData }) {
     } else if (url.includes('youtube.com/embed/')) {
       videoId = url.split('embed/')[1]?.split('?')[0];
     }
-    
+
     return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
   };
 
@@ -112,11 +112,11 @@ export default function MediaCoverageClient({ initialData }) {
     // Search filter - check title and slug
     const title = item.title || '';
     const slug = item.slug || '';
-    
-    const matchesSearch = searchQuery === '' || 
+
+    const matchesSearch = searchQuery === '' ||
       title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       slug.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     // Year filter - extract year from publishedOn (fallback to publishedAt) and match
     let matchesYear = true;
     if (selectedYear !== '') {
@@ -128,7 +128,7 @@ export default function MediaCoverageClient({ initialData }) {
         matchesYear = false;
       }
     }
-    
+
     return matchesSearch && matchesYear;
   });
 
@@ -158,7 +158,7 @@ export default function MediaCoverageClient({ initialData }) {
   return (
     <div style={{ position: 'relative' }}>
       <InnerBanner data={bannerData} />
-      <MediaNavigation 
+      <MediaNavigation
         onSearch={(query) => setSearchQuery(query)}
         onYearChange={(year) => setSelectedYear(year)}
         years={availableYears}
@@ -177,8 +177,8 @@ export default function MediaCoverageClient({ initialData }) {
                 const isClickable = hasVideo || hasExternalLink;
 
                 return (
-                  <div 
-                    key={item.id} 
+                  <div
+                    key={item.id}
                     className={`profile-card-wrapper ${isClickable ? 'profile-card-wrapper--clickable' : ''}`}
                     onClick={hasVideo ? () => handleVideoClick(item) : hasExternalLink ? (e) => handleLinkClick(e, item) : undefined}
                     style={isClickable ? { cursor: 'pointer' } : {}}
@@ -209,20 +209,20 @@ export default function MediaCoverageClient({ initialData }) {
                           viewBox="0 0 66 66"
                           fill="none"
                         >
-                          <path d="M25.5684 16.3633L48.4093 29.9996L25.5684 43.636V16.3633Z" fill="#0A963C"/>
+                          <path d="M25.5684 16.3633L48.4093 29.9996L25.5684 43.636V16.3633Z" fill="#0A963C" />
                           <g filter={`url(#filter0_d_play_${item.id})`}>
-                            <path d="M32.9942 59.9986C19.6429 60.1272 7.37744 51.2621 3.75566 37.7681C-0.530471 21.7666 8.96331 5.31516 24.9577 1.02906C40.9593 -3.25704 57.4109 6.23666 61.697 22.2381C65.9831 38.2395 56.4965 54.6839 40.4949 58.97C37.9947 59.6414 35.473 59.97 32.9942 59.9986ZM25.5863 43.5686L48.4457 29.9959L25.5863 16.4233V43.5686Z" fill="white"/>
+                            <path d="M32.9942 59.9986C19.6429 60.1272 7.37744 51.2621 3.75566 37.7681C-0.530471 21.7666 8.96331 5.31516 24.9577 1.02906C40.9593 -3.25704 57.4109 6.23666 61.697 22.2381C65.9831 38.2395 56.4965 54.6839 40.4949 58.97C37.9947 59.6414 35.473 59.97 32.9942 59.9986ZM25.5863 43.5686L48.4457 29.9959L25.5863 16.4233V43.5686Z" fill="white" />
                           </g>
                           <defs>
                             <filter id={`filter0_d_play_${item.id}`} x="-0.000710249" y="0" width="65.4545" height="65.4545" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
-                              <feFlood floodOpacity="0" result="BackgroundImageFix"/>
-                              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
-                              <feOffset dy="2.72727"/>
-                              <feGaussianBlur stdDeviation="1.36364"/>
-                              <feComposite in2="hardAlpha" operator="out"/>
-                              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.23 0"/>
-                              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2497_283"/>
-                              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2497_283" result="shape"/>
+                              <feFlood floodOpacity="0" result="BackgroundImageFix" />
+                              <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                              <feOffset dy="2.72727" />
+                              <feGaussianBlur stdDeviation="1.36364" />
+                              <feComposite in2="hardAlpha" operator="out" />
+                              <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.23 0" />
+                              <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_2497_283" />
+                              <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_2497_283" result="shape" />
                             </filter>
                           </defs>
                         </svg>
@@ -295,7 +295,7 @@ export default function MediaCoverageClient({ initialData }) {
             )}
           </div>
         </div>
-        
+
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="pagination-container">
@@ -308,7 +308,7 @@ export default function MediaCoverageClient({ initialData }) {
         )}
       </section>
 
-      <MediaContact 
+      <MediaContact
         contact={{
           name: "Rajalakshmi Azariah",
           title: "Vice President & Global Head – Corporate Communications",

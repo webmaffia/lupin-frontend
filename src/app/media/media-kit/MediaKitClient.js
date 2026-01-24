@@ -21,7 +21,7 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
         },
         images: {
             banner: {
-                url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+                url: "/assets/inner-banner/media-kit.png",
                 alt: "Media kit"
             },
             petal: {
