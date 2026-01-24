@@ -23,75 +23,65 @@ export async function GET(request) {
         categoryOptions = categoriesResponse.data.map((item) => {
           const category = item.attributes || item;
           const name = category.name || '';
+          const id = item.id || item.documentId || '';
           return {
-            value: name,
+            value: name, // Use name for filtering (as per current implementation)
             label: name
           };
-        }).filter(option => option.value); // Filter out empty values
+        }).filter(option => option.value && option.label);
       }
     } catch (error) {
       console.error('Error fetching product categories:', error);
     }
 
-    // Fetch all products to extract unique filter values for geography and oncology
-    const queryString = `products?pagination[page]=1&pagination[pageSize]=100&sort=brandName:asc`;
-    
-    let allProducts = [];
-    let currentPage = 1;
-    let totalPages = 1;
+    // Fetch product geographies from product-geographies endpoint
+    let geographyOptions = [];
+    try {
+      const geographiesResponse = await fetchAPI('product-geographies?pagination[page]=1&pagination[pageSize]=100', {
+        next: { revalidate: 60 },
+      });
 
-    // Fetch first page
-    const firstPageResponse = await fetchAPI(queryString, {
-      next: { revalidate: 60 },
-    });
-
-    if (firstPageResponse && firstPageResponse.data) {
-      allProducts = [...firstPageResponse.data];
-      totalPages = firstPageResponse.meta?.pagination?.pageCount || 1;
-
-      // Fetch remaining pages if needed
-      if (totalPages > 1) {
-        const remainingPages = [];
-        for (let page = 2; page <= totalPages; page++) {
-          remainingPages.push(
-            fetchAPI(`products?pagination[page]=${page}&pagination[pageSize]=100&sort=brandName:asc`, {
-              next: { revalidate: 60 },
-            })
-          );
-        }
-
-        const remainingResponses = await Promise.all(remainingPages);
-        remainingResponses.forEach((response) => {
-          if (response && response.data) {
-            allProducts = [...allProducts, ...response.data];
-          }
-        });
+      if (geographiesResponse && geographiesResponse.data) {
+        geographyOptions = geographiesResponse.data.map((item) => {
+          const geography = item.attributes || item;
+          const name = geography.name || '';
+          const id = item.id || item.documentId || '';
+          return {
+            value: id.toString(), // Use ID for relation filtering
+            label: name
+          };
+        }).filter(option => option.value && option.label);
       }
+    } catch (error) {
+      console.error('Error fetching product geographies:', error);
     }
 
-    // Extract unique values for geography and oncology
-    const geographySet = new Set();
-    const oncologySet = new Set();
+    // Fetch product therapies from product-therapies endpoint
+    let therapyOptions = [];
+    try {
+      const therapiesResponse = await fetchAPI('product-therapies?pagination[page]=1&pagination[pageSize]=100', {
+        next: { revalidate: 60 },
+      });
 
-    allProducts.forEach((item) => {
-      const product = item.attributes || item;
-      
-      if (product.geography && product.geography.trim() !== '') {
-        geographySet.add(product.geography.trim());
+      if (therapiesResponse && therapiesResponse.data) {
+        therapyOptions = therapiesResponse.data.map((item) => {
+          const therapy = item.attributes || item;
+          const name = therapy.name || '';
+          const id = item.id || item.documentId || '';
+          return {
+            value: id.toString(), // Use ID for relation filtering
+            label: name
+          };
+        }).filter(option => option.value && option.label);
       }
-      if (product.oncology && product.oncology.trim() !== '') {
-        oncologySet.add(product.oncology.trim());
-      }
-    });
-
-    // Convert to sorted arrays
-    const geography = Array.from(geographySet).sort();
-    const oncology = Array.from(oncologySet).sort();
+    } catch (error) {
+      console.error('Error fetching product therapies:', error);
+    }
 
     return NextResponse.json({
-      geography: geography.map(value => ({ value, label: value })),
+      geography: geographyOptions, // Use product geographies from API
       category: categoryOptions, // Use product categories from API
-      oncology: oncology.map(value => ({ value, label: value }))
+      oncology: therapyOptions // Use product therapies from API (mapped to oncology in UI)
     });
   } catch (error) {
     console.error('Error fetching product filters:', error);

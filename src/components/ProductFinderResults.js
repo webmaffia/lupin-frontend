@@ -33,9 +33,9 @@ export default function ProductFinderResults({
         if (searchTerm) {
           params.append('searchTerm', searchTerm);
         }
-        if (selectedLetter) {
+    if (selectedLetter) {
           params.append('selectedLetter', selectedLetter);
-        }
+    }
         if (geography) {
           params.append('geography', geography);
         }

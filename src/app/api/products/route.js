@@ -43,24 +43,25 @@ export async function GET(request) {
       filters.push(`filters[name][$startsWithi]=${encodeURIComponent(selectedLetter)}`);
     }
 
-    // Filter by geography (if field exists in Strapi)
+    // Filter by geography (relation - filter by ID)
     if (geography) {
-      filters.push(`filters[geography][$eq]=${encodeURIComponent(geography)}`);
+      filters.push(`filters[geography][id][$eq]=${encodeURIComponent(geography)}`);
     }
 
-    // Filter by category (if field exists in Strapi)
+    // Filter by category (relation - filter by name or ID)
     if (category) {
-      filters.push(`filters[category][$eq]=${encodeURIComponent(category)}`);
+      // Category can be filtered by name since it's a relation
+      filters.push(`filters[category][name][$eq]=${encodeURIComponent(category)}`);
     }
 
-    // Filter by oncology (if field exists in Strapi)
+    // Filter by therapy/oncology (relation - filter by ID)
     if (oncology) {
-      filters.push(`filters[oncology][$eq]=${encodeURIComponent(oncology)}`);
+      filters.push(`filters[therapy][id][$eq]=${encodeURIComponent(oncology)}`);
     }
 
-    // Build query string
+    // Build query string with populate for relations
     const filterQuery = filters.length > 0 ? `&${filters.join('&')}` : '';
-    const queryString = `products?pagination[page]=${page}&pagination[pageSize]=${pageSize}${filterQuery}&sort=brandName:asc`;
+    const queryString = `products?pagination[page]=${page}&pagination[pageSize]=${pageSize}${filterQuery}&populate=geography&populate=therapy&populate=category&sort=brandName:asc`;
 
     // Fetch products from Strapi
     const data = await fetchAPI(queryString, {
@@ -70,14 +71,30 @@ export async function GET(request) {
     // Map Strapi data to component format
     const products = (data.data || []).map((item) => {
       const product = item.attributes || item;
+
+      // Extract geography name from relation
+      const geographyObj = product.geography?.data?.attributes || product.geography;
+      const geographyName = geographyObj?.name || '';
+
+      // Extract therapy name from relation
+      const therapyObj = product.therapy?.data?.attributes || product.therapy;
+      const therapyName = therapyObj?.name || '';
+
+      // Extract category name from relation
+      const categoryObj = product.category?.data?.attributes || product.category;
+      const categoryName = categoryObj?.name || '';
+
       return {
         id: item.id || item.documentId,
         documentId: item.documentId,
         brandName: product.brandName || '',
         activeIngredient: product.name || product.activeIngredient || '',
-        therapyArea: product.therapyArea || product.category || '',
+        therapyArea: therapyName || categoryName || '',
         form: product.form || '',
-        name: product.name || ''
+        name: product.name || '',
+        geography: geographyName,
+        therapy: therapyName,
+        category: categoryName
       };
     });
 
