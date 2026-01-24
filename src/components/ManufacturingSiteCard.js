@@ -1,5 +1,8 @@
 'use client';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/ManufacturingSiteCard.scss';
 
 export default function ManufacturingSiteCard({ data }) {
@@ -30,15 +33,13 @@ export default function ManufacturingSiteCard({ data }) {
           {description}
         </p>
         <div className="manufacturing-site-card__address">
-          <p className="manufacturing-site-card__address-label" data-node-id="3030:5839">
-            {addressLabel}
-          </p>
           <div className="manufacturing-site-card__address-text" data-node-id="3030:5838">
-            {addressText.split('\n').map((line, index) => (
-              <p key={index} className="manufacturing-site-card__address-line">
-                {line}
-              </p>
-            ))}
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+            >
+              {addressText}
+            </ReactMarkdown>
           </div>
         </div>
       </div>

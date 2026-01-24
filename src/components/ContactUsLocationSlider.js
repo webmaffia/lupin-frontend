@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/ContactUsLocationSlider.scss';
 
 export default function ContactUsLocationSlider({ data }) {
@@ -315,49 +318,60 @@ export default function ContactUsLocationSlider({ data }) {
             </h2>
             
             <div className="contact-us-location-slider__addresses" data-node-id="2947:6406">
-              {currentLocation.addresses.map((addressItem, index) => (
-                <div key={index} className="contact-us-location-slider__address-item" data-node-id={`2947:${6407 + index * 3}`}>
-                  <h3 className="contact-us-location-slider__address-title" data-node-id={`2947:${6408 + index * 3}`}>
-                    {addressItem.title}
-                  </h3>
-                  <div className="contact-us-location-slider__address-content" data-node-id={`2947:${6409 + index * 3}`}>
-                    {addressItem.address.map((line, lineIndex) => {
-                      // Check if line contains email or phone
-                      const hasEmail = line.includes('@');
-                      const hasPhone = line.includes('Phone:');
-                      
-                      if (hasEmail || hasPhone) {
-                        // Split line to handle email links
-                        const parts = line.split(/(info@lupin\.com|dsrm@lupin\.com)/);
+              {currentLocation.addressDetail ? (
+                <div className="contact-us-location-slider__address-content">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {currentLocation.addressDetail}
+                  </ReactMarkdown>
+                </div>
+              ) : currentLocation.addresses ? (
+                currentLocation.addresses.map((addressItem, index) => (
+                  <div key={index} className="contact-us-location-slider__address-item" data-node-id={`2947:${6407 + index * 3}`}>
+                    <h3 className="contact-us-location-slider__address-title" data-node-id={`2947:${6408 + index * 3}`}>
+                      {addressItem.title}
+                    </h3>
+                    <div className="contact-us-location-slider__address-content" data-node-id={`2947:${6409 + index * 3}`}>
+                      {addressItem.address.map((line, lineIndex) => {
+                        // Check if line contains email or phone
+                        const hasEmail = line.includes('@');
+                        const hasPhone = line.includes('Phone:');
+                        
+                        if (hasEmail || hasPhone) {
+                          // Split line to handle email links
+                          const parts = line.split(/(info@lupin\.com|dsrm@lupin\.com)/);
+                          return (
+                            <p key={lineIndex} className="contact-us-location-slider__address-line">
+                              {parts.map((part, partIndex) => {
+                                if (part.includes('@')) {
+                                  return (
+                                    <a
+                                      key={partIndex}
+                                      href={`mailto:${part}`}
+                                      className="contact-us-location-slider__email-link"
+                                    >
+                                      {part}
+                                    </a>
+                                  );
+                                }
+                                return <span key={partIndex}>{part}</span>;
+                              })}
+                            </p>
+                          );
+                        }
+                        
                         return (
                           <p key={lineIndex} className="contact-us-location-slider__address-line">
-                            {parts.map((part, partIndex) => {
-                              if (part.includes('@')) {
-                                return (
-                                  <a
-                                    key={partIndex}
-                                    href={`mailto:${part}`}
-                                    className="contact-us-location-slider__email-link"
-                                  >
-                                    {part}
-                                  </a>
-                                );
-                              }
-                              return <span key={partIndex}>{part}</span>;
-                            })}
+                            {line}
                           </p>
                         );
-                      }
-                      
-                      return (
-                        <p key={lineIndex} className="contact-us-location-slider__address-line">
-                          {line}
-                        </p>
-                      );
-                    })}
+                      })}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : null}
             </div>
           </div>
         </div>

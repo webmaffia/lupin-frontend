@@ -24,7 +24,7 @@ export default function ProductFinderPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/product-finder.png",
         alt: "Product Finder - Lupin"
       },
       petal: {
@@ -38,7 +38,7 @@ export default function ProductFinderPage() {
   const sectionData = {
     button: {
       text: "View Our API Product List",
-      href: "#",
+      href: "https://www.lupin.com/wp-content/uploads/2021/04/API-List-april-2021.pdf",
       target: "_blank"
     }
   };

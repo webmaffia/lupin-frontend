@@ -57,12 +57,16 @@ export default async function LeaderDetailsPage({ params }) {
   const bannerData = {
     title: {
       line1: leaderData?.name || "Leader",
-      line2: "Details"
+      line2: "" // Removed "Details" as requested
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Leader Details"
+        url: "/assets/leaders/Leadership_Desktop.png",
+        alt: leaderData?.name || "Leader"
+      },
+      bannerMobile: {
+        url: "/assets/leaders/Leadership_Mobile.png",
+        alt: leaderData?.name || "Leader"
       },
       petal: {
         url: "/assets/inner-banner/petal-2.svg",

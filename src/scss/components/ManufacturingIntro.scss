@@ -43,6 +43,39 @@
   }
   
   &__text {
+    // ReactMarkdown styles
+    p {
+      margin: 0;
+      
+      &:not(:last-child) {
+        margin-bottom: vw(15);
+        
+        @include media('tablet') {
+          margin-bottom: vw(12, 768);
+        }
+        
+        @include media('mobile') {
+          margin-bottom: vw-mobile(10, 414);
+        }
+      }
+    }
+    
+    a {
+      color: inherit;
+      text-decoration: underline;
+      
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+    
+    strong, b {
+      font-weight: 700;
+    }
+    
+    em, i {
+      font-style: italic;
+    }
     font-family: $font-family-base;
     font-weight: 500; // Medium (Inter:Medium)
     font-size: vw(22);

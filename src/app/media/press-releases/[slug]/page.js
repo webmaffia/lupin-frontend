@@ -104,7 +104,7 @@ export default async function PressReleaseDetailPage({ params }) {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/press-releases.png",
         alt: "Press Releases"
       },
       petal: {

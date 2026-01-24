@@ -3253,15 +3253,16 @@ export function mapCommitteesData(leadersData) {
   }
 
   // Map boolean field names to committee titles
+  // Note: board_of_directors and management_team are excluded as they belong to Leadership page
   const committeeFieldMap = {
     strategy_committee: 'Strategy Committee',
     audit_committee: 'Audit Committee',
     stakeholders_relationship_committee: 'Stakeholders Relationship Committee',
     nomination_remuneration_committee: 'Nomination & Remuneration Committee',
     sustainability_csr_committee: 'Sustainability & CSR Committee',
-    risk_management_committee: 'Risk Management Committee',
-    board_of_directors: 'Board of Directors',
-    management_team: 'Management Team'
+    risk_management_committee: 'Risk Management Committee'
+    // board_of_directors: 'Board of Directors', // Excluded - belongs to Leadership page
+    // management_team: 'Management Team' // Excluded - belongs to Leadership page
   };
 
   // Initialize committees map
@@ -3344,6 +3345,150 @@ export function mapCommitteesData(leadersData) {
 
   return {
     committees: committees
+  };
+}
+
+/**
+ * Fetch our-manufacturing-site data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * Structure:
+ * - TopBanner (Component - InnerBanner)
+ *   - DesktopImage, MobileImage, Heading, SubHeading, SubHeadingText
+ * - IntroSection (Component - IntroSectionData)
+ *   - Description (Rich text Markdown)
+ * - CountryAddressSection (Component - CountryCardData)
+ *   - CountryName, CityAddressSection (repeatable CityAddressCard)
+ *     - CityName, Description, AddressDetail (Rich text Markdown), isActive
+ * - NorthAmericaSection (Component - InternationalCountryData)
+ *   - CountryName, CityAddressSection (repeatable CityAddressCard)
+ *     - CityName, Description, AddressDetail (Rich text Markdown), isActive
+ * - LatamSection (Component - InternationalCountryData)
+ *   - CountryName, CityAddressSection (repeatable CityAddressCard)
+ *     - CityName, Description, AddressDetail (Rich text Markdown), isActive
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getOurManufacturingSite() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[CountryAddressSection][populate][CityAddressSection][populate]=*',
+    'populate[NorthAmericaSection][populate][CityAddressSection][populate]=*',
+    'populate[LatamSection][populate][CityAddressSection][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`our-manufacturing-site?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map our-manufacturing-site data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped manufacturing site data for components
+ */
+export function mapOurManufacturingSiteData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) {
+    return {
+      banner: null,
+      introSection: null,
+      countryAddressSection: null,
+      northAmericaSection: null,
+      latamSection: null
+    };
+  }
+
+  // Map TopBanner
+  const topBanner = data?.TopBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map IntroSection
+  const introSection = data?.IntroSection;
+  const introData = introSection?.Description ? {
+    description: introSection.Description
+  } : null;
+
+  // Map CountryAddressSection (India)
+  const countryAddressSection = data?.CountryAddressSection;
+  let countryData = null;
+  if (countryAddressSection) {
+    const citySections = countryAddressSection?.CityAddressSection || [];
+    const sites = citySections
+      .filter(city => city?.isActive !== false)
+      .map((city) => ({
+        id: city?.id || Math.random(),
+        title: city?.CityName || '',
+        description: city?.Description || '',
+        address: {
+          label: 'Address',
+          text: city?.AddressDetail || ''
+        }
+      }));
+
+    countryData = {
+      heading: countryAddressSection?.CountryName || 'INDIA',
+      sites: sites
+    };
+  }
+
+  // Map NorthAmericaSection
+  const northAmericaSection = data?.NorthAmericaSection;
+  let northAmericaData = null;
+  if (northAmericaSection) {
+    const citySections = northAmericaSection?.CityAddressSection || [];
+    const sites = citySections
+      .filter(city => city?.isActive !== false)
+      .map((city) => ({
+        id: city?.id || Math.random(),
+        title: city?.CityName || '',
+        description: city?.Description || '',
+        address: {
+          label: 'Address',
+          text: city?.AddressDetail || ''
+        }
+      }));
+
+    northAmericaData = {
+      heading: northAmericaSection?.CountryName || 'NORTH AMERICA',
+      showBackground: false,
+      sites: sites
+    };
+  }
+
+  // Map LatamSection
+  const latamSection = data?.LatamSection;
+  let latamData = null;
+  if (latamSection) {
+    const citySections = latamSection?.CityAddressSection || [];
+    const sites = citySections
+      .filter(city => city?.isActive !== false)
+      .map((city) => ({
+        id: city?.id || Math.random(),
+        title: city?.CityName || '',
+        description: city?.Description || '',
+        address: {
+          label: 'Address',
+          text: city?.AddressDetail || ''
+        }
+      }));
+
+    latamData = {
+      heading: latamSection?.CountryName || 'LATAM',
+      fullWidth: true,
+      showBackground: false,
+      sites: sites
+    };
+  }
+
+  return {
+    banner: banner,
+    introSection: introData,
+    countryAddressSection: countryData,
+    northAmericaSection: northAmericaData,
+    latamSection: latamData
   };
 }
 

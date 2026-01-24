@@ -37,7 +37,7 @@ export default function AwardsAndRecognitionClient({ initialData }) {
   // Filter articles by active year
   const filteredArticles = useMemo(() => {
     if (!activeYear) return [];
-    
+
     return initialData.filter((item) => {
       const dateToUse = item.publishedOn || item.publishedAt;
       if (dateToUse) {
@@ -83,7 +83,7 @@ export default function AwardsAndRecognitionClient({ initialData }) {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/awards-and-recognition.png",
         alt: "Awards and Recognition - Lupin"
       },
       petal: {
@@ -96,7 +96,7 @@ export default function AwardsAndRecognitionClient({ initialData }) {
   return (
     <div className="awards-and-recognition-page">
       <InnerBanner data={bannerData} />
-      
+
       {/* Content sections */}
       <section className="awards-and-recognition-content">
         <div className="awards-and-recognition-content__container">
@@ -110,20 +110,20 @@ export default function AwardsAndRecognitionClient({ initialData }) {
           </div>
         </div>
       </section>
-      
+
       {/* Year Selector Section */}
       {availableYears.length > 0 && (
         <section className="awards-and-recognition-years-section">
           <div className="awards-and-recognition-years-section__container">
-            <YearSelector 
+            <YearSelector
               years={availableYears}
               activeYear={activeYear}
-              onYearChange={setActiveYear} 
+              onYearChange={setActiveYear}
             />
           </div>
         </section>
       )}
-      
+
       {/* Year Content Section */}
       {activeYear && (
         <section className="awards-and-recognition-year-content">

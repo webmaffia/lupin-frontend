@@ -107,29 +107,41 @@ export default function CommitteesBoard({ data, error = null }) {
   };
 
   // Use API data if available, otherwise use fallback
-  const committeesData = data?.committees && data.committees.length > 0 ? data : fallbackData;
+  // Only use fallback if we have an error AND no valid data
+  const hasValidData = data?.committees && Array.isArray(data.committees) && data.committees.length > 0;
+  const committeesData = hasValidData ? data : fallbackData;
 
-  // Show error state if API failed and no fallback data
-  if (error && (!data || !data.committees || data.committees.length === 0)) {
-    return (
-      <section className="committees-board">
-        <div className="committees-board__container">
-          <NavigationLinks links={[
-            { id: 'committees', label: 'Committees of the Board', href: '/investors/committees' },
-            { id: 'code-of-conduct', label: 'Code of Conduct', href: '/investors/code-of-conduct' },
-            { id: 'policies', label: 'Policies', href: '/investors/policies' }
-          ]} />
-          <div className="committees-board__placeholder">
-            <p>Unable to load committees data at this time. Please try again later.</p>
-            {process.env.NODE_ENV === 'development' && (
-              <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
-                Error: {error}
-              </p>
-            )}
+  // Show error state only if API failed AND we don't have fallback data to show
+  // If we have fallback data, show it but log the error in development
+  if (error && !hasValidData) {
+    // In development, log that we're using fallback data
+    if (process.env.NODE_ENV === 'development') {
+      console.warn('Committees - Using fallback data due to error:', error);
+    }
+    
+    // Only show error message if we don't have fallback data either
+    if (!fallbackData?.committees || fallbackData.committees.length === 0) {
+      return (
+        <section className="committees-board">
+          <div className="committees-board__container">
+            <NavigationLinks links={[
+              { id: 'committees', label: 'Committees of the Board', href: '/investors/committees' },
+              { id: 'code-of-conduct', label: 'Code of Conduct', href: '/investors/code-of-conduct' },
+              { id: 'policies', label: 'Policies', href: '/investors/policies' }
+            ]} />
+            <div className="committees-board__placeholder">
+              <p>Unable to load committees data at this time. Please try again later.</p>
+              {process.env.NODE_ENV === 'development' && (
+                <p style={{ fontSize: '14px', color: '#666', marginTop: '10px' }}>
+                  Error: {error}
+                </p>
+              )}
+            </div>
           </div>
-        </div>
-      </section>
-    );
+        </section>
+      );
+    }
+    // If we have fallback data, continue to render it below (don't return early)
   }
 
   return (
