@@ -108,7 +108,7 @@ export default async function PressReleaseDetailPage({ params }) {
         alt: "Press Releases"
       },
       petal: {
-        url: "/assets/inner-banner/petal-2.svg",
+        url: "/assets/inner-banner/press-releases-mobile.png",
         alt: "Decorative petal"
       }
     }

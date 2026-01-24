@@ -25,7 +25,7 @@ export default function MediaKitClient({ initialProfiles, initialPdfs }) {
                 alt: "Media kit"
             },
             petal: {
-                url: "/assets/inner-banner/petal-2.svg",
+                url: "/assets/inner-banner/media-kit-mobile.png",
                 alt: "Decorative petal"
             }
         }

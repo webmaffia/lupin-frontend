@@ -65,9 +65,25 @@ export function mapAboutUsData(strapiData) {
     const introImage = pageIntroSection?.Image?.data?.attributes || pageIntroSection?.Image || pageIntroSection?.image?.data?.attributes || pageIntroSection?.image;
     const imageUrl = introImage ? getStrapiMedia(introImage) : null;
 
+    // Heading is Rich text (Markdown) - extract as string, then split into array for line-by-line rendering
+    const heading = pageIntroSection?.Heading || pageIntroSection?.heading || '';
+    let headingText = typeof heading === 'string' ? heading : '';
+    // Strip markdown syntax
+    headingText = headingText.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s/g, '');
+    // Split by newlines or spaces to create array of lines/words
+    const headingArray = headingText.includes('\n') 
+      ? headingText.split('\n').filter(line => line.trim())
+      : headingText.split(/\s+/).filter(word => word.trim());
+
+    // Description is Rich text (Markdown) - extract as string
+    const description = pageIntroSection?.Description || pageIntroSection?.description || '';
+    const descriptionText = typeof description === 'string' ? description : '';
+    // Strip markdown syntax for plain text rendering
+    const descriptionPlain = descriptionText.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s/g, '');
+
     pageIntro = {
-      heading: pageIntroSection?.Heading || pageIntroSection?.heading || '',
-      description: pageIntroSection?.Description || pageIntroSection?.description || '',
+      heading: headingArray, // Return as array for line-by-line rendering
+      description: descriptionPlain, // Return as plain text
       image: imageUrl ? {
         url: imageUrl,
         alt: introImage?.alternativeText || introImage?.caption || 'About Us'
@@ -94,10 +110,14 @@ export function mapAboutUsData(strapiData) {
 
       const imagePosition = section?.Image_Position || section?.image_Position || section?.imagePosition || 'right';
 
+      // Description is Rich text (Markdown) - extract as string
+      const description = section?.Description || section?.description || '';
+      const descriptionText = typeof description === 'string' ? description : '';
+
       return {
         id: section?.id || index + 1,
         title: section?.Title || section?.title || '',
-        description: section?.Description || section?.description || '',
+        description: descriptionText,
         image: imageUrl ? {
           url: imageUrl,
           alt: sectionImage?.alternativeText || sectionImage?.caption || section?.Title || section?.title || 'About Us'
@@ -498,15 +518,25 @@ export function mapOurPurposeData(strapiData) {
       const desktopImg = treatmentImage?.DesktopImage;
       const mobileImg = treatmentImage?.MobileImage;
       
-      desktopImage = desktopImg ? {
-        url: getStrapiMedia(desktopImg),
-        alt: desktopImg?.alternativeText || desktopImg?.caption || 'Treatment desktop'
-      } : null;
+      if (desktopImg) {
+        const desktopUrl = getStrapiMedia(desktopImg);
+        if (desktopUrl) {
+          desktopImage = {
+            url: desktopUrl,
+            alt: desktopImg?.alternativeText || desktopImg?.caption || 'Treatment desktop'
+          };
+        }
+      }
       
-      mobileImage = mobileImg ? {
-        url: getStrapiMedia(mobileImg),
-        alt: mobileImg?.alternativeText || mobileImg?.caption || 'Treatment mobile'
-      } : null;
+      if (mobileImg) {
+        const mobileUrl = getStrapiMedia(mobileImg);
+        if (mobileUrl) {
+          mobileImage = {
+            url: mobileUrl,
+            alt: mobileImg?.alternativeText || mobileImg?.caption || 'Treatment mobile'
+          };
+        }
+      }
     }
 
     treatmentData = {
@@ -515,6 +545,13 @@ export function mapOurPurposeData(strapiData) {
       desktopImage: desktopImage,
       mobileImage: mobileImage
     };
+
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('mapOurPurposeData - TreatmentSection raw:', treatmentSection);
+      console.log('mapOurPurposeData - treatmentImage:', treatmentImage);
+      console.log('mapOurPurposeData - treatmentData mapped:', treatmentData);
+    }
   }
 
   // Map CommitmentSection
@@ -1356,18 +1393,303 @@ export function mapOurScienceData(strapiData) {
 }
 
 /**
+ * Convert Strapi Blocks (Rich text Blocks) to Markdown string
+ * Blocks is an array of objects with different types (paragraph, heading, list, etc.)
+ * 
+ * @param {Array} blocks - Strapi Blocks array
+ * @returns {string} Markdown string
+ */
+function convertBlocksToMarkdown(blocks) {
+  if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
+    return '';
+  }
+
+  let markdown = '';
+
+  blocks.forEach((block) => {
+    if (!block || !block.type) return;
+
+    switch (block.type) {
+      case 'paragraph':
+        if (block.children && Array.isArray(block.children)) {
+          const paragraphText = block.children
+            .map((child) => {
+              if (child.type === 'text') {
+                let text = child.text || '';
+                // Handle formatting
+                if (child.bold) text = `**${text}**`;
+                if (child.italic) text = `*${text}*`;
+                if (child.code) text = `\`${text}\``;
+                return text;
+              }
+              return '';
+            })
+            .join('');
+          markdown += paragraphText + '\n\n';
+        }
+        break;
+
+      case 'heading':
+        if (block.children && Array.isArray(block.children)) {
+          const level = block.level || 1;
+          const headingText = block.children
+            .map((child) => child.text || '')
+            .join('');
+          const hashes = '#'.repeat(level);
+          markdown += `${hashes} ${headingText}\n\n`;
+        }
+        break;
+
+      case 'list':
+        if (block.children && Array.isArray(block.children)) {
+          block.children.forEach((item) => {
+            if (item.children && Array.isArray(item.children)) {
+              const itemText = item.children
+                .map((child) => child.text || '')
+                .join('');
+              const listMarker = block.format === 'ordered' ? '1. ' : '- ';
+              markdown += `${listMarker}${itemText}\n`;
+            }
+          });
+          markdown += '\n';
+        }
+        break;
+
+      case 'quote':
+        if (block.children && Array.isArray(block.children)) {
+          const quoteText = block.children
+            .map((child) => child.text || '')
+            .join('');
+          markdown += `> ${quoteText}\n\n`;
+        }
+        break;
+
+      case 'code':
+        if (block.children && Array.isArray(block.children)) {
+          const codeText = block.children
+            .map((child) => child.text || '')
+            .join('');
+          markdown += `\`\`\`\n${codeText}\n\`\`\`\n\n`;
+        }
+        break;
+
+      default:
+        // For unknown types, try to extract text from children
+        if (block.children && Array.isArray(block.children)) {
+          const text = block.children
+            .map((child) => child.text || '')
+            .join('');
+          if (text) markdown += text + '\n\n';
+        }
+        break;
+    }
+  });
+
+  return markdown.trim();
+}
+
+/**
+ * Fetch our-manufacturing-approach data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getOurManufacturingApproach() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[PageIntroSection][populate][PetalImageSvg][populate]=*',
+    'populate[CommentSection][populate]=*',
+    'populate[StrategicPerformanceAreaSection][populate][Image][populate]=*',
+    'populate[StrategicPerformanceAreaSection][populate][PerformanceAreaData][populate][icon][populate]=*',
+    'populate[GtoStructureSection][populate][PetalImageSvg][populate]=*',
+    'populate[GtoStructureSection][populate][GtoStructureSection][populate][GtoStructureCardData][populate][image][populate]=*',
+    'populate[GtoStructureSection][populate][GtoStructureSection][populate][GtoStructureCardData][populate][cta][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`our-manufacturing-approach?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map our-manufacturing-approach data from Strapi for global-technical-operations page
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped data for global-technical-operations page
+ */
+export function mapOurManufacturingApproachData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return {
+      banner: null,
+      pageIntroSection: null,
+      commentSection: null,
+      strategicPerformanceAreaSection: null,
+      gtoStructureSection: null,
+      tabsData: null
+    };
+  }
+
+  // Map TopBanner
+  const topBanner = data?.TopBanner || data?.topBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map PageIntroSection
+  const pageIntroSection = data?.PageIntroSection || data?.pageIntroSection;
+  let pageIntroData = null;
+  if (pageIntroSection) {
+    const petalImage = pageIntroSection?.PetalImageSvg?.data?.attributes || pageIntroSection?.PetalImageSvg;
+    const petalImageUrl = petalImage ? getStrapiMedia(petalImage) : null;
+
+    pageIntroData = {
+      heading: pageIntroSection?.Heading || pageIntroSection?.heading || '',
+      description: pageIntroSection?.Description || pageIntroSection?.description || '',
+      petalImage: petalImageUrl ? {
+        url: petalImageUrl,
+        alt: petalImage?.alternativeText || petalImage?.caption || 'Petal decoration'
+      } : null
+    };
+  }
+
+  // Map CommentSection
+  const commentSection = data?.CommentSection || data?.commentSection;
+  let commentData = null;
+  if (commentSection) {
+    commentData = {
+      description: commentSection?.Description || commentSection?.description || '',
+      paragraphDescription: commentSection?.ParagraphDescription || commentSection?.paragraphDescription || ''
+    };
+  }
+
+  // Map StrategicPerformanceAreaSection
+  const strategicSection = data?.StrategicPerformanceAreaSection || data?.strategicPerformanceAreaSection;
+  let strategicData = null;
+  if (strategicSection) {
+    const sectionImage = strategicSection?.Image?.data?.attributes || strategicSection?.Image;
+    const imageUrl = sectionImage ? getStrapiMedia(sectionImage) : null;
+
+    const performanceAreaData = strategicSection?.PerformanceAreaData || strategicSection?.performanceAreaData || [];
+    const cards = performanceAreaData.map((card) => {
+      const cardIcon = card?.icon?.data?.attributes || card?.icon;
+      const iconUrl = cardIcon ? getStrapiMedia(cardIcon) : null;
+
+      // Convert Blocks to Markdown for subheading
+      const subheadingBlocks = card?.subheading || card?.SubHeading;
+      const subheadingMarkdown = subheadingBlocks ? convertBlocksToMarkdown(subheadingBlocks) : '';
+
+      return {
+        heading: card?.heading || card?.Heading || '',
+        subheading: subheadingMarkdown,
+        icon: iconUrl ? {
+          url: iconUrl,
+          alt: cardIcon?.alternativeText || cardIcon?.caption || card?.heading || ''
+        } : null
+      };
+    });
+
+    strategicData = {
+      sectionTitle: strategicSection?.SectionTitle || strategicSection?.sectionTitle || '',
+      description: strategicSection?.Description || strategicSection?.description || '',
+      image: imageUrl ? {
+        url: imageUrl,
+        alt: sectionImage?.alternativeText || sectionImage?.caption || 'Strategic Performance Areas'
+      } : null,
+      cards: cards
+    };
+  }
+
+  // Map GtoStructureSection
+  const gtoStructureSection = data?.GtoStructureSection || data?.gtoStructureSection;
+  let gtoStructureData = null;
+  let tabsData = null;
+  if (gtoStructureSection) {
+    const petalImage = gtoStructureSection?.PetalImageSvg?.data?.attributes || gtoStructureSection?.PetalImageSvg;
+    const petalImageUrl = petalImage ? getStrapiMedia(petalImage) : null;
+
+    gtoStructureData = {
+      heading: gtoStructureSection?.Heading || gtoStructureSection?.heading || '',
+      subHeading: gtoStructureSection?.SubHeading || gtoStructureSection?.subHeading || '',
+      description: gtoStructureSection?.Description || gtoStructureSection?.description || '',
+      petalImage: petalImageUrl ? {
+        url: petalImageUrl,
+        alt: petalImage?.alternativeText || petalImage?.caption || 'Petal decoration'
+      } : null
+    };
+
+    // Map GtoStructureSection tabs (repeatable GTOTab)
+    const tabsArray = gtoStructureSection?.GtoStructureSection || gtoStructureSection?.gtoStructureSection || [];
+    tabsData = tabsArray.map((tab, tabIndex) => {
+      const tabName = tab?.TabName || tab?.tabName || '';
+      
+      // Map GtoStructureCardData (repeatable GTOStructureCard)
+      const cardsArray = tab?.GtoStructureCardData || tab?.gtoStructureCardData || [];
+      const sections = cardsArray.map((card, cardIndex) => {
+        const cardImage = card?.image?.data?.attributes || card?.image;
+        const imageUrl = cardImage ? getStrapiMedia(cardImage) : null;
+
+        // Convert Blocks to Markdown for SubHeading
+        const subheadingBlocks = card?.SubHeading || card?.subheading;
+        const subheadingMarkdown = subheadingBlocks ? convertBlocksToMarkdown(subheadingBlocks) : '';
+
+        const cta = card?.cta || card?.CTA;
+        const ctaData = cta ? {
+          text: cta?.text || '',
+          href: cta?.href || '#'
+        } : null;
+
+        const imagePosition = card?.Image_Position || card?.image_Position || card?.imagePosition || 'right';
+
+        return {
+          heading: card?.Heading || card?.heading || '',
+          subheading: subheadingMarkdown,
+          paragraphs: subheadingMarkdown ? subheadingMarkdown.split('\n\n').filter(p => p.trim()) : [],
+          image: imageUrl ? {
+            url: imageUrl,
+            alt: cardImage?.alternativeText || cardImage?.caption || card?.Heading || ''
+          } : null,
+          link: ctaData,
+          imageFirst: imagePosition === 'left' || imagePosition === 'Left'
+        };
+      });
+
+      // Generate tab ID from tab name
+      const tabId = tabName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || `tab-${tabIndex + 1}`;
+
+      return {
+        id: tabId,
+        label: tabName,
+        dataNodeId: `2852:${339 + tabIndex * 3}`, // Approximate data-node-id pattern
+        sections: sections
+      };
+    });
+  }
+
+  return {
+    banner,
+    pageIntroSection: pageIntroData,
+    commentSection: commentData,
+    strategicPerformanceAreaSection: strategicData,
+    gtoStructureSection: gtoStructureData,
+    tabsData: tabsData && tabsData.length > 0 ? tabsData : null
+  };
+}
+
+/**
  * Fetch our-story data from Strapi
  * This is a Single Type, so it returns one entry
  * 
  * Structure:
  * - TopBanner (Component - InnerBanner)
  *   - DesktopImage, MobileImage, Heading, SubHeading, SubHeadingText
- * - IntroSection (Component)
- *   - Heading, Description
- * - TimelineSection (Repeatable Component)
- *   - Year, Title, Description
- * - MilestonesSection (Repeatable Component)
- *   - Title, Value, Description
+ * - IntroSection (Component - IntroSection)
+ *   - Heading, Description (Rich text Markdown)
+ * - TimelineSection (Repeatable Component - TimelineItem)
+ *   - Year, Title, Description (Rich text Markdown), isActive, DisplayOrder
+ * - MilestonesSection (Repeatable Component - MilestoneCard)
+ *   - Title, Value, Description, isActive, DisplayOrder
  * 
  * @returns {Promise<Object>} Raw Strapi API response
  */
@@ -1392,47 +1714,62 @@ export async function getOurStory() {
  * @returns {Object} Mapped our-story data for component
  */
 export function mapOurStoryData(strapiData) {
-  // Handle Strapi v4 response structure (Single Type)
   const data = strapiData?.data || strapiData;
-
+  
   if (!data) {
-    return null;
-  }
-
-  // Map TopBanner for InnerBanner
-  const banner = mapTopBannerData(data.TopBanner);
-
-  // Map IntroSection
-  const introSection = data?.IntroSection;
-  let intro = null;
-  if (introSection) {
-    intro = {
-      heading: introSection?.Heading || '',
-      description: introSection?.Description || ''
+    return {
+      banner: null,
+      intro: null,
+      timeline: [],
+      milestones: []
     };
   }
 
-  // Map TimelineSection
-  const timelineSection = data?.TimelineSection;
-  let timeline = null;
-  if (timelineSection && Array.isArray(timelineSection)) {
-    timeline = timelineSection.map((item) => ({
-      year: item?.Year || '',
-      title: item?.Title || '',
-      description: item?.Description || ''
-    }));
+  // Map TopBanner
+  const topBanner = data?.TopBanner || data?.topBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map IntroSection
+  const introSection = data?.IntroSection || data?.introSection;
+  let intro = null;
+  if (introSection) {
+    intro = {
+      heading: introSection?.Heading || introSection?.heading || '',
+      description: introSection?.Description || introSection?.description || ''
+    };
   }
 
-  // Map MilestonesSection
-  const milestonesSection = data?.MilestonesSection;
-  let milestones = null;
-  if (milestonesSection && Array.isArray(milestonesSection)) {
-    milestones = milestonesSection.map((item) => ({
-      title: item?.Title || '',
-      value: item?.Value || '',
-      description: item?.Description || ''
-    }));
-  }
+  // Map TimelineSection (Repeatable Component)
+  const timelineArray = data?.TimelineSection || data?.timelineSection || [];
+  const timeline = timelineArray
+    .filter(item => item?.isActive !== false)
+    .map((item, index) => ({
+      year: item?.Year || item?.year || '',
+      title: item?.Title || item?.title || '',
+      description: item?.Description || item?.description || ''
+    }))
+    .sort((a, b) => {
+      const orderA = a.year || '9999';
+      const orderB = b.year || '9999';
+      return orderA.localeCompare(orderB);
+    });
+
+  // Map MilestonesSection (Repeatable Component)
+  const milestonesArray = data?.MilestonesSection || data?.milestonesSection || [];
+  const milestones = milestonesArray
+    .filter(item => item?.isActive !== false)
+    .map((item, index) => ({
+      title: item?.Title || item?.title || '',
+      value: item?.Value || item?.value || '',
+      description: item?.Description || item?.description || '',
+      displayOrder: item?.DisplayOrder || item?.displayOrder || String(index + 1)
+    }))
+    .sort((a, b) => {
+      const orderA = a.displayOrder || '999';
+      const orderB = b.displayOrder || '999';
+      return orderA.localeCompare(orderB);
+    })
+    .map(({ displayOrder, ...rest }) => rest); // Remove displayOrder from final output
 
   return {
     banner,

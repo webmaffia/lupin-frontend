@@ -48,6 +48,12 @@ export default async function PurposePage() {
   const commitmentSection = purposeData?.commitmentSection;
   const guidedFrameworkSection = purposeData?.guidedFrameworkSection;
 
+  // Debug logging
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Our Purpose Page - treatmentSection:', treatmentSection);
+    console.log('Our Purpose Page - purposeData:', purposeData);
+  }
+
   return (
     <>
       <Header />
@@ -84,28 +90,36 @@ export default async function PurposePage() {
         )}
 
         {/* Section 3: We Catalyze Treatments */}
-        {treatmentSection && (
+        {treatmentSection && (treatmentSection.heading || treatmentSection.paragraphDescription) && (
           <section className="purpose-mountain">
-            <div className="purpose-mountain__bg-wrapper">
-              <picture>
-                {treatmentSection.mobileImage && (
-                  <source media="(max-width: 767px)" srcSet={treatmentSection.mobileImage.url} />
-                )}
-                {treatmentSection.desktopImage && (
-                  <img
-                    src={treatmentSection.desktopImage.url}
-                    alt={treatmentSection.desktopImage.alt || ''}
-                    className="purpose-mountain__bg"
-                  />
-                )}
-              </picture>
-            </div>
+            {(treatmentSection.desktopImage?.url || treatmentSection.mobileImage?.url) && (
+              <div className="purpose-mountain__bg-wrapper">
+                <picture>
+                  {treatmentSection.mobileImage?.url && (
+                    <source media="(max-width: 767px)" srcSet={treatmentSection.mobileImage.url} />
+                  )}
+                  {treatmentSection.desktopImage?.url ? (
+                    <img
+                      src={treatmentSection.desktopImage.url}
+                      alt={treatmentSection.desktopImage.alt || 'Treatment background'}
+                      className="purpose-mountain__bg"
+                    />
+                  ) : treatmentSection.mobileImage?.url ? (
+                    <img
+                      src={treatmentSection.mobileImage.url}
+                      alt={treatmentSection.mobileImage.alt || 'Treatment background'}
+                      className="purpose-mountain__bg"
+                    />
+                  ) : null}
+                </picture>
+              </div>
+            )}
             <div className="container-mountain">
               <div className="purpose-mountain__content">
                 <div className="purpose-mountain__text">
                   {treatmentSection.heading && (
                     <h2 className="purpose-mountain__title">
-                      {treatmentSection.heading.replace(/"/g, '').split('\n').map((line, index, array) => (
+                      {String(treatmentSection.heading).replace(/"/g, '').split('\n').map((line, index, array) => (
                         <React.Fragment key={index}>
                           {line}
                           {index < array.length - 1 && <br />}
@@ -115,7 +129,7 @@ export default async function PurposePage() {
                   )}
                   {treatmentSection.paragraphDescription && (
                     <p className="purpose-mountain__paragraph">
-                      {treatmentSection.paragraphDescription}
+                      {String(treatmentSection.paragraphDescription)}
                     </p>
                   )}
                 </div>

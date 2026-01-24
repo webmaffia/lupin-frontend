@@ -154,7 +154,7 @@ export default function ProductFinderSearchForm({
               className="product-finder-search-form__select"
               data-node-id="2953:3841"
             >
-              <option value="">Oncology</option>
+              <option value="">Therapy</option>
               {formData.oncologyOptions.map((option, index) => (
                 <option key={index} value={option.value}>
                   {option.label}

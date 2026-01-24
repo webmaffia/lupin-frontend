@@ -1,8 +1,12 @@
 import InnerBanner from '@/components/InnerBanner';
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getAboutUs, mapAboutUsTopfoldData, mapAboutUsFoldsData, mapTopBannerData } from '@/lib/strapi';
+import { getAboutUs, mapAboutUsData } from '@/lib/strapi-pages';
+import { mapTopBannerData } from '@/lib/strapi';
 import '@/scss/pages/about-us.scss';
 
 // Generate metadata for the About Us page
@@ -17,31 +21,27 @@ export const metadata = generateSEOMetadata({
 export default async function AboutUsPage() {
   // Fetch data from Strapi
   let bannerData = null;
-  let topfoldData = null;
-  let foldsData = null;
+  let pageIntroData = null;
+  let overviewSections = null;
+  let redirectSection = null;
 
   try {
     const strapiData = await getAboutUs();
     
-    // Map TopBanner data for InnerBanner
-    const data = strapiData?.data || strapiData;
-    if (data?.TopBanner) {
-      bannerData = mapTopBannerData(data.TopBanner);
-      
-      // Add subheading if available
-      if (data.TopBanner.subHeading && !bannerData.subheading) {
-        bannerData.subheading = {
-          enabled: true,
-          text: data.TopBanner.subHeading
-        };
-      }
-    }
-
-    // Map Topfold data
-    topfoldData = mapAboutUsTopfoldData(strapiData);
+    // Map all data using the new mapping function
+    const mappedData = mapAboutUsData(strapiData);
     
-    // Map Folds data
-    foldsData = mapAboutUsFoldsData(strapiData);
+    // Map TopBanner data for InnerBanner
+    bannerData = mappedData.banner;
+    
+    // Map PageIntroSection (Topfold)
+    pageIntroData = mappedData.pageIntro;
+    
+    // Map AboutOverviewSection (Folds)
+    overviewSections = mappedData.overviewSections || [];
+    
+    // Map RedirectSection
+    redirectSection = mappedData.redirectSection;
   } catch (error) {
     console.error('Error fetching about-us data from Strapi:', error);
     // Will use default data below
@@ -70,9 +70,9 @@ export default async function AboutUsPage() {
     };
   }
 
-  // Default topfold data if Strapi data is not available
-  if (!topfoldData) {
-    topfoldData = {
+  // Default page intro data if Strapi data is not available
+  if (!pageIntroData) {
+    pageIntroData = {
       heading: ["Shaping", "Healthier", "World", "Together"],
       description: "Lupin is built on a simple belief — that quality healthcare should reach every life it can touch. From our humble beginnings to becoming a trusted global pharmaceutical leader, we remain driven by innovation, compassion, and responsibility. Our journey continues with a diverse portfolio that spans generics, complex generics, specialty medicines, biosimilars, and APIs, all designed to make meaningful impact across 100+ markets worldwide."
     };
@@ -86,25 +86,26 @@ export default async function AboutUsPage() {
           <div className="about-us-content__wrapper">
             <div className="about-us-content__topfold">
               <div className="about-us-content__topfold-content">
-                {topfoldData?.heading && (
+                {pageIntroData?.heading && (
                   <h1 className="about-us-content__topfold-heading">
-                    {topfoldData.heading.map((line, index) => (
-                      <span key={index}>{line}</span>
-                    ))}
+                    {Array.isArray(pageIntroData.heading) 
+                      ? pageIntroData.heading.join(' ')
+                      : pageIntroData.heading
+                    }
                   </h1>
                 )}
                 <div className="about-us-content__topfold-petals">
                   <Image
-                    src="/assets/about/petalsabout.svg"
-                    alt="Decorative petals"
+                    src={pageIntroData?.image?.url || "/assets/about/petalsabout.svg"}
+                    alt={pageIntroData?.image?.alt || "Decorative petals"}
                     width={270}
                     height={388}
                     quality={100}
                   />
                 </div>
-                {topfoldData?.description && (
+                {pageIntroData?.description && (
                   <p className="about-us-content__topfold-description">
-                    {topfoldData.description}
+                    {pageIntroData.description}
                   </p>
                 )}
               </div>
@@ -114,85 +115,93 @@ export default async function AboutUsPage() {
               // Default fold data with headings and text content
               const defaultFolds = [
                 { 
-                  heading: 'Our Purpose', 
+                  title: 'Our Purpose', 
                   color: 'green', 
                   svg: 'svg2', 
                   svgPosition: 'left', 
                   imagePosition: 'right', 
-                  text: 'We Catalyze Treatments that Transform Hope into Healing\n\nOurs is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders',
-                  href: '/about-us/purpose'
+                  description: 'We Catalyze Treatments that Transform Hope into Healing\n\nOurs is a purpose-driven journey of over five decades, where we relentlessly aim to improve lives, build sustainability and deliver long-term value to our stakeholders',
+                  href: '/about-us/our-purpose'
                 },
                 { 
-                  heading: 'Our\nValues', 
+                  title: 'Our\nValues', 
                   color: 'teal', 
                   svg: 'svg1', 
                   svgPosition: 'right', 
                   imagePosition: 'left', 
-                  text: 'At Lupin, we pride ourselves on our promise of caring for our customers, our commitment to our employees\' growth and welfare, our continuous quality focus, and the spirit of innovation that drives each of us to discover better ways of working. This culture is shaped and driven by our values.',
+                  description: 'At Lupin, we pride ourselves on our promise of caring for our customers, our commitment to our employees\' growth and welfare, our continuous quality focus, and the spirit of innovation that drives each of us to discover better ways of working. This culture is shaped and driven by our values.',
                   href: '/about-us/our-values'
                 },
                 { 
-                  heading: 'Our\nLeadership', 
+                  title: 'Our\nLeadership', 
                   color: 'green', 
                   svg: 'svg2', 
                   svgPosition: 'left', 
                   imagePosition: 'right', 
-                  text: 'At Lupin, we are guided by a team that brings experience, vision, and a shared commitment to growth. We strive to create an impact, innovate, and bring meaningful change every day.',
-                  href: '/leaders'
+                  description: 'At Lupin, we are guided by a team that brings experience, vision, and a shared commitment to growth. We strive to create an impact, innovate, and bring meaningful change every day.',
+                  href: '/about-us/leadership'
                 },
                 { 
-                  heading: 'Global\nPresence', 
+                  title: 'Global\nPresence', 
                   color: 'teal', 
                   svg: 'svg1', 
                   svgPosition: 'right', 
                   imagePosition: 'left', 
-                  text: 'From a single vision in 1968 to an organization that moves across borders, Lupin has grown into a network of 24,000+ people across 11 countries and six continents.',
+                  description: 'From a single vision in 1968 to an organization that moves across borders, Lupin has grown into a network of 24,000+ people across 11 countries and six continents.',
                   href: '/about-us/global-presence'
                 },
                 { 
-                  heading: 'Our Manufacturing\nApproach', 
+                  title: 'Our Manufacturing\nApproach', 
                   color: 'green', 
                   svg: 'svg2', 
                   svgPosition: 'left', 
                   imagePosition: 'right', 
-                  text: 'Our manufacturing strength is built on the power of technology, advanced facilities, rigorous quality systems, and a commitment to sustainable, reliable production.',
+                  description: 'Our manufacturing strength is built on the power of technology, advanced facilities, rigorous quality systems, and a commitment to sustainable, reliable production.',
                   href: '/about-us/our-manufacturing-sites'
                 },
                 { 
-                  heading: 'Our Science', 
+                  title: 'Our Science', 
                   color: 'teal', 
                   svg: 'svg1', 
                   svgPosition: 'right', 
                   imagePosition: 'left', 
-                  text: 'At Lupin, our Research and Development (R&D) division drives our industry positioning as a leading pharmaceutical solutions provider in the US and in India. It develops solutions that allow us to deliver on our purpose and vision.',
+                  description: 'At Lupin, our Research and Development (R&D) division drives our industry positioning as a leading pharmaceutical solutions provider in the US and in India. It develops solutions that allow us to deliver on our purpose and vision.',
                   href: '/about-us/our-science'
                 }
               ];
               
               // Use Strapi data if available, otherwise use defaults
-              const foldsToRender = Array.isArray(foldsData) 
-                ? foldsData.map((fold, index) => ({
-                    heading: fold.heading || defaultFolds[index]?.heading || 'Our Purpose',
-                    text: fold.text || defaultFolds[index]?.text || '',
-                    href: fold.href || defaultFolds[index]?.href || '#',
-                    color: index % 2 === 0 ? 'teal' : 'green',
-                    svg: index % 2 === 0 ? 'svg1' : 'svg2',
-                    svgPosition: index % 2 === 0 ? 'right' : 'left',
-                    imagePosition: index % 2 === 0 ? 'left' : 'right'
-                  }))
+              // Follow the defaultFolds structure and use colors from defaultFolds
+              const foldsToRender = Array.isArray(overviewSections) && overviewSections.length > 0
+                ? overviewSections.map((section, index) => {
+                    // Get default fold for this index to use its color, svg, and positions
+                    const defaultFold = defaultFolds[index] || defaultFolds[0];
+                    
+                    return {
+                      title: section.title || defaultFold.title || 'Our Purpose',
+                      description: section.description || defaultFold.description || '',
+                      href: section.cta?.href || defaultFold.href || '#',
+                      image: section.image || null,
+                      icon: section.icon || null,
+                      // Use color, svg, svgPosition, and imagePosition from defaultFolds
+                      color: defaultFold.color || (index % 2 === 0 ? 'teal' : 'green'),
+                      svg: defaultFold.svg || (index % 2 === 0 ? 'svg1' : 'svg2'),
+                      svgPosition: defaultFold.svgPosition || (index % 2 === 0 ? 'right' : 'left'),
+                      imagePosition: section.imagePosition || defaultFold.imagePosition || (index % 2 === 0 ? 'left' : 'right')
+                    };
+                  })
                 : defaultFolds;
               
               return foldsToRender.map((fold, index) => {
-                const headingLines = fold.heading.split('\n').filter(line => line.trim());
-                const textContent = fold.text || defaultFolds[index]?.text || '';
+                const headingLines = fold.title.split(/\s+/).filter(word => word.trim());
                 
                 return (
                   <section key={index} className={`about-us-content__fold about-us-content__fold--${fold.color}`}>
                     <div className="about-us-content__fold-container">
                       <div className={`about-us-content__fold-image about-us-content__fold-image--${fold.imagePosition}`}>
                         <Image
-                          src="/assets/about/image.png"
-                          alt="About Us"
+                          src={fold.image?.url || "/assets/about/image.png"}
+                          alt={fold.image?.alt || "About Us"}
                           width={800}
                           height={623}
                           quality={100}
@@ -205,23 +214,44 @@ export default async function AboutUsPage() {
                         </Link>
                       </div>
                       <div className={`about-us-content__fold-svg about-us-content__fold-svg--${fold.svgPosition}`}>
-                        <Image
-                          src={`/assets/about/${fold.svg}.svg`}
-                          alt="Decorative SVG"
-                          width={fold.svg === 'svg1' ? 251 : 531}
-                          height={fold.svg === 'svg1' ? 284 : 384}
-                          quality={100}
-                        />
+                        {fold.icon ? (
+                          <Image
+                            src={fold.icon.url}
+                            alt={fold.icon.alt || "Decorative SVG"}
+                            width={fold.svg === 'svg1' ? 251 : 531}
+                            height={fold.svg === 'svg1' ? 284 : 384}
+                            quality={100}
+                          />
+                        ) : (
+                          <Image
+                            src={`/assets/about/${fold.svg}.svg`}
+                            alt="Decorative SVG"
+                            width={fold.svg === 'svg1' ? 251 : 531}
+                            height={fold.svg === 'svg1' ? 284 : 384}
+                            quality={100}
+                          />
+                        )}
                       </div>
                       <h2 className="about-us-content__fold-heading">
-                        {headingLines.map((line, lineIndex) => (
-                          <span key={lineIndex}>{line.trim()}</span>
+                        {headingLines.map((word, wordIndex) => (
+                          <span key={wordIndex}>{word.trim()}</span>
                         ))}
                       </h2>
                       <div className="about-us-content__fold-text">
-                        {textContent.split('\n\n').filter(para => para.trim()).map((paragraph, paraIndex) => (
-                          <p key={paraIndex}>{paragraph.trim()}</p>
-                        ))}
+                        {(() => {
+                          const textContent = fold.description || defaultFolds[index]?.description || '';
+                          // Split by double newlines for paragraphs, strip markdown
+                          const paragraphs = textContent
+                            .replace(/\*\*/g, '')
+                            .replace(/\*/g, '')
+                            .replace(/#{1,6}\s/g, '')
+                            .split('\n\n')
+                            .filter(para => para.trim());
+                          
+                          return paragraphs.map((paragraph, paraIndex) => (
+                            <p key={paraIndex}>{paragraph.trim()}</p>
+                          ));
+                        })()}
                       </div>
                     </div>
                   </section>
@@ -230,11 +260,13 @@ export default async function AboutUsPage() {
             })()}
             
             {/* View All CTA */}
-            <div className="about-us-content__view-all">
-              <Link href="#" className="about-us-content__view-all-button">
-                <span className="about-us-content__view-all-text">view all</span>
-              </Link>
-            </div>
+            {redirectSection && (
+              <div className="about-us-content__view-all">
+                <Link href={redirectSection.href || '#'} className="about-us-content__view-all-button">
+                  <span className="about-us-content__view-all-text">{redirectSection.text || 'view all'}</span>
+                </Link>
+              </div>
+            )}
           </div>
         </div>
       </section>

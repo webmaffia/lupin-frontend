@@ -23,7 +23,7 @@ export default function PerspectivesClient({ initialData }) {
         alt: "Perspectives"
       },
       petal: {
-        url: "/assets/inner-banner/petal-2.svg",
+        url: "/assets/inner-banner/perspectives-mobile.png",
         alt: "Decorative petal"
       }
     }

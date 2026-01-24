@@ -96,6 +96,7 @@
     color: #ffffff;
     text-transform: capitalize;
     margin: 0;
+    width: 85%;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -378,6 +379,19 @@
     &--left {
       left: 25%;
       transform: translate(-50%, -50%);
+      
+      img {
+        width: vw(531);
+        height: auto;
+        
+        @include media('tablet') {
+          width: vw(400, 768);
+        }
+        
+        @include media('mobile') {
+          width: vw-mobile(250, 414);
+        }
+      }
     }
     
     &--right {
