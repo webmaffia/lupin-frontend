@@ -276,13 +276,17 @@
     list-style: none;
     margin: 0;
     padding: vw(8) 0;
+    max-height: vw(300);
+    overflow-y: auto;
     
     @include media('tablet') {
       padding: vw(6, 768) 0;
+      max-height: vw(300, 768);
     }
     
     @include media('mobile') {
       padding: vw-mobile(6, 414) 0;
+      max-height: vw-mobile(300, 414);
     }
   }
 

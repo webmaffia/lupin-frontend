@@ -174,23 +174,23 @@
     // ReactMarkdown styles
     p {
       margin: 0;
-    font-family: $font-family-base;
-    font-weight: 500;
-    font-size: vw(24);
-    line-height: 1.37;
-    color: #000000;
-    opacity: 0.8;
-    margin: 0;
-    width: 100%;
-    
-    @include media('tablet') {
-      font-size: vw(20, 768);
-      line-height: 1.4;
-    }
-    
-    @include media('mobile') {
-      font-size: vw-mobile(16, 414);
-      line-height: 1.5;
+      font-family: $font-family-base;
+      font-weight: 500;
+      font-size: vw(24);
+      line-height: 1.37;
+      color: #000000;
+      opacity: 0.8;
+      width: 100%;
+      
+      @include media('tablet') {
+        font-size: vw(20, 768);
+        line-height: 1.4;
+      }
+      
+      @include media('mobile') {
+        font-size: vw-mobile(16, 414);
+        line-height: 1.5;
+      }
     }
   }
   
@@ -417,24 +417,24 @@
     // ReactMarkdown styles
     p {
       margin: 0;
-    font-family: $font-family-base;
-    font-weight: 600;
-    font-size: vw(20);
-    line-height: 1.82;
-    color: #1e1e1e;
-    opacity: 0.8;
-    margin: 0;
-    width: 100%;
-    height: auto;
-    
-    @include media('tablet') {
-      font-size: vw(18, 768);
-      line-height: 1.8;
-    }
-    
-    @include media('mobile') {
-      font-size: vw-mobile(16, 414);
-      line-height: 1.75;
+      font-family: $font-family-base;
+      font-weight: 600;
+      font-size: vw(20);
+      line-height: 1.82;
+      color: #1e1e1e;
+      opacity: 0.8;
+      width: 100%;
+      height: auto;
+      
+      @include media('tablet') {
+        font-size: vw(18, 768);
+        line-height: 1.8;
+      }
+      
+      @include media('mobile') {
+        font-size: vw-mobile(16, 414);
+        line-height: 1.75;
+      }
     }
   }
   

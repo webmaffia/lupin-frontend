@@ -1,3 +1,7 @@
+@import '../utils/variables';
+@import '../utils/functions';
+@import '../utils/mixins';
+
 // Typography styles
 body {
   font-family: $font-family-primary;
