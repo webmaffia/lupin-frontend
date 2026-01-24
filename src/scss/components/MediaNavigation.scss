@@ -9,7 +9,6 @@
   position: relative;
   width: 100%;
   padding: vw(60) 0;
-  overflow: hidden;
   
   @include media('tablet') {
     padding: vw(50, 768) 0;
