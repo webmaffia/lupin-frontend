@@ -55,7 +55,7 @@ export default function OurBusinessPage() {
         url: "/assets/our-business/Image.png",
         alt: "Complex Generics"
       },
-      link: "/our-business/complex-generics",
+      link: "/our-business/global-generics",
       isActive: false
     },
     {
@@ -66,7 +66,7 @@ export default function OurBusinessPage() {
         url: "/assets/our-business/Image.png",
         alt: "Specialty Products"
       },
-      link: "/our-business/specialty-products",
+      link: "/our-business/specialty",
       isActive: false
     },
     {
@@ -99,7 +99,7 @@ export default function OurBusinessPage() {
         url: "/assets/our-business/Image.png",
         alt: "India Formulations"
       },
-      link: "/our-business/india-formulations",
+      link: "/our-business/india",
       isActive: false
     },
  
