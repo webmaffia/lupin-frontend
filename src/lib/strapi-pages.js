@@ -65,9 +65,25 @@ export function mapAboutUsData(strapiData) {
     const introImage = pageIntroSection?.Image?.data?.attributes || pageIntroSection?.Image || pageIntroSection?.image?.data?.attributes || pageIntroSection?.image;
     const imageUrl = introImage ? getStrapiMedia(introImage) : null;
 
+    // Heading is Rich text (Markdown) - extract as string, then split into array for line-by-line rendering
+    const heading = pageIntroSection?.Heading || pageIntroSection?.heading || '';
+    let headingText = typeof heading === 'string' ? heading : '';
+    // Strip markdown syntax
+    headingText = headingText.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s/g, '');
+    // Split by newlines or spaces to create array of lines/words
+    const headingArray = headingText.includes('\n') 
+      ? headingText.split('\n').filter(line => line.trim())
+      : headingText.split(/\s+/).filter(word => word.trim());
+
+    // Description is Rich text (Markdown) - extract as string
+    const description = pageIntroSection?.Description || pageIntroSection?.description || '';
+    const descriptionText = typeof description === 'string' ? description : '';
+    // Strip markdown syntax for plain text rendering
+    const descriptionPlain = descriptionText.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s/g, '');
+
     pageIntro = {
-      heading: pageIntroSection?.Heading || pageIntroSection?.heading || '',
-      description: pageIntroSection?.Description || pageIntroSection?.description || '',
+      heading: headingArray, // Return as array for line-by-line rendering
+      description: descriptionPlain, // Return as plain text
       image: imageUrl ? {
         url: imageUrl,
         alt: introImage?.alternativeText || introImage?.caption || 'About Us'
@@ -94,10 +110,14 @@ export function mapAboutUsData(strapiData) {
 
       const imagePosition = section?.Image_Position || section?.image_Position || section?.imagePosition || 'right';
 
+      // Description is Rich text (Markdown) - extract as string
+      const description = section?.Description || section?.description || '';
+      const descriptionText = typeof description === 'string' ? description : '';
+
       return {
         id: section?.id || index + 1,
         title: section?.Title || section?.title || '',
-        description: section?.Description || section?.description || '',
+        description: descriptionText,
         image: imageUrl ? {
           url: imageUrl,
           alt: sectionImage?.alternativeText || sectionImage?.caption || section?.Title || section?.title || 'About Us'
