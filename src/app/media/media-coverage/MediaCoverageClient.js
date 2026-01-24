@@ -28,7 +28,7 @@ export default function MediaCoverageClient({ initialData }) {
         alt: "Media Coverage"
       },
       petal: {
-        url: "/assets/inner-banner/petal-2.svg",
+        url: "/assets/inner-banner/media-coverage-mobile.png",
         alt: "Decorative petal"
       }
     }

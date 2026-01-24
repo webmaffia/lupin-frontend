@@ -74,7 +74,7 @@ export default async function MediaPage() {
         alt: "Media contacts"
       },
       petal: {
-        url: "/assets/inner-banner/petal-2.svg",
+        url: "/assets/inner-banner/media-mobile.png",
         alt: "Decorative petal"
       }
     }

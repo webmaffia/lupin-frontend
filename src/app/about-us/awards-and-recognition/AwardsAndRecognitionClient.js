@@ -87,7 +87,7 @@ export default function AwardsAndRecognitionClient({ initialData }) {
         alt: "Awards and Recognition - Lupin"
       },
       petal: {
-        url: "/assets/inner-banner/petal-2.svg",
+        url: "/assets/inner-banner/awards-and-recognition-mobile.png",
         alt: "Decorative petal"
       }
     }
