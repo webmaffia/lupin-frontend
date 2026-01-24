@@ -1355,3 +1355,288 @@ export function mapOurScienceData(strapiData) {
   };
 }
 
+/**
+ * Convert Strapi Blocks (Rich text Blocks) to Markdown string
+ * Blocks is an array of objects with different types (paragraph, heading, list, etc.)
+ * 
+ * @param {Array} blocks - Strapi Blocks array
+ * @returns {string} Markdown string
+ */
+function convertBlocksToMarkdown(blocks) {
+  if (!blocks || !Array.isArray(blocks) || blocks.length === 0) {
+    return '';
+  }
+
+  let markdown = '';
+
+  blocks.forEach((block) => {
+    if (!block || !block.type) return;
+
+    switch (block.type) {
+      case 'paragraph':
+        if (block.children && Array.isArray(block.children)) {
+          const paragraphText = block.children
+            .map((child) => {
+              if (child.type === 'text') {
+                let text = child.text || '';
+                // Handle formatting
+                if (child.bold) text = `**${text}**`;
+                if (child.italic) text = `*${text}*`;
+                if (child.code) text = `\`${text}\``;
+                return text;
+              }
+              return '';
+            })
+            .join('');
+          markdown += paragraphText + '\n\n';
+        }
+        break;
+
+      case 'heading':
+        if (block.children && Array.isArray(block.children)) {
+          const level = block.level || 1;
+          const headingText = block.children
+            .map((child) => child.text || '')
+            .join('');
+          const hashes = '#'.repeat(level);
+          markdown += `${hashes} ${headingText}\n\n`;
+        }
+        break;
+
+      case 'list':
+        if (block.children && Array.isArray(block.children)) {
+          block.children.forEach((item) => {
+            if (item.children && Array.isArray(item.children)) {
+              const itemText = item.children
+                .map((child) => child.text || '')
+                .join('');
+              const listMarker = block.format === 'ordered' ? '1. ' : '- ';
+              markdown += `${listMarker}${itemText}\n`;
+            }
+          });
+          markdown += '\n';
+        }
+        break;
+
+      case 'quote':
+        if (block.children && Array.isArray(block.children)) {
+          const quoteText = block.children
+            .map((child) => child.text || '')
+            .join('');
+          markdown += `> ${quoteText}\n\n`;
+        }
+        break;
+
+      case 'code':
+        if (block.children && Array.isArray(block.children)) {
+          const codeText = block.children
+            .map((child) => child.text || '')
+            .join('');
+          markdown += `\`\`\`\n${codeText}\n\`\`\`\n\n`;
+        }
+        break;
+
+      default:
+        // For unknown types, try to extract text from children
+        if (block.children && Array.isArray(block.children)) {
+          const text = block.children
+            .map((child) => child.text || '')
+            .join('');
+          if (text) markdown += text + '\n\n';
+        }
+        break;
+    }
+  });
+
+  return markdown.trim();
+}
+
+/**
+ * Fetch our-manufacturing-approach data from Strapi
+ * This is a Single Type, so it returns one entry
+ * 
+ * @returns {Promise<Object>} Raw Strapi API response
+ */
+export async function getOurManufacturingApproach() {
+  const populateQuery = [
+    'populate[TopBanner][populate][DesktopImage][populate]=*',
+    'populate[TopBanner][populate][MobileImage][populate]=*',
+    'populate[PageIntroSection][populate][PetalImageSvg][populate]=*',
+    'populate[CommentSection][populate]=*',
+    'populate[StrategicPerformanceAreaSection][populate][Image][populate]=*',
+    'populate[StrategicPerformanceAreaSection][populate][PerformanceAreaData][populate][icon][populate]=*',
+    'populate[GtoStructureSection][populate][PetalImageSvg][populate]=*',
+    'populate[GtoStructureSection][populate][GtoStructureSection][populate][GtoStructureCardData][populate][image][populate]=*',
+    'populate[GtoStructureSection][populate][GtoStructureSection][populate][GtoStructureCardData][populate][cta][populate]=*'
+  ].join('&');
+  
+  return fetchAPI(`our-manufacturing-approach?${populateQuery}`, {
+    next: { revalidate: 60 },
+  });
+}
+
+/**
+ * Map our-manufacturing-approach data from Strapi for global-technical-operations page
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped data for global-technical-operations page
+ */
+export function mapOurManufacturingApproachData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return {
+      banner: null,
+      pageIntroSection: null,
+      commentSection: null,
+      strategicPerformanceAreaSection: null,
+      gtoStructureSection: null,
+      tabsData: null
+    };
+  }
+
+  // Map TopBanner
+  const topBanner = data?.TopBanner || data?.topBanner;
+  const banner = topBanner ? mapTopBannerData(topBanner) : null;
+
+  // Map PageIntroSection
+  const pageIntroSection = data?.PageIntroSection || data?.pageIntroSection;
+  let pageIntroData = null;
+  if (pageIntroSection) {
+    const petalImage = pageIntroSection?.PetalImageSvg?.data?.attributes || pageIntroSection?.PetalImageSvg;
+    const petalImageUrl = petalImage ? getStrapiMedia(petalImage) : null;
+
+    pageIntroData = {
+      heading: pageIntroSection?.Heading || pageIntroSection?.heading || '',
+      description: pageIntroSection?.Description || pageIntroSection?.description || '',
+      petalImage: petalImageUrl ? {
+        url: petalImageUrl,
+        alt: petalImage?.alternativeText || petalImage?.caption || 'Petal decoration'
+      } : null
+    };
+  }
+
+  // Map CommentSection
+  const commentSection = data?.CommentSection || data?.commentSection;
+  let commentData = null;
+  if (commentSection) {
+    commentData = {
+      description: commentSection?.Description || commentSection?.description || '',
+      paragraphDescription: commentSection?.ParagraphDescription || commentSection?.paragraphDescription || ''
+    };
+  }
+
+  // Map StrategicPerformanceAreaSection
+  const strategicSection = data?.StrategicPerformanceAreaSection || data?.strategicPerformanceAreaSection;
+  let strategicData = null;
+  if (strategicSection) {
+    const sectionImage = strategicSection?.Image?.data?.attributes || strategicSection?.Image;
+    const imageUrl = sectionImage ? getStrapiMedia(sectionImage) : null;
+
+    const performanceAreaData = strategicSection?.PerformanceAreaData || strategicSection?.performanceAreaData || [];
+    const cards = performanceAreaData.map((card) => {
+      const cardIcon = card?.icon?.data?.attributes || card?.icon;
+      const iconUrl = cardIcon ? getStrapiMedia(cardIcon) : null;
+
+      // Convert Blocks to Markdown for subheading
+      const subheadingBlocks = card?.subheading || card?.SubHeading;
+      const subheadingMarkdown = subheadingBlocks ? convertBlocksToMarkdown(subheadingBlocks) : '';
+
+      return {
+        heading: card?.heading || card?.Heading || '',
+        subheading: subheadingMarkdown,
+        icon: iconUrl ? {
+          url: iconUrl,
+          alt: cardIcon?.alternativeText || cardIcon?.caption || card?.heading || ''
+        } : null
+      };
+    });
+
+    strategicData = {
+      sectionTitle: strategicSection?.SectionTitle || strategicSection?.sectionTitle || '',
+      description: strategicSection?.Description || strategicSection?.description || '',
+      image: imageUrl ? {
+        url: imageUrl,
+        alt: sectionImage?.alternativeText || sectionImage?.caption || 'Strategic Performance Areas'
+      } : null,
+      cards: cards
+    };
+  }
+
+  // Map GtoStructureSection
+  const gtoStructureSection = data?.GtoStructureSection || data?.gtoStructureSection;
+  let gtoStructureData = null;
+  let tabsData = null;
+  if (gtoStructureSection) {
+    const petalImage = gtoStructureSection?.PetalImageSvg?.data?.attributes || gtoStructureSection?.PetalImageSvg;
+    const petalImageUrl = petalImage ? getStrapiMedia(petalImage) : null;
+
+    gtoStructureData = {
+      heading: gtoStructureSection?.Heading || gtoStructureSection?.heading || '',
+      subHeading: gtoStructureSection?.SubHeading || gtoStructureSection?.subHeading || '',
+      description: gtoStructureSection?.Description || gtoStructureSection?.description || '',
+      petalImage: petalImageUrl ? {
+        url: petalImageUrl,
+        alt: petalImage?.alternativeText || petalImage?.caption || 'Petal decoration'
+      } : null
+    };
+
+    // Map GtoStructureSection tabs (repeatable GTOTab)
+    const tabsArray = gtoStructureSection?.GtoStructureSection || gtoStructureSection?.gtoStructureSection || [];
+    tabsData = tabsArray.map((tab, tabIndex) => {
+      const tabName = tab?.TabName || tab?.tabName || '';
+      
+      // Map GtoStructureCardData (repeatable GTOStructureCard)
+      const cardsArray = tab?.GtoStructureCardData || tab?.gtoStructureCardData || [];
+      const sections = cardsArray.map((card, cardIndex) => {
+        const cardImage = card?.image?.data?.attributes || card?.image;
+        const imageUrl = cardImage ? getStrapiMedia(cardImage) : null;
+
+        // Convert Blocks to Markdown for SubHeading
+        const subheadingBlocks = card?.SubHeading || card?.subheading;
+        const subheadingMarkdown = subheadingBlocks ? convertBlocksToMarkdown(subheadingBlocks) : '';
+
+        const cta = card?.cta || card?.CTA;
+        const ctaData = cta ? {
+          text: cta?.text || '',
+          href: cta?.href || '#'
+        } : null;
+
+        const imagePosition = card?.Image_Position || card?.image_Position || card?.imagePosition || 'right';
+
+        return {
+          heading: card?.Heading || card?.heading || '',
+          subheading: subheadingMarkdown,
+          paragraphs: subheadingMarkdown ? subheadingMarkdown.split('\n\n').filter(p => p.trim()) : [],
+          image: imageUrl ? {
+            url: imageUrl,
+            alt: cardImage?.alternativeText || cardImage?.caption || card?.Heading || ''
+          } : null,
+          link: ctaData,
+          imageFirst: imagePosition === 'left' || imagePosition === 'Left'
+        };
+      });
+
+      // Generate tab ID from tab name
+      const tabId = tabName.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || `tab-${tabIndex + 1}`;
+
+      return {
+        id: tabId,
+        label: tabName,
+        dataNodeId: `2852:${339 + tabIndex * 3}`, // Approximate data-node-id pattern
+        sections: sections
+      };
+    });
+  }
+
+  return {
+    banner,
+    pageIntroSection: pageIntroData,
+    commentSection: commentData,
+    strategicPerformanceAreaSection: strategicData,
+    gtoStructureSection: gtoStructureData,
+    tabsData: tabsData && tabsData.length > 0 ? tabsData : null
+  };
+}
+

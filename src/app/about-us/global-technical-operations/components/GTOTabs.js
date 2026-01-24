@@ -1,6 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 
 /**
  * GTOTabs - Tabs component for Global Technical Operations
@@ -72,8 +75,9 @@ export default function GTOTabs({ tabs: propTabs = null, defaultActiveTab = null
           const isActive = activeTab === tab.id;
           if (!isActive) return null;
 
-          // Determine content class based on tab id
-          const contentClass = `global-technical-operations-tabs__content-${tab.id}`;
+          // Use the same content class for all tabs to maintain consistent spacing
+          // This ensures Procurement and Supply Chain have the same padding, gap, and background as Manufacturing
+          const contentClass = 'global-technical-operations-tabs__content-manufacturing';
           
           // If no sections from Strapi, show placeholder or default content
           if (!tab.sections || tab.sections.length === 0) {
@@ -85,7 +89,8 @@ export default function GTOTabs({ tabs: propTabs = null, defaultActiveTab = null
                 </div>
               );
             }
-            // Placeholder for other tabs
+            // For other tabs (Procurement, Supply Chain), show empty state with same structure
+            // This ensures consistent layout even when no data is available
             return (
               <div key={tab.id} className={contentClass}>
                 <div className="global-technical-operations-tabs__content-placeholder">
@@ -99,8 +104,8 @@ export default function GTOTabs({ tabs: propTabs = null, defaultActiveTab = null
           return (
             <div key={tab.id} className={contentClass}>
               {tab.sections.map((section, sectionIndex) => {
-                // Determine section class
-                const sectionClass = `global-technical-operations-tabs__${tab.id}-section-${sectionIndex + 1}`;
+                // Determine section class - use manufacturing classes for all tabs to maintain consistent structure
+                const sectionClass = `global-technical-operations-tabs__manufacturing-section-${sectionIndex + 1}`;
                 // Use imageFirst from Strapi if available, otherwise alternate based on index
                 const isImageFirst = section.imageFirst !== undefined 
                   ? section.imageFirst 
@@ -125,7 +130,22 @@ export default function GTOTabs({ tabs: propTabs = null, defaultActiveTab = null
                             {section.heading}
                           </h2>
                         )}
-                        {section.paragraphs && section.paragraphs.length > 0 && (
+                        {section.subheading && (
+                          <div className="global-technical-operations-tabs__manufacturing-text">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                              components={{
+                                p: ({ children }) => (
+                                  <p>{children || '\u00A0'}</p>
+                                )
+                              }}
+                            >
+                              {section.subheading}
+                            </ReactMarkdown>
+                          </div>
+                        )}
+                        {!section.subheading && section.paragraphs && section.paragraphs.length > 0 && (
                           <div className="global-technical-operations-tabs__manufacturing-text">
                             {section.paragraphs.map((para, paraIndex) => (
                               <p key={paraIndex}>{para || '\u00A0'}</p>
