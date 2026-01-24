@@ -1,5 +1,4 @@
-import OurStoryContent from '@/components/OurStoryContent';
-import { getOurStory, mapOurStoryData } from '@/lib/strapi-pages';
+import InnerBanner from '@/components/InnerBanner';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import '@/scss/pages/our-story.scss';
 
@@ -11,23 +10,28 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin history, pharmaceutical company story, Lupin journey, healthcare transformation, pharmaceutical milestones, Lupin Limited history",
 });
 
-export default async function OurStoryPage() {
-  let ourStoryData = null;
-  let error = null;
-  
-  try {
-    const rawData = await getOurStory();
-    
-    if (rawData) {
-      ourStoryData = mapOurStoryData(rawData);
-    } else {
-      error = 'No data received from Strapi API';
+export default function OurStoryPage() {
+  // Default banner data
+  const bannerData = {
+    title: {
+      line1: "Our Story",
+    },
+    subheading: {
+      enabled: true,
+      text: "Five Decades of Transforming Healthcare"
+    },
+    images: {
+      banner: {
+        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        alt: "Our Story - Lupin"
+      },
+      petal: {
+        url: "/assets/inner-banner/petal-2.svg",
+        alt: "Decorative petal"
+      }
     }
-  } catch (err) {
-    error = err.message || 'Failed to fetch our story data from Strapi';
-    console.error('Error fetching Our Story data from Strapi:', err);
-  }
+  };
 
-  return <OurStoryContent data={ourStoryData} error={error} />;
+  return <InnerBanner data={bannerData} />;
 }
 
