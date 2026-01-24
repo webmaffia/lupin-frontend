@@ -2,6 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '@/scss/components/PressReleaseDetail.scss';
 
 export default function PressReleaseDetail({ data }) {
@@ -50,10 +53,16 @@ export default function PressReleaseDetail({ data }) {
           </div>
 
           {/* Content from Strapi Rich Text Editor */}
-          <div 
-            className="press-release-detail__body"
-            dangerouslySetInnerHTML={{ __html: pressRelease.content }}
-          />
+          {pressRelease.content && (
+            <div className="press-release-detail__body">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+              >
+                {pressRelease.content}
+              </ReactMarkdown>
+            </div>
+          )}
         </div>
 
         {/* Sidebar Navigation */}
