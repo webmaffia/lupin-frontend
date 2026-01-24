@@ -31,6 +31,7 @@ export default function SitemapContent({ data }) {
           { text: "Global Generics", href: "/our-business/global-generics" },
           { text: "Branded & Emerging Markets", href: "/our-business/branded-emerging-markets" },
           { text: "Specialty", href: "/our-business/specialty" },
+          { text: "Biosimilars", href: "/our-business/biosimilars" },
           { text: "Global Technical Operations", href: "/about-us/global-technical-operations" },
           { text: "WAVE", href: "/wave" },
           { text: "India", href: "/our-business/india" }
