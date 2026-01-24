@@ -19,7 +19,7 @@ export default function PerspectivesClient({ initialData }) {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/perspectives.png",
         alt: "Perspectives"
       },
       petal: {

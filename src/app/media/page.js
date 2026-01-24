@@ -70,7 +70,7 @@ export default async function MediaPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/inner-banner/media.png",
         alt: "Media contacts"
       },
       petal: {
