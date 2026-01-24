@@ -91,7 +91,7 @@
 
     @include media('mobile') {
       min-height: auto;
-      padding: vw-mobile(10, 414);
+      padding: vw-mobile(40, 414) 0;
     }
   }
 
