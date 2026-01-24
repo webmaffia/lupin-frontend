@@ -32,21 +32,16 @@ export default function SitemapContent({ data }) {
           { text: "Branded & Emerging Markets", href: "/our-business/branded-emerging-markets" },
           { text: "Specialty", href: "/our-business/specialty" },
           { text: "Biosimilars", href: "/our-business/biosimilars" },
+          { text: "India", href: "/our-business/india" },
+          { text: "Allied Business", href: "/our-business/allied-business" },
           { text: "Global Technical Operations", href: "/about-us/global-technical-operations" },
-          { text: "WAVE", href: "/wave" },
-          { text: "India", href: "/our-business/india" }
+          { text: "WAVE", href: "/wave" }
         ]
       },
       {
         title: "Products",
         links: [
           { text: "Product Finder", href: "/product-finder" }
-        ]
-      },
-      {
-        title: "Allied Business",
-        links: [
-          { text: "Allied Business", href: "/allied-business" }
         ]
       },
       {

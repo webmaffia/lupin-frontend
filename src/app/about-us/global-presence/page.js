@@ -1,5 +1,5 @@
-import Image from 'next/image';
 import InnerBanner from '@/components/InnerBanner';
+import GlobalPresenceMap from '@/components/GlobalPresenceMap';
 import GlobalPresenceContent from '@/components/GlobalPresenceContent';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getGlobalPresence, mapGlobalPresenceData } from '@/lib/strapi-pages';
@@ -74,18 +74,8 @@ export default async function GlobalPresencePage() {
 
   return (
     <div style={{ position: 'relative' }}>
-
-      <div style={{ width: '100%', position: 'relative' }}>
-        <Image
-          src="/assets/global-presence/Map ok bro.svg"
-          alt="Global Presence Map"
-          width={1920}
-          height={1080}
-          style={{ width: '100%', height: 'auto' }}
-          quality={100}
-          priority
-        />
-      </div>
+      <InnerBanner data={bannerData} />
+      <GlobalPresenceMap />
       <GlobalPresenceContent data={globalPresenceData} error={error} />
     </div>
   );

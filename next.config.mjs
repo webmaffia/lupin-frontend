@@ -107,6 +107,11 @@ const nextConfig = {
         destination: '/our-business/biosimilars',
         permanent: true,
       },
+      {
+        source: '/allied-business',
+        destination: '/our-business/allied-business',
+        permanent: true,
+      },
       // Investors redirects
       {
         source: '/investors/committees',

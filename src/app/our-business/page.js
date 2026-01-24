@@ -38,6 +38,17 @@ export default function OurBusinessPage() {
   const businessItems = [
     {
       id: 1,
+      title: "Global Generics",
+      description: "Lupin continues to be the 3rd largest generic pharmaceutical company by prescription volume in the US, reflecting our scale and market leadership.",
+      image: {
+        url: "/assets/our-business/Image.png",
+        alt: "Global Generics"
+      },
+      link: "/our-business/global-generics",
+      isActive: false
+    },
+    {
+      id: 2,
       title: "Branded Emerging Markets",
       description: "Lupin's purpose finds strong expression in the work it does across emerging markets. From being among the top generic companies in South Africa to ranking #3 in ophthalmology in Mexico.",
       image: {
@@ -48,42 +59,31 @@ export default function OurBusinessPage() {
       isActive: false
     },
     {
-      id: 2,
-      title: "Complex Generics",
-      description: "Lupin leads in developing and commercializing complex generic products that require specialized formulation, delivery systems, or regulatory expertise.",
+      id: 3,
+      title: "India",
+      description: "Lupin's home market in India is a cornerstone of our global business, with a diversified portfolio across major therapy areas, including anti-TB, anti-diabetes, respiratory, and cardiology, among others.",
       image: {
         url: "/assets/our-business/Image.png",
-        alt: "Complex Generics"
+        alt: "India"
       },
-      link: "/our-business/global-generics",
+      link: "/our-business/india",
       isActive: false
     },
     {
-      id: 3,
-      title: "Specialty Products",
-      description: "Our specialty portfolio addresses unmet medical needs in areas such as respiratory, dermatology, and women's health, delivering innovative solutions to patients.",
+      id: 4,
+      title: "Specialty and Innovation",
+      description: "Lupin's specialty business is anchored in science-led innovations across complex platforms, including a range of inhalation and injectable technologies.",
       image: {
         url: "/assets/our-business/Image.png",
-        alt: "Specialty Products"
+        alt: "Specialty and Innovation"
       },
       link: "/our-business/specialty",
       isActive: false
     },
     {
-      id: 4,
-      title: "API & Formulations",
-      description: "With world-class manufacturing facilities, Lupin produces high-quality Active Pharmaceutical Ingredients (APIs) and finished formulations across multiple therapeutic areas.",
-      image: {
-        url: "/assets/our-business/Image.png",
-        alt: "API & Formulations"
-      },
-      link: "/our-business/api-formulations",
-      isActive: false
-    },
-    {
       id: 5,
       title: "Biosimilars",
-      description: "Lupin is advancing a robust pipeline of biosimilar products to make life-saving biologic medicines more accessible and affordable to patients globally.",
+      description: "Lupin's biosimilars business is focused on making complex biologics more accessible and affordable through science and quality-led manufacturing.",
       image: {
         url: "/assets/our-business/Image.png",
         alt: "Biosimilars"
@@ -93,16 +93,15 @@ export default function OurBusinessPage() {
     },
     {
       id: 6,
-      title: "India Formulations",
-      description: "As one of India's leading pharmaceutical companies, we serve millions of patients across diverse therapeutic segments with high-quality, affordable medicines.",
+      title: "Patient Centric Initiatives",
+      description: "Lupin's patient-centric initiatives and businesses are designed to offer holistic healthcare support that goes beyond medication.",
       image: {
         url: "/assets/our-business/Image.png",
-        alt: "India Formulations"
+        alt: "Patient Centric Initiatives"
       },
-      link: "/our-business/india",
+      link: "/our-business/allied-business",
       isActive: false
     },
- 
   ];
 
   return (

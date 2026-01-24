@@ -16,14 +16,14 @@ function getLinkUrl(label, category) {
       "Our Leadership": "/about-us/leadership",
       "Awards and Recognition": "/about-us/awards-and-recognition"
     },
-    ourBusiness: {
-      "Global Generics": "/our-business/global-generics",
-      "Branded Emerging Markets": "/our-business/branded-emerging-markets",
-      "India": "/our-business/india",
-      "Specialty / Innovation": "/our-business/specialty",
-      "Biosimilars": "/our-business/biosimilars",
-      "Allied Business": "/allied-business"
-    },
+          ourBusiness: {
+            "Global Generics": "/our-business/global-generics",
+            "Branded Emerging Markets": "/our-business/branded-emerging-markets",
+            "India": "/our-business/india",
+            "Specialty / Innovation": "/our-business/specialty",
+            "Biosimilars": "/our-business/biosimilars",
+            "Allied Business": "/our-business/allied-business"
+          },
     investors: {
       "Investors FAQ": "/investors/investor-faqs",
       "News and Events": "/investors/news-events",

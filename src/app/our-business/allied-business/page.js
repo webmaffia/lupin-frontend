@@ -12,7 +12,7 @@ import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 export const metadata = generateSEOMetadata({
   title: "Allied Business - Lupin | Strategic Business Partnerships",
   description: "At Lupin, patient centricity is about building meaningful, accessible and holistic healthcare solutions. Through our allied businesses, we are addressing unmet needs across diagnosis, prevention, treatment and rehabilitation.",
-  canonicalUrl: "https://www.lupin.com/allied-business",
+  canonicalUrl: "https://www.lupin.com/our-business/allied-business",
   keywords: "Lupin allied business, strategic partnerships, business collaborations, pharmaceutical partnerships, Lupin Limited, patient centricity, healthcare solutions",
 });
 
