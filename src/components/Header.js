@@ -16,7 +16,7 @@ export default function Header({ data }) {
     },
     navigation: [
       { label: "About Us", href: "/about-us", active: false },
-      { label: "Our Business", href: "/business", active: false },
+      { label: "Our Business", href: "/our-business", active: false },
       { label: "Investors", href: "/investors", active: false },
       { label: "Sustainability", href: "/sustainability", active: false },
       { label: "Community", href: "/community", active: false },
