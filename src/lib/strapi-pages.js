@@ -518,15 +518,25 @@ export function mapOurPurposeData(strapiData) {
       const desktopImg = treatmentImage?.DesktopImage;
       const mobileImg = treatmentImage?.MobileImage;
       
-      desktopImage = desktopImg ? {
-        url: getStrapiMedia(desktopImg),
-        alt: desktopImg?.alternativeText || desktopImg?.caption || 'Treatment desktop'
-      } : null;
+      if (desktopImg) {
+        const desktopUrl = getStrapiMedia(desktopImg);
+        if (desktopUrl) {
+          desktopImage = {
+            url: desktopUrl,
+            alt: desktopImg?.alternativeText || desktopImg?.caption || 'Treatment desktop'
+          };
+        }
+      }
       
-      mobileImage = mobileImg ? {
-        url: getStrapiMedia(mobileImg),
-        alt: mobileImg?.alternativeText || mobileImg?.caption || 'Treatment mobile'
-      } : null;
+      if (mobileImg) {
+        const mobileUrl = getStrapiMedia(mobileImg);
+        if (mobileUrl) {
+          mobileImage = {
+            url: mobileUrl,
+            alt: mobileImg?.alternativeText || mobileImg?.caption || 'Treatment mobile'
+          };
+        }
+      }
     }
 
     treatmentData = {
@@ -535,6 +545,13 @@ export function mapOurPurposeData(strapiData) {
       desktopImage: desktopImage,
       mobileImage: mobileImage
     };
+
+    // Debug logging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('mapOurPurposeData - TreatmentSection raw:', treatmentSection);
+      console.log('mapOurPurposeData - treatmentImage:', treatmentImage);
+      console.log('mapOurPurposeData - treatmentData mapped:', treatmentData);
+    }
   }
 
   // Map CommitmentSection
