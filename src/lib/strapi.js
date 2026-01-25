@@ -2026,6 +2026,105 @@ export function mapImpactSectionData(strapiData) {
 }
 
 /**
+ * Map community live program section data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped live program section data
+ */
+export function mapLiveProgramSectionData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const liveProgramSection = data?.LiveProgramSection || data?.liveProgramSection;
+  if (!liveProgramSection) {
+    return null;
+  }
+
+  // Extract Heading
+  const title = liveProgramSection?.Heading || '';
+
+  // Extract SubHeading
+  const subtitle = liveProgramSection?.SubHeading || '';
+
+  // Extract Description (Rich text Markdown) - split into paragraphs
+  const description = liveProgramSection?.Description || '';
+  let paragraphs = [];
+  if (description) {
+    // Split by double newlines to create paragraphs
+    paragraphs = description.split(/\n\n+/).filter(p => p.trim());
+    // If no double newlines, split by single newlines
+    if (paragraphs.length === 1) {
+      paragraphs = description.split(/\n+/).filter(p => p.trim());
+    }
+  }
+
+  // Convert paragraphs to content array format
+  const content = paragraphs.map(para => ({
+    type: 'paragraph',
+    text: para
+  }));
+
+  // Extract Image
+  const programImage = liveProgramSection?.Image;
+  const imageUrl = programImage ? getStrapiMedia(programImage) : null;
+  const image = imageUrl ? {
+    url: imageUrl,
+    alt: programImage?.alternativeText || programImage?.caption || 'Lives Program',
+    width: programImage?.width || 872,
+    height: programImage?.height || 600
+  } : null;
+
+  // Extract KeyHighlitesSection
+  const keyHighlitesSection = liveProgramSection?.KeyHighlitesSection;
+  const keyHighlitesArray = keyHighlitesSection?.KeyHighlites || [];
+  
+  // Format number with commas
+  const formatNumber = (num) => {
+    if (num === null || num === undefined || num === '') {
+      return '';
+    }
+    if (typeof num === 'string') {
+      const cleanNum = num.replace(/,/g, '').trim();
+      if (!cleanNum) return '';
+      if (isNaN(parseFloat(cleanNum))) return cleanNum;
+      return cleanNum.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    if (typeof num === 'number') {
+      return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+    return num.toString();
+  };
+
+  const highlights = keyHighlitesArray.map((item) => {
+    const formattedValue = formatNumber(item?.Value);
+    const suffix = item?.Suffix || '';
+    const displayNumber = suffix ? `${formattedValue}${suffix}` : formattedValue;
+
+    const icon = item?.Icon;
+    const iconUrl = icon ? getStrapiMedia(icon) : null;
+
+    return {
+      id: item?.id || Math.random(),
+      number: displayNumber,
+      description: item?.Description || '',
+      icon: iconUrl
+    };
+  });
+
+  return {
+    title: title,
+    subtitle: subtitle,
+    content: content,
+    image: image,
+    highlights: highlights
+  };
+}
+
+/**
  * Map community key highlights data from Strapi
  * 
  * @param {Object} strapiData - Raw Strapi API response
