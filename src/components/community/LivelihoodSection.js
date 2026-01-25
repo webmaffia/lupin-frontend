@@ -1,12 +1,10 @@
 'use client';
 
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import rehypeRaw from 'rehype-raw';
 import '@/scss/pages/community.scss';
 
 export default function LivelihoodSection({ livelihoodData = null }) {
+  // Don't render if no data
   if (!livelihoodData) {
     return null;
   }
@@ -17,7 +15,10 @@ export default function LivelihoodSection({ livelihoodData = null }) {
     <section className="community-livelihood">
       <div className="community-livelihood__bg">
         <picture>
-          {data.backgroundImage && (
+          {data?.mobileImage && (
+            <source media="(max-width: 768px)" srcSet={data.mobileImage} />
+          )}
+          {data?.backgroundImage && (
             <img
               src={data.backgroundImage}
               alt="Livelihood"
@@ -28,33 +29,26 @@ export default function LivelihoodSection({ livelihoodData = null }) {
       </div>
       <div className="community-livelihood__container">
         <div className="community-livelihood__content">
-          {data.heading && (
+          {data?.heading && (
             <h2 className="community-livelihood__heading">
               {data.heading}
             </h2>
           )}
           <div className="community-livelihood__text">
-            {data.subheading && (
+            {data?.subheading && (
               <h3 className="community-livelihood__subheading">
                 {data.subheading}
               </h3>
             )}
-            <div className="community-livelihood__paragraphs">
-              {data.description ? (
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
-                >
-                  {data.description}
-                </ReactMarkdown>
-              ) : data.paragraphs && data.paragraphs.length > 0 ? (
-                data.paragraphs.map((paragraph, index) => (
+            {data?.paragraphs && data.paragraphs.length > 0 && (
+              <div className="community-livelihood__paragraphs">
+                {data.paragraphs.map((paragraph, index) => (
                   <p key={index} className="community-livelihood__paragraph">
                     {paragraph}
                   </p>
-                ))
-              ) : null}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

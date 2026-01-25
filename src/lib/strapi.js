@@ -1649,10 +1649,39 @@ export function mapOurValuesContentData(strapiData) {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getCommunity() {
-  // Populate TopBanner, InfoSection, LivelihoodSection, LivelihoodTabs, and KeyHighlights with nested data
-  return fetchAPI('community?populate[TopBanner][populate][desktop_image][populate]=*&populate[TopBanner][populate][mobile_image][populate]=*&populate[InfoSection][populate][image][populate]=*&populate[LivelihoodSection][populate][background_image][populate]=*&populate[LivelihoodTabs][populate][tabs][populate][content][populate][image][populate]=*&populate[KeyHighlights][populate][highlights][populate]=*', {
-    next: { revalidate: 60 },
-  });
+  // Populate all fields from the community single type
+  // Structure:
+  // - TopBanner: DesktopImage, MobileImage, Heading, SubHeading, SubHeadingText
+  // - PageIntroSection: Image, PageIntroContent
+  // - ImpactSection: SectionTitle, ImpactHeadingSection (repeatable), Map, MetricSection (repeatable)
+  // - LivelihoodSection: SectionTitle, Heading, Description, Image (GlobalImage with DesktopImage, MobileImage)
+  // - TabSectionDetails (repeatable): TabTitle, isActive, TabSectionData (with SectionHeading, KeyHighlites, SectionData)
+  // - LiveProgramSection: Heading, SubHeading, Description, Image, KeyHighlitesSection, SectionData
+  return fetchAPI(
+    'community?' +
+    // TopBanner
+    'populate[TopBanner][populate][DesktopImage][populate]=*&' +
+    'populate[TopBanner][populate][MobileImage][populate]=*&' +
+    // PageIntroSection
+    'populate[PageIntroSection][populate][Image][populate]=*&' +
+    // ImpactSection
+    'populate[ImpactSection][populate][ImpactHeadingSection][populate]=*&' +
+    'populate[ImpactSection][populate][Map][populate]=*&' +
+    'populate[ImpactSection][populate][MetricSection][populate][Icon][populate]=*&' +
+    // LivelihoodSection
+    'populate[LivelihoodSection][populate][Image][populate][DesktopImage][populate]=*&' +
+    'populate[LivelihoodSection][populate][Image][populate][MobileImage][populate]=*&' +
+    // TabSectionDetails (repeatable) - nested TabSectionData
+    'populate[TabSectionDetails][populate][TabSectionData][populate][SectionHeading][populate][Image][populate]=*&' +
+    'populate[TabSectionDetails][populate][TabSectionData][populate][KeyHighlites][populate][KeyHighlites][populate][Icon][populate]=*&' +
+    'populate[TabSectionDetails][populate][TabSectionData][populate][SectionData][populate][Image][populate]=*&' +
+    // LiveProgramSection
+    'populate[LiveProgramSection][populate][Image][populate]=*&' +
+    'populate[LiveProgramSection][populate][KeyHighlitesSection][populate][KeyHighlites][populate][Icon][populate]=*',
+    {
+      next: { revalidate: 60 },
+    }
+  );
 }
 
 /**
@@ -1713,36 +1742,44 @@ export function mapLivelihoodSectionData(strapiData) {
     return null;
   }
 
-  const livelihoodSection = data.LivelihoodSection || data.livelihoodSection;
+  const livelihoodSection = data?.LivelihoodSection || data?.livelihoodSection;
   if (!livelihoodSection) {
     return null;
   }
 
-  // Extract heading
-  const heading = livelihoodSection.heading || livelihoodSection.title || 'Livelihood Program';
+  // Extract SectionTitle as heading
+  const heading = livelihoodSection?.SectionTitle || '';
 
-  // Extract subheading
-  const subheading = livelihoodSection.subheading || livelihoodSection.subtitle || 'Desh Bandhu Jan Utkarsh Pariyojana';
+  // Extract Heading as subheading
+  const subheading = livelihoodSection?.Heading || '';
 
-  // Extract paragraphs - can be array or string
-  let paragraphs = livelihoodSection.paragraphs || livelihoodSection.paragraph || [];
-  if (typeof paragraphs === 'string') {
-    // Split by double newlines or keep as single paragraph
-    paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
+  // Extract Description (Rich text Markdown) - split into paragraphs
+  const description = livelihoodSection?.Description || '';
+  let paragraphs = [];
+  if (description) {
+    // Split by double newlines to create paragraphs
+    paragraphs = description.split(/\n\n+/).filter(p => p.trim());
+    // If no double newlines, split by single newlines
+    if (paragraphs.length === 1) {
+      paragraphs = description.split(/\n+/).filter(p => p.trim());
+    }
   }
-  if (!Array.isArray(paragraphs)) {
-    paragraphs = paragraphs ? [paragraphs] : [];
-  }
 
-  // Extract background image
-  const bgImage = livelihoodSection.background_image?.data?.attributes || livelihoodSection.background_image;
-  const bgImageUrl = bgImage ? getStrapiMedia(bgImage) : null;
+  // Extract Image component (GlobalImage)
+  const imageComponent = livelihoodSection?.Image;
+  const desktopImage = imageComponent?.DesktopImage;
+  const mobileImage = imageComponent?.MobileImage;
+  
+  // Get image URLs
+  const desktopImageUrl = desktopImage ? getStrapiMedia(desktopImage) : null;
+  const mobileImageUrl = mobileImage ? getStrapiMedia(mobileImage) : null;
 
   return {
     heading,
     subheading,
     paragraphs,
-    backgroundImage: bgImageUrl || '/assets/community/livelihood.png'
+    backgroundImage: desktopImageUrl,
+    mobileImage: mobileImageUrl
   };
 }
 
@@ -1817,6 +1854,79 @@ export function mapLivelihoodTabsData(strapiData) {
   });
 
   return mappedTabs.length > 0 ? mappedTabs : null;
+}
+
+/**
+ * Map community impact section data from Strapi
+ * 
+ * @param {Object} strapiData - Raw Strapi API response
+ * @returns {Object} Mapped impact section data
+ */
+export function mapImpactSectionData(strapiData) {
+  // Handle Strapi v4 response structure (Single Type)
+  const data = strapiData?.data || strapiData;
+
+  if (!data) {
+    return null;
+  }
+
+  const impactSection = data?.ImpactSection || data?.impactSection;
+  if (!impactSection) {
+    return null;
+  }
+
+  // Map ImpactHeadingSection (for subtitle)
+  const impactHeadingSection = impactSection?.ImpactHeadingSection || [];
+  const headings = impactHeadingSection
+    .filter(item => item?.isActive !== false)
+    .map((item) => ({
+      value: item?.Value || 0,
+      description: item?.Description || ''
+    }));
+
+  // Create subtitle from headings (e.g., "8 states | 26 districts | 5431 villages...")
+  const subtitle = headings
+    .map(h => `${h.value} ${h.description}`)
+    .join(' | ');
+
+  // Map MetricSection
+  const metricSection = impactSection?.MetricSection || [];
+  const metrics = metricSection.map((metric) => {
+    // Format number with commas
+    const formatNumber = (num) => {
+      if (num === null || num === undefined || num === '') {
+        return '';
+      }
+      if (typeof num === 'string') {
+        const cleanNum = num.replace(/,/g, '').trim();
+        if (!cleanNum) return '';
+        if (isNaN(parseFloat(cleanNum))) return cleanNum;
+        return cleanNum.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+      if (typeof num === 'number') {
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+      return num.toString();
+    };
+
+    const formattedValue = formatNumber(metric?.Value);
+    const suffix = metric?.Suffix || '';
+    const displayNumber = suffix ? `${formattedValue}${suffix}` : formattedValue;
+
+    return {
+      id: metric?.id || Math.random(),
+      number: displayNumber,
+      description: metric?.Description || '',
+      icon: '/assets/community/key1.svg' // Keep static icon for now
+    };
+  });
+
+  return {
+    title: impactSection?.SectionTitle || 'Impact at a Glance',
+    subtitle: subtitle,
+    map: '/assets/community/map.png', // Keep static map for now
+    metrics: metrics
+  };
 }
 
 /**
@@ -2392,19 +2502,28 @@ export function mapGlobalGenericsIntroData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const introSection = data.IntroSection || data.introSection || data.Intro || data.intro;
+  // Support both old structure (IntroSection) and new structure (description)
+  const introSection = data.description || data.IntroSection || data.introSection || data.Intro || data.intro;
   if (!introSection) return null;
 
   let content = [];
-  if (introSection.content && Array.isArray(introSection.content)) {
+  
+  // Handle description field (new API structure)
+  if (introSection.description) {
+    // Split markdown-style text by double newlines and extract plain text from markdown links
+    const description = typeof introSection.description === 'string' ? introSection.description : '';
+    // Convert markdown links [text](url) to just text, then split by paragraphs
+    const plainText = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    content = plainText.split(/\n\n+/).filter(p => p.trim());
+  } else if (introSection.content && Array.isArray(introSection.content)) {
     content = introSection.content;
   } else if (introSection.paragraphs && Array.isArray(introSection.paragraphs)) {
     content = introSection.paragraphs;
   } else if (introSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof introSection.text === 'string'
-      ? introSection.text.split(/\n\n+/).filter(p => p.trim())
-      : [introSection.text];
+    const text = typeof introSection.text === 'string' ? introSection.text : '';
+    const plainText = text.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    content = plainText.split(/\n\n+/).filter(p => p.trim());
   } else if (Array.isArray(introSection)) {
     content = introSection;
   }
@@ -2430,21 +2549,28 @@ export function mapGlobalGenericsSectionData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const section = data.GenericsSection || data.genericsSection || data.Section || data.section;
+  // Support both old structure (GenericsSection) and new structure (genericsAndComplexGenerics)
+  const section = data.genericsAndComplexGenerics || data.GenericsSection || data.genericsSection || data.Section || data.section;
   if (!section) return null;
 
-  const heading = section.heading || section.title || section.Heading || '';
+  const heading = section.title || section.heading || section.Heading || '';
 
   let content = [];
-  if (section.content && Array.isArray(section.content)) {
+  if (section.description) {
+    // Split markdown-style text by double newlines and extract plain text from markdown links
+    const description = typeof section.description === 'string' ? section.description : '';
+    // Convert markdown links [text](url) to just text, then split by paragraphs
+    const plainText = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    content = plainText.split(/\n\n+/).filter(p => p.trim());
+  } else if (section.content && Array.isArray(section.content)) {
     content = section.content;
   } else if (section.paragraphs && Array.isArray(section.paragraphs)) {
     content = section.paragraphs;
   } else if (section.text) {
     // If it's a single string, split by paragraphs
-    content = typeof section.text === 'string'
-      ? section.text.split(/\n\n+/).filter(p => p.trim())
-      : [section.text];
+    const text = typeof section.text === 'string' ? section.text : '';
+    const plainText = text.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    content = plainText.split(/\n\n+/).filter(p => p.trim());
   } else if (Array.isArray(section)) {
     content = section;
   }
@@ -2471,21 +2597,38 @@ export function mapGlobalGenericsPortfolioData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const portfolioSection = data.PortfolioSection || data.portfolioSection || data.Portfolio || data.portfolio;
+  // Support both old structure (PortfolioSection) and new structure (genericsAndComplexGenerics.subSectionOne)
+  const portfolioSection = data.genericsAndComplexGenerics?.subSectionOne || data.PortfolioSection || data.portfolioSection || data.Portfolio || data.portfolio;
   if (!portfolioSection) return null;
 
-  const description = portfolioSection.description || portfolioSection.text || portfolioSection.content || '';
+  // Extract plain text from markdown description
+  let description = portfolioSection.description || portfolioSection.text || portfolioSection.content || '';
+  if (typeof description === 'string') {
+    description = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+  }
 
   const linkText = portfolioSection.link?.text || portfolioSection.linkText || portfolioSection.ctaText || '';
   const linkUrl = portfolioSection.link?.url || portfolioSection.linkUrl || portfolioSection.ctaUrl || '#';
 
   const image = portfolioSection.image || portfolioSection.imageData;
-  const imageUrl = typeof image === 'string'
-    ? image
-    : image?.url || image?.src || portfolioSection.imageUrl || '';
-  const imageAlt = typeof image === 'object'
-    ? (image?.alt || image?.altText || '')
-    : '';
+  let imageUrl = null;
+  let imageAlt = '';
+  
+  if (image) {
+    if (typeof image === 'string') {
+      imageUrl = image;
+    } else {
+      // Use getStrapiMedia to get full URL from Strapi media object
+      imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+      imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+    }
+  }
+
+  // Use fallback image if no image from API
+  if (!imageUrl) {
+    imageUrl = "/assets/images/global-generic/Firefly_Gemini Flash_Premium healthcare scene showing a doctor consulting a patient in a calm clinical env 288275 1.png";
+    imageAlt = imageAlt || "Doctor consulting a patient";
+  }
 
   return {
     description: description,
@@ -2516,30 +2659,49 @@ export function mapGlobalGenericsComplexData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const complexSection = data.ComplexSection || data.complexSection || data.Complex || data.complex;
+  // Support both old structure (ComplexSection) and new structure (genericsAndComplexGenerics.subSectionTwo)
+  const complexSection = data.genericsAndComplexGenerics?.subSectionTwo || data.ComplexSection || data.complexSection || data.Complex || data.complex;
   if (!complexSection) return null;
 
   let content = [];
-  if (complexSection.content && Array.isArray(complexSection.content)) {
+  if (complexSection.description) {
+    // Split markdown-style text by double newlines and extract plain text from markdown links
+    const description = typeof complexSection.description === 'string' ? complexSection.description : '';
+    // Convert markdown links [text](url) to just text, then split by paragraphs
+    const plainText = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    content = plainText.split(/\n\n+/).filter(p => p.trim());
+  } else if (complexSection.content && Array.isArray(complexSection.content)) {
     content = complexSection.content;
   } else if (complexSection.paragraphs && Array.isArray(complexSection.paragraphs)) {
     content = complexSection.paragraphs;
   } else if (complexSection.text) {
     // If it's a single string, split by paragraphs
-    content = typeof complexSection.text === 'string'
-      ? complexSection.text.split(/\n\n+/).filter(p => p.trim())
-      : [complexSection.text];
+    const text = typeof complexSection.text === 'string' ? complexSection.text : '';
+    const plainText = text.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    content = plainText.split(/\n\n+/).filter(p => p.trim());
   } else if (Array.isArray(complexSection)) {
     content = complexSection;
   }
 
   const image = complexSection.image || complexSection.imageData;
-  const imageUrl = typeof image === 'string'
-    ? image
-    : image?.url || image?.src || complexSection.imageUrl || '';
-  const imageAlt = typeof image === 'object'
-    ? (image?.alt || image?.altText || '')
-    : '';
+  let imageUrl = null;
+  let imageAlt = '';
+  
+  if (image) {
+    if (typeof image === 'string') {
+      imageUrl = image;
+    } else {
+      // Use getStrapiMedia to get full URL from Strapi media object
+      imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+      imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+    }
+  }
+
+  // Use fallback image if no image from API
+  if (!imageUrl) {
+    imageUrl = "/assets/images/global-generic/Firefly_Gemini Flash_Premium pharmaceutical visual showing advanced inhalation devices and injectable vial 159471 1.png";
+    imageAlt = imageAlt || "Pharmaceutical visual showing advanced inhalation devices and injectable vial";
+  }
 
   return {
     content: content.length > 0 ? content : [],
@@ -2566,14 +2728,20 @@ export function mapGlobalGenericsInhalationData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const inhalationSection = data.InhalationSection || data.inhalationSection || data.Inhalation || data.inhalation;
+  // Support both old structure (InhalationSection) and new structure (ourInhalationBusiness)
+  const inhalationSection = data.ourInhalationBusiness || data.InhalationSection || data.inhalationSection || data.Inhalation || data.inhalation;
   if (!inhalationSection) return null;
 
-  const heading = inhalationSection.heading || inhalationSection.title || inhalationSection.Heading || '';
-  const description = inhalationSection.description || inhalationSection.text || inhalationSection.content || '';
+  const heading = inhalationSection.title || inhalationSection.heading || inhalationSection.Heading || '';
+  
+  // Extract plain text from markdown description
+  let description = inhalationSection.description || inhalationSection.text || inhalationSection.content || '';
+  if (typeof description === 'string') {
+    description = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+  }
 
-  const linkText = inhalationSection.link?.text || inhalationSection.linkText || inhalationSection.ctaText || '';
-  const linkUrl = inhalationSection.link?.url || inhalationSection.linkUrl || inhalationSection.ctaUrl || '#';
+  const linkText = inhalationSection.cta?.text || inhalationSection.link?.text || inhalationSection.linkText || inhalationSection.ctaText || '';
+  const linkUrl = inhalationSection.cta?.href || inhalationSection.link?.url || inhalationSection.linkUrl || inhalationSection.ctaUrl || '#';
 
   return {
     heading: heading,
@@ -2643,36 +2811,45 @@ export function mapGlobalGenericsRegionalPresenceData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const regionalSection = data.RegionalPresenceSection || data.regionalPresenceSection || data.RegionalPresence || data.regionalPresence;
+  // Support both old structure (RegionalPresenceSection) and new structure (regionalPresence)
+  const regionalSection = data.regionalPresence || data.RegionalPresenceSection || data.regionalPresenceSection || data.RegionalPresence;
   if (!regionalSection) return null;
 
-  const heading = regionalSection.heading || regionalSection.title || regionalSection.Heading || '';
+  const heading = regionalSection.title || regionalSection.heading || regionalSection.Heading || '';
 
-  // Handle background images
+  // Handle background images - use getStrapiMedia if it's a Strapi media object
   let backgroundDesktop = '';
   let backgroundMobile = '';
 
   if (regionalSection.background) {
     if (typeof regionalSection.background === 'object') {
-      backgroundDesktop = regionalSection.background.desktop || regionalSection.background.url || '';
-      backgroundMobile = regionalSection.background.mobile || regionalSection.background.urlMobile || backgroundDesktop;
+      const bgDesktop = regionalSection.background.desktop || regionalSection.background;
+      const bgMobile = regionalSection.background.mobile || bgDesktop;
+      backgroundDesktop = getStrapiMedia(bgDesktop) || (typeof bgDesktop === 'string' ? bgDesktop : '');
+      backgroundMobile = getStrapiMedia(bgMobile) || (typeof bgMobile === 'string' ? bgMobile : backgroundDesktop);
     } else {
       backgroundDesktop = regionalSection.background;
       backgroundMobile = backgroundDesktop;
     }
   } else if (regionalSection.backgroundImage) {
     if (typeof regionalSection.backgroundImage === 'object') {
-      backgroundDesktop = regionalSection.backgroundImage.desktop || regionalSection.backgroundImage.url || '';
-      backgroundMobile = regionalSection.backgroundImage.mobile || regionalSection.backgroundImage.urlMobile || backgroundDesktop;
+      const bgDesktop = regionalSection.backgroundImage.desktop || regionalSection.backgroundImage;
+      const bgMobile = regionalSection.backgroundImage.mobile || bgDesktop;
+      backgroundDesktop = getStrapiMedia(bgDesktop) || (typeof bgDesktop === 'string' ? bgDesktop : '');
+      backgroundMobile = getStrapiMedia(bgMobile) || (typeof bgMobile === 'string' ? bgMobile : backgroundDesktop);
     } else {
       backgroundDesktop = regionalSection.backgroundImage;
       backgroundMobile = backgroundDesktop;
     }
   }
 
-  // Handle regions/items
+  // Handle regions/items/cards
   let regions = [];
-  if (regionalSection.regions && Array.isArray(regionalSection.regions)) {
+  if (regionalSection.card && Array.isArray(regionalSection.card)) {
+    regions = regionalSection.card;
+  } else if (regionalSection.cards && Array.isArray(regionalSection.cards)) {
+    regions = regionalSection.cards;
+  } else if (regionalSection.regions && Array.isArray(regionalSection.regions)) {
     regions = regionalSection.regions;
   } else if (regionalSection.items && Array.isArray(regionalSection.items)) {
     regions = regionalSection.items;
@@ -2681,15 +2858,66 @@ export function mapGlobalGenericsRegionalPresenceData(strapiData) {
   }
 
   // Map each region to ensure proper structure
-  const mappedRegions = regions.map(region => ({
-    title: region.title || region.name || region.heading || '',
-    position: region.position || region.positionType || 'top-left',
-    backgroundColor: region.backgroundColor || region.bgColor || region.color || '#08a03f',
-    highlights: Array.isArray(region.highlights)
-      ? region.highlights
-      : (region.highlight ? [region.highlight] : []),
-    description: region.description || region.text || region.content || ''
-  }));
+  // Note: API response has card array with title and description, but no highlights or position
+  // We'll need to map based on title to assign positions and highlights
+  const positionMap = {
+    'United States': 'top-left',
+    'Canada': 'top-right',
+    'United Kingdom': 'middle-left',
+    'Europe': 'middle-right',
+    'Australia': 'bottom'
+  };
+
+  const backgroundColorMap = {
+    'United States': '#08a03f',
+    'Canada': '#034a1d',
+    'United Kingdom': '#05461d',
+    'Europe': '#0a933c',
+    'Australia': '#0a933c'
+  };
+
+  const highlightsMap = {
+    'United States': [
+      "#3 largest generics company by prescriptions filled",
+      "#3 in U.S. generics respiratory sales"
+    ],
+    'Canada': [
+      "~18% CAGR growth (FY20–FY25)",
+      "First generic Tolvaptan – affordable access to critical kidney therapy"
+    ],
+    'United Kingdom': [
+      "Luforbec: #1 primary care respiratory brand",
+      "Leadership in sustainable inhalers",
+      "230,000+ patients treated monthly for respiratory disorders"
+    ],
+    'Europe': [
+      "Contributes ~11% of global revenues",
+      "Growth led by respiratory, neurology and injectables"
+    ],
+    'Australia': [
+      "#4 generics player (Generic Health)",
+      "Strategic Expansion into Complex Generics"
+    ]
+  };
+
+  const mappedRegions = regions.map(region => {
+    const title = region.title || region.name || region.heading || '';
+    // Extract plain text from markdown description
+    let description = region.description || region.text || region.content || '';
+    if (typeof description === 'string') {
+      description = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    }
+
+    return {
+      title: title,
+      position: region.position || region.positionType || positionMap[title] || 'top-left',
+      backgroundColor: region.backgroundColor || region.bgColor || region.color || regionalSection.cardColor || backgroundColorMap[title] || '#08a03f',
+      highlights: Array.isArray(region.highlights)
+        ? region.highlights
+        : (region.highlight ? [region.highlight] : (highlightsMap[title] || [])),
+      description: description
+    };
+  });
 
   return {
     heading: heading,
