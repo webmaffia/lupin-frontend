@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '../scss/components/Hero.scss';
 
 export default function Hero({ data }) {
@@ -50,14 +49,13 @@ export default function Hero({ data }) {
       {/* Hero Image */}
       <div className="hero__image-wrapper">
         <Image
-          src={getImageUrl(heroData.image.url) || heroData.image.url}
+          src={heroData.image.url}
           alt={heroData.image.alt || ''}
           width={heroData.image.width}
           height={heroData.image.height}
           className="hero__image"
           priority
           quality={100}
-          unoptimized={isProxiedImage(heroData.image.url)}
         />
       </div>
 

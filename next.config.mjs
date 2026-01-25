@@ -30,8 +30,8 @@ function getStrapiImagePattern() {
   } catch (error) {
     console.warn('Invalid NEXT_PUBLIC_STRAPI_URL, using default localhost pattern');
     return {
-      protocol: 'http',
-      hostname: '65.2.155.211',
+      protocol: 'https',
+      hostname: 'lupin-cms.devmaffia.in',
       port: '1380',
       pathname: '/uploads/**',
     };
