@@ -75,6 +75,7 @@ export async function fetchAPI(endpoint, options = {}) {
 
 /**
  * Get full Strapi media URL
+ * Converts HTTP URLs to HTTPS in production to avoid mixed content issues in Vercel
  * @param {string|object} media - Media path or object
  * @returns {string} - Full URL
  */
@@ -95,13 +96,22 @@ export function getStrapiMedia(media) {
 
   if (!imageUrl) return null;
 
-  // Return full URL if it's already a complete URL
-  if (imageUrl.startsWith('http')) {
-    return imageUrl;
+  // Build full URL if it's relative
+  let fullUrl = imageUrl;
+  if (!imageUrl.startsWith('http')) {
+    fullUrl = `${STRAPI_URL}${imageUrl}`;
   }
 
-  // Otherwise prepend Strapi URL
-  return `${STRAPI_URL}${imageUrl}`;
+  // In production on Vercel, convert HTTP to HTTPS to avoid mixed content blocking
+  // Only do this on Vercel (not localhost), check for VERCEL env variable
+  // Note: This assumes your Strapi server supports HTTPS
+  // If not, you'll need to set up HTTPS on your Strapi server or use a reverse proxy
+  const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
+  if (isVercel && fullUrl.startsWith('http://')) {
+    fullUrl = fullUrl.replace('http://', 'https://');
+  }
+
+  return fullUrl;
 }
 
 /**
