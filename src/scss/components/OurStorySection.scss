@@ -7,15 +7,21 @@
   position: relative;
   width: 100%;
   background-color: #08A03F;
+  background-image: url('/assets/images/our-story/toppetals.svg');
+  background-repeat: no-repeat;
+  background-position: right 0 top vw(70);
+  background-size: auto;
   padding: vw(100) 0;
   overflow: hidden;
   
   @include media('tablet') {
     padding: vw(80, 768) 0;
+    background-position: right 0 top vw(70, 768);
   }
   
   @include media('mobile') {
     padding: vw-mobile(60, 414) 0;
+    background-position: right 0 top vw-mobile(70, 414);
   }
 
   // Container

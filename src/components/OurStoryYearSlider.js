@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from 'react';
 import OurStoryVerticalYearSlider from './OurStoryVerticalYearSlider';
+import OurStoryYearSlideContent from './OurStoryYearSlideContent';
 import '@/scss/components/OurStoryYearSlider.scss';
 
 export default function OurStoryYearSlider() {
@@ -133,14 +134,21 @@ export default function OurStoryYearSlider() {
       </div>
 
       <section className="our-story-year-slider" data-node-id="2888:555">
-        {/* Vertical Year Slider - Left Side */}
-      <div className="our-story-year-slider__vertical-wrapper">
-        <OurStoryVerticalYearSlider
-          years={years}
-          activeYear={activeYear}
-          onYearClick={handleYearClick}
-        />
-      </div>
+        <div className="our-story-year-slider__container-inner">
+          {/* Vertical Year Slider - Left Side */}
+          <div className="our-story-year-slider__vertical-wrapper">
+            <OurStoryVerticalYearSlider
+              years={years}
+              activeYear={activeYear}
+              onYearClick={handleYearClick}
+            />
+          </div>
+          
+          {/* Slide Content - Right Side */}
+          <div className="our-story-year-slider__slide-content-wrapper">
+            <OurStoryYearSlideContent year={activeYear} />
+          </div>
+        </div>
       </section>
     </>
   );
