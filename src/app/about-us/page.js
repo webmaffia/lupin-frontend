@@ -117,12 +117,6 @@ export default async function AboutUsPage() {
                           height={623}
                           quality={100}
                         />
-                        <Link href={fold.cta.href || '#'} className="about-us-content__fold-cta">
-                          <div className="about-us-content__fold-cta-circle"></div>
-                          <span className="about-us-content__fold-cta-text">
-                            READ<br />MORE
-                          </span>
-                        </Link>
                       </div>
                       <div className={`about-us-content__fold-svg about-us-content__fold-svg--${fold.svgPosition}`}>
                         <Image
@@ -145,6 +139,25 @@ export default async function AboutUsPage() {
                         >
                           {fold.description}
                         </ReactMarkdown>
+                        <Link href={fold.cta.href || '#'} className="about-us-content__fold-text-cta">
+                          <span className="about-us-content__fold-text-cta-text">Read More</span>
+                          <svg
+                            className="about-us-content__fold-text-cta-icon"
+                            width="18"
+                            height="18"
+                            viewBox="0 0 18 18"
+                            fill="none"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              d="M1 17L17 1M17 1H1M17 1V17"
+                              stroke="white"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </Link>
                       </div>
                     </div>
                   </section>
