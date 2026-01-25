@@ -6,23 +6,12 @@ import KeyHighlights from '@/components/community/KeyHighlights';
 import '@/scss/components/community/LivesProgram.scss';
 
 export default function LivesProgram({ programData = null }) {
-  // Default content if not provided (based on Figma design)
-  const defaultContent = {
-    title: 'Lives Program',
-    subtitle: 'Desh Bandhu Jan Aarogya Sewa',
-    content: [
-      {
-        type: 'paragraph',
-        text: 'The Lives program by LHWRF was designed to tackle the growing burden of non-communicable diseases in rural India, especially where early diagnosis poses a major challenge. The program bridges this gap by introducing preventative and primary healthcare to communities.'
-      },
-      {
-        type: 'paragraph',
-        text: 'The program focuses on sustained management of chronic diabetes, COPD, cardiovascular diseases, hypertension and asthma, through door-to-door screenings, mobile health camps, and by strengthening public health infrastructure.'
-      }
-    ]
-  };
+  // Don't render if no data
+  if (!programData) {
+    return null;
+  }
 
-  const content = programData || defaultContent;
+  const content = programData;
 
   return (
     <section className="lives-program">
@@ -56,39 +45,24 @@ export default function LivesProgram({ programData = null }) {
               </div>
             )}
           </div>
-          <div className="lives-program__right">
-            <Image
-              src="/assets/community/livesprogram.png"
-              alt="Lives Program"
-              width={872}
-              height={600}
-              className="lives-program__image"
-              quality={100}
-            />
+          {content?.image && (
+            <div className="lives-program__right">
+              <Image
+                src={content.image.url}
+                alt={content.image.alt || 'Lives Program'}
+                width={content.image.width || 872}
+                height={content.image.height || 600}
+                className="lives-program__image"
+                quality={100}
+              />
+            </div>
+          )}
+        </div>
+        {content?.highlights && content.highlights.length > 0 && (
+          <div className="lives-program__highlights">
+            <KeyHighlights highlights={content.highlights} />
           </div>
-        </div>
-        <div className="lives-program__highlights">
-          <KeyHighlights highlights={[
-            {
-              id: 1,
-              number: '192,677',
-              description: 'patients screened',
-              icon: '/assets/community/keynew1.svg'
-            },
-            {
-              id: 2,
-              number: '1100+',
-              description: 'health camps',
-              icon: '/assets/community/keynew2.svg'
-            },
-            {
-              id: 3,
-              number: '65,000+',
-              description: 'free consultations',
-              icon: '/assets/community/keynew2.svg'
-            }
-          ]} />
-        </div>
+        )}
       </div>
     </section>
   );

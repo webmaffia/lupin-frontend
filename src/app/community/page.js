@@ -1,7 +1,7 @@
 import InnerBanner from '@/components/InnerBanner';
 import Image from 'next/image';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { getCommunity, mapCommunityInfoData, mapTopBannerData, mapLivelihoodTabsData, mapLivelihoodSectionData, mapImpactSectionData } from '@/lib/strapi';
+import { getCommunity, mapCommunityInfoData, mapTopBannerData, mapLivelihoodTabsData, mapLivelihoodSectionData, mapImpactSectionData, mapLiveProgramSectionData } from '@/lib/strapi';
 import LivelihoodSection from '@/components/community/LivelihoodSection';
 import LivelihoodTabs from '@/components/community/LivelihoodTabs';
 import LivesProgram from '@/components/community/LivesProgram';
@@ -26,6 +26,7 @@ export default async function CommunityPage() {
   let impactData = null;
   let livelihoodData = null;
   let tabsData = null;
+  let liveProgramData = null;
 
   try {
     const strapiData = await getCommunity();
@@ -47,6 +48,9 @@ export default async function CommunityPage() {
 
     // Map LivelihoodTabs data
     tabsData = mapLivelihoodTabsData(strapiData);
+
+    // Map LiveProgramSection data
+    liveProgramData = mapLiveProgramSectionData(strapiData);
   } catch (error) {
     console.error('Error fetching community data from Strapi:', error);
   }
@@ -94,7 +98,7 @@ export default async function CommunityPage() {
       {impactData && <ImpactAtGlance impactData={impactData} />}
       <LivelihoodSection livelihoodData={livelihoodData} />
       <LivelihoodTabs tabs={tabsData || []} />
-      <LivesProgram programData={null} />
+      {liveProgramData && <LivesProgram programData={liveProgramData} />}
       <FoundationLink linkData={null} />
       
     </div>

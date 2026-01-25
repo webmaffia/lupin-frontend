@@ -142,19 +142,22 @@ export default async function AboutUsPage() {
                           {fold.description}
                         </ReactMarkdown>
                         {fold.cta && fold.cta.href && fold.cta.href !== '#' && (() => {
-                          // Check if this CTA links to our-story - if so, don't render the link
                           const ctaHref = fold.cta.href;
                           const isOurStoryLink = ctaHref.includes('our-story') || ctaHref.includes('ourstory');
                           
-                          // If it's our-story link, don't render the CTA button
+                          // Normalize the href for our-story links
+                          let normalizedHref = ctaHref;
                           if (isOurStoryLink) {
-                            return null;
+                            normalizedHref = '/about-us/our-story';
+                          } else if (ctaHref.startsWith('http')) {
+                            normalizedHref = ctaHref;
+                          } else {
+                            normalizedHref = ctaHref.startsWith('/') ? ctaHref : `/${ctaHref}`;
                           }
                           
-                          // Otherwise, render the link normally
                           return (
                             <Link 
-                              href={ctaHref.startsWith('http') ? ctaHref : (ctaHref.startsWith('/') ? ctaHref : `/${ctaHref}`)} 
+                              href={normalizedHref}
                               className="about-us-content__fold-text-cta"
                               target={ctaHref.startsWith('http') ? '_blank' : undefined}
                               rel={ctaHref.startsWith('http') ? 'noopener noreferrer' : undefined}
