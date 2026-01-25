@@ -1797,61 +1797,157 @@ export function mapLivelihoodTabsData(strapiData) {
     return null;
   }
 
-  const livelihoodTabs = data.LivelihoodTabs || data.livelihoodTabs;
-  if (!livelihoodTabs || !livelihoodTabs.tabs || !Array.isArray(livelihoodTabs.tabs)) {
+  const tabSectionDetails = data?.TabSectionDetails || data?.tabSectionDetails;
+  if (!tabSectionDetails || !Array.isArray(tabSectionDetails)) {
     return null;
   }
 
-  // Map each tab
-  const mappedTabs = livelihoodTabs.tabs.map((tab, index) => {
-    const tabId = tab.id || index + 1;
+  // Map each tab from TabSectionDetails
+  const mappedTabs = tabSectionDetails
+    .filter(tab => tab?.isActive !== false)
+    .map((tab, index) => {
+      const tabId = parseInt(tab?.id) || index + 1;
 
-    // Extract title - handle newlines
-    let title = tab.title || tab.name || '';
-    if (typeof title === 'string' && title.includes('\n')) {
-      // Keep newlines for display
-      title = title;
-    }
+      // Extract TabTitle
+      const title = tab?.TabTitle || '';
 
-    // Extract content if available
-    let content = null;
-    if (tab.content) {
-      const contentData = tab.content;
-
-      // Extract heading
-      const heading = contentData.heading || contentData.title || '';
-
-      // Extract paragraphs
-      let paragraphs = contentData.paragraphs || contentData.paragraph || [];
-      if (typeof paragraphs === 'string') {
-        paragraphs = paragraphs.split(/\n\n+/).filter(p => p.trim());
-      }
-      if (!Array.isArray(paragraphs)) {
-        paragraphs = paragraphs ? [paragraphs] : [];
+      // Extract TabSectionData
+      const tabSectionData = tab?.TabSectionData;
+      if (!tabSectionData) {
+        return {
+          id: tabId,
+          title: title,
+          content: null
+        };
       }
 
-      // Extract image
-      const image = contentData.image?.data?.attributes || contentData.image;
-      const imageUrl = image ? getStrapiMedia(image) : null;
+      // Extract SectionHeading
+      const sectionHeading = tabSectionData?.SectionHeading;
+      let heading = '';
+      let description = '';
+      let image = null;
+      let imagePosition = 'Right';
 
-      content = {
-        heading: heading,
-        paragraphs: paragraphs,
-        image: imageUrl ? {
-          url: imageUrl,
-          alt: image.alternativeText || image.caption || 'Tab Image',
-          width: image.width || 600,
-          height: image.height || 600
-        } : null
+      if (sectionHeading) {
+        heading = sectionHeading?.Heading || '';
+        description = sectionHeading?.Description || '';
+        imagePosition = sectionHeading?.Image_Position || 'Right';
+        
+        const headingImage = sectionHeading?.Image;
+        if (headingImage) {
+          const imageUrl = getStrapiMedia(headingImage);
+          if (imageUrl) {
+            image = {
+              url: imageUrl,
+              alt: headingImage?.alternativeText || headingImage?.caption || heading || 'Tab Image',
+              width: headingImage?.width || 600,
+              height: headingImage?.height || 600
+            };
+          }
+        }
+      }
+
+      // Split description into paragraphs
+      let paragraphs = [];
+      if (description) {
+        paragraphs = description.split(/\n\n+/).filter(p => p.trim());
+        if (paragraphs.length === 1) {
+          paragraphs = description.split(/\n+/).filter(p => p.trim());
+        }
+      }
+
+      // Extract KeyHighlites
+      const keyHighlites = tabSectionData?.KeyHighlites || [];
+      let highlights = [];
+      if (keyHighlites.length > 0) {
+        // Get the first KeyHighlites object (it has SectionTitle and KeyHighlites array)
+        const keyHighlitesSection = keyHighlites[0];
+        const keyHighlitesArray = keyHighlitesSection?.KeyHighlites || [];
+        
+        highlights = keyHighlitesArray.map((item) => {
+          // Format number with commas
+          const formatNumber = (num) => {
+            if (num === null || num === undefined || num === '') {
+              return '';
+            }
+            if (typeof num === 'string') {
+              const cleanNum = num.replace(/,/g, '').trim();
+              if (!cleanNum) return '';
+              if (isNaN(parseFloat(cleanNum))) return cleanNum;
+              return cleanNum.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+            if (typeof num === 'number') {
+              return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }
+            return num.toString();
+          };
+
+          const formattedValue = formatNumber(item?.Value);
+          const suffix = item?.Suffix || '';
+          const displayNumber = suffix ? `${formattedValue}${suffix}` : formattedValue;
+
+          const icon = item?.Icon;
+          const iconUrl = icon ? getStrapiMedia(icon) : null;
+
+          return {
+            id: item?.id || Math.random(),
+            number: displayNumber,
+            description: item?.Description || '',
+            icon: iconUrl
+          };
+        });
+      }
+
+      // Extract SectionData (Market Quote)
+      const sectionData = tabSectionData?.SectionData;
+      let quoteData = null;
+      if (sectionData) {
+        const quoteDescription = sectionData?.Description || '';
+        const quoteHeading = sectionData?.Heading || '';
+        
+        // Parse heading to extract author and designation
+        // Format: "Chotelal Saini Farmer" or "Pankaj Kumbhare CEO Mankaimata FPC"
+        let author = '';
+        let designation = '';
+        if (quoteHeading) {
+          const parts = quoteHeading.split(/\s+/);
+          if (parts.length >= 2) {
+            author = parts.slice(0, -1).join(' ');
+            designation = parts[parts.length - 1];
+          } else {
+            author = quoteHeading;
+          }
+        }
+
+        const quoteImage = sectionData?.Image;
+        const quoteImageUrl = quoteImage ? getStrapiMedia(quoteImage) : null;
+
+        quoteData = {
+          quote: quoteDescription,
+          author: author,
+          designation: designation,
+          image: quoteImageUrl ? {
+            url: quoteImageUrl,
+            alt: quoteImage?.alternativeText || quoteImage?.caption || author || 'Quote Image',
+            width: quoteImage?.width || 332,
+            height: quoteImage?.height || 330
+          } : null
+        };
+      }
+
+      return {
+        id: tabId,
+        title: title,
+        content: {
+          heading: heading,
+          paragraphs: paragraphs,
+          image: image,
+          imagePosition: imagePosition,
+          highlights: highlights,
+          quote: quoteData
+        }
       };
-    }
-
-    return {
-      id: tabId,
-      title: title,
-      content: content
-    };
-  });
+    });
 
   return mappedTabs.length > 0 ? mappedTabs : null;
 }

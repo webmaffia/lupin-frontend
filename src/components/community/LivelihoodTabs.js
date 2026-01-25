@@ -6,88 +6,93 @@ import KeyHighlights from '@/components/community/KeyHighlights';
 import MarketQuote from '@/components/community/MarketQuote';
 import '@/scss/components/community/LivelihoodTabs.scss';
 
-// Tab content component that renders from Strapi data or default
-const TabContent = ({ contentData, defaultImage }) => {
-  // If contentData is provided (from Strapi), use it
-  if (contentData && typeof contentData === 'object' && !React.isValidElement(contentData)) {
-    const { heading, paragraphs, image } = contentData;
-    const displayImage = image || defaultImage;
+// Tab content component that renders from Strapi data
+const TabContent = ({ contentData }) => {
+  if (!contentData || typeof contentData !== 'object') {
+    return null;
+  }
 
-    return (
-      <div className="livelihood-tabs__panel-content">
-        <div className="livelihood-tabs__panel-left">
-          <div className="livelihood-tabs__panel-text">
-            {heading && (
-              <h2 className="livelihood-tabs__panel-heading">
-                {heading}
-              </h2>
-            )}
-            {paragraphs && paragraphs.length > 0 && (
-              <div className="livelihood-tabs__panel-paragraphs">
-                {paragraphs.map((paragraph, index) => (
-                  <p key={index} className="livelihood-tabs__panel-paragraph">
-                    {paragraph}
-                  </p>
-                ))}
-              </div>
-            )}
+  const { heading, paragraphs, image, imagePosition } = contentData;
+  const isImageLeft = imagePosition === 'Left';
+
+  return (
+    <div className="livelihood-tabs__panel-content">
+      {isImageLeft && image && (
+        <div className="livelihood-tabs__panel-right">
+          <div className="livelihood-tabs__panel-image-wrapper">
+            <Image
+              src={image.url}
+              alt={image.alt || 'Tab Image'}
+              width={image.width || 600}
+              height={image.height || 600}
+              className="livelihood-tabs__panel-image"
+              quality={100}
+            />
           </div>
         </div>
-        {displayImage && (
+      )}
+      <div className="livelihood-tabs__panel-left">
+        <div className="livelihood-tabs__panel-text">
+          {heading && (
+            <h2 className="livelihood-tabs__panel-heading">
+              {heading}
+            </h2>
+          )}
+          {paragraphs && paragraphs.length > 0 && (
+            <div className="livelihood-tabs__panel-paragraphs">
+              {paragraphs.map((paragraph, index) => (
+                <p key={index} className="livelihood-tabs__panel-paragraph">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+      {!isImageLeft && image && (
+        <div className="livelihood-tabs__panel-right">
+          <div className="livelihood-tabs__panel-image-wrapper">
+            <Image
+              src={image.url}
+              alt={image.alt || 'Tab Image'}
+              width={image.width || 600}
+              height={image.height || 600}
+              className="livelihood-tabs__panel-image"
+              quality={100}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Agriculture tab content component (with Strapi support)
+const AgricultureTabContent = ({ contentData }) => {
+  if (!contentData || typeof contentData !== 'object') {
+    return null;
+  }
+
+  const { heading, paragraphs, image, imagePosition, highlights, quote } = contentData;
+  const isImageLeft = imagePosition === 'Left';
+
+  return (
+    <>
+      <div className="livelihood-tabs__panel-content">
+        {isImageLeft && image && (
           <div className="livelihood-tabs__panel-right">
             <div className="livelihood-tabs__panel-image-wrapper">
               <Image
-                src={displayImage.url}
-                alt={displayImage.alt || 'Tab Image'}
-                width={displayImage.width || 600}
-                height={displayImage.height || 600}
+                src={image.url}
+                alt={image.alt || 'Tab Image'}
+                width={image.width || 600}
+                height={image.height || 600}
                 className="livelihood-tabs__panel-image"
                 quality={100}
               />
             </div>
           </div>
         )}
-      </div>
-    );
-  }
-
-  // If contentData is a React element (default content), render it
-  if (React.isValidElement(contentData)) {
-    return contentData;
-  }
-
-  // Fallback placeholder
-  return (
-    <div className="livelihood-tabs__placeholder">
-      Content will be added here.
-    </div>
-  );
-};
-
-// Agriculture tab content component (default with Strapi support)
-const AgricultureTabContent = ({ contentData }) => {
-  // Default content data
-  const defaultContent = {
-    heading: 'Agriculture-Based Livelihood Empowerment (ABLE) Program',
-    paragraphs: [
-      'The program was launched in 2024 and aims to support marginal farmers in building resilient, income-generating livelihoods. Implemented across Alwar in Rajasthan and Dhule in Maharashtra, this program specifically targets farmers with minimum agricultural infrastructure, enabling optimal capacity building and knowledge transfer.',
-      'A key pillar is the Lupin Farmer School (LFS) model, which promotes peer learning through hands-on demonstrations and collective problem-solving. Together, these initiatives improve agricultural productivity, enhance climate resilience, and create sustainable income opportunities for farming communities.'
-    ],
-    image: {
-      url: '/assets/community/agriright.png',
-      alt: 'Agriculture-Based Livelihood Empowerment',
-      width: 600,
-      height: 600
-    }
-  };
-
-  // Use Strapi data if provided, otherwise use defaults
-  const content = contentData || defaultContent;
-  const { heading, paragraphs, image, highlights } = content;
-
-  return (
-    <>
-      <div className="livelihood-tabs__panel-content">
         <div className="livelihood-tabs__panel-left">
           <div className="livelihood-tabs__panel-text">
             {heading && (
@@ -106,12 +111,12 @@ const AgricultureTabContent = ({ contentData }) => {
             )}
           </div>
         </div>
-        {image && (
+        {!isImageLeft && image && (
           <div className="livelihood-tabs__panel-right">
             <div className="livelihood-tabs__panel-image-wrapper">
               <Image
                 src={image.url}
-                alt={image.alt || 'Agriculture-Based Livelihood Empowerment'}
+                alt={image.alt || 'Tab Image'}
                 width={image.width || 600}
                 height={image.height || 600}
                 className="livelihood-tabs__panel-image"
@@ -121,8 +126,12 @@ const AgricultureTabContent = ({ contentData }) => {
           </div>
         )}
       </div>
-      <KeyHighlights highlights={highlights} />
-      <MarketQuote quoteData={contentData?.quote} />
+      {highlights && highlights.length > 0 && (
+        <KeyHighlights highlights={highlights} />
+      )}
+      {quote && (
+        <MarketQuote quoteData={quote} />
+      )}
     </>
   );
 };
@@ -170,14 +179,26 @@ export default function LivelihoodTabs({ tabs = [] }) {
     }
 
     return strapiTabs.map((tab) => {
-      // If tab has content object from Strapi, use TabContent component
+      // If tab has content object from Strapi, use appropriate component
       let content = null;
       if (tab.content && typeof tab.content === 'object') {
         // For tab id 1 (Agriculture), use AgricultureTabContent with Strapi data
         if (tab.id === 1) {
           content = <AgricultureTabContent contentData={tab.content} />;
         } else {
-          content = <TabContent contentData={tab.content} />;
+          // For other tabs, use TabContent and add KeyHighlights and MarketQuote if available
+          const { highlights, quote, ...sectionContent } = tab.content;
+          content = (
+            <>
+              <TabContent contentData={sectionContent} />
+              {highlights && highlights.length > 0 && (
+                <KeyHighlights highlights={highlights} />
+              )}
+              {quote && (
+                <MarketQuote quoteData={quote} />
+              )}
+            </>
+          );
         }
       }
 
@@ -189,28 +210,18 @@ export default function LivelihoodTabs({ tabs = [] }) {
     });
   };
 
-  // Default tabs if not provided
-  const defaultTabs = [
-    {
-      id: 1,
-      title: 'Agriculture-Based\nLivelihood Empowerment\n(ABLE) Program',
-      content: <AgricultureTabContent />
-    },
-    {
-      id: 2,
-      title: 'Natural Resource\nManagement',
-      content: null
-    },
-    {
-      id: 3,
-      title: 'Community Collectives',
-      content: null
-    }
-  ];
+  // Don't render if no tabs data
+  if (!tabs || tabs.length === 0) {
+    return null;
+  }
 
-  // Use Strapi data if available, otherwise use defaults
-  const transformedTabs = tabs.length > 0 ? transformTabsData(tabs) : null;
-  const tabsData = transformedTabs || defaultTabs;
+  // Use Strapi data
+  const transformedTabs = transformTabsData(tabs);
+  if (!transformedTabs) {
+    return null;
+  }
+  
+  const tabsData = transformedTabs;
   const [activeTab, setActiveTab] = useState(tabsData[0]?.id || 1);
 
   const handleTabClick = (tabId) => {
