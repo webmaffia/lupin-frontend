@@ -8,7 +8,7 @@ import SpecialtyCanada from '@/components/specialty/SpecialtyCanada';
 import SpecialtyBrazil from '@/components/specialty/SpecialtyBrazil';
 import SpecialtyCTA from '@/components/specialty/SpecialtyCTA';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
-import { mapTopBannerData, mapSpecialtyIntroData, mapSpecialtyHeadingData, mapSpecialtySnapshotData, fetchAPI } from '@/lib/strapi';
+import { mapTopBannerData, mapSpecialtyIntroData, mapSpecialtyHeadingData, mapSpecialtyUnitedStatesData, mapSpecialtyEuropeData, mapSpecialtyCanadaData, mapSpecialtyBrazilData, fetchAPI } from '@/lib/strapi';
 import '@/scss/pages/specialty.scss';
 
 // Generate metadata for the Specialty page
@@ -19,49 +19,18 @@ export const metadata = generateSEOMetadata({
   keywords: "Lupin specialty, specialty pharmaceuticals, advanced therapeutics, complex generics, specialty medicines, innovative treatments, therapeutic solutions",
 });
 
-/**
- * Get the appropriate component for a region based on its title
- * @param {string} title - Region title
- * @param {object} data - Region data
- * @returns {JSX.Element|null} Component or null
- */
-function getRegionComponent(title, data) {
-  const normalizedTitle = title.trim().toLowerCase();
-
-  if (normalizedTitle.includes('united states') || normalizedTitle === 'united states') {
-    return <SpecialtyUnitedStates data={data} />;
-  } else if (normalizedTitle.includes('europe') || normalizedTitle === 'europe') {
-    return <SpecialtyEurope data={data} />;
-  } else if (normalizedTitle.includes('canada') || normalizedTitle === 'canada') {
-    return <SpecialtyCanada data={data} />;
-  } else if (normalizedTitle.includes('brazil') || normalizedTitle === 'brazil') {
-    return <SpecialtyBrazil data={data} />;
-  }
-
-  return null;
-}
-
-/**
- * Determine if a region should be wrapped in SpecialtyContent
- * @param {string} title - Region title
- * @returns {boolean}
- */
-function shouldWrapInContent(title) {
-  const normalizedTitle = title.trim().toLowerCase();
-  // United States and Canada are wrapped in SpecialtyContent
-  return normalizedTitle.includes('united states') || normalizedTitle === 'united states' ||
-    normalizedTitle.includes('canada') || normalizedTitle === 'canada';
-}
-
 export default async function SpecialtyPage() {
   // Fetch data from Strapi with specific populate query (single API call)
-  const populateQuery = 'populate[hero][populate]=*&populate[intro][populate]=*&populate[snapshotSection][populate]=*';
+  const populateQuery = 'populate[hero][populate]=*&populate[intro][populate]=*&populate[snapshotSection][populate][snapshot][populate][cta][populate]=*&populate[snapshotSection][populate][snapshot][populate][moreInfo][populate]=*';
 
   let strapiData = null;
   let bannerData = null;
   let specialtyIntroData = null;
   let specialtyHeadingData = null;
-  let snapshotData = null;
+  let unitedStatesData = null;
+  let europeData = null;
+  let canadaData = null;
+  let brazilData = null;
 
   try {
     strapiData = await fetchAPI(`specialty?${populateQuery}`, {
@@ -85,8 +54,11 @@ export default async function SpecialtyPage() {
     // Map heading data
     specialtyHeadingData = mapSpecialtyHeadingData(strapiData);
 
-    // Map snapshot data
-    snapshotData = mapSpecialtySnapshotData(strapiData);
+    // Map each region's data separately
+    unitedStatesData = mapSpecialtyUnitedStatesData(strapiData);
+    europeData = mapSpecialtyEuropeData(strapiData);
+    canadaData = mapSpecialtyCanadaData(strapiData);
+    brazilData = mapSpecialtyBrazilData(strapiData);
   } catch (error) {
     console.error('Error fetching specialty data from Strapi:', error);
   }
@@ -133,38 +105,90 @@ export default async function SpecialtyPage() {
     };
   }
 
-  // Default snapshot data if Strapi data is not available
-  if (!snapshotData || !snapshotData.regions || snapshotData.regions.length === 0) {
-    snapshotData = {
-      regions: [
+  // Default United States data if Strapi data is not available
+  if (!unitedStatesData) {
+    unitedStatesData = {
+      heading: "United States",
+      paragraphs: [
+        "With an extensive supply-chain network and deep roots in science, our U.S. specialty business has established a strong presence in the respiratory segment with the addition of asthma and COPD brands, including Xopenex HFA® and Brovana®.",
+        "Brovana is our specialty respiratory medication for long-term maintenance treatment of chronic obstructive pulmonary disease (COPD). It contains arformoterol, a long-acting beta-2 agonist that works by relaxing airway muscles to improve airflow and breathing. Administered via nebulization, Brovana is designed to improve pulmonary function in patients.",
+        "Xopenex HFA is our specialty prescription respiratory drug that acts as a bronchodilator and delivers levalbuterol via an inhaler. This medication supports acute symptom management while helping in long-term respiratory care.",
+        "Going forward, Lupin's U.S. business aims to grow with an intent to care and to act with purpose. We are poised to lead with patient-centricity and a well-balanced portfolio in the specialty segment, targeting high-burden areas with very few players."
+      ],
+      buttons: [
         {
-          heading: "United States",
-          paragraphs: [
-            "With an extensive supply-chain network and deep roots in science, our U.S. specialty business has established a strong presence in the respiratory segment with the addition of asthma and COPD brands, including Xopenex HFA® and Brovana®.",
-            "Brovana is our specialty respiratory medication for long-term maintenance treatment of chronic obstructive pulmonary disease (COPD). It contains arformoterol, a long-acting beta-2 agonist that works by relaxing airway muscles to improve airflow and breathing. Administered via nebulization, Brovana is designed to improve pulmonary function in patients."
-          ],
-          buttons: []
+          text: "Know more about Brovana here",
+          href: "#",
+          variant: "outline"
         },
         {
-          heading: "Europe",
-          paragraphs: [
-            "Lupin continues to expand in specialty medication across Europe. With NaMuscla, Lupin's flagship specialty neurology therapy, we are addressing the unmet needs of patients who have rare and debilitating neuromuscular disorders."
-          ],
-          buttons: []
+          text: "Know more about Xopenex HFA here",
+          href: "#",
+          variant: "outline"
         },
         {
-          heading: "Canada",
-          paragraphs: [
-            "Lupin's Canadian subsidiary is expanding its portfolio and broadening its footprint by specializing in gastroenterology and women's health segments."
-          ],
-          buttons: []
-        },
+          text: "Visit our Lupin U.S. website",
+          href: "#",
+          variant: "filled"
+        }
+      ]
+    };
+  }
+
+  // Default Europe data if Strapi data is not available
+  if (!europeData) {
+    europeData = {
+      heading: "Europe",
+      paragraphs: [
+        "Lupin continues to expand in specialty medication across Europe. With NaMuscla, Lupin's flagship specialty neurology therapy, we are addressing the unmet needs of patients who have rare and debilitating neuromuscular disorders. Approved by the European Medicines Agency to treat symptomatic myotonia in adults with non-dystrophic myotonic disorders, the product reflects Lupin's innovation prowess in areas with limited treatment options.",
+        "We are accelerating access to NaMuscla across key European markets, with the help of Lupin Neurosciences, our European subsidiary, headquartered in Zug, Switzerland.",
+        "The business is advancing pediatric development through clinical trials to broaden NaMuscula's therapeutic potential. We are also conducting new studies to assess NaMuscula's broader capabilities in treating myotonic dystrophy, helping patients regain their mobility.",
+        "This sustained investment showcases our focus on improving mobility, functional outcomes, and quality of life for patients in the CNS segment.",
+        "Lupin is expanding its specialty ophthalmology business with the acquisition of VISUfarma from GHO Capital, a pan-European ophthalmic firm with an established portfolio of 60+ branded eye health products.",
+        "This strategic expansion increases our presence in key markets, including Italy, the UK, Spain, Germany, and France. It also widens our offerings in areas such as dry eye, glaucoma, eyelid hygiene, blepharitis, retinal health, and nutraceuticals tailored for ophthalmologists.",
+        "The acquisition supports Lupin's long-term specialty growth strategy by tapping into the growing global demand for advanced eye care, driven by the aging population and rising diabetes-related complications."
+      ],
+      buttons: [
         {
-          heading: "Brazil",
-          paragraphs: [
-            "Lupin's Brazil subsidiary, MedQuímica, has entered the specialty segment through our rare-disease therapy, Cuprimine."
-          ],
-          buttons: []
+          text: "You can find out more about Lupin Lifesciences and NaMuscula here",
+          href: "#",
+          variant: "filled"
+        }
+      ]
+    };
+  }
+
+  // Default Canada data if Strapi data is not available
+  if (!canadaData) {
+    canadaData = {
+      heading: "Canada",
+      paragraphs: [
+        "Lupin's Canadian subsidiary is expanding its portfolio and broadening its footprint by specializing in gastroenterology and women's health segments. 60% of this business is driven by our specialty focus, with key products including Zaxine®, Relistor®, and Intrarosa®.",
+        "To expand our specialty niche, we recently acquired Nalcrom® from Sanofi and in-licensed three branded products for Attention-Deficit/Hyperactivity Disorder (ADHD)."
+      ],
+      buttons: [
+        {
+          text: "Read more on Lupin's Canada subsidiary",
+          href: "#",
+          variant: "filled"
+        }
+      ]
+    };
+  }
+
+  // Default Brazil data if Strapi data is not available
+  if (!brazilData) {
+    brazilData = {
+      heading: "Brazil",
+      paragraphs: [
+        "Lupin's Brazil subsidiary, MedQuímica, has entered the specialty segment through our rare-disease therapy, Cuprimine. The medication is used to treat the rare genetic disorder, Wilson's disease, which is characterized by excess copper in the body that can cause liver damage and CNS dysfunction.",
+        "Our smart research methodologies, along with a resilient supply chain, position us well to drive continued growth and improve access in the rare diseases segment through our specialty treatments."
+      ],
+      buttons: [
+        {
+          text: "Know more about Cuprimine",
+          href: "#",
+          variant: "outline"
         }
       ]
     };
@@ -178,24 +202,17 @@ export default async function SpecialtyPage() {
 
       <SpecialtyHeading data={specialtyHeadingData} />
 
-      {/* Dynamically render regions from API */}
-      {snapshotData.regions.map((region, index) => {
-        const regionComponent = getRegionComponent(region.heading, region);
+      <SpecialtyContent>
+        <SpecialtyUnitedStates data={unitedStatesData} />
+      </SpecialtyContent>
 
-        if (!regionComponent) return null;
+      <SpecialtyEurope data={europeData} />
 
-        // Wrap United States and Canada in SpecialtyContent
-        if (shouldWrapInContent(region.heading)) {
-          return (
-            <SpecialtyContent key={index}>
-              {regionComponent}
-            </SpecialtyContent>
-          );
-        }
+      <SpecialtyContent>
+        <SpecialtyCanada data={canadaData} />
+      </SpecialtyContent>
 
-        // Europe and Brazil are not wrapped
-        return <div key={index}>{regionComponent}</div>;
-      })}
+      <SpecialtyBrazil data={brazilData} />
 
       <SpecialtyCTA />
     </div>

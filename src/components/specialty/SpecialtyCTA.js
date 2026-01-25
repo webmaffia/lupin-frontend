@@ -5,8 +5,8 @@ export default function SpecialtyCTA({ data }) {
   // Default data from Figma design
   const ctaData = data || {
     text: "Find our Specialty Products Here",
-    href: "#",
-    external: true
+    href: "/product-finder",
+    external: false
   };
 
   const linkProps = ctaData.external ? {

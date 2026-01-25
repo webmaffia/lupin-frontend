@@ -4004,51 +4004,143 @@ export function mapSpecialtyHeadingData(strapiData) {
  * @returns {object|null} Formatted snapshot data with structure:
  *   { regions: [{ heading: string, paragraphs: string[], buttons: array }] }
  */
-export function mapSpecialtySnapshotData(strapiData) {
+/**
+ * Map a single snapshot to component format
+ * @param {object} snapshot - Single snapshot object from API
+ * @returns {object} Formatted data with heading, paragraphs, and buttons
+ */
+function mapSingleSnapshot(snapshot) {
+  if (!snapshot) return null;
+
+  const heading = snapshot.title || snapshot.heading || '';
+  
+  // Split main description by double newlines to create paragraphs array
+  let paragraphs = [];
+  if (snapshot.description) {
+    const description = typeof snapshot.description === 'string' ? snapshot.description : '';
+    paragraphs = description.split(/\n\n+/).filter(p => p.trim());
+  } else if (snapshot.paragraphs && Array.isArray(snapshot.paragraphs)) {
+    paragraphs = snapshot.paragraphs;
+  } else if (snapshot.content && Array.isArray(snapshot.content)) {
+    paragraphs = snapshot.content;
+  }
+
+  // Build buttons array from cta and moreInfo
+  let buttons = [];
+  
+  // Add main cta as first button (outline variant)
+  if (snapshot.cta && snapshot.cta.text && snapshot.cta.href) {
+    buttons.push({
+      text: snapshot.cta.text,
+      href: snapshot.cta.href || snapshot.cta.url || '#',
+      variant: 'outline'
+    });
+  }
+
+  // Process moreInfo array - each item's description becomes a paragraph, cta becomes a button
+  if (snapshot.moreInfo && Array.isArray(snapshot.moreInfo)) {
+    snapshot.moreInfo.forEach((infoItem, index) => {
+      // Add description as a paragraph
+      if (infoItem.description) {
+        const infoDescription = typeof infoItem.description === 'string' ? infoItem.description : '';
+        if (infoDescription.trim()) {
+          paragraphs.push(infoDescription.trim());
+        }
+      }
+      
+      // Add cta as a button (outline for middle buttons, filled for last)
+      if (infoItem.cta && infoItem.cta.text && infoItem.cta.href) {
+        const isLastButton = index === snapshot.moreInfo.length - 1;
+        buttons.push({
+          text: infoItem.cta.text,
+          href: infoItem.cta.href || infoItem.cta.url || '#',
+          variant: isLastButton ? 'filled' : 'outline'
+        });
+      }
+    });
+  }
+
+  return {
+    heading: heading.trim(),
+    paragraphs: paragraphs.length > 0 ? paragraphs : [],
+    buttons: buttons
+  };
+}
+
+/**
+ * Map Strapi Specialty United States data to SpecialtyUnitedStates component format
+ */
+export function mapSpecialtyUnitedStatesData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const snapshotSection = data.snapshotSection || data.SnapshotSection || data.snapshotSection || data.Snapshot;
-  if (!snapshotSection) return null;
+  const snapshotSection = data.snapshotSection || data.SnapshotSection;
+  if (!snapshotSection || !snapshotSection.snapshot) return null;
 
-  let snapshots = [];
-  if (snapshotSection.snapshot && Array.isArray(snapshotSection.snapshot)) {
-    snapshots = snapshotSection.snapshot;
-  } else if (snapshotSection.snapshots && Array.isArray(snapshotSection.snapshots)) {
-    snapshots = snapshotSection.snapshots;
-  } else if (Array.isArray(snapshotSection)) {
-    snapshots = snapshotSection;
-  }
-
-  // Map each snapshot to region component format
-  const mappedRegions = snapshots.map(snapshot => {
-    const heading = snapshot.title || snapshot.heading || '';
-    
-    // Split description by double newlines to create paragraphs array
-    let paragraphs = [];
-    if (snapshot.description) {
-      const description = typeof snapshot.description === 'string' ? snapshot.description : '';
-      paragraphs = description.split(/\n\n+/).filter(p => p.trim());
-    } else if (snapshot.paragraphs && Array.isArray(snapshot.paragraphs)) {
-      paragraphs = snapshot.paragraphs;
-    } else if (snapshot.content && Array.isArray(snapshot.content)) {
-      paragraphs = snapshot.content;
-    }
-
-    // Buttons are not in the API, so we'll return empty array
-    // They can be added to Strapi later or kept as defaults
-    const buttons = snapshot.buttons || snapshot.cta || [];
-
-    return {
-      heading: heading.trim(),
-      paragraphs: paragraphs.length > 0 ? paragraphs : [],
-      buttons: Array.isArray(buttons) ? buttons : []
-    };
+  // Find United States snapshot
+  const usSnapshot = snapshotSection.snapshot.find(s => {
+    const title = (s.title || '').trim().toLowerCase();
+    return title.includes('united states') || title === 'united states';
   });
 
-  return {
-    regions: mappedRegions.length > 0 ? mappedRegions : []
-  };
+  return mapSingleSnapshot(usSnapshot);
+}
+
+/**
+ * Map Strapi Specialty Europe data to SpecialtyEurope component format
+ */
+export function mapSpecialtyEuropeData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const snapshotSection = data.snapshotSection || data.SnapshotSection;
+  if (!snapshotSection || !snapshotSection.snapshot) return null;
+
+  // Find Europe snapshot
+  const europeSnapshot = snapshotSection.snapshot.find(s => {
+    const title = (s.title || '').trim().toLowerCase();
+    return title.includes('europe') || title === 'europe';
+  });
+
+  return mapSingleSnapshot(europeSnapshot);
+}
+
+/**
+ * Map Strapi Specialty Canada data to SpecialtyCanada component format
+ */
+export function mapSpecialtyCanadaData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const snapshotSection = data.snapshotSection || data.SnapshotSection;
+  if (!snapshotSection || !snapshotSection.snapshot) return null;
+
+  // Find Canada snapshot
+  const canadaSnapshot = snapshotSection.snapshot.find(s => {
+    const title = (s.title || '').trim().toLowerCase();
+    return title.includes('canada') || title === 'canada';
+  });
+
+  return mapSingleSnapshot(canadaSnapshot);
+}
+
+/**
+ * Map Strapi Specialty Brazil data to SpecialtyBrazil component format
+ */
+export function mapSpecialtyBrazilData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const snapshotSection = data.snapshotSection || data.SnapshotSection;
+  if (!snapshotSection || !snapshotSection.snapshot) return null;
+
+  // Find Brazil snapshot
+  const brazilSnapshot = snapshotSection.snapshot.find(s => {
+    const title = (s.title || '').trim().toLowerCase();
+    return title.includes('brazil') || title === 'brazil';
+  });
+
+  return mapSingleSnapshot(brazilSnapshot);
 }
 
 /**
