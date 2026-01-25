@@ -20,7 +20,7 @@ export default function OurStoryPage() {
   // Default banner data
   const bannerData = {
     title: {
-      line1: "Our Story",
+      line1: "The Lupin Story",
     },
     subheading: {
       enabled: true,
