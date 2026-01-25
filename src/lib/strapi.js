@@ -2835,11 +2835,45 @@ export function mapBrandedEmergingMarketsIntroData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const introSection = data.IntroSection || data.introSection || data.Intro || data.intro;
+  // Support both old structure (IntroSection) and new structure (description)
+  const introSection = data.description || data.IntroSection || data.introSection || data.Intro || data.intro;
   if (!introSection) return null;
 
   let content = [];
-  if (introSection.content && Array.isArray(introSection.content)) {
+  
+  // Handle description field (new API structure)
+  if (introSection.description) {
+    // Split markdown-style text by double newlines and extract plain text from markdown links
+    const description = typeof introSection.description === 'string' ? introSection.description : '';
+    // Convert markdown links [text](url) to extract link info, then split by paragraphs
+    const paragraphs = description.split(/\n\n+/).filter(p => p.trim());
+    
+    content = paragraphs.map(paragraph => {
+      // Check if paragraph contains markdown links
+      const linkMatches = paragraph.match(/\[([^\]]+)\]\(([^\)]+)\)/g);
+      if (linkMatches && linkMatches.length > 0) {
+        // Extract first link
+        const firstLink = linkMatches[0];
+        const linkMatch = firstLink.match(/\[([^\]]+)\]\(([^\)]+)\)/);
+        if (linkMatch) {
+          const linkText = linkMatch[1];
+          const linkUrl = linkMatch[2];
+          // Replace markdown link with plain text in the paragraph
+          const text = paragraph.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+          return {
+            text: text,
+            link: {
+              text: linkText,
+              url: linkUrl
+            }
+          };
+        }
+      }
+      // Extract plain text from markdown links
+      const plainText = paragraph.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+      return plainText;
+    });
+  } else if (introSection.content && Array.isArray(introSection.content)) {
     content = introSection.content;
   } else if (introSection.paragraphs && Array.isArray(introSection.paragraphs)) {
     content = introSection.paragraphs;
@@ -2889,11 +2923,17 @@ export function mapBrandedEmergingMarketsMarketsData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const marketsSection = data.MarketsSection || data.marketsSection || data.Markets || data.markets;
+  // Support both old structure (MarketsSection) and new structure (markets)
+  const marketsSection = data.markets || data.MarketsSection || data.marketsSection || data.Markets;
   if (!marketsSection) return null;
 
-  const heading = marketsSection.heading || marketsSection.title || marketsSection.Heading || '';
-  const content = marketsSection.content || marketsSection.text || marketsSection.paragraph || marketsSection.description || '';
+  const heading = marketsSection.title || marketsSection.heading || marketsSection.Heading || '';
+  
+  // Extract plain text from markdown description
+  let content = marketsSection.description || marketsSection.content || marketsSection.text || marketsSection.paragraph || '';
+  if (typeof content === 'string') {
+    content = content.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+  }
 
   return {
     heading: heading,
@@ -2917,37 +2957,68 @@ export function mapBrandedEmergingMarketsItemsData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const itemsSection = data.ItemsSection || data.itemsSection || data.Items || data.items || data.MarketsItems || data.marketsItems;
-  if (!itemsSection) return null;
+  // Support both old structure (ItemsSection) and new structure (markets.marketCard)
+  const marketsSection = data.markets || data.ItemsSection || data.itemsSection || data.Items || data.items || data.MarketsItems || data.marketsItems;
+  if (!marketsSection) return null;
 
   let items = [];
-  if (itemsSection.items && Array.isArray(itemsSection.items)) {
-    items = itemsSection.items;
-  } else if (itemsSection.markets && Array.isArray(itemsSection.markets)) {
-    items = itemsSection.markets;
-  } else if (Array.isArray(itemsSection)) {
-    items = itemsSection;
+  if (marketsSection.marketCard && Array.isArray(marketsSection.marketCard)) {
+    items = marketsSection.marketCard;
+  } else if (marketsSection.items && Array.isArray(marketsSection.items)) {
+    items = marketsSection.items;
+  } else if (marketsSection.markets && Array.isArray(marketsSection.markets)) {
+    items = marketsSection.markets;
+  } else if (Array.isArray(marketsSection)) {
+    items = marketsSection;
   }
 
   // Map each item to ensure proper structure
-  const mappedItems = items.map(item => ({
-    title: item.title || item.name || item.heading || '',
-    content: Array.isArray(item.content)
-      ? item.content
-      : (item.text ? [item.text] : (item.description ? [item.description] : [])),
-    link: item.link || (item.linkText && item.linkUrl ? {
-      text: item.linkText,
-      url: item.linkUrl
-    } : null),
-    image: {
-      url: typeof item.image === 'string'
-        ? item.image
-        : item.image?.url || item.imageUrl || "/assets/images/branded/image1.png",
-      alt: typeof item.image === 'object'
-        ? (item.image?.alt || item.imageAlt || '')
-        : ''
+  const mappedItems = items.map(item => {
+    // Extract plain text from markdown description and split into paragraphs
+    let content = [];
+    if (item.description) {
+      const description = typeof item.description === 'string' ? item.description : '';
+      const plainText = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+      content = plainText.split(/\n\n+/).filter(p => p.trim());
+    } else if (Array.isArray(item.content)) {
+      content = item.content;
+    } else if (item.text) {
+      content = [item.text];
     }
-  }));
+
+    const image = item.image || item.imageData;
+    let imageUrl = null;
+    let imageAlt = '';
+    
+    if (image) {
+      if (typeof image === 'string') {
+        imageUrl = image;
+      } else {
+        // Use getStrapiMedia to get full URL from Strapi media object
+        imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+        imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+      }
+    }
+
+    // Use fallback image if no image from API
+    if (!imageUrl) {
+      imageUrl = "/assets/images/branded/image1.png";
+      imageAlt = imageAlt || item.title || 'Market image';
+    }
+
+    return {
+      title: item.title || item.name || item.heading || '',
+      content: content.length > 0 ? content : [],
+      link: item.link || (item.linkText && item.linkUrl ? {
+        text: item.linkText,
+        url: item.linkUrl
+      } : null),
+      image: {
+        url: imageUrl,
+        alt: imageAlt
+      }
+    };
+  });
 
   return {
     items: mappedItems.length > 0 ? mappedItems : []
@@ -2970,36 +3041,51 @@ export function mapBrandedEmergingMarketsFooterData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const footerSection = data.FooterSection || data.footerSection || data.Footer || data.footer;
+  // Support both old structure (FooterSection) and new structure (globalInstitutionalBusiness)
+  const footerSection = data.globalInstitutionalBusiness || data.FooterSection || data.footerSection || data.Footer || data.footer;
   if (!footerSection) return null;
 
-  // Handle heading
+  // Handle heading - split title by pattern or newline
   let heading = { line1: '', line2: '' };
-  if (footerSection.heading) {
+  if (footerSection.title) {
+    // Split title like "GLOBAL INSTITUTIONAL BUSINESS (GIB)" into two lines
+    // Try to split by "(" or newline
+    if (footerSection.title.includes('(')) {
+      const parts = footerSection.title.split(/\s*\(/);
+      heading = {
+        line1: parts[0]?.trim() || '',
+        line2: parts[1] ? `(${parts[1].trim()}` : ''
+      };
+    } else {
+      const parts = footerSection.title.split(/\n+/);
+      heading = {
+        line1: parts[0] || '',
+        line2: parts[1] || ''
+      };
+    }
+  } else if (footerSection.heading) {
     if (typeof footerSection.heading === 'object') {
       heading = {
         line1: footerSection.heading.line1 || footerSection.heading.lineOne || '',
         line2: footerSection.heading.line2 || footerSection.heading.lineTwo || ''
       };
     } else if (typeof footerSection.heading === 'string') {
-      // Try to split by newline or pattern
       const parts = footerSection.heading.split(/\n+/);
       heading = {
         line1: parts[0] || '',
         line2: parts[1] || ''
       };
     }
-  } else if (footerSection.title) {
-    const parts = footerSection.title.split(/\n+/);
-    heading = {
-      line1: parts[0] || '',
-      line2: parts[1] || ''
-    };
   }
 
-  // Handle content
+  // Handle content - extract plain text from markdown description
   let content = [];
-  if (footerSection.content && Array.isArray(footerSection.content)) {
+  if (footerSection.description) {
+    const description = typeof footerSection.description === 'string' ? footerSection.description : '';
+    // Extract plain text from markdown links, then split by paragraphs
+    const plainText = description.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+    content = plainText.split(/\n\n+/).filter(p => p.trim());
+  } else if (footerSection.content && Array.isArray(footerSection.content)) {
     content = footerSection.content;
   } else if (footerSection.paragraphs && Array.isArray(footerSection.paragraphs)) {
     content = footerSection.paragraphs;
@@ -3011,12 +3097,24 @@ export function mapBrandedEmergingMarketsFooterData(strapiData) {
 
   // Handle image
   const image = footerSection.image || footerSection.imageData;
-  const imageUrl = typeof image === 'string'
-    ? image
-    : image?.url || image?.src || footerSection.imageUrl || '';
-  const imageAlt = typeof image === 'object'
-    ? (image?.alt || image?.altText || '')
-    : '';
+  let imageUrl = null;
+  let imageAlt = '';
+  
+  if (image) {
+    if (typeof image === 'string') {
+      imageUrl = image;
+    } else {
+      // Use getStrapiMedia to get full URL from Strapi media object
+      imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+      imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+    }
+  }
+
+  // Use fallback image if no image from API
+  if (!imageUrl) {
+    imageUrl = "/assets/images/branded/Firefly_Gemini Flash_Premium global public health image showing healthcare professionals collaborating acr 448492 1.png";
+    imageAlt = imageAlt || "Healthcare professionals collaborating";
+  }
 
   return {
     heading: heading,
@@ -3044,13 +3142,18 @@ export function mapIndiaOverviewData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const overviewSection = data.OverviewSection || data.overviewSection || data.Overview || data.overview;
+  // Support both old structure (OverviewSection) and new structure (overview)
+  const overviewSection = data.overview || data.OverviewSection || data.overviewSection || data.Overview;
   if (!overviewSection) return null;
 
-  const heading = overviewSection.heading || overviewSection.title || overviewSection.Heading || '';
+  const heading = overviewSection.title || overviewSection.heading || overviewSection.Heading || '';
 
   let content = [];
-  if (overviewSection.content && Array.isArray(overviewSection.content)) {
+  if (overviewSection.description) {
+    // Split markdown-style text by double newlines
+    const description = typeof overviewSection.description === 'string' ? overviewSection.description : '';
+    content = description.split(/\n\n+/).filter(p => p.trim());
+  } else if (overviewSection.content && Array.isArray(overviewSection.content)) {
     content = overviewSection.content;
   } else if (overviewSection.paragraphs && Array.isArray(overviewSection.paragraphs)) {
     content = overviewSection.paragraphs;
@@ -3085,13 +3188,17 @@ export function mapIndiaAtAGlanceData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const glanceSection = data.AtAGlanceSection || data.atAGlanceSection || data.AtAGlance || data.atAGlance || data.GlanceSection || data.glanceSection;
+  // Support both old structure (AtAGlanceSection) and new structure (IndiaAtAGlance)
+  const glanceSection = data.IndiaAtAGlance || data.AtAGlanceSection || data.atAGlanceSection || data.AtAGlance || data.atAGlance || data.GlanceSection || data.glanceSection;
   if (!glanceSection) return null;
 
-  const heading = glanceSection.heading || glanceSection.title || glanceSection.Heading || '';
+  const heading = glanceSection.title || glanceSection.heading || glanceSection.Heading || '';
 
   let items = [];
-  if (glanceSection.items && Array.isArray(glanceSection.items)) {
+  if (glanceSection.feature && Array.isArray(glanceSection.feature)) {
+    // Extract feature text from feature objects
+    items = glanceSection.feature.map(f => f.feature || f.text || f.description || '');
+  } else if (glanceSection.items && Array.isArray(glanceSection.items)) {
     items = glanceSection.items;
   } else if (glanceSection.list && Array.isArray(glanceSection.list)) {
     items = glanceSection.list;
@@ -3105,7 +3212,7 @@ export function mapIndiaAtAGlanceData(strapiData) {
 
   return {
     heading: heading,
-    items: items.length > 0 ? items : []
+    items: items.filter(item => item && item.trim()).length > 0 ? items.filter(item => item && item.trim()) : []
   };
 }
 
@@ -3125,13 +3232,18 @@ export function mapIndiaWhatWeDoData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const whatWeDoSection = data.WhatWeDoSection || data.whatWeDoSection || data.WhatWeDo || data.whatWeDo;
+  // Support both old structure (WhatWeDoSection) and new structure (WhatWeDo)
+  const whatWeDoSection = data.WhatWeDo || data.WhatWeDoSection || data.whatWeDoSection || data.whatWeDo;
   if (!whatWeDoSection) return null;
 
-  const heading = whatWeDoSection.heading || whatWeDoSection.title || whatWeDoSection.Heading || '';
+  const heading = whatWeDoSection.title || whatWeDoSection.heading || whatWeDoSection.Heading || '';
 
   let content = [];
-  if (whatWeDoSection.content && Array.isArray(whatWeDoSection.content)) {
+  if (whatWeDoSection.description) {
+    // Split markdown-style text by double newlines
+    const description = typeof whatWeDoSection.description === 'string' ? whatWeDoSection.description : '';
+    content = description.split(/\n\n+/).filter(p => p.trim());
+  } else if (whatWeDoSection.content && Array.isArray(whatWeDoSection.content)) {
     content = whatWeDoSection.content;
   } else if (whatWeDoSection.paragraphs && Array.isArray(whatWeDoSection.paragraphs)) {
     content = whatWeDoSection.paragraphs;
@@ -3166,13 +3278,19 @@ export function mapIndiaDigitalInitiativesData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const digitalSection = data.DigitalInitiativesSection || data.digitalInitiativesSection || data.DigitalInitiatives || data.digitalInitiatives;
+  // Support both old structure (DigitalInitiativesSection) and new structure (WhatWeDo.ourDigitalInitiatives)
+  const whatWeDoSection = data.WhatWeDo || data.WhatWeDoSection || data.whatWeDoSection || data.whatWeDo;
+  const digitalSection = whatWeDoSection?.ourDigitalInitiatives || data.DigitalInitiativesSection || data.digitalInitiativesSection || data.DigitalInitiatives || data.digitalInitiatives;
   if (!digitalSection) return null;
 
-  const heading = digitalSection.heading || digitalSection.title || digitalSection.Heading || '';
+  const heading = digitalSection.title || digitalSection.heading || digitalSection.Heading || '';
 
   let description = [];
-  if (digitalSection.description && Array.isArray(digitalSection.description)) {
+  if (digitalSection.description) {
+    // Split markdown-style text by double newlines
+    const desc = typeof digitalSection.description === 'string' ? digitalSection.description : '';
+    description = desc.split(/\n\n+/).filter(p => p.trim());
+  } else if (digitalSection.description && Array.isArray(digitalSection.description)) {
     description = digitalSection.description;
   } else if (digitalSection.text && Array.isArray(digitalSection.text)) {
     description = digitalSection.text;
@@ -3214,10 +3332,11 @@ export function mapIndiaTherapiesData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const therapiesSection = data.TherapiesSection || data.therapiesSection || data.Therapies || data.therapies;
+  // Support both old structure (TherapiesSection) and new structure (therapies)
+  const therapiesSection = data.therapies || data.TherapiesSection || data.therapiesSection || data.Therapies;
   if (!therapiesSection) return null;
 
-  const heading = therapiesSection.heading || therapiesSection.title || therapiesSection.Heading || '';
+  const heading = therapiesSection.title || therapiesSection.heading || therapiesSection.Heading || '';
   const description = therapiesSection.description || therapiesSection.text || therapiesSection.content || '';
 
   return {
@@ -3241,27 +3360,62 @@ export function mapIndiaTherapySectionData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const therapySection = data.TherapySection || data.therapySection || data.TherapyContent || data.therapyContent;
-  if (!therapySection) return null;
+  // Support both old structure (TherapySection) and new structure (therapies.therapyTab)
+  const therapiesSection = data.therapies || data.TherapySection || data.therapySection || data.TherapyContent || data.therapyContent;
+  if (!therapiesSection) return null;
 
-  // Map tabs structure
-  let tabs = [];
-  if (therapySection.tabs && Array.isArray(therapySection.tabs)) {
-    tabs = therapySection.tabs;
-  } else if (therapySection.tabRows && Array.isArray(therapySection.tabRows)) {
-    tabs = therapySection.tabRows;
-  }
-
-  // Map content structure
+  // Map therapyTab array to content structure
   let content = {};
-  if (therapySection.content && typeof therapySection.content === 'object') {
-    content = therapySection.content;
-  } else if (therapySection.therapies && typeof therapySection.therapies === 'object') {
-    content = therapySection.therapies;
+  if (therapiesSection.therapyTab && Array.isArray(therapiesSection.therapyTab)) {
+    // Title to ID mapping for known therapies
+    const titleToIdMap = {
+      'Anti-Tuberculosis (TB)': 'anti-tb',
+      'Respiratory': 'respiratory',
+      'Anti-Diabetes': 'anti-diabetes',
+      'Cardiology': 'cardiology',
+      "Women's Health": 'womens-health-1',
+      'Gastrointestinal ': 'gastrointestinal',
+      'Gastrointestinal': 'gastrointestinal',
+      'Oncology': 'oncology',
+      'Pain Management': 'pain-management',
+      'Anti-Infectives': 'anti-infectives',
+      'Vitamins/Minerals/Nutrients': 'vitamins',
+      'Ophthalmology': 'ophthalmology',
+      'Urology': 'urology',
+      'Dermatology': 'dermatology',
+      'Bone and Muscle Health ': 'bone-muscle',
+      'Bone and Muscle Health': 'bone-muscle',
+      'Central Nervous System (CNS)': 'cns'
+    };
+
+    // Convert therapyTab array to content object keyed by normalized IDs
+    therapiesSection.therapyTab.forEach(tab => {
+      if (tab.title && tab.description) {
+        // Use mapping if available, otherwise normalize title
+        const key = titleToIdMap[tab.title] || tab.title.toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        content[key] = {
+          heading: tab.title,
+          description: tab.description
+        };
+      }
+    });
+  } else if (therapiesSection.tabs && Array.isArray(therapiesSection.tabs)) {
+    // Old structure
+    therapiesSection.tabs.forEach(tab => {
+      if (tab.id || tab.key) {
+        content[tab.id || tab.key] = tab;
+      }
+    });
+  } else if (therapiesSection.content && typeof therapiesSection.content === 'object') {
+    content = therapiesSection.content;
+  } else if (therapiesSection.therapies && typeof therapiesSection.therapies === 'object') {
+    content = therapiesSection.therapies;
   }
 
   return {
-    tabs: tabs.length > 0 ? tabs : null,
+    tabs: null, // Tabs are generated from content in component
     content: Object.keys(content).length > 0 ? content : null
   };
 }
@@ -3282,21 +3436,477 @@ export function mapIndiaPatientSupportData(strapiData) {
   const data = strapiData?.data || strapiData;
   if (!data) return null;
 
-  const supportSection = data.PatientSupportSection || data.patientSupportSection || data.PatientSupport || data.patientSupport;
+  // Support both old structure (PatientSupportSection) and new structure (patientSupportPrograms)
+  const supportSection = data.patientSupportPrograms || data.PatientSupportSection || data.patientSupportSection || data.PatientSupport || data.patientSupport;
   if (!supportSection) return null;
 
-  const heading = supportSection.heading || supportSection.title || supportSection.Heading || '';
+  const heading = supportSection.title || supportSection.heading || supportSection.Heading || '';
   const description = supportSection.description || supportSection.text || supportSection.content || '';
 
-  const button = supportSection.button ? {
+  const button = supportSection.cta ? {
+    text: supportSection.cta.text || supportSection.cta.buttonText || '',
+    url: supportSection.cta.href || supportSection.cta.url || supportSection.cta.linkUrl || '#'
+  } : (supportSection.button ? {
     text: supportSection.button.text || supportSection.button.buttonText || '',
     url: supportSection.button.url || supportSection.button.linkUrl || supportSection.button.link || '#'
-  } : null;
+  } : null);
 
   return {
     heading: heading,
     description: description,
     button: button
+  };
+}
+
+/**
+ * Map Strapi Patient Support Programs Intro data to PatientSupportProgramsSection component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { intro: { description: "...", image: {...} } }
+ * 2. { IntroSection: { description: "...", image: {...} } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted intro data with structure:
+ *   { content: string[], image: { url: string, alt: string }, backgroundSvg: { url: string, alt: string } }
+ */
+export function mapPatientSupportProgramsIntroData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const introSection = data.intro || data.IntroSection || data.introSection || data.Intro;
+  if (!introSection) return null;
+
+  // Split description by double newlines to create content array
+  let content = [];
+  if (introSection.description) {
+    const description = typeof introSection.description === 'string' ? introSection.description : '';
+    content = description.split(/\n\n+/).filter(p => p.trim());
+  } else if (introSection.content && Array.isArray(introSection.content)) {
+    content = introSection.content;
+  } else if (introSection.paragraphs && Array.isArray(introSection.paragraphs)) {
+    content = introSection.paragraphs;
+  }
+
+  // Handle image
+  const image = introSection.image || introSection.imageData;
+  let imageUrl = null;
+  let imageAlt = '';
+  
+  if (image) {
+    if (typeof image === 'string') {
+      imageUrl = image;
+    } else {
+      // Use getStrapiMedia to get full URL from Strapi media object
+      imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+      imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+    }
+  }
+
+  // Use fallback image if no image from API
+  if (!imageUrl) {
+    imageUrl = "/assets/images/patient-support-programs/top.png";
+    imageAlt = imageAlt || "Patient Support Programs - Healthcare Professional and Patient";
+  }
+
+  return {
+    content: content.length > 0 ? content : [],
+    image: {
+      url: imageUrl,
+      alt: imageAlt
+    },
+    backgroundSvg: {
+      url: "/assets/images/patient-support-programs/lefpetals.svg",
+      alt: "Decorative petals"
+    }
+  };
+}
+
+/**
+ * Map Strapi Patient Support Programs Cards data to PatientSupportProgramsCard component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { card: [{ description: "...", logo: {...}, image: {...} }] }
+ * 2. { cards: [{ description: "...", logo: {...}, image: {...} }] }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted cards data with structure:
+ *   { cards: [{ logo: { url: string, alt: string }, content: string, image: { url: string, alt: string } }] }
+ */
+export function mapPatientSupportProgramsCardsData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  let cards = [];
+  if (data.card && Array.isArray(data.card)) {
+    cards = data.card;
+  } else if (data.cards && Array.isArray(data.cards)) {
+    cards = data.cards;
+  } else if (data.programs && Array.isArray(data.programs)) {
+    cards = data.programs;
+  }
+
+  // Map each card to ensure proper structure
+  const mappedCards = cards.map(card => {
+    // Handle logo
+    const logo = card.logo || card.logoData;
+    let logoUrl = null;
+    let logoAlt = '';
+    
+    if (logo) {
+      if (typeof logo === 'string') {
+        logoUrl = logo;
+      } else {
+        logoUrl = getStrapiMedia(logo) || logo?.url || logo?.src || null;
+        logoAlt = logo?.alternativeText || logo?.caption || logo?.alt || logo?.altText || '';
+      }
+    }
+
+    // Use fallback logo if no logo from API
+    if (!logoUrl) {
+      logoUrl = "/assets/images/patient-support-programs/logo1.png";
+      logoAlt = logoAlt || "Program Logo";
+    }
+
+    // Handle image
+    const image = card.image || card.imageData;
+    let imageUrl = null;
+    let imageAlt = '';
+    
+    if (image) {
+      if (typeof image === 'string') {
+        imageUrl = image;
+      } else {
+        imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+        imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+      }
+    }
+
+    // Use fallback image if no image from API
+    if (!imageUrl) {
+      imageUrl = "/assets/images/patient-support-programs/human-heart-hologram-hand-cardiogram-line 1.png";
+      imageAlt = imageAlt || "Program Image";
+    }
+
+    // Extract plain text from description
+    let content = card.description || card.content || card.text || '';
+    if (typeof content === 'string') {
+      content = content.trim();
+    }
+
+    return {
+      logo: {
+        url: logoUrl,
+        alt: logoAlt
+      },
+      content: content,
+      image: {
+        url: imageUrl,
+        alt: imageAlt
+      }
+    };
+  });
+
+  return {
+    cards: mappedCards.length > 0 ? mappedCards : []
+  };
+}
+
+/**
+ * Map Strapi Patient Support Programs Looking Ahead data to PatientSupportProgramsLookingAhead component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { lookingAhead: { title: "...", description: "..." } }
+ * 2. { LookingAheadSection: { heading: "...", content: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted looking ahead data with structure:
+ *   { heading: string, content: string }
+ */
+export function mapPatientSupportProgramsLookingAheadData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const lookingAheadSection = data.lookingAhead || data.LookingAheadSection || data.lookingAheadSection || data.LookingAhead;
+  if (!lookingAheadSection) return null;
+
+  const heading = lookingAheadSection.title || lookingAheadSection.heading || lookingAheadSection.Heading || '';
+  const content = lookingAheadSection.description || lookingAheadSection.content || lookingAheadSection.text || '';
+
+  return {
+    heading: heading,
+    content: content
+  };
+}
+
+/**
+ * Map Strapi Specialty Intro data to SpecialtyIntro component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { intro: { description: "..." } }
+ * 2. { IntroSection: { description: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted intro data with structure:
+ *   { text: string }
+ */
+export function mapSpecialtyIntroData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const introSection = data.intro || data.IntroSection || data.introSection || data.Intro;
+  if (!introSection) return null;
+
+  const text = introSection.description || introSection.text || introSection.content || '';
+
+  return {
+    text: text.trim()
+  };
+}
+
+/**
+ * Map Strapi Specialty Heading data to SpecialtyHeading component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { snapshotSection: { title: "..." } }
+ * 2. { SnapshotSection: { title: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted heading data with structure:
+ *   { text: string }
+ */
+export function mapSpecialtyHeadingData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const snapshotSection = data.snapshotSection || data.SnapshotSection || data.snapshotSection || data.Snapshot;
+  if (!snapshotSection) return null;
+
+  const text = snapshotSection.title || snapshotSection.heading || snapshotSection.text || '';
+
+  return {
+    text: text.trim()
+  };
+}
+
+/**
+ * Map Strapi Specialty Snapshot data to region components format
+ * 
+ * Expected Strapi data structures:
+ * 1. { snapshotSection: { snapshot: [{ title: "...", description: "..." }] } }
+ * 2. { SnapshotSection: { snapshots: [{ title: "...", description: "..." }] } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted snapshot data with structure:
+ *   { regions: [{ heading: string, paragraphs: string[], buttons: array }] }
+ */
+export function mapSpecialtySnapshotData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const snapshotSection = data.snapshotSection || data.SnapshotSection || data.snapshotSection || data.Snapshot;
+  if (!snapshotSection) return null;
+
+  let snapshots = [];
+  if (snapshotSection.snapshot && Array.isArray(snapshotSection.snapshot)) {
+    snapshots = snapshotSection.snapshot;
+  } else if (snapshotSection.snapshots && Array.isArray(snapshotSection.snapshots)) {
+    snapshots = snapshotSection.snapshots;
+  } else if (Array.isArray(snapshotSection)) {
+    snapshots = snapshotSection;
+  }
+
+  // Map each snapshot to region component format
+  const mappedRegions = snapshots.map(snapshot => {
+    const heading = snapshot.title || snapshot.heading || '';
+    
+    // Split description by double newlines to create paragraphs array
+    let paragraphs = [];
+    if (snapshot.description) {
+      const description = typeof snapshot.description === 'string' ? snapshot.description : '';
+      paragraphs = description.split(/\n\n+/).filter(p => p.trim());
+    } else if (snapshot.paragraphs && Array.isArray(snapshot.paragraphs)) {
+      paragraphs = snapshot.paragraphs;
+    } else if (snapshot.content && Array.isArray(snapshot.content)) {
+      paragraphs = snapshot.content;
+    }
+
+    // Buttons are not in the API, so we'll return empty array
+    // They can be added to Strapi later or kept as defaults
+    const buttons = snapshot.buttons || snapshot.cta || [];
+
+    return {
+      heading: heading.trim(),
+      paragraphs: paragraphs.length > 0 ? paragraphs : [],
+      buttons: Array.isArray(buttons) ? buttons : []
+    };
+  });
+
+  return {
+    regions: mappedRegions.length > 0 ? mappedRegions : []
+  };
+}
+
+/**
+ * Map Strapi Allied Business Intro data to AlliedBusinessIntro component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { intro: { description: "..." } }
+ * 2. { IntroSection: { description: "..." } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted intro data with structure:
+ *   { text: string }
+ */
+export function mapAlliedBusinessIntroData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const introSection = data.intro || data.IntroSection || data.introSection || data.Intro;
+  if (!introSection) return null;
+
+  const text = introSection.description || introSection.text || introSection.content || '';
+
+  return {
+    text: text.trim()
+  };
+}
+
+/**
+ * Map Strapi Allied Business Looking Ahead data to AlliedBusinessLookingAhead component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { lookingAhead: { title: "...", description: "...", image: {...} } }
+ * 2. { LookingAheadSection: { heading: "...", content: "...", image: {...} } }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted looking ahead data with structure:
+ *   { heading: string, content: string[], image: { url: string, alt: string }, pointerIcon: { url: string, alt: string } }
+ */
+export function mapAlliedBusinessLookingAheadData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  const lookingAheadSection = data.lookingAhead || data.LookingAheadSection || data.lookingAheadSection || data.LookingAhead;
+  if (!lookingAheadSection) return null;
+
+  const heading = lookingAheadSection.title || lookingAheadSection.heading || lookingAheadSection.Heading || '';
+  
+  // Split description by double newlines to create content array
+  let content = [];
+  if (lookingAheadSection.description) {
+    const description = typeof lookingAheadSection.description === 'string' ? lookingAheadSection.description : '';
+    content = description.split(/\n\n+/).filter(p => p.trim());
+  } else if (lookingAheadSection.content && Array.isArray(lookingAheadSection.content)) {
+    content = lookingAheadSection.content;
+  } else if (lookingAheadSection.paragraphs && Array.isArray(lookingAheadSection.paragraphs)) {
+    content = lookingAheadSection.paragraphs;
+  }
+
+  // Handle image
+  const image = lookingAheadSection.image || lookingAheadSection.imageData;
+  let imageUrl = null;
+  let imageAlt = '';
+  
+  if (image) {
+    if (typeof image === 'string') {
+      imageUrl = image;
+    } else {
+      imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+      imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+    }
+  }
+
+  // Use fallback image if no image from API
+  if (!imageUrl) {
+    imageUrl = "/assets/images/AlliedBusiness/biopharmaceutical-industry-laboratory-with-scientist-handling-vials-modern-research-facility (1) 1.png";
+    imageAlt = imageAlt || "Biopharmaceutical Industry Laboratory";
+  }
+
+  return {
+    heading: heading.trim(),
+    content: content.length > 0 ? content : [],
+    image: {
+      url: imageUrl,
+      alt: imageAlt
+    },
+    pointerIcon: {
+      url: "/assets/images/AlliedBusiness/Group.svg",
+      alt: "Pointer Icon"
+    }
+  };
+}
+
+/**
+ * Map Strapi Allied Business items data to component format
+ * 
+ * Expected Strapi data structures:
+ * 1. { business: [{ title: "...", description: "...", image: {...}, cta: {...} }] }
+ * 2. { businesses: [{ title: "...", description: "...", image: {...}, cta: {...} }] }
+ * 
+ * @param {object} strapiData - Raw Strapi API response
+ * @returns {object|null} Formatted business data with structure:
+ *   { businesses: [{ heading: string, content: string[], image: { url: string, alt: string }, websiteUrl: string, websiteText: string }] }
+ */
+export function mapAlliedBusinessItemsData(strapiData) {
+  const data = strapiData?.data || strapiData;
+  if (!data) return null;
+
+  let businesses = [];
+  if (data.business && Array.isArray(data.business)) {
+    businesses = data.business;
+  } else if (data.businesses && Array.isArray(data.businesses)) {
+    businesses = data.businesses;
+  } else if (data.items && Array.isArray(data.items)) {
+    businesses = data.items;
+  }
+
+  // Map each business to component format
+  const mappedBusinesses = businesses.map(business => {
+    const heading = business.title || business.heading || '';
+    
+    // Split description by double newlines to create content array
+    let content = [];
+    if (business.description) {
+      const description = typeof business.description === 'string' ? business.description : '';
+      content = description.split(/\n\n+/).filter(p => p.trim());
+    } else if (business.content && Array.isArray(business.content)) {
+      content = business.content;
+    } else if (business.paragraphs && Array.isArray(business.paragraphs)) {
+      content = business.paragraphs;
+    }
+
+    // Handle image
+    const image = business.image || business.imageData;
+    let imageUrl = null;
+    let imageAlt = '';
+    
+    if (image) {
+      if (typeof image === 'string') {
+        imageUrl = image;
+      } else {
+        imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+        imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+      }
+    }
+
+    // Handle CTA (website link)
+    const websiteUrl = business.cta?.href || business.cta?.url || business.websiteUrl || business.linkUrl || '#';
+    const websiteText = business.cta?.text || business.cta?.buttonText || business.websiteText || business.linkText || heading;
+
+    return {
+      heading: heading.trim(),
+      content: content.length > 0 ? content : [],
+      image: {
+        url: imageUrl,
+        alt: imageAlt || heading
+      },
+      websiteUrl: websiteUrl,
+      websiteText: websiteText
+    };
+  });
+
+  return {
+    businesses: mappedBusinesses.length > 0 ? mappedBusinesses : []
   };
 }
 

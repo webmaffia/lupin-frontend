@@ -19,22 +19,45 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function IndiaPage() {
-  // Fetch data from Strapi
+  // Fetch data from Strapi with specific populate query (single API call)
+  const populateQuery = 'populate[hero][populate]=*&populate[overview][populate]=*&populate[IndiaAtAGlance][populate]=*&populate[WhatWeDo][populate]=*&populate[therapies][populate]=*&populate[patientSupportPrograms][populate]=*';
+
+  let strapiData = null;
   let bannerData = null;
+  let overviewData = null;
+  let glanceData = null;
+  let whatWeDoData = null;
+  let digitalInitiativesData = null;
+  let therapiesData = null;
+  let therapySectionData = null;
+  let patientSupportData = null;
 
   try {
-    const strapiData = await fetchAPI('india?populate=deep', {
+    strapiData = await fetchAPI(`india?${populateQuery}`, {
       next: { revalidate: 60 },
     });
-    
-    // Map TopBanner data for InnerBanner
+
+    // Extract data from response
     const data = strapiData?.data || strapiData;
-    if (data?.TopBanner) {
+
+    // Map hero data for InnerBanner (new API uses 'hero' instead of 'TopBanner')
+    if (data?.hero) {
+      bannerData = mapTopBannerData(data.hero);
+    } else if (data?.TopBanner) {
+      // Fallback to old structure
       bannerData = mapTopBannerData(data.TopBanner);
     }
+
+    // Map all section data
+    overviewData = mapIndiaOverviewData(strapiData);
+    glanceData = mapIndiaAtAGlanceData(strapiData);
+    whatWeDoData = mapIndiaWhatWeDoData(strapiData);
+    digitalInitiativesData = mapIndiaDigitalInitiativesData(strapiData);
+    therapiesData = mapIndiaTherapiesData(strapiData);
+    therapySectionData = mapIndiaTherapySectionData(strapiData);
+    patientSupportData = mapIndiaPatientSupportData(strapiData);
   } catch (error) {
     console.error('Error fetching india data from Strapi:', error);
-    // Will use default data below
   }
 
   // Default banner data if Strapi data is not available
@@ -43,7 +66,7 @@ export default async function IndiaPage() {
       title: {
         line1: "India"
       },
-      subheading: {
+      subHeading: {
         enabled: false,
         text: ""
       },
@@ -62,31 +85,6 @@ export default async function IndiaPage() {
         }
       }
     };
-  }
-
-  // Fetch overview data from Strapi
-  let overviewData = null;
-  let glanceData = null;
-  let whatWeDoData = null;
-  let digitalInitiativesData = null;
-  let therapiesData = null;
-  let therapySectionData = null;
-  let patientSupportData = null;
-
-  try {
-    const strapiData = await fetchAPI('india?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    overviewData = mapIndiaOverviewData(strapiData);
-    glanceData = mapIndiaAtAGlanceData(strapiData);
-    whatWeDoData = mapIndiaWhatWeDoData(strapiData);
-    digitalInitiativesData = mapIndiaDigitalInitiativesData(strapiData);
-    therapiesData = mapIndiaTherapiesData(strapiData);
-    therapySectionData = mapIndiaTherapySectionData(strapiData);
-    patientSupportData = mapIndiaPatientSupportData(strapiData);
-  } catch (error) {
-    console.error('Error fetching india data from Strapi:', error);
   }
 
   // Default overview data if Strapi data is not available

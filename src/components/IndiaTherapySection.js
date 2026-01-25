@@ -5,8 +5,8 @@ import Image from 'next/image';
 import '../scss/components/IndiaTherapySection.scss';
 
 export default function IndiaTherapySection({ data }) {
-  // Tabs data - fixed, does not change - all in one row
-  const tabs = [
+  // Default tabs data - fallback if no data from API
+  const defaultTabs = [
     { id: 'anti-tb', label: 'Anti-Tuberculosis (TB)' },
     { id: 'respiratory', label: 'Respiratory' },
     { id: 'anti-diabetes', label: 'Anti-Diabetes' },
@@ -24,16 +24,21 @@ export default function IndiaTherapySection({ data }) {
     { id: 'bone-muscle', label: 'Bone and Muscle Health' }
   ];
 
-  // Content data for each tab
-  const contentData = {
-    'respiratory': {
-      heading: 'Respiratory',
-      description: "Lupin is a leading player in respiratory care, addressing the growing burden of asthma and COPD. Ranked 2nd in this segment, we are conducting continuous in-depth research to advance innovative, patient-centric respiratory therapies. Lupin is set to become the 1st Indian pharmaceutical company to deploy next-generation, near-zero global warming potential propellants across its respiratory inhalers at scale."
-    }
-  };
+  // Get content data from props or use default
+  const contentData = data?.content || {};
+  
+  // Generate tabs from content data or use defaults
+  let tabs = defaultTabs;
+  if (contentData && Object.keys(contentData).length > 0) {
+    tabs = Object.keys(contentData).map(key => ({
+      id: key,
+      label: contentData[key].heading || contentData[key].title || key
+    }));
+  }
 
-  // Respiratory is the default active tab
-  const [activeTabId, setActiveTabId] = useState('respiratory');
+  // Set default active tab to first available tab or 'respiratory'
+  const defaultActiveTab = tabs.length > 0 ? tabs[0].id : 'respiratory';
+  const [activeTabId, setActiveTabId] = useState(defaultActiveTab);
 
   const activeContent = contentData[activeTabId] || null;
 
@@ -70,9 +75,21 @@ export default function IndiaTherapySection({ data }) {
                   {activeContent.heading}
                 </h2>
               </div>
-              <p className="india-therapy-section__description">
-                {activeContent.description}
-              </p>
+              <div className="india-therapy-section__description">
+                {typeof activeContent.description === 'string' ? (
+                  activeContent.description.split(/\n\n+/).map((paragraph, index) => (
+                    paragraph && paragraph.trim() ? (
+                      <p key={index} className="india-therapy-section__description-paragraph">
+                        {paragraph}
+                      </p>
+                    ) : null
+                  ))
+                ) : (
+                  <p className="india-therapy-section__description-paragraph">
+                    {activeContent.description || ''}
+                  </p>
+                )}
+              </div>
             </div>
             <div className="india-therapy-section__image-wrapper">
               <div className="india-therapy-section__image-container">

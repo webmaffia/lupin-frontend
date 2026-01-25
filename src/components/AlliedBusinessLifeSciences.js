@@ -20,17 +20,19 @@ export default function AlliedBusinessLifeSciences({ data }) {
     <section className="allied-business-life-sciences" data-node-id="3067:1454">
       <div className="allied-business-life-sciences__container">
         {/* Image Section */}
-        <div className="allied-business-life-sciences__image-wrapper" data-node-id="3067:579">
-          <div className="allied-business-life-sciences__image-mask">
-            <Image
-              src={lifeSciencesData.image.url}
-              alt={lifeSciencesData.image.alt || "Lupin Life Sciences"}
-              fill
-              className="allied-business-life-sciences__image"
-              quality={100}
-            />
+        {lifeSciencesData.image?.url && lifeSciencesData.image.url.trim() !== '' && (
+          <div className="allied-business-life-sciences__image-wrapper" data-node-id="3067:579">
+            <div className="allied-business-life-sciences__image-mask">
+              <Image
+                src={lifeSciencesData.image.url}
+                alt={lifeSciencesData.image.alt || "Lupin Life Sciences"}
+                fill
+                className="allied-business-life-sciences__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Text Section */}
         <div className="allied-business-life-sciences__content" data-node-id="3067:1453">

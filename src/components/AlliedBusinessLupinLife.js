@@ -23,17 +23,19 @@ export default function AlliedBusinessLupinLife({ data }) {
     <section className="allied-business-lupinlife" data-node-id="3067:713">
       <div className="allied-business-lupinlife__container">
         {/* Image Section */}
-        <div className="allied-business-lupinlife__image-wrapper" data-node-id="3067:712">
-          <div className="allied-business-lupinlife__image-mask">
-            <Image
-              src={lupinLifeData.image.url}
-              alt={lupinLifeData.image.alt || "LupinLife Consumer Healthcare"}
-              fill
-              className="allied-business-lupinlife__image"
-              quality={100}
-            />
+        {lupinLifeData.image?.url && lupinLifeData.image.url.trim() !== '' && (
+          <div className="allied-business-lupinlife__image-wrapper" data-node-id="3067:712">
+            <div className="allied-business-lupinlife__image-mask">
+              <Image
+                src={lupinLifeData.image.url}
+                alt={lupinLifeData.image.alt || "LupinLife Consumer Healthcare"}
+                fill
+                className="allied-business-lupinlife__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Text Section */}
         <div className="allied-business-lupinlife__content" data-node-id="3067:711">

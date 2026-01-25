@@ -73,17 +73,19 @@ export default function AlliedBusinessLightBox({ data }) {
         </div>
 
         {/* Image Section (Right Side) */}
-        <div className="allied-business-lightbox__image-wrapper" data-node-id="3067:592">
-          <div className="allied-business-lightbox__image-mask">
-            <Image
-              src={lightBoxData.image.url}
-              alt={lightBoxData.image.alt || "Lupin Diagnostics"}
-              fill
-              className="allied-business-lightbox__image"
-              quality={100}
-            />
+        {lightBoxData.image?.url && lightBoxData.image.url.trim() !== '' && (
+          <div className="allied-business-lightbox__image-wrapper" data-node-id="3067:592">
+            <div className="allied-business-lightbox__image-mask">
+              <Image
+                src={lightBoxData.image.url}
+                alt={lightBoxData.image.alt || "Lupin Diagnostics"}
+                fill
+                className="allied-business-lightbox__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

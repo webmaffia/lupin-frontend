@@ -16,22 +16,46 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function BrandedEmergingMarketsPage() {
-  // Fetch data from Strapi
+  // Fetch data from Strapi with specific populate query (single API call)
+  // Include image population for marketCard items if they exist
+  const populateQuery = 'populate[description][populate]=*&populate[markets][populate][marketCard][populate][image][populate]=*&populate[hero][populate]=*&populate[globalInstitutionalBusiness][populate][image][populate]=*';
+
+  let strapiData = null;
   let bannerData = null;
+  let introData = null;
+  let marketsData = null;
+  let itemsData = null;
+  let footerData = null;
 
   try {
-    const strapiData = await fetchAPI('branded-emerging-markets?populate=deep', {
+    strapiData = await fetchAPI(`branded-emerging-markets?${populateQuery}`, {
       next: { revalidate: 60 },
     });
-    
-    // Map TopBanner data for InnerBanner
+
+    // Extract data from response
     const data = strapiData?.data || strapiData;
-    if (data?.TopBanner) {
+
+    // Map hero data for InnerBanner (new API uses 'hero' instead of 'TopBanner')
+    if (data?.hero) {
+      bannerData = mapTopBannerData(data.hero);
+    } else if (data?.TopBanner) {
+      // Fallback to old structure
       bannerData = mapTopBannerData(data.TopBanner);
     }
+
+    // Map intro data
+    introData = mapBrandedEmergingMarketsIntroData(strapiData);
+
+    // Map markets data
+    marketsData = mapBrandedEmergingMarketsMarketsData(strapiData);
+
+    // Map items data
+    itemsData = mapBrandedEmergingMarketsItemsData(strapiData);
+
+    // Map footer data
+    footerData = mapBrandedEmergingMarketsFooterData(strapiData);
   } catch (error) {
     console.error('Error fetching branded-emerging-markets data from Strapi:', error);
-    // Will use default data below
   }
 
   // Default banner data if Strapi data is not available
@@ -41,7 +65,7 @@ export default async function BrandedEmergingMarketsPage() {
         line1: "Branded",
         line2: "Emerging Markets"
       },
-      subheading: {
+      subHeading: {
         enabled: false,
         text: ""
       },
@@ -62,19 +86,6 @@ export default async function BrandedEmergingMarketsPage() {
     };
   }
 
-  // Fetch intro data from Strapi
-  let introData = null;
-
-  try {
-    const strapiData = await fetchAPI('branded-emerging-markets?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    introData = mapBrandedEmergingMarketsIntroData(strapiData);
-  } catch (error) {
-    console.error('Error fetching branded-emerging-markets intro data from Strapi:', error);
-  }
-
   // Default intro data if Strapi data is not available
   if (!introData) {
     introData = {
@@ -92,38 +103,12 @@ export default async function BrandedEmergingMarketsPage() {
     };
   }
 
-  // Fetch markets data from Strapi
-  let marketsData = null;
-
-  try {
-    const strapiData = await fetchAPI('branded-emerging-markets?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    marketsData = mapBrandedEmergingMarketsMarketsData(strapiData);
-  } catch (error) {
-    console.error('Error fetching branded-emerging-markets markets data from Strapi:', error);
-  }
-
   // Default markets data if Strapi data is not available
   if (!marketsData) {
     marketsData = {
       heading: "MARKETS",
       content: "Lupin's business across emerging markets, including South Africa, Brazil, Mexico, and the Philippines is integral to Lupin's global expansion and influencing patient care. These dynamic markets demand affordable, effective and high-quality treatments. The focus on generic drug manufacturing to create high accessibility at lower costs reflects volume growth, market-specific strategies and efficient cost structures."
     };
-  }
-
-  // Fetch items data from Strapi
-  let itemsData = null;
-
-  try {
-    const strapiData = await fetchAPI('branded-emerging-markets?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    itemsData = mapBrandedEmergingMarketsItemsData(strapiData);
-  } catch (error) {
-    console.error('Error fetching branded-emerging-markets items data from Strapi:', error);
   }
 
   // Default items data if Strapi data is not available
@@ -224,19 +209,6 @@ export default async function BrandedEmergingMarketsPage() {
         }
       ]
     };
-  }
-
-  // Fetch footer data from Strapi
-  let footerData = null;
-
-  try {
-    const strapiData = await fetchAPI('branded-emerging-markets?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    footerData = mapBrandedEmergingMarketsFooterData(strapiData);
-  } catch (error) {
-    console.error('Error fetching branded-emerging-markets footer data from Strapi:', error);
   }
 
   return (

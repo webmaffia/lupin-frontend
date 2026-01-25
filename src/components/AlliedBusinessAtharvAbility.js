@@ -73,17 +73,19 @@ export default function AlliedBusinessAtharvAbility({ data }) {
         </div>
 
         {/* Image Section (Right Side) */}
-        <div className="allied-business-atharv-ability__image-wrapper" data-node-id="3067:1448">
-          <div className="allied-business-atharv-ability__image-mask">
-            <Image
-              src={atharvAbilityData.image.url}
-              alt={atharvAbilityData.image.alt || "Atharv Ability"}
-              fill
-              className="allied-business-atharv-ability__image"
-              quality={100}
-            />
+        {atharvAbilityData.image?.url && atharvAbilityData.image.url.trim() !== '' && (
+          <div className="allied-business-atharv-ability__image-wrapper" data-node-id="3067:1448">
+            <div className="allied-business-atharv-ability__image-mask">
+              <Image
+                src={atharvAbilityData.image.url}
+                alt={atharvAbilityData.image.alt || "Atharv Ability"}
+                fill
+                className="allied-business-atharv-ability__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
