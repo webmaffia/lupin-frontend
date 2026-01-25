@@ -194,23 +194,6 @@ export default async function AboutUsPage() {
           </div>
         </div>
       </section>
-
-      {/* Redirect Section */}
-      {/* Hide redirect section if it links to our-story (still working on it) */}
-      {redirectSection && redirectSection.href && redirectSection.href !== '#' && !redirectSection.href.includes('our-story') && !redirectSection.href.includes('ourstory') && (
-        <section className="about-us-content__redirect">
-          <div className="about-us-content__container">
-            <Link 
-              href={redirectSection.href.startsWith('http') ? redirectSection.href : (redirectSection.href.startsWith('/') ? redirectSection.href : `/${redirectSection.href}`)}
-              className="about-us-content__redirect-link"
-              target={redirectSection.href.startsWith('http') ? '_blank' : undefined}
-              rel={redirectSection.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-            >
-              {redirectSection.text || 'View All'}
-            </Link>
-          </div>
-        </section>
-      )}
     </div>
   );
 }
