@@ -46,15 +46,17 @@ export default function PatientSupportProgramsSection({ data }) {
           </div>
 
           {/* Image Section (Right) */}
-          <div className="patient-support-programs-section__image-wrapper">
-            <Image
-              src={sectionData.image.url}
-              alt={sectionData.image.alt || "Patient Support Programs"}
-              fill
-              className="patient-support-programs-section__image"
-              quality={100}
-            />
-          </div>
+          {sectionData.image?.url && sectionData.image.url.trim() !== '' && (
+            <div className="patient-support-programs-section__image-wrapper">
+              <Image
+                src={sectionData.image.url}
+                alt={sectionData.image.alt || "Patient Support Programs"}
+                fill
+                className="patient-support-programs-section__image"
+                quality={100}
+              />
+            </div>
+          )}
         </div>
       </div>
     </section>

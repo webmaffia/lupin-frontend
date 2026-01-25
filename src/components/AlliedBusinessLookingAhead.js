@@ -22,17 +22,19 @@ export default function AlliedBusinessLookingAhead({ data }) {
     <section className="allied-business-looking-ahead" data-node-id="3067:1457">
       <div className="allied-business-looking-ahead__container">
         {/* Image Section (Left) */}
-        <div className="allied-business-looking-ahead__image-wrapper" data-node-id="3067:684">
-          <div className="allied-business-looking-ahead__image-mask">
-            <Image
-              src={lookingAheadData.image.url}
-              alt={lookingAheadData.image.alt || "Looking Ahead"}
-              fill
-              className="allied-business-looking-ahead__image"
-              quality={100}
-            />
+        {lookingAheadData.image?.url && lookingAheadData.image.url.trim() !== '' && (
+          <div className="allied-business-looking-ahead__image-wrapper" data-node-id="3067:684">
+            <div className="allied-business-looking-ahead__image-mask">
+              <Image
+                src={lookingAheadData.image.url}
+                alt={lookingAheadData.image.alt || "Looking Ahead"}
+                fill
+                className="allied-business-looking-ahead__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Vertical Line with Pointer (Middle) */}
         <div className="allied-business-looking-ahead__pointer-wrapper" data-node-id="3067:1455">

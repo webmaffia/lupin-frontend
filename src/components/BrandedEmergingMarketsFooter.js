@@ -51,19 +51,21 @@ export default function BrandedEmergingMarketsFooter({ data }) {
             </div>
           </div>
           <div className="branded-emerging-markets-footer__divider"></div>
-          <div className="branded-emerging-markets-footer__right">
-            <div className="branded-emerging-markets-footer__image-wrapper">
-              <div className="branded-emerging-markets-footer__image-mask">
-                <Image
-                  src={imageUrl}
-                  alt={imageAlt}
-                  fill
-                  className="branded-emerging-markets-footer__image"
-                  quality={100}
-                />
+          {imageUrl && imageUrl.trim() !== '' && (
+            <div className="branded-emerging-markets-footer__right">
+              <div className="branded-emerging-markets-footer__image-wrapper">
+                <div className="branded-emerging-markets-footer__image-mask">
+                  <Image
+                    src={imageUrl}
+                    alt={imageAlt}
+                    fill
+                    className="branded-emerging-markets-footer__image"
+                    quality={100}
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </section>

@@ -121,15 +121,17 @@ export default function BrandedEmergingMarketsItems({ data }) {
               {isOdd ? (
                 <>
                   {/* Odd: Image then Content */}
-                  <div className="branded-emerging-markets-items__image-wrapper">
-                    <Image
-                      src={item.image?.url || item.imageUrl || "/assets/images/branded/image1.png"}
-                      alt={item.image?.alt || item.imageAlt || item.title || ''}
-                      fill
-                      className="branded-emerging-markets-items__image"
-                      quality={100}
-                    />
-                  </div>
+                  {item.image?.url && item.image.url.trim() !== '' && (
+                    <div className="branded-emerging-markets-items__image-wrapper">
+                      <Image
+                        src={item.image.url}
+                        alt={item.image.alt || item.title || ''}
+                        fill
+                        className="branded-emerging-markets-items__image"
+                        quality={100}
+                      />
+                    </div>
+                  )}
                   <div className="branded-emerging-markets-items__text-wrapper">
                     <div className="branded-emerging-markets-items__background"></div>
                     <div className="branded-emerging-markets-items__text-content">
@@ -242,15 +244,17 @@ export default function BrandedEmergingMarketsItems({ data }) {
                       )}
                     </div>
                   </div>
-                  <div className="branded-emerging-markets-items__image-wrapper">
-                    <Image
-                      src={item.image?.url || item.imageUrl || "/assets/images/branded/image1.png"}
-                      alt={item.image?.alt || item.imageAlt || item.title || ''}
-                      fill
-                      className="branded-emerging-markets-items__image"
-                      quality={100}
-                    />
-                  </div>
+                  {item.image?.url && item.image.url.trim() !== '' && (
+                    <div className="branded-emerging-markets-items__image-wrapper">
+                      <Image
+                        src={item.image.url}
+                        alt={item.image.alt || item.title || ''}
+                        fill
+                        className="branded-emerging-markets-items__image"
+                        quality={100}
+                      />
+                    </div>
+                  )}
                 </>
               )}
             </div>

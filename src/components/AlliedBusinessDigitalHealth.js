@@ -23,17 +23,19 @@ export default function AlliedBusinessDigitalHealth({ data }) {
     <section className="allied-business-digital-health" data-node-id="3067:730">
       <div className="allied-business-digital-health__container">
         {/* Image Section */}
-        <div className="allied-business-digital-health__image-wrapper" data-node-id="3067:729">
-          <div className="allied-business-digital-health__image-mask">
-            <Image
-              src={digitalHealthData.image.url}
-              alt={digitalHealthData.image.alt || "Lupin Digital Health"}
-              fill
-              className="allied-business-digital-health__image"
-              quality={100}
-            />
+        {digitalHealthData.image?.url && digitalHealthData.image.url.trim() !== '' && (
+          <div className="allied-business-digital-health__image-wrapper" data-node-id="3067:729">
+            <div className="allied-business-digital-health__image-mask">
+              <Image
+                src={digitalHealthData.image.url}
+                alt={digitalHealthData.image.alt || "Lupin Digital Health"}
+                fill
+                className="allied-business-digital-health__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Text Section */}
         <div className="allied-business-digital-health__content" data-node-id="3067:728">
