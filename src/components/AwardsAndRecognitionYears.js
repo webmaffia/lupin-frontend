@@ -96,6 +96,25 @@ export default function AwardsAndRecognitionYears({ activeYear: externalActiveYe
   const activeYear = externalActiveYear || 2023;
   const awards = awardsData[activeYear] || [];
   const yearPrefix = Math.floor(activeYear / 100); // "20" for 2023
+  
+  // Years array for vertical slider
+  const years = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017];
+  const activeIndex = years.indexOf(activeYear);
+  
+  // Get years to display (previous, active, next) with infinite loop
+  const getDisplayYears = () => {
+    // Calculate previous year (loop to end if at start)
+    const prevIndex = activeIndex === 0 ? years.length - 1 : activeIndex - 1;
+    const prevYear = years[prevIndex];
+    
+    // Calculate next year (loop to start if at end)
+    const nextIndex = activeIndex === years.length - 1 ? 0 : activeIndex + 1;
+    const nextYear = years[nextIndex];
+    
+    return { prevYear, activeYear, nextYear };
+  };
+  
+  const { prevYear, activeYear: currentActiveYear, nextYear } = getDisplayYears();
 
   return (
     <section className="awards-and-recognition-years" data-node-id="2936:181">
@@ -103,10 +122,32 @@ export default function AwardsAndRecognitionYears({ activeYear: externalActiveYe
         {/* Content Box - Dark Green Rounded */}
         <div className="awards-and-recognition-years__content-box" data-node-id="2936:183">
           <div className="awards-and-recognition-years__content-inner" data-node-id="2936:184">
-            {/* Year Prefix "20" - Hidden (opacity 0) */}
+            {/* Year Prefix "20" */}
             <p className="awards-and-recognition-years__year-prefix" data-node-id="2936:185">
               {yearPrefix}
             </p>
+
+            {/* Vertical Year Slider - Static HTML with Infinite Loop */}
+            <div className="awards-and-recognition-years__year-slider-wrapper" data-node-id="2936:330">
+              <p 
+                className="awards-and-recognition-years__year awards-and-recognition-years__year--inactive"
+                data-node-id="2936:331"
+              >
+                {prevYear.toString().slice(-2)}
+              </p>
+              <p 
+                className="awards-and-recognition-years__year awards-and-recognition-years__year--active"
+                data-node-id="2936:332"
+              >
+                {currentActiveYear.toString().slice(-2)}
+              </p>
+              <p 
+                className="awards-and-recognition-years__year awards-and-recognition-years__year--inactive"
+                data-node-id="2936:333"
+              >
+                {nextYear.toString().slice(-2)}
+              </p>
+            </div>
 
             {/* Awards List */}
             <ul className="awards-and-recognition-years__awards-list" data-node-id="2936:186">

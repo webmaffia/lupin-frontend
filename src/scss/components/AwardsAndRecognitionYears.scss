@@ -232,5 +232,77 @@
     }
   }
 
+  // Vertical Year Slider Wrapper - Static HTML
+  &__year-slider-wrapper {
+    position: absolute;
+    left: vw(467);
+    top: vw(-56);
+    width: vw(418.463);
+    height: vw(781);
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: vw(295);
+    justify-content: center;
+    
+    @include media('tablet') {
+      left: vw(50, 768);
+      top: vw(-56, 768);
+      width: vw(300, 768);
+      height: auto;
+      min-height: vw(600, 768);
+      gap: vw(295, 768);
+    }
+    
+    @include media('mobile') {
+      position: relative;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: auto;
+      margin-bottom: vw-mobile(30, 414);
+      gap: vw-mobile(50, 414);
+    }
+  }
+
+  // Year Number
+  &__year {
+    font-family: $font-family-base;
+    font-weight: 700;
+    font-size: vw(280);
+    line-height: vw(242.959);
+    color: #e1e1e1;
+    letter-spacing: vw(19.6);
+    margin: 0;
+    padding: 0;
+    position: relative;
+    flex-shrink: 0;
+    white-space: nowrap;
+    
+    @include media('tablet') {
+      font-size: vw(200, 768);
+      line-height: vw(180, 768);
+      letter-spacing: vw(14, 768);
+    }
+    
+    @include media('mobile') {
+      font-size: vw-mobile(60, 414);
+      line-height: vw-mobile(50, 414);
+      letter-spacing: vw-mobile(5, 414);
+    }
+
+    // Active state - full opacity
+    &--active {
+      opacity: 1;
+    }
+    
+    // Inactive years
+    &--inactive {
+      opacity: 0.5;
+      min-width: 100%;
+      width: min-content;
+    }
+  }
 }
 
