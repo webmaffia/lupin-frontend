@@ -1,5 +1,8 @@
 'use client';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/BrandedEmergingMarketsIntro.scss';
 
 export default function BrandedEmergingMarketsIntro({ data }) {
@@ -20,24 +23,26 @@ export default function BrandedEmergingMarketsIntro({ data }) {
   const introData = data || defaultData;
   const content = introData?.content || introData?.paragraphs || introData?.text || defaultData.content;
 
-  // Process content to handle bold numbers (11%) and links
-  const processContent = (item) => {
+  const CustomParagraph = ({ children }) => {
+    return <p className="branded-emerging-markets-intro__paragraph">{children}</p>;
+  };
+
+  // Convert content to markdown format
+  const convertToMarkdown = (item) => {
     if (typeof item === 'string') {
-      // Bold "11%"
-      return item.replace(/\b(11%)\b/g, '<strong>$1</strong>');
+      return item;
     } else if (typeof item === 'object' && item.text) {
-      // Handle text with link
-      let processedText = item.text;
+      // Convert link object to markdown link
       if (item.link && item.link.text && item.link.url) {
         const linkText = item.link.text;
         const linkUrl = item.link.url;
-        // Replace the link text with an anchor tag
-        processedText = processedText.replace(
+        // Replace the link text with markdown link syntax
+        return item.text.replace(
           linkText,
-          `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer" class="branded-emerging-markets-intro__link">${linkText}</a>`
+          `[${linkText}](${linkUrl})`
         );
       }
-      return processedText;
+      return item.text;
     }
     return '';
   };
@@ -47,18 +52,37 @@ export default function BrandedEmergingMarketsIntro({ data }) {
       <div className="branded-emerging-markets-intro__container">
         <div className="branded-emerging-markets-intro__content">
           {Array.isArray(content) ? (
-            content.map((item, index) => (
-              <p 
-                key={index} 
-                className="branded-emerging-markets-intro__paragraph"
-                dangerouslySetInnerHTML={{ __html: processContent(item) }}
-              />
-            ))
+            content.map((item, index) => {
+              const markdownContent = convertToMarkdown(item);
+              return (
+                <ReactMarkdown
+                  key={index}
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    p: CustomParagraph,
+                    a: ({ node, ...props }) => (
+                      <a {...props} target="_blank" rel="noopener noreferrer" className="branded-emerging-markets-intro__link" />
+                    ),
+                  }}
+                >
+                  {markdownContent}
+                </ReactMarkdown>
+              );
+            })
           ) : (
-            <p 
-              className="branded-emerging-markets-intro__paragraph"
-              dangerouslySetInnerHTML={{ __html: processContent(content) }}
-            />
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: CustomParagraph,
+                a: ({ node, ...props }) => (
+                  <a {...props} target="_blank" rel="noopener noreferrer" className="branded-emerging-markets-intro__link" />
+                ),
+              }}
+            >
+              {convertToMarkdown(content)}
+            </ReactMarkdown>
           )}
         </div>
       </div>

@@ -1,6 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/GlobalGenericsComplex.scss';
 
 export default function GlobalGenericsComplex({ data }) {
@@ -30,12 +33,27 @@ export default function GlobalGenericsComplex({ data }) {
           <div className="global-generics-complex__text-content">
             {Array.isArray(content) ? (
               content.map((paragraph, index) => (
-                <p key={index} className="global-generics-complex__paragraph">
+                <ReactMarkdown
+                  key={index}
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    p: ({ children }) => <p className="global-generics-complex__paragraph">{children}</p>,
+                  }}
+                >
                   {paragraph}
-                </p>
+                </ReactMarkdown>
               ))
             ) : (
-              <p className="global-generics-complex__paragraph">{content}</p>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: ({ children }) => <p className="global-generics-complex__paragraph">{children}</p>,
+                }}
+              >
+                {content}
+              </ReactMarkdown>
             )}
           </div>
         </div>

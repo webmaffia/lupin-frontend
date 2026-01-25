@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../../scss/components/specialty/SpecialtyEurope.scss';
 
 export default function SpecialtyEurope({ data }) {
@@ -50,9 +53,16 @@ export default function SpecialtyEurope({ data }) {
           {/* Intro Paragraphs (1st, 2nd, 3rd, 4th) */}
           <div className="specialty-europe__intro" data-node-id="2957:1429">
             {contentData.paragraphs.slice(0, 4).map((paragraph, index) => (
-              <p key={index} className="specialty-europe__paragraph">
+              <ReactMarkdown
+                key={index}
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: ({ children }) => <p className="specialty-europe__paragraph">{children}</p>,
+                }}
+              >
                 {paragraph}
-              </p>
+              </ReactMarkdown>
             ))}
           </div>
 
@@ -107,9 +117,16 @@ export default function SpecialtyEurope({ data }) {
         {/* Fifth, Sixth, Seventh Paragraphs */}
         <div className="specialty-europe__section" data-node-id="2957:1441">
           {contentData.paragraphs.slice(4, 7).map((paragraph, index) => (
-            <p key={index} className="specialty-europe__paragraph">
+            <ReactMarkdown
+              key={index}
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: ({ children }) => <p className="specialty-europe__paragraph">{children}</p>,
+              }}
+            >
               {paragraph}
-            </p>
+            </ReactMarkdown>
           ))}
         </div>
       </div>

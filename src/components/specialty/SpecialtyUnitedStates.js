@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../../scss/components/specialty/SpecialtyUnitedStates.scss';
 
 export default function SpecialtyUnitedStates({ data }) {
@@ -71,9 +74,16 @@ export default function SpecialtyUnitedStates({ data }) {
           {/* Intro Paragraphs (1st and 2nd) */}
           <div className="specialty-united-states__intro" data-node-id="2957:1400">
             {contentData.paragraphs.slice(0, 2).map((paragraph, index) => (
-              <p key={index} className="specialty-united-states__paragraph">
+              <ReactMarkdown
+                key={index}
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: ({ children }) => <p className="specialty-united-states__paragraph">{children}</p>,
+                }}
+              >
                 {paragraph}
-              </p>
+              </ReactMarkdown>
             ))}
           </div>
 
@@ -114,9 +124,15 @@ export default function SpecialtyUnitedStates({ data }) {
         {/* Third Paragraph with Second Button */}
         {contentData.paragraphs[2] && (
           <div className="specialty-united-states__section" data-node-id="2957:1403">
-            <p className="specialty-united-states__paragraph">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: ({ children }) => <p className="specialty-united-states__paragraph">{children}</p>,
+              }}
+            >
               {contentData.paragraphs[2]}
-            </p>
+            </ReactMarkdown>
             {contentData.buttons[1] && (
               <Link
                 href={contentData.buttons[1].href}
@@ -151,9 +167,15 @@ export default function SpecialtyUnitedStates({ data }) {
         {/* Fourth Paragraph with Third Button */}
         {contentData.paragraphs[3] && (
           <div className="specialty-united-states__section" data-node-id="2957:1405">
-            <p className="specialty-united-states__paragraph">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: ({ children }) => <p className="specialty-united-states__paragraph">{children}</p>,
+              }}
+            >
               {contentData.paragraphs[3]}
-            </p>
+            </ReactMarkdown>
             {contentData.buttons[2] && (
               <Link
                 href={contentData.buttons[2].href}

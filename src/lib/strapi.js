@@ -3700,9 +3700,34 @@ export function mapIndiaTherapySectionData(strapiData) {
         const key = titleToIdMap[tab.title] || tab.title.toLowerCase()
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/^-+|-+$/g, '');
+        
+        // Handle image
+        const image = tab.image || tab.imageData;
+        let imageUrl = null;
+        let imageAlt = '';
+        
+        if (image) {
+          if (typeof image === 'string') {
+            imageUrl = image;
+          } else {
+            imageUrl = getStrapiMedia(image) || image?.url || image?.src || null;
+            imageAlt = image?.alternativeText || image?.caption || image?.alt || image?.altText || '';
+          }
+        }
+
+        // Use fallback image if no image from API
+        if (!imageUrl) {
+          imageUrl = "/assets/images/india/lady.png";
+          imageAlt = imageAlt || tab.title || 'Therapy image';
+        }
+
         content[key] = {
           heading: tab.title,
-          description: tab.description
+          description: tab.description,
+          image: {
+            url: imageUrl,
+            alt: imageAlt
+          }
         };
       }
     });

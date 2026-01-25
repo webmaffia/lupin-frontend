@@ -20,7 +20,7 @@ export const metadata = generateSEOMetadata({
 
 export default async function IndiaPage() {
   // Fetch data from Strapi with specific populate query (single API call)
-  const populateQuery = 'populate[hero][populate]=*&populate[overview][populate]=*&populate[IndiaAtAGlance][populate]=*&populate[WhatWeDo][populate]=*&populate[therapies][populate]=*&populate[patientSupportPrograms][populate]=*';
+  const populateQuery = 'populate[hero][populate]=*&populate[overview][populate]=*&populate[IndiaAtAGlance][populate]=*&populate[WhatWeDo][populate]=*&populate[therapies][populate][therapyTab][populate][image][populate]=*&populate[patientSupportPrograms][populate]=*';
 
   let strapiData = null;
   let bannerData = null;

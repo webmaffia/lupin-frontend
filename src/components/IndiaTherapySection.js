@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/IndiaTherapySection.scss';
 
 export default function IndiaTherapySection({ data }) {
@@ -26,7 +29,7 @@ export default function IndiaTherapySection({ data }) {
 
   // Get content data from props or use default
   const contentData = data?.content || {};
-  
+
   // Generate tabs from content data or use defaults
   let tabs = defaultTabs;
   if (contentData && Object.keys(contentData).length > 0) {
@@ -76,32 +79,32 @@ export default function IndiaTherapySection({ data }) {
                 </h2>
               </div>
               <div className="india-therapy-section__description">
-                {typeof activeContent.description === 'string' ? (
-                  activeContent.description.split(/\n\n+/).map((paragraph, index) => (
-                    paragraph && paragraph.trim() ? (
-                      <p key={index} className="india-therapy-section__description-paragraph">
-                        {paragraph}
-                      </p>
-                    ) : null
-                  ))
-                ) : (
-                  <p className="india-therapy-section__description-paragraph">
-                    {activeContent.description || ''}
-                  </p>
-                )}
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    p: ({ children }) => (
+                      <p className="india-therapy-section__description-paragraph">{children}</p>
+                    ),
+                  }}
+                >
+                  {activeContent.description || ''}
+                </ReactMarkdown>
               </div>
             </div>
-            <div className="india-therapy-section__image-wrapper">
-              <div className="india-therapy-section__image-container">
-                <Image
-                  src="/assets/images/india/lady.png"
-                  alt={activeContent.heading || 'Therapy image'}
-                  width={786}
-                  height={591}
-                  className="india-therapy-section__image"
-                />
+            {activeContent.image?.url && activeContent.image.url.trim() !== '' && (
+              <div className="india-therapy-section__image-wrapper">
+                <div className="india-therapy-section__image-container">
+                  <Image
+                    src={activeContent.image.url}
+                    alt={activeContent.image.alt || activeContent.heading || 'Therapy image'}
+                    width={786}
+                    height={591}
+                    className="india-therapy-section__image"
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

@@ -2,6 +2,9 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/GlobalGenericsPortfolio.scss';
 
 export default function GlobalGenericsPortfolio({ data }) {
@@ -56,9 +59,17 @@ export default function GlobalGenericsPortfolio({ data }) {
             />
           </div>
           <div className="global-generics-portfolio__right-content">
-            <p className="global-generics-portfolio__description">
-              {description}
-            </p>
+            <div className="global-generics-portfolio__description">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: ({ children }) => <p className="global-generics-portfolio__description-text">{children}</p>,
+                }}
+              >
+                {description}
+              </ReactMarkdown>
+            </div>
             {linkText && (
               <Link href={linkUrl} className="global-generics-portfolio__link">
                 {linkText}

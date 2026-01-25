@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../../scss/components/specialty/SpecialtyBrazil.scss';
 
 export default function SpecialtyBrazil({ data }) {
@@ -44,9 +47,15 @@ export default function SpecialtyBrazil({ data }) {
 
           {/* First Paragraph */}
           <div className="specialty-brazil__intro" data-node-id="2957:1460">
-            <p className="specialty-brazil__paragraph">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: ({ children }) => <p className="specialty-brazil__paragraph">{children}</p>,
+              }}
+            >
               {contentData.paragraphs[0]}
-            </p>
+            </ReactMarkdown>
           </div>
 
           {/* Button */}
@@ -81,9 +90,15 @@ export default function SpecialtyBrazil({ data }) {
 
           {/* Second Paragraph */}
           <div className="specialty-brazil__section" data-node-id="2957:1463">
-            <p className="specialty-brazil__paragraph">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: ({ children }) => <p className="specialty-brazil__paragraph">{children}</p>,
+              }}
+            >
               {contentData.paragraphs[1]}
-            </p>
+            </ReactMarkdown>
           </div>
         </div>
 

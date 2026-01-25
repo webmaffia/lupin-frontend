@@ -1,6 +1,9 @@
 'use client';
 
 import Image from 'next/image';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/GlobalGenericsIntro.scss';
 
 export default function GlobalGenericsIntro({ data }) {
@@ -14,18 +17,37 @@ export default function GlobalGenericsIntro({ data }) {
   const introData = data || defaultData;
   const content = introData?.content || introData?.paragraphs || introData?.text || defaultData.content;
 
+  const CustomParagraph = ({ children }) => {
+    return <p className="global-generics-intro__paragraph">{children}</p>;
+  };
+
   return (
     <section className="global-generics-intro" data-node-id="3112:602">
       <div className="global-generics-intro__container">
         <div className="global-generics-intro__content">
           {Array.isArray(content) ? (
             content.map((paragraph, index) => (
-              <p key={index} className="global-generics-intro__paragraph">
+              <ReactMarkdown
+                key={index}
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: CustomParagraph,
+                }}
+              >
                 {paragraph}
-              </p>
+              </ReactMarkdown>
             ))
           ) : (
-            <p className="global-generics-intro__paragraph">{content}</p>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: CustomParagraph,
+              }}
+            >
+              {content}
+            </ReactMarkdown>
           )}
         </div>
         <div className="global-generics-intro__line">

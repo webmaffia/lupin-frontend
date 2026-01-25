@@ -1,5 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../../scss/components/specialty/SpecialtyCanada.scss';
 
 export default function SpecialtyCanada({ data }) {
@@ -59,9 +62,16 @@ export default function SpecialtyCanada({ data }) {
           {/* Intro Paragraphs */}
           <div className="specialty-canada__intro" data-node-id="2957:1500">
             {contentData.paragraphs.map((paragraph, index) => (
-              <p key={index} className="specialty-canada__paragraph">
+              <ReactMarkdown
+                key={index}
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: ({ children }) => <p className="specialty-canada__paragraph">{children}</p>,
+                }}
+              >
                 {paragraph}
-              </p>
+              </ReactMarkdown>
             ))}
           </div>
 

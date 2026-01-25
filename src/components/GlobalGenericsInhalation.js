@@ -1,6 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/GlobalGenericsInhalation.scss';
 
 export default function GlobalGenericsInhalation({ data }) {
@@ -25,9 +28,17 @@ export default function GlobalGenericsInhalation({ data }) {
         <h2 className="global-generics-inhalation__heading">
           {heading}
         </h2>
-        <p className="global-generics-inhalation__description">
-          {description}
-        </p>
+        <div className="global-generics-inhalation__description">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+            components={{
+              p: ({ children }) => <p className="global-generics-inhalation__description-text">{children}</p>,
+            }}
+          >
+            {description}
+          </ReactMarkdown>
+        </div>
         {linkText && (
           <Link href={linkUrl} className="global-generics-inhalation__link">
             {linkText}

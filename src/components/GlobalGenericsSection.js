@@ -1,5 +1,8 @@
 'use client';
 
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import '../scss/components/GlobalGenericsSection.scss';
 
 export default function GlobalGenericsSection({ data }) {
@@ -15,6 +18,10 @@ export default function GlobalGenericsSection({ data }) {
   const heading = sectionData?.heading || sectionData?.title || defaultData.heading;
   const content = sectionData?.content || sectionData?.paragraphs || sectionData?.text || defaultData.content;
 
+  const CustomParagraph = ({ children }) => {
+    return <p className="global-generics-section__paragraph">{children}</p>;
+  };
+
   return (
     <section className="global-generics-section" data-node-id="3113:603">
       <div className="global-generics-section__container">
@@ -24,12 +31,27 @@ export default function GlobalGenericsSection({ data }) {
         <div className="global-generics-section__content">
           {Array.isArray(content) ? (
             content.map((paragraph, index) => (
-              <p key={index} className="global-generics-section__paragraph">
+              <ReactMarkdown
+                key={index}
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: CustomParagraph,
+                }}
+              >
                 {paragraph}
-              </p>
+              </ReactMarkdown>
             ))
           ) : (
-            <p className="global-generics-section__paragraph">{content}</p>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw]}
+              components={{
+                p: CustomParagraph,
+              }}
+            >
+              {content}
+            </ReactMarkdown>
           )}
         </div>
       </div>
