@@ -28,7 +28,11 @@ export default function OurStoryPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/images/our-story/desktopbanner.webp",
+        alt: "Our Story - Lupin"
+      },
+      bannerMobile: {
+        url: "/assets/images/our-story/mobile.webp",
         alt: "Our Story - Lupin"
       },
       petal: {

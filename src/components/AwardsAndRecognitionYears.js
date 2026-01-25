@@ -4,117 +4,43 @@ import React from 'react';
 import Image from 'next/image';
 import '@/scss/components/AwardsAndRecognitionYears.scss';
 
-// Awards data for each year
-const awardsData = {
-  2023: [
-    "Acquisition of Five Brands from Menarini",
-    "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-    "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-    "Acquisition of ONDERO® and ONDERO MET®",
-    "Launch of Spiriva (Tiotropium DPI) in the United States",
-    "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-    "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-    "Acquisition of French company Medisol",
-    "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc.",
-    "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business"
-  ],
-  2022: [
-    "Acquisition of Five Brands from Menarini",
-    "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-    "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-    "Acquisition of ONDERO® and ONDERO MET®",
-    "Launch of Spiriva (Tiotropium DPI) in the United States",
-    "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-    "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-    "Acquisition of French company Medisol",
-    "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc.",
-    "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business"
-  ],
-  2021: [
-    "Acquisition of Five Brands from Menarini",
-    "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-    "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-    "Acquisition of ONDERO® and ONDERO MET®",
-    "Launch of Spiriva (Tiotropium DPI) in the United States",
-    "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-    "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-    "Acquisition of French company Medisol",
-    "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc.",
-    "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business"
-  ],
-  2020: [
-    "Acquisition of Five Brands from Menarini",
-    "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-    "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-    "Acquisition of ONDERO® and ONDERO MET®",
-    "Launch of Spiriva (Tiotropium DPI) in the United States",
-    "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-    "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-    "Acquisition of French company Medisol",
-    "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc.",
-    "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business"
-  ],
-  2019: [
-    "Acquisition of Five Brands from Menarini",
-    "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-    "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-    "Acquisition of ONDERO® and ONDERO MET®",
-    "Launch of Spiriva (Tiotropium DPI) in the United States",
-    "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-    "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-    "Acquisition of French company Medisol",
-    "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc.",
-    "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business"
-  ],
-  2018: [
-    "Acquisition of Five Brands from Menarini",
-    "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-    "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-    "Acquisition of ONDERO® and ONDERO MET®",
-    "Launch of Spiriva (Tiotropium DPI) in the United States",
-    "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-    "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-    "Acquisition of French company Medisol",
-    "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc.",
-    "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business"
-  ],
-  2017: [
-    "Acquisition of Five Brands from Menarini",
-    "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-    "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-    "Acquisition of ONDERO® and ONDERO MET®",
-    "Launch of Spiriva (Tiotropium DPI) in the United States",
-    "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-    "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-    "Acquisition of French company Medisol",
-    "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc.",
-    "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business"
-  ]
-};
-
-export default function AwardsAndRecognitionYears({ activeYear: externalActiveYear, onYearChange }) {
-  const activeYear = externalActiveYear || 2023;
-  const awards = awardsData[activeYear] || [];
-  const yearPrefix = Math.floor(activeYear / 100); // "20" for 2023
+export default function AwardsAndRecognitionYears({ 
+  activeYear: externalActiveYear, 
+  awardsData = {},
+  years = [],
+  onYearChange 
+}) {
+  const activeYear = externalActiveYear || (years.length > 0 ? years[0] : null);
+  const awards = activeYear ? (awardsData[activeYear] || []) : [];
+  const yearPrefix = activeYear ? Math.floor(activeYear / 100) : '20'; // "20" for 2023
   
-  // Years array for vertical slider
-  const years = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017];
-  const activeIndex = years.indexOf(activeYear);
+  // Use provided years array or fallback
+  const yearsList = years.length > 0 ? years : [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017];
+  const activeIndex = yearsList.indexOf(activeYear);
   
   // Get years to display (previous, active, next) with infinite loop
   const getDisplayYears = () => {
+    if (!activeYear || yearsList.length === 0 || activeIndex === -1) {
+      return { prevYear: null, activeYear: null, nextYear: null };
+    }
+    
     // Calculate previous year (loop to end if at start)
-    const prevIndex = activeIndex === 0 ? years.length - 1 : activeIndex - 1;
-    const prevYear = years[prevIndex];
+    const prevIndex = activeIndex === 0 ? yearsList.length - 1 : activeIndex - 1;
+    const prevYear = yearsList[prevIndex];
     
     // Calculate next year (loop to start if at end)
-    const nextIndex = activeIndex === years.length - 1 ? 0 : activeIndex + 1;
-    const nextYear = years[nextIndex];
+    const nextIndex = activeIndex === yearsList.length - 1 ? 0 : activeIndex + 1;
+    const nextYear = yearsList[nextIndex];
     
     return { prevYear, activeYear, nextYear };
   };
   
   const { prevYear, activeYear: currentActiveYear, nextYear } = getDisplayYears();
+  
+  // Don't render if no active year
+  if (!activeYear || !currentActiveYear) {
+    return null;
+  }
 
   return (
     <section className="awards-and-recognition-years" data-node-id="2936:181">
@@ -138,7 +64,7 @@ export default function AwardsAndRecognitionYears({ activeYear: externalActiveYe
                 data-node-id="2936:331"
                 key={`prev-${prevYear}`}
               >
-                {prevYear.toString().slice(-2)}
+                {prevYear ? prevYear.toString().slice(-2) : ''}
               </p>
               <p 
                 className="awards-and-recognition-years__year awards-and-recognition-years__year--active"
