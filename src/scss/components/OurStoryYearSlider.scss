@@ -8,8 +8,9 @@
   width: 100%;
   background-color: #08A03F;
   padding: vw(50) 0 vw(100);
-  overflow: hidden;
-  min-height: vw(1000); // Ensure enough height for vertical slider
+  overflow: visible; // Allow all years to be visible
+  // Height needs to show 3 full years: vw(1319)
+  min-height: vw(1319);
   
   @include media('tablet') {
     padding: vw(40, 768) 0 vw(80, 768);
@@ -21,7 +22,24 @@
     min-height: auto;
   }
 
-  // Vertical Slider Wrapper - Left Side
+  // Container Inner - Wraps vertical slider and slide content
+  &__container-inner {
+    position: relative;
+    width: 100%;
+    // Height needs to accommodate 3 full years: vw(243) + vw(295) + vw(243) + vw(295) + vw(243) = vw(1319)
+    min-height: vw(1319);
+    
+    @include media('tablet') {
+      // Tablet: vw(180) + vw(200) + vw(180) + vw(200) + vw(180) = vw(940)
+      min-height: vw(940, 768);
+    }
+    
+    @include media('mobile') {
+      min-height: auto;
+    }
+  }
+
+  // Vertical Slider Wrapper - Left Side (Absolute Position)
   &__vertical-wrapper {
     position: absolute;
     left: 0;
@@ -29,7 +47,7 @@
     width: vw(900); // Increased width to accommodate "20" prefix + year digits
     height: 100%;
     z-index: 10; // Higher z-index to overlap slide container
-    overflow: visible; // Allow content to be visible
+    overflow: visible; // Allow partial visibility of adjacent years
     
     @include media('tablet') {
       width: vw(650, 768);
@@ -40,6 +58,17 @@
       width: 100%;
       height: auto;
       margin-bottom: vw-mobile(30, 414);
+    }
+  }
+
+  // Slide Content Wrapper - Full Width
+  &__slide-content-wrapper {
+    position: relative;
+    width: 100%;
+    z-index: 1;
+    
+    @include media('mobile') {
+      width: 100%;
     }
   }
 

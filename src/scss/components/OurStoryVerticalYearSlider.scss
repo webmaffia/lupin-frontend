@@ -8,10 +8,11 @@
   width: 100%;
   height: 100%;
   z-index: 2;
-  overflow: visible; // Allow content to be visible
+  overflow: visible; // Allow partial visibility of adjacent years
   
   @include media('mobile') {
     height: auto;
+    overflow: visible;
   }
 
   // Fixed "20" prefix in the middle
@@ -55,9 +56,14 @@
     scroll-behavior: smooth;
     scrollbar-width: none; // Firefox
     -ms-overflow-style: none; // IE and Edge
-    // Add top and bottom padding to allow first/last items to center
-    // Left padding matches "20" prefix position, right padding for spacing
-    padding: vw(500) vw(83) vw(500) vw(500); // Large top/bottom and right padding allows centering of first/last items
+    // Padding calculation to show all 3 years (previous, active, next) fully visible
+    // Year height: vw(243), Gap: vw(295)
+    // To show 3 years: need space = vw(243) + vw(295) + vw(243) + vw(295) + vw(243) = vw(1319)
+    // Container height: vw(1000)
+    // When active year is centered at vw(500), we need:
+    // - Top padding: enough to show full year above = vw(243) + vw(295) = vw(538)
+    // - Bottom padding: enough to show full year below = vw(243) + vw(295) = vw(538)
+    padding: vw(538) vw(83) vw(538) vw(500);
     
     &::-webkit-scrollbar {
       display: none; // Chrome, Safari, Opera
@@ -65,7 +71,9 @@
     
     @include media('tablet') {
       gap: vw(200, 768);
-      padding: vw(400, 768) vw(50, 768) vw(400, 768) 0;
+      // Year height on tablet: vw(180), Gap: vw(200)
+      // Top/Bottom padding: vw(180) + vw(200) = vw(380)
+      padding: vw(380, 768) vw(50, 768) vw(380, 768) 0;
     }
     
     @include media('mobile') {
@@ -92,7 +100,6 @@
     border: none;
     cursor: pointer;
     transition: opacity $transition-base;
-    opacity: 0.1; // Default opacity for non-active years
     position: relative;
     flex-shrink: 0;
     min-width: max-content;
