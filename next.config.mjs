@@ -9,58 +9,32 @@ function getStrapiImagePattern() {
     const protocol = url.protocol.replace(':', '') || 'http';
     const hostname = url.hostname;
     
-    // Build pattern objects - support both HTTP and HTTPS for production
-    const patterns = [];
-    
-    // Add HTTP pattern (for development)
-    const httpPattern = {
-      protocol: 'http',
+    // Build pattern object
+    const pattern = {
+      protocol,
       hostname,
       pathname: '/uploads/**',
     };
     
     // Only add port if it's not the default port
-    const defaultHttpPort = '80';
-    if (url.port && url.port !== defaultHttpPort) {
-      httpPattern.port = url.port;
+    const defaultPort = protocol === 'https' ? '443' : '80';
+    if (url.port && url.port !== defaultPort) {
+      pattern.port = url.port;
     }
-    patterns.push(httpPattern);
-    
-    // Add HTTPS pattern (for production/Vercel to avoid mixed content issues)
-    const httpsPattern = {
-      protocol: 'https',
-      hostname,
-      pathname: '/uploads/**',
-    };
-    
-    // Only add port if it's not the default port
-    const defaultHttpsPort = '443';
-    if (url.port && url.port !== defaultHttpsPort) {
-      httpsPattern.port = url.port;
-    }
-    patterns.push(httpsPattern);
     
     // Log pattern for debugging (will show in build logs)
-    console.log(`[Next.js Config] Image remotePatterns for Strapi:`, JSON.stringify(patterns, null, 2));
+    console.log(`[Next.js Config] Image remotePattern for Strapi:`, JSON.stringify(pattern, null, 2));
     console.log(`[Next.js Config] Strapi URL: ${strapiUrl}`);
     
-    return patterns;
+    return pattern;
   } catch (error) {
     console.warn('Invalid NEXT_PUBLIC_STRAPI_URL, using default localhost pattern');
-    return [
-      {
-        protocol: 'http',
-        hostname: '65.2.155.211',
-        port: '1380',
-        pathname: '/uploads/**',
-      },
-      {
-        protocol: 'https',
-        hostname: '65.2.155.211',
-        port: '1380',
-        pathname: '/uploads/**',
-      },
-    ];
+    return {
+      protocol: 'http',
+      hostname: '65.2.155.211',
+      port: '1380',
+      pathname: '/uploads/**',
+    };
   }
 }
 
@@ -184,8 +158,7 @@ const nextConfig = {
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 60,
     remotePatterns: [
-      // Spread the patterns array returned by getStrapiImagePattern()
-      ...getStrapiImagePattern(),
+      getStrapiImagePattern(),
       // Allow images from www.lupin.com
       {
         protocol: 'https',
