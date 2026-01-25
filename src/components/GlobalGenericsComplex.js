@@ -20,6 +20,9 @@ export default function GlobalGenericsComplex({ data }) {
   const imageUrl = complexData?.image?.url || complexData?.image || defaultData.image.url;
   const imageAlt = complexData?.image?.alt || complexData?.imageAlt || defaultData.image.alt;
 
+  // Don't render image if URL is empty or null
+  const hasImage = imageUrl && imageUrl.trim() !== '';
+
   return (
     <section className="global-generics-complex" data-node-id="3114:619">
       <div className="global-generics-complex__content">
@@ -48,17 +51,19 @@ export default function GlobalGenericsComplex({ data }) {
             />
           </div>
         </div>
-        <div className="global-generics-complex__right">
-          <div className="global-generics-complex__image-wrapper">
-            <Image
-              src={imageUrl}
-              alt={imageAlt}
-              fill
-              className="global-generics-complex__image"
-              quality={100}
-            />
+        {hasImage && (
+          <div className="global-generics-complex__right">
+            <div className="global-generics-complex__image-wrapper">
+              <Image
+                src={imageUrl}
+                alt={imageAlt}
+                fill
+                className="global-generics-complex__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );

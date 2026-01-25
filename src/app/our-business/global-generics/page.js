@@ -18,22 +18,30 @@ export const metadata = generateSEOMetadata({
 });
 
 export default async function GlobalGenericsPage() {
-  // Fetch data from Strapi
-  let bannerData = null;
+  // Fetch data from Strapi with specific populate query (single API call)
+  // Include image population for subSectionOne and subSectionTwo if they exist
+  const populateQuery = 'populate[description][populate]=*&populate[genericsAndComplexGenerics][populate][subSectionOne][populate][image][populate]=*&populate[genericsAndComplexGenerics][populate][subSectionTwo][populate][image][populate]=*&populate[ourInhalationBusiness][populate]=*&populate[hero][populate]=*&populate[regionalPresence][populate]=*';
+
+  let strapiData = null;
 
   try {
-    const strapiData = await fetchAPI('global-generics?populate=deep', {
+    strapiData = await fetchAPI(`global-generics?${populateQuery}`, {
       next: { revalidate: 60 },
     });
-    
-    // Map TopBanner data for InnerBanner
-    const data = strapiData?.data || strapiData;
-    if (data?.TopBanner) {
-      bannerData = mapTopBannerData(data.TopBanner);
-    }
   } catch (error) {
     console.error('Error fetching global-generics data from Strapi:', error);
-    // Will use default data below
+  }
+
+  // Map hero data for InnerBanner (new API uses 'hero' instead of 'TopBanner')
+  let bannerData = null;
+  if (strapiData) {
+    const data = strapiData?.data || strapiData;
+    if (data?.hero) {
+      bannerData = mapTopBannerData(data.hero);
+    } else if (data?.TopBanner) {
+      // Fallback to old structure
+      bannerData = mapTopBannerData(data.TopBanner);
+    }
   }
 
   // Default banner data if Strapi data is not available
@@ -43,7 +51,7 @@ export default async function GlobalGenericsPage() {
         line1: "Global",
         line2: "Generics"
       },
-      subheading: {
+      subHeading: {
         enabled: false,
         text: ""
       },
@@ -64,18 +72,8 @@ export default async function GlobalGenericsPage() {
     };
   }
 
-  // Fetch intro data from Strapi
-  let introData = null;
-
-  try {
-    const strapiData = await fetchAPI('global-generics?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    introData = mapGlobalGenericsIntroData(strapiData);
-  } catch (error) {
-    console.error('Error fetching global-generics intro data from Strapi:', error);
-  }
+  // Map intro data from Strapi
+  let introData = strapiData ? mapGlobalGenericsIntroData(strapiData) : null;
 
   // Default intro data if Strapi data is not available
   if (!introData) {
@@ -87,18 +85,8 @@ export default async function GlobalGenericsPage() {
     };
   }
 
-  // Fetch section data from Strapi
-  let sectionData = null;
-
-  try {
-    const strapiData = await fetchAPI('global-generics?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    sectionData = mapGlobalGenericsSectionData(strapiData);
-  } catch (error) {
-    console.error('Error fetching global-generics section data from Strapi:', error);
-  }
+  // Map section data from Strapi
+  let sectionData = strapiData ? mapGlobalGenericsSectionData(strapiData) : null;
 
   // Default section data if Strapi data is not available
   if (!sectionData) {
@@ -111,18 +99,8 @@ export default async function GlobalGenericsPage() {
     };
   }
 
-  // Fetch portfolio data from Strapi
-  let portfolioData = null;
-
-  try {
-    const strapiData = await fetchAPI('global-generics?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    portfolioData = mapGlobalGenericsPortfolioData(strapiData);
-  } catch (error) {
-    console.error('Error fetching global-generics portfolio data from Strapi:', error);
-  }
+  // Map portfolio data from Strapi
+  let portfolioData = strapiData ? mapGlobalGenericsPortfolioData(strapiData) : null;
 
   // Default portfolio data if Strapi data is not available
   if (!portfolioData) {
@@ -139,18 +117,8 @@ export default async function GlobalGenericsPage() {
     };
   }
 
-  // Fetch complex data from Strapi
-  let complexData = null;
-
-  try {
-    const strapiData = await fetchAPI('global-generics?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    complexData = mapGlobalGenericsComplexData(strapiData);
-  } catch (error) {
-    console.error('Error fetching global-generics complex data from Strapi:', error);
-  }
+  // Map complex data from Strapi
+  let complexData = strapiData ? mapGlobalGenericsComplexData(strapiData) : null;
 
   // Default complex data if Strapi data is not available
   if (!complexData) {
@@ -166,18 +134,8 @@ export default async function GlobalGenericsPage() {
     };
   }
 
-  // Fetch inhalation data from Strapi
-  let inhalationData = null;
-
-  try {
-    const strapiData = await fetchAPI('global-generics?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    inhalationData = mapGlobalGenericsInhalationData(strapiData);
-  } catch (error) {
-    console.error('Error fetching global-generics inhalation data from Strapi:', error);
-  }
+  // Map inhalation data from Strapi
+  let inhalationData = strapiData ? mapGlobalGenericsInhalationData(strapiData) : null;
 
   // Default inhalation data if Strapi data is not available
   if (!inhalationData) {
@@ -191,18 +149,8 @@ export default async function GlobalGenericsPage() {
     };
   }
 
-  // Fetch regional presence data from Strapi
-  let regionalPresenceData = null;
-
-  try {
-    const strapiData = await fetchAPI('global-generics?populate=deep', {
-      next: { revalidate: 60 },
-    });
-    
-    regionalPresenceData = mapGlobalGenericsRegionalPresenceData(strapiData);
-  } catch (error) {
-    console.error('Error fetching global-generics regional presence data from Strapi:', error);
-  }
+  // Map regional presence data from Strapi
+  let regionalPresenceData = strapiData ? mapGlobalGenericsRegionalPresenceData(strapiData) : null;
 
   // Default regional presence data if Strapi data is not available
   if (!regionalPresenceData) {

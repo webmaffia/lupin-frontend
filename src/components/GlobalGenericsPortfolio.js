@@ -24,20 +24,25 @@ export default function GlobalGenericsPortfolio({ data }) {
   const imageUrl = portfolioData?.image?.url || portfolioData?.image || defaultData.image.url;
   const imageAlt = portfolioData?.image?.alt || portfolioData?.imageAlt || defaultData.image.alt;
 
+  // Don't render image if URL is empty or null
+  const hasImage = imageUrl && imageUrl.trim() !== '';
+
   return (
     <section className="global-generics-portfolio" data-node-id="3030:2227">
       <div className="global-generics-portfolio__content">
-        <div className="global-generics-portfolio__left">
-          <div className="global-generics-portfolio__image-wrapper">
-            <Image
-              src={imageUrl}
-              alt={imageAlt}
-              fill
-              className="global-generics-portfolio__image"
-              quality={100}
-            />
+        {hasImage && (
+          <div className="global-generics-portfolio__left">
+            <div className="global-generics-portfolio__image-wrapper">
+              <Image
+                src={imageUrl}
+                alt={imageAlt}
+                fill
+                className="global-generics-portfolio__image"
+                quality={100}
+              />
+            </div>
           </div>
-        </div>
+        )}
         <div className="global-generics-portfolio__right">
           <div className="global-generics-portfolio__background"></div>
           <div className="global-generics-portfolio__petals">
