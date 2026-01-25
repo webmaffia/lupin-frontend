@@ -2999,15 +2999,16 @@ export async function getLeadership() {
 export async function getLeaders() {
   // Populate all nested components and media
   // Following the structure:
-  // - LeaderName, ProfileImage, slug, Designation, LeadershipType, DetailDescription, EducationDetail
-  // - Age, Nationality, Tenure, Appointed, CommitteeMembership, isActive, cta, Pdf, DisplayOrder
+  // - LeaderName (Text), ProfileImage (Media), slug (UID), Designation (Text)
+  // - DetailDescription (Rich text Markdown), EducationDetail (Rich text Markdown)
+  // - Age (Text), Nationality (Text), Tenure (Text), Appointed (Date)
+  // - CommitteeMembership (Rich text Markdown), isActive (Boolean)
+  // - cta (Component with text, href), Pdf (Media), DisplayOrder (Text), PdfTitle (Text)
   // - Committee boolean fields: strategy_committee, audit_committee, stakeholders_relationship_committee,
   //   nomination_remuneration_committee, sustainability_csr_committee, risk_management_committee,
   //   board_of_directors, management_team
   const populateQuery = [
-    'populate[ProfileImage][populate]=*',
-    'populate[cta][populate]=*',
-    'populate[Pdf][populate]=*',
+    'populate=*',
     'filters[isActive][$eq]=true',
     'sort=DisplayOrder:asc'
   ].join('&');
