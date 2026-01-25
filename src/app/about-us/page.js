@@ -164,15 +164,6 @@ export default async function AboutUsPage() {
                 );
               });
             })()}
-
-            {/* View All CTA */}
-            {redirectSection && (
-              <div className="about-us-content__view-all">
-                <Link href={redirectSection.href || '#'} className="about-us-content__view-all-button">
-                  <span className="about-us-content__view-all-text">{redirectSection.text || 'view all'}</span>
-                </Link>
-              </div>
-            )}
           </div>
         </div>
       </section>
