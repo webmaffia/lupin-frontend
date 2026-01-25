@@ -20,22 +20,22 @@
     background-position: right vw-mobile(100, 414) bottom 0;
   }
   
-  &__year-selector-wrapper {
-    position: relative;
-    width: 100%;
-    background-color: #08A03F;
-    padding: vw(60) 0;
-    padding-bottom: vw(300);
-    
-    @include media('tablet') {
-      padding: vw(50, 768) 0;
-      padding-bottom: vw(300, 768);
-    }
-    
-    @include media('mobile') {
-      padding: vw-mobile(40, 414) 0;
-      padding-bottom: vw-mobile(300, 414);
-    }
-  }
+      &__year-selector-wrapper {
+        position: relative;
+        width: 100%;
+        background-color: #08A03F;
+        padding: vw(60) 0;
+        padding-bottom: vw(300);
+        
+        @include media('tablet') {
+          padding: vw(50, 768) 0;
+          padding-bottom: vw(300, 768);
+        }
+        
+        @include media('mobile') {
+          padding: vw-mobile(40, 414) 0;
+          padding-bottom: 0;
+        }
+      }
 }
 

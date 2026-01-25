@@ -88,6 +88,10 @@
     
     @include media('mobile') {
       gap: vw-mobile(25, 414);
+      scroll-snap-type: x mandatory;
+      scroll-padding: 0 50%;
+      padding-left: 50%;
+      padding-right: 50%;
     }
   }
   
@@ -121,6 +125,14 @@
     @include media('mobile') {
       font-size: vw-mobile(28, 414);
       line-height: vw-mobile(36, 414);
+      scroll-snap-align: center;
+    }
+    
+    &--active {
+      @include media('mobile') {
+        scroll-snap-align: center;
+        position: relative;
+      }
     }
   }
 }

@@ -51,26 +51,76 @@ export default function OurStoryYearSelector({ years = [], activeYear, onYearCha
   }, [currentActiveYear]);
 
   useEffect(() => {
-    // Scroll to active year when it changes
-    if (scrollContainerRef.current && currentActiveYear) {
-      setTimeout(() => {
-        const yearButtons = Array.from(scrollContainerRef.current.querySelectorAll('.our-story-year-selector__year'));
+    // Scroll to active year when it changes - ensure it's centered on mobile
+    const centerActiveYear = () => {
+      if (scrollContainerRef.current && currentActiveYear) {
+        const container = scrollContainerRef.current;
+        const yearButtons = Array.from(container.querySelectorAll('.our-story-year-selector__year'));
         const targetButton = yearButtons.find(btn => parseInt(btn.textContent.trim()) === currentActiveYear);
+        
         if (targetButton) {
-          const container = scrollContainerRef.current;
-          const buttonLeft = targetButton.offsetLeft;
-          const buttonWidth = targetButton.offsetWidth;
-          const containerWidth = container.clientWidth;
+          const isMobile = window.innerWidth <= 768;
           
-          const targetScroll = buttonLeft - (containerWidth / 2) + (buttonWidth / 2);
-          
-          container.scrollTo({
-            left: Math.max(0, targetScroll),
-            behavior: 'smooth'
-          });
+          if (isMobile) {
+            // On mobile: center the active year
+            // Wait for layout to settle
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                const buttonRect = targetButton.getBoundingClientRect();
+                const containerRect = container.getBoundingClientRect();
+                const containerWidth = containerRect.width;
+                const buttonWidth = buttonRect.width;
+                const buttonLeft = targetButton.offsetLeft;
+                
+                // Calculate scroll position to center the button
+                const targetScroll = buttonLeft - (containerWidth / 2) + (buttonWidth / 2);
+                
+                container.scrollTo({
+                  left: Math.max(0, targetScroll),
+                  behavior: 'smooth'
+                });
+                
+                // Double-check after scroll animation
+                setTimeout(() => {
+                  const newButtonLeft = targetButton.offsetLeft;
+                  const newContainerWidth = container.clientWidth;
+                  const newTargetScroll = newButtonLeft - (newContainerWidth / 2) + (buttonWidth / 2);
+                  container.scrollTo({
+                    left: Math.max(0, newTargetScroll),
+                    behavior: 'smooth'
+                  });
+                }, 400);
+              });
+            });
+          } else {
+            // Desktop: normal centering
+            const buttonLeft = targetButton.offsetLeft;
+            const buttonWidth = targetButton.offsetWidth;
+            const containerWidth = container.clientWidth;
+            const targetScroll = buttonLeft - (containerWidth / 2) + (buttonWidth / 2);
+            
+            container.scrollTo({
+              left: Math.max(0, targetScroll),
+              behavior: 'smooth'
+            });
+          }
         }
-      }, 100);
-    }
+      }
+    };
+    
+    // Initial centering with multiple attempts for mobile
+    setTimeout(centerActiveYear, 150);
+    setTimeout(centerActiveYear, 400);
+    
+    // Also center on window resize
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setTimeout(centerActiveYear, 150);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [currentActiveYear]);
 
   const scroll = (direction) => {

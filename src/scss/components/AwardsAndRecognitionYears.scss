@@ -258,14 +258,7 @@
     }
     
     @include media('mobile') {
-      position: relative;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: auto;
-      margin-bottom: vw-mobile(30, 414);
-      gap: vw-mobile(50, 414);
-      
+      display: none;
     }
   }
 
