@@ -973,7 +973,6 @@ export async function getCodeOfConduct() {
   const populateQuery = [
     'populate[TopBanner][populate][DesktopImage][populate]=*',
     'populate[TopBanner][populate][MobileImage][populate]=*',
-    'populate[CodeOfConductDocumentsSection][populate][Pdf][populate]=*',
     'populate[DocumentSection][populate][Pdf][populate]=*',
     'populate[DocumentSection][populate][LangaugePdfDocument][populate][Pdf][populate]=*'
   ].join('&');
