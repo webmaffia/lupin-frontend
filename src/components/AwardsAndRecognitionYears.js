@@ -128,22 +128,29 @@ export default function AwardsAndRecognitionYears({ activeYear: externalActiveYe
             </p>
 
             {/* Vertical Year Slider - Static HTML with Infinite Loop */}
-            <div className="awards-and-recognition-years__year-slider-wrapper" data-node-id="2936:330">
+            <div 
+              className="awards-and-recognition-years__year-slider-wrapper" 
+              data-node-id="2936:330"
+              key={activeYear}
+            >
               <p 
                 className="awards-and-recognition-years__year awards-and-recognition-years__year--inactive"
                 data-node-id="2936:331"
+                key={`prev-${prevYear}`}
               >
                 {prevYear.toString().slice(-2)}
               </p>
               <p 
                 className="awards-and-recognition-years__year awards-and-recognition-years__year--active"
                 data-node-id="2936:332"
+                key={`active-${currentActiveYear}`}
               >
                 {currentActiveYear.toString().slice(-2)}
               </p>
               <p 
                 className="awards-and-recognition-years__year awards-and-recognition-years__year--inactive"
                 data-node-id="2936:333"
+                key={`next-${nextYear}`}
               >
                 {nextYear.toString().slice(-2)}
               </p>

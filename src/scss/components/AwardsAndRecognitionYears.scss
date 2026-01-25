@@ -6,7 +6,6 @@
 .awards-and-recognition-years {
   position: relative;
   width: 100%;
-  background-color: #08A03F;
   padding: 0;
   overflow: visible;
   min-height: vw(1319);
@@ -245,6 +244,8 @@
     align-items: flex-start;
     gap: vw(295);
     justify-content: center;
+    transition: transform 0.5s ease-in-out;
+    
     
     @include media('tablet') {
       left: vw(50, 768);
@@ -253,6 +254,7 @@
       height: auto;
       min-height: vw(600, 768);
       gap: vw(295, 768);
+  
     }
     
     @include media('mobile') {
@@ -263,6 +265,7 @@
       height: auto;
       margin-bottom: vw-mobile(30, 414);
       gap: vw-mobile(50, 414);
+      
     }
   }
 
@@ -279,6 +282,7 @@
     position: relative;
     flex-shrink: 0;
     white-space: nowrap;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
     
     @include media('tablet') {
       font-size: vw(200, 768);
@@ -295,6 +299,29 @@
     // Active state - full opacity
     &--active {
       opacity: 1;
+      transform: scale(1);
+      background-color: #126430;
+      padding-top: vw(58);
+      padding-bottom: vw(58);
+      padding-left: vw(20);
+      padding-right: vw(20);
+      border-radius: vw(48);
+      
+      @include media('tablet') {
+        padding-top: vw(58, 768);
+        padding-bottom: vw(58, 768);
+        padding-left: vw(20, 768);
+        padding-right: vw(20, 768);
+        border-radius: vw(48, 768);
+      }
+      
+      @include media('mobile') {
+        padding-top: vw-mobile(58, 414);
+        padding-bottom: vw-mobile(58, 414);
+        padding-left: vw-mobile(20, 414);
+        padding-right: vw-mobile(20, 414);
+        border-radius: vw-mobile(48, 414);
+      }
     }
     
     // Inactive years
@@ -302,6 +329,7 @@
       opacity: 0.5;
       min-width: 100%;
       width: min-content;
+      transform: scale(0.9);
     }
   }
 }

@@ -1,4 +1,6 @@
 import InnerBanner from '@/components/InnerBanner';
+import OurStorySvgOverlay from '@/components/OurStorySvgOverlay';
+import HeroGradientSection from '@/components/HeroGradientSection';
 import OurStoryAlternatingSection from '@/components/OurStoryAlternatingSection';
 import OurStoryDidYouKnow from '@/components/OurStoryDidYouKnow';
 import OurStorySection from '@/components/OurStorySection';
@@ -63,6 +65,8 @@ export default function OurStoryPage() {
   return (
     <>
       <InnerBanner data={bannerData} />
+      <OurStorySvgOverlay />
+      <HeroGradientSection />
       {sections.map((section, index) => (
         <OurStoryAlternatingSection
           key={index}
