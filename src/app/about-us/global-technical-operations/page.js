@@ -1,7 +1,6 @@
 import InnerBanner from '@/components/InnerBanner';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getOurManufacturingApproach, mapOurManufacturingApproachData } from '@/lib/strapi-pages';
-import { getImageUrl } from '@/lib/image-proxy';
 import GTOTabs from './components/GTOTabs';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -62,7 +61,7 @@ export default async function GlobalTechnicalOperationsPage() {
                 {/* Background Petals SVG */}
                 <div className="global-technical-operations-content__bg-petals">
                   <img
-                    src={getImageUrl(gtoData.pageIntroSection.petalImage?.url) || gtoData.pageIntroSection.petalImage?.url || "/assets/global-technical/peatals.svg"}
+                    src={gtoData.pageIntroSection.petalImage?.url || "/assets/global-technical/peatals.svg"}
                     alt={gtoData.pageIntroSection.petalImage?.alt || ""}
                     className="global-technical-operations-content__bg-petals-img"
                   />
@@ -181,7 +180,7 @@ export default async function GlobalTechnicalOperationsPage() {
                             <div className="global-technical-operations-spa__item-icon-inner">
                               {card.icon ? (
                                 <img
-                                  src={getImageUrl(card.icon.url) || card.icon.url}
+                                  src={card.icon.url}
                                   alt={card.icon.alt}
                                   className="global-technical-operations-spa__item-icon-img"
                                 />
@@ -197,7 +196,7 @@ export default async function GlobalTechnicalOperationsPage() {
                         ) : (
                           card.icon ? (
                             <img
-                              src={getImageUrl(card.icon.url) || card.icon.url}
+                              src={card.icon.url}
                               alt={card.icon.alt}
                               className="global-technical-operations-spa__item-icon-img"
                             />
@@ -236,7 +235,7 @@ export default async function GlobalTechnicalOperationsPage() {
                   <div className="global-technical-operations-spa__image-wrapper">
                     <div className="global-technical-operations-spa__image-mask">
                       <img
-                        src={getImageUrl(gtoData.strategicPerformanceAreaSection.image.url) || gtoData.strategicPerformanceAreaSection.image.url}
+                        src={gtoData.strategicPerformanceAreaSection.image.url}
                         alt={gtoData.strategicPerformanceAreaSection.image.alt}
                         className="global-technical-operations-spa__image-img"
                       />
@@ -263,7 +262,7 @@ export default async function GlobalTechnicalOperationsPage() {
           {gtoData.gtoStructureSection.petalImage && (
             <div className="global-technical-operations-structure__bg-petals">
               <img
-                src={getImageUrl(gtoData.gtoStructureSection.petalImage.url) || gtoData.gtoStructureSection.petalImage.url}
+                src={gtoData.gtoStructureSection.petalImage.url}
                 alt={gtoData.gtoStructureSection.petalImage.alt}
                 className="global-technical-operations-structure__bg-petals-img"
               />

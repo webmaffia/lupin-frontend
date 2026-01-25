@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '../scss/components/InnerBanner.scss';
 
 export default function InnerBanner({ data }) {
@@ -48,13 +47,12 @@ export default function InnerBanner({ data }) {
         {bannerData.images?.petal && (
           <div className="inner-banner__petal">
             <Image
-              src={getImageUrl(bannerData.images.petal.url) || bannerData.images.petal.url}
+              src={bannerData.images.petal.url}
               alt={bannerData.images.petal.alt}
               width={400}
               height={400}
               className="inner-banner__petal-img"
               quality={100}
-              unoptimized={isProxiedImage(bannerData.images.petal.url)}
             />
           </div>
         )}

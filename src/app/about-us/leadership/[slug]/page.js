@@ -3,7 +3,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getLeaderBySlug, mapLeaderDetailData } from '@/lib/strapi-reports';
-import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '@/scss/pages/leader-details.scss';
 
 // Generate metadata for the leader details page
@@ -143,12 +142,11 @@ export default async function LeaderDetailsPage({ params }) {
               <div className="leader-profile__image-wrapper">
                 <div className="leader-profile__image-circle">
                   <Image
-                    src={getImageUrl(leaderData.image.url) || leaderData.image.url}
+                    src={leaderData.image.url}
                     alt={leaderData.image.alt || leaderData.name}
                     width={595}
                     height={595}
                     className="leader-profile__image"
-                    unoptimized={isProxiedImage(leaderData.image.url)}
                     quality={100}
                   />
                 </div>

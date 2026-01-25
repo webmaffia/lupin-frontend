@@ -4,7 +4,6 @@ import Image from 'next/image';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '../scss/components/ScienceResearch.scss';
 
 export default function ScienceResearch({ data }) {
@@ -20,12 +19,11 @@ export default function ScienceResearch({ data }) {
         <div className="science-research__left">
           <div className="science-research__image-wrapper">
             <Image
-              src={getImageUrl(imageUrl) || imageUrl}
+              src={imageUrl}
               alt={imageAlt}
               fill
               className="science-research__image"
               quality={100}
-              unoptimized={isProxiedImage(imageUrl)}
             />
           </div>
         </div>

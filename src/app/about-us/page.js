@@ -7,7 +7,6 @@ import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getAboutUs, mapAboutUsData } from '@/lib/strapi-pages';
-import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '@/scss/pages/about-us.scss';
 
 // Generate metadata for the About Us page
@@ -76,12 +75,11 @@ export default async function AboutUsPage() {
 
                 <div className="about-us-content__topfold-petals">
                   <Image
-                    src={getImageUrl(pageIntroData?.image?.url) || pageIntroData?.image?.url || "/assets/about/petalsabout.svg"}
+                    src={pageIntroData?.image?.url || "/assets/about/petalsabout.svg"}
                     alt={pageIntroData?.image?.alt || "Decorative petals"}
                     width={270}
                     height={388}
                     quality={100}
-                    unoptimized={isProxiedImage(pageIntroData?.image?.url)}
                   />
                 </div>
                 {pageIntroData?.description && (
@@ -113,23 +111,21 @@ export default async function AboutUsPage() {
                     <div className="about-us-content__fold-container">
                       <div className={`about-us-content__fold-image about-us-content__fold-image--${fold.imagePosition}`}>
                         <Image
-                          src={getImageUrl(fold.image?.url) || fold.image?.url || "/assets/about/image.png"}
+                          src={fold.image?.url || "/assets/about/image.png"}
                           alt={fold.image?.alt || "About Us"}
                           width={800}
                           height={623}
                           quality={100}
-                          unoptimized={isProxiedImage(fold.image?.url)}
                         />
                       </div>
                       {fold.icon && fold.icon.url && (
                         <div className={`about-us-content__fold-svg about-us-content__fold-svg--${fold.svgPosition}`}>
                           <Image
-                            src={getImageUrl(fold.icon.url) || fold.icon.url}
+                            src={fold.icon.url}
                             alt={fold.icon.alt || "Decorative SVG"}
                             width={fold.svg === 'svg1' ? 251 : 531}
                             height={fold.svg === 'svg1' ? 284 : 384}
                             quality={100}
-                            unoptimized={isProxiedImage(fold.icon.url)}
                           />
                         </div>
                       )}
