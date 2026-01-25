@@ -4,6 +4,10 @@ import Link from 'next/link';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getLeaderBySlug, mapLeaderDetailData } from '@/lib/strapi-reports';
 import '@/scss/pages/leader-details.scss';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 
 // Generate metadata for the leader details page
 export async function generateMetadata({ params }) {
@@ -101,10 +105,7 @@ export default async function LeaderDetailsPage({ params }) {
             <div className="leader-profile__content">
               <div className="leader-profile__info">
                 <h1 className="leader-profile__name">Leader Not Found</h1>
-                <p className="leader-profile__title">The leader you&apos;re looking for doesn&apos;t exist or has been removed.</p>
-                <Link href="/about-us/leadership" className="leader-profile__back-link">
-                  ← Back to Leaders
-                </Link>
+                
               </div>
             </div>
           </div>
@@ -130,11 +131,12 @@ export default async function LeaderDetailsPage({ params }) {
               </div>
               {leaderData.biography && (
                 <div className="leader-profile__biography">
-                  {typeof leaderData.biography === 'string' ? (
-                    <div dangerouslySetInnerHTML={{ __html: leaderData.biography.replace(/\n/g, '<br />') }} />
-                  ) : (
-                    <p>{leaderData.biography}</p>
-                  )}
+                  <ReactMarkdown 
+                    remarkPlugins={[remarkGfm, remarkBreaks]} 
+                    rehypePlugins={[rehypeRaw]}
+                  >
+                    {leaderData.biography}
+                  </ReactMarkdown>
                 </div>
               )}
             </div>
@@ -174,7 +176,14 @@ export default async function LeaderDetailsPage({ params }) {
               </div>
               <div className="leader-education__text">
                 {leaderData.education.map((item, index) => (
-                  <p key={index} dangerouslySetInnerHTML={{ __html: typeof item === 'string' ? item.replace(/\n/g, '<br />') : item }} />
+                  <div key={index}>
+                    <ReactMarkdown 
+                      remarkPlugins={[remarkGfm, remarkBreaks]} 
+                      rehypePlugins={[rehypeRaw]}
+                    >
+                      {typeof item === 'string' ? item : String(item)}
+                    </ReactMarkdown>
+                  </div>
                 ))}
               </div>
             </div>
@@ -227,7 +236,12 @@ export default async function LeaderDetailsPage({ params }) {
                 <h2 className="leader-education__title">Committee Membership</h2>
               </div>
               <div className="leader-education__text">
-                <p dangerouslySetInnerHTML={{ __html: typeof leaderData.committeeMembership === 'string' ? leaderData.committeeMembership.replace(/\n/g, '<br />') : leaderData.committeeMembership }} />
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm, remarkBreaks]} 
+                  rehypePlugins={[rehypeRaw]}
+                >
+                  {leaderData.committeeMembership}
+                </ReactMarkdown>
               </div>
             </div>
           </div>
