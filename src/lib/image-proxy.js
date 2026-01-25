@@ -24,7 +24,18 @@ export function isSvgUrl(url) {
 }
 
 /**
- * Proxy an HTTP SVG URL through the Next.js API route
+ * Check if a URL is an image file
+ * @param {string} url - URL to check
+ * @returns {boolean}
+ */
+export function isImageUrl(url) {
+  if (!url || typeof url !== 'string') return false;
+  const lowerUrl = url.toLowerCase();
+  return lowerUrl.match(/\.(jpg|jpeg|png|gif|webp|svg|bmp|ico)(\?|$)/i) !== null;
+}
+
+/**
+ * Proxy an HTTP image URL through the Next.js API route
  * @param {string} url - Original HTTP URL
  * @returns {string} - Proxied URL or original if no proxy needed
  */
@@ -36,19 +47,19 @@ export function getProxiedImageUrl(url) {
     return url;
   }
 
-  // Only proxy SVG files (for now, can be extended for other image types)
-  if (!isSvgUrl(url)) {
+  // Proxy all image types (SVG, JPG, PNG, WebP, etc.)
+  if (!isImageUrl(url)) {
     return url;
   }
 
-  // Proxy through the API route
+  // Use general image proxy for all image types
   const encodedUrl = encodeURIComponent(url);
-  return `/api/svg?url=${encodedUrl}`;
+  return `/api/image?url=${encodedUrl}`;
 }
 
 /**
  * Get proxied image URL for Next.js Image component
- * Automatically handles HTTP SVG URLs by proxying them
+ * Automatically handles HTTP image URLs by proxying them
  * @param {string|object} image - Image URL string or object with url property
  * @returns {string|null} - Proxied URL or original URL
  */
@@ -92,6 +103,6 @@ export function isProxiedImage(image) {
 
   if (!imageUrl) return false;
 
-  return isHttpUrl(imageUrl) && isSvgUrl(imageUrl);
+  return isHttpUrl(imageUrl) && isImageUrl(imageUrl);
 }
 

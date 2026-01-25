@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import VideoModal from './VideoModal';
 
 export default function PurposeVideo({ youtubeLink, image }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const videoUrl = youtubeLink || 'https://youtube.com/shorts/HsNDyLnQ5Xs?si=S2CFP1288whkQoe1';
-  const imageSrc = image?.url || '/assets/images/purpose/circle.webp';
+  const imageSrc = image?.url ? (getImageUrl(image.url) || image.url) : '/assets/images/purpose/circle.webp';
   const imageAlt = image?.alt || 'Our Story';
 
   const handlePlayClick = () => {
@@ -30,6 +31,7 @@ export default function PurposeVideo({ youtubeLink, image }) {
             width={400}
             height={400}
             quality={100}
+            unoptimized={image?.url ? isProxiedImage(image.url) : false}
           />
           {videoUrl && (
             <button 
