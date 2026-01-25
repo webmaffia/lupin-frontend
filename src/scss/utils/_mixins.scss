@@ -1,5 +1,3 @@
-@use 'sass:map';
-
 // Media query mixins
 // Usage: @include media('mobile') { ... }
 
@@ -11,8 +9,8 @@ $breakpoints: (
 
 // Media query mixin
 @mixin media($breakpoint, $type: 'max') {
-  @if map.has-key($breakpoints, $breakpoint) {
-    $value: map.get($breakpoints, $breakpoint);
+  @if map-has-key($breakpoints, $breakpoint) {
+    $value: map-get($breakpoints, $breakpoint);
     
     @if $type == 'max' {
       @media (max-width: $value) {
@@ -30,8 +28,8 @@ $breakpoints: (
 
 // Between breakpoints
 @mixin media-between($min-breakpoint, $max-breakpoint) {
-  $min-value: map.get($breakpoints, $min-breakpoint);
-  $max-value: map.get($breakpoints, $max-breakpoint);
+  $min-value: map-get($breakpoints, $min-breakpoint);
+  $max-value: map-get($breakpoints, $max-breakpoint);
   
   @media (min-width: $min-value) and (max-width: $max-value) {
     @content;
