@@ -7,26 +7,11 @@ import rehypeRaw from 'rehype-raw';
 import '../scss/components/ScienceResearch.scss';
 
 export default function ScienceResearch({ data }) {
-  const defaultData = {
-    heading: "Research and Development",
-    content: [
-      "Innovation at Lupin is driven by a single motivation; to deliver advanced, accessible and safe healthcare solutions to reduce the burden of diseases worldwide.",
-      "Our globally spread R&D centers and team of scientists bring deep domain knowledge across complex generics, specialty formulations, Active Pharmaceutical Ingredients and novel therapies.",
-      "With 41 product filings and 52 approvals in FY25, Lupin is gaining momentum in complex generics and Active Pharmaceutical Ingredients. Our Intellectual Property Management Group plays a vital role in safeguarding innovations across Active Pharmaceutical Ingredients, biologics, and novel chemical entities.",
-      "In FY25, we secured 87 patents out of which 6 were for formulations and 81 for new chemical entities.",
-      "Our New Chemical Entity (NCE) team, with a strategic focus on oncology, immunology, and metabolic disorders, is advancing novel therapeutics from early-stage research through clinical development. These efforts underscore our commitment to delivering breakthrough medicines that transform lives."
-    ],
-    image: {
-      url: "/assets/images/our-sci/biotechnology-scientist-researching-laboratory-using-microscope-typing-pc-chemist-examining-virus-evolution-using-high-tech-scientific-research-vaccine-development-against-covid19-1 1.png",
-      alt: "Scientist researching in laboratory"
-    }
-  };
-
-  const researchData = data || defaultData;
-  const heading = researchData?.heading || researchData?.title || defaultData.heading;
-  const content = researchData?.content || researchData?.paragraphs || researchData?.text || defaultData.content;
-  const imageUrl = researchData?.image?.url || researchData?.image || defaultData.image.url;
-  const imageAlt = researchData?.image?.alt || researchData?.imageAlt || defaultData.image.alt;
+  const researchData = data;
+  const heading = researchData?.heading || researchData?.title;
+  const content = researchData?.content || researchData?.paragraphs || researchData?.text;
+  const imageUrl = researchData?.image?.url || researchData?.image;
+  const imageAlt = researchData?.image?.alt || researchData?.imageAlt;
 
   return (
     <section className="science-research" data-node-id="2952:3478">
@@ -57,21 +42,11 @@ export default function ScienceResearch({ data }) {
               {heading}
             </h2>
             <div className="science-research__text">
-              {Array.isArray(content) ? (
-                content.map((paragraph, index) => (
-                  <div key={index} className="science-research__paragraph">
-                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                      {paragraph}
-                    </ReactMarkdown>
-                  </div>
-                ))
-              ) : (
-                <div className="science-research__paragraph">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
-                    {content}
-                  </ReactMarkdown>
-                </div>
-              )}
+              <div className="science-research__paragraph">
+                <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+                  {content}
+                </ReactMarkdown>
+              </div>
             </div>
           </div>
         </div>

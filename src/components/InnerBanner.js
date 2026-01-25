@@ -39,10 +39,10 @@ export default function InnerBanner({ data }) {
       <div className="inner-banner__bg">
         {/* Base green background */}
         <div className="inner-banner__bg-base"></div>
-        
+
         {/* Gradient overlay */}
         <div className="inner-banner__bg-gradient"></div>
-        
+
         {/* Decorative Petal */}
         {bannerData.images?.petal && (
           <div className="inner-banner__petal">
@@ -56,7 +56,7 @@ export default function InnerBanner({ data }) {
             />
           </div>
         )}
-        
+
         {/* Gradient overlays */}
         <div className="inner-banner__overlay-1"></div>
         <div className="inner-banner__overlay-2"></div>
@@ -108,8 +108,8 @@ export default function InnerBanner({ data }) {
               <span className="inner-banner__title-line">{bannerData.title.line2}</span>
             )}
           </h1>
-          {bannerData.subheading?.enabled && bannerData.subheading?.text && (
-            <p className="inner-banner__subheading">{bannerData.subheading.text}</p>
+          {bannerData.subHeading?.enabled && bannerData.subHeading?.text && (
+            <p className="inner-banner__subheading">{bannerData.subHeading.text}</p>
           )}
         </div>
       </div>

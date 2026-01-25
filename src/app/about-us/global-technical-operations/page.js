@@ -28,14 +28,14 @@ export default async function GlobalTechnicalOperationsPage() {
 
   try {
     const strapiData = await getOurManufacturingApproach();
-    
+
     // Debug logging
     if (process.env.NODE_ENV === 'development') {
       console.log('GlobalTechnicalOperationsPage - Raw Strapi data:', strapiData);
     }
-    
+
     gtoData = mapOurManufacturingApproachData(strapiData);
-    
+
     // Debug logging after mapping
     if (process.env.NODE_ENV === 'development') {
       console.log('GlobalTechnicalOperationsPage - Mapped gtoData:', gtoData);
@@ -51,7 +51,7 @@ export default async function GlobalTechnicalOperationsPage() {
   return (
     <div style={{ position: 'relative' }}>
       {gtoData.banner && <InnerBanner data={gtoData.banner} />}
-      
+
       {/* Page Intro Section */}
       {gtoData.pageIntroSection && (
         <section className="global-technical-operations-content">
@@ -60,13 +60,13 @@ export default async function GlobalTechnicalOperationsPage() {
               <div className="global-technical-operations-content__section">
                 {/* Background Petals SVG */}
                 <div className="global-technical-operations-content__bg-petals">
-                  <img 
-                    src={gtoData.pageIntroSection.petalImage?.url || "/assets/global-technical/peatals.svg"} 
-                    alt={gtoData.pageIntroSection.petalImage?.alt || ""} 
+                  <img
+                    src={gtoData.pageIntroSection.petalImage?.url || "/assets/global-technical/peatals.svg"}
+                    alt={gtoData.pageIntroSection.petalImage?.alt || ""}
                     className="global-technical-operations-content__bg-petals-img"
                   />
                 </div>
-                
+
                 {/* Text Content */}
                 <div className="global-technical-operations-content__text">
                   <div className="global-technical-operations-content__text-main">
@@ -84,13 +84,6 @@ export default async function GlobalTechnicalOperationsPage() {
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
                           rehypePlugins={[rehypeRaw]}
-                          components={{
-                            p: ({ children }) => (
-                              <p className="global-technical-operations-content__paragraph">
-                                {children}
-                              </p>
-                            )
-                          }}
                         >
                           {gtoData.pageIntroSection.description}
                         </ReactMarkdown>
@@ -103,20 +96,20 @@ export default async function GlobalTechnicalOperationsPage() {
           </div>
         </section>
       )}
-      
+
       {/* Comment Section (Quote) */}
       {gtoData.commentSection && gtoData.commentSection.description && (
         <section className="global-technical-operations-quote">
           <div className="global-technical-operations-quote__wrapper">
             {/* Top Quote SVG */}
             <div className="global-technical-operations-quote__top">
-              <img 
-                src="/assets/community/top-quote.svg" 
-                alt="" 
+              <img
+                src="/assets/community/top-quote.svg"
+                alt=""
                 className="global-technical-operations-quote__top-img"
               />
             </div>
-            
+
             {/* Quote Text */}
             <div className="global-technical-operations-quote__text">
               <ReactMarkdown
@@ -126,19 +119,19 @@ export default async function GlobalTechnicalOperationsPage() {
                 {gtoData.commentSection.description}
               </ReactMarkdown>
             </div>
-            
+
             {/* Bottom Quote SVG */}
             <div className="global-technical-operations-quote__bottom">
-              <img 
-                src="/assets/community/bottom-quote.svg" 
-                alt="" 
+              <img
+                src="/assets/community/bottom-quote.svg"
+                alt=""
                 className="global-technical-operations-quote__bottom-img"
               />
             </div>
           </div>
         </section>
       )}
-      
+
       {/* Certification Section (ParagraphDescription from CommentSection) */}
       {gtoData.commentSection && gtoData.commentSection.paragraphDescription && (
         <section className="global-technical-operations-certification">
@@ -154,7 +147,7 @@ export default async function GlobalTechnicalOperationsPage() {
           </div>
         </section>
       )}
-      
+
       {/* Strategic Performance Areas Section */}
       {gtoData.strategicPerformanceAreaSection && (
         <section className="global-technical-operations-spa">
@@ -173,7 +166,7 @@ export default async function GlobalTechnicalOperationsPage() {
                 </p>
               )}
             </div>
-            
+
             {/* Content: Text and Image */}
             <div className="global-technical-operations-spa__content">
               {/* Text List */}
@@ -186,15 +179,15 @@ export default async function GlobalTechnicalOperationsPage() {
                           <div className="global-technical-operations-spa__item-icon-bg">
                             <div className="global-technical-operations-spa__item-icon-inner">
                               {card.icon ? (
-                                <img 
-                                  src={card.icon.url} 
-                                  alt={card.icon.alt} 
+                                <img
+                                  src={card.icon.url}
+                                  alt={card.icon.alt}
                                   className="global-technical-operations-spa__item-icon-img"
                                 />
                               ) : (
-                                <img 
-                                  src="/assets/global-technical/Icon1.svg" 
-                                  alt={card.heading} 
+                                <img
+                                  src="/assets/global-technical/Icon1.svg"
+                                  alt={card.heading}
                                   className="global-technical-operations-spa__item-icon-img"
                                 />
                               )}
@@ -202,15 +195,15 @@ export default async function GlobalTechnicalOperationsPage() {
                           </div>
                         ) : (
                           card.icon ? (
-                            <img 
-                              src={card.icon.url} 
-                              alt={card.icon.alt} 
+                            <img
+                              src={card.icon.url}
+                              alt={card.icon.alt}
                               className="global-technical-operations-spa__item-icon-img"
                             />
                           ) : (
-                            <img 
-                              src={`/assets/global-technical/Icon${index + 1}.svg`} 
-                              alt={card.heading} 
+                            <img
+                              src={`/assets/global-technical/Icon${index + 1}.svg`}
+                              alt={card.heading}
                               className="global-technical-operations-spa__item-icon-img"
                             />
                           )
@@ -225,19 +218,7 @@ export default async function GlobalTechnicalOperationsPage() {
                           )}
                           {card.subheading && (
                             <div className="global-technical-operations-spa__item-description">
-                              <ReactMarkdown
-                                remarkPlugins={[remarkGfm]}
-                                rehypePlugins={[rehypeRaw]}
-                                components={{
-                                  p: ({ children }) => (
-                                    <p className="global-technical-operations-spa__item-description-text">
-                                      {children}
-                                    </p>
-                                  )
-                                }}
-                              >
-                                {card.subheading}
-                              </ReactMarkdown>
+                              {card.subheading}
                             </div>
                           )}
                         </div>
@@ -247,15 +228,15 @@ export default async function GlobalTechnicalOperationsPage() {
                   ))}
                 </div>
               )}
-              
+
               {/* Image */}
               {gtoData.strategicPerformanceAreaSection.image && (
                 <div className="global-technical-operations-spa__image">
                   <div className="global-technical-operations-spa__image-wrapper">
                     <div className="global-technical-operations-spa__image-mask">
-                      <img 
-                        src={gtoData.strategicPerformanceAreaSection.image.url} 
-                        alt={gtoData.strategicPerformanceAreaSection.image.alt} 
+                      <img
+                        src={gtoData.strategicPerformanceAreaSection.image.url}
+                        alt={gtoData.strategicPerformanceAreaSection.image.alt}
                         className="global-technical-operations-spa__image-img"
                       />
                     </div>
@@ -266,16 +247,23 @@ export default async function GlobalTechnicalOperationsPage() {
           </div>
         </section>
       )}
-      
+
       {/* Our Integrated GTO Structure Section */}
       {gtoData.gtoStructureSection && (
         <section className="global-technical-operations-structure">
+          <div className="global-technical-operations-structure__bg-petals">
+            <img
+              src="/assets/global-technical/patelsb.svg"
+              alt=""
+              className="global-technical-operations-structure__bg-petals-img"
+            />
+          </div>
           {/* Background Petals SVG */}
           {gtoData.gtoStructureSection.petalImage && (
             <div className="global-technical-operations-structure__bg-petals">
-              <img 
-                src={gtoData.gtoStructureSection.petalImage.url} 
-                alt={gtoData.gtoStructureSection.petalImage.alt} 
+              <img
+                src={gtoData.gtoStructureSection.petalImage.url}
+                alt={gtoData.gtoStructureSection.petalImage.alt}
                 className="global-technical-operations-structure__bg-petals-img"
               />
             </div>
@@ -299,13 +287,6 @@ export default async function GlobalTechnicalOperationsPage() {
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypeRaw]}
-                    components={{
-                      p: ({ children }) => (
-                        <p className="global-technical-operations-structure__paragraph-line">
-                          {children}
-                        </p>
-                      )
-                    }}
                   >
                     {gtoData.gtoStructureSection.description}
                   </ReactMarkdown>
@@ -315,7 +296,7 @@ export default async function GlobalTechnicalOperationsPage() {
           </div>
         </section>
       )}
-      
+
       {/* Tabs Section */}
       {gtoData.tabsData && (
         <section className="global-technical-operations-tabs-section">

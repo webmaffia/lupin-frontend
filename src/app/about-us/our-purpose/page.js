@@ -1,12 +1,15 @@
 import React from 'react';
 import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import InnerBanner from '@/components/InnerBanner';
 import PurposeVideo from '@/components/PurposeVideo';
 import Image from 'next/image';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getOurPurpose, mapOurPurposeData } from '@/lib/strapi-pages';
 import '@/scss/components/Purpose.scss';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
+import remarkBreaks from 'remark-breaks';
 
 // Generate metadata for the purpose page
 export const metadata = generateSEOMetadata({
@@ -31,17 +34,7 @@ export default async function PurposePage() {
     error = err instanceof Error ? err : new Error('Failed to fetch our-purpose data');
   }
 
-  const bannerData = purposeData?.banner || {
-    title: {
-      line1: "Our Purpose",
-      line2: ""
-    },
-    background: {
-      color1: "#0d4a4a",
-      color2: "#00a859",
-      opacity: 0.9
-    }
-  };
+  const bannerData = purposeData?.banner || null;
 
   const pageIntro = purposeData?.pageIntro;
   const treatmentSection = purposeData?.treatmentSection;
@@ -52,6 +45,26 @@ export default async function PurposePage() {
   if (process.env.NODE_ENV === 'development') {
     console.log('Our Purpose Page - treatmentSection:', treatmentSection);
     console.log('Our Purpose Page - purposeData:', purposeData);
+  }
+
+  const CustomHeading = ({ children }) => {
+    return <h2 className="purpose-story__title">{children}</h2>;
+  }
+
+  const CustomParagraph = ({ children }) => {
+    return <p className="purpose-story__paragraph">{children}</p>;
+  }
+
+  const CustomHeading2 = ({ children }) => {
+    return <h2 className="purpose-mountain__title">{children}</h2>;
+  }
+
+  const CustomParagraph2 = ({ children }) => {
+    return <p className="purpose-mountain__paragraph">{children}</p>;
+  }
+
+  const CustomHeading3 = ({ children }) => {
+    return <h2 className="purpose-commitments__title">{children}</h2>;
   }
 
   return (
@@ -68,19 +81,26 @@ export default async function PurposePage() {
               <div className="purpose-story__content">
                 <div className="purpose-story__text">
                   {pageIntro.heading && (
-                    <h2 className="purpose-story__title">
-                      {pageIntro.heading.split('\n').map((line, index, array) => (
-                        <React.Fragment key={index}>
-                          {line}
-                          {index < array.length - 1 && <br />}
-                        </React.Fragment>
-                      ))}
-                    </h2>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkBreaks]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        p: CustomHeading,
+                      }}
+                    >
+                      {pageIntro.heading}
+                    </ReactMarkdown>
                   )}
                   {pageIntro.paragraphDescription && (
-                    <p className="purpose-story__paragraph">
+                    <ReactMarkdown
+                      remarkPlugins={[remarkGfm]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        p: CustomParagraph,
+                      }}
+                    >
                       {pageIntro.paragraphDescription}
-                    </p>
+                    </ReactMarkdown>
                   )}
                 </div>
                 <PurposeVideo youtubeLink={pageIntro.youtubeLink} image={pageIntro.image} />
@@ -118,19 +138,26 @@ export default async function PurposePage() {
               <div className="purpose-mountain__content">
                 <div className="purpose-mountain__text">
                   {treatmentSection.heading && (
-                    <h2 className="purpose-mountain__title">
-                      {String(treatmentSection.heading).replace(/"/g, '').split('\n').map((line, index, array) => (
-                        <React.Fragment key={index}>
-                          {line}
-                          {index < array.length - 1 && <br />}
-                        </React.Fragment>
-                      ))}
-                    </h2>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkBreaks]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        p: CustomHeading2,
+                      }}
+                    >
+                      {treatmentSection.heading}
+                    </ReactMarkdown>
                   )}
                   {treatmentSection.paragraphDescription && (
-                    <p className="purpose-mountain__paragraph">
-                      {String(treatmentSection.paragraphDescription)}
-                    </p>
+                    <ReactMarkdown
+                      remarkPlugins={[remarkBreaks]}
+                      rehypePlugins={[rehypeRaw]}
+                      components={{
+                        p: CustomParagraph2,
+                      }}
+                    >
+                      {treatmentSection.paragraphDescription}
+                    </ReactMarkdown>
                   )}
                 </div>
                 <div className="purpose-mountain__media">
@@ -153,14 +180,15 @@ export default async function PurposePage() {
             <div className="container-commitments">
               <div className="purpose-commitments__header">
                 {commitmentSection.sectionTitle && (
-                  <h2 className="purpose-commitments__title">
-                    {commitmentSection.sectionTitle.split('\n').map((line, index, array) => (
-                      <React.Fragment key={index}>
-                        {line}
-                        {index < array.length - 1 && <br />}
-                      </React.Fragment>
-                    ))}
-                  </h2>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkBreaks]}
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                      p: CustomHeading3,
+                    }}
+                  >
+                    {commitmentSection.sectionTitle}
+                  </ReactMarkdown>
                 )}
               </div>
               {commitmentSection.cards && commitmentSection.cards.length > 0 && (
@@ -224,8 +252,8 @@ export default async function PurposePage() {
               {guidedFrameworkSection.cards && guidedFrameworkSection.cards.length > 0 && (
                 <div className="purpose-framework__circles">
                   {guidedFrameworkSection.cards.map((card, index) => (
-                    <div 
-                      key={card.id} 
+                    <div
+                      key={card.id}
                       className={`purpose-framework__circle ${index === 0 ? 'purpose-framework__circle--white' : 'purpose-framework__circle--green'}`}
                     >
                       <h3 className="purpose-framework__circle-title">
@@ -263,7 +291,6 @@ export default async function PurposePage() {
           </section>
         )}
       </main>
-      <Footer />
     </>
   );
 }

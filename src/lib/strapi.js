@@ -1423,19 +1423,24 @@ export function mapTopBannerData(topBanner) {
   // Support both camelCase (Heading, SubHeading) and legacy fields (BannerTitle, subHeading)
   const heading = topBanner?.Heading || topBanner?.heading || topBanner?.BannerTitle || '';
   const subHeading = topBanner?.SubHeading || topBanner?.subHeading || '';
+  const subHeadingEnabled = topBanner?.SubHeadingText || topBanner?.SubHeadingText || false;
 
   // Parse heading - could be single line or two lines separated by newline/space
   const titleParts = heading ? heading.split(/\n|\\n/).filter(part => part.trim()) : [];
 
   // Use Heading as line1, SubHeading as line2, or split Heading if SubHeading not available
-  const line1 = titleParts[0]?.trim() || subHeading || '';
-  const line2 = subHeading || titleParts[1]?.trim() || '';
+  const line1 = titleParts[0]?.trim() || '';
+  const line2 = titleParts[1]?.trim() || '';
 
   // Build banner data object
   const bannerData = {
     title: {
       line1: line1,
-      line2: line2
+      line2: line2,
+    },
+    subHeading: {
+      text: subHeading || '',
+      enabled: subHeadingEnabled
     },
     images: {}
   };

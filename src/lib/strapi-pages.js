@@ -29,7 +29,7 @@ export async function getAboutUs() {
     'populate[AboutOverviewSection][populate][cta][populate]=*',
     'populate[RedirectSection][populate][cta][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`about-us?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -71,7 +71,7 @@ export function mapAboutUsData(strapiData) {
     // Strip markdown syntax
     headingText = headingText.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s/g, '');
     // Split by newlines or spaces to create array of lines/words
-    const headingArray = headingText.includes('\n') 
+    const headingArray = headingText.includes('\n')
       ? headingText.split('\n').filter(line => line.trim())
       : headingText.split(/\s+/).filter(word => word.trim());
 
@@ -82,7 +82,7 @@ export function mapAboutUsData(strapiData) {
     const descriptionPlain = descriptionText.replace(/\*\*/g, '').replace(/\*/g, '').replace(/#{1,6}\s/g, '');
 
     pageIntro = {
-      heading: headingArray, // Return as array for line-by-line rendering
+      heading: heading, // Return as array for line-by-line rendering
       description: descriptionPlain, // Return as plain text
       image: imageUrl ? {
         url: imageUrl,
@@ -127,6 +127,9 @@ export function mapAboutUsData(strapiData) {
           alt: sectionIcon?.alternativeText || sectionIcon?.caption || 'Icon'
         } : null,
         cta: ctaData,
+        color: index % 2 === 0 ? 'green' : 'teal',
+        svg: index % 2 === 0 ? 'svg2' : 'svg1',
+        svgPosition: imagePosition.toLowerCase() === 'left' ? 'right' : 'left',
         imagePosition: imagePosition.toLowerCase(), // 'left' or 'right'
         displayOrder: section?.DisplayOrder || section?.displayOrder || String(index + 1)
       };
@@ -176,7 +179,7 @@ export async function getEthicsAndCompliance() {
     'populate[TopBanner][populate][MobileImage][populate]=*',
     'populate[PageIntroSection][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`ethics-and-compliance?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -245,7 +248,7 @@ export async function getOurValue() {
     'populate[CulturePrinciplesVideoSection][populate][DesktopPosterImage][populate]=*',
     'populate[CulturePrinciplesVideoSection][populate][MobilePosterImage][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`our-value?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -354,7 +357,7 @@ export async function getGlobalPresence() {
     'populate[GlobalPresenceSection][populate][Image][populate]=*',
     'populate[GlobalPresenceSection][populate][cta][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`global-presence?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -459,7 +462,7 @@ export async function getOurPurpose() {
     'populate[CommitmentSection][populate][CommitmentCard][populate][Image][populate]=*',
     'populate[GuidedFrameWorkSection][populate][FrameWorkCard][populate][Image][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`our-purpose?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -513,11 +516,11 @@ export function mapOurPurposeData(strapiData) {
     const treatmentImage = treatmentSection?.image;
     let desktopImage = null;
     let mobileImage = null;
-    
+
     if (treatmentImage) {
       const desktopImg = treatmentImage?.DesktopImage;
       const mobileImg = treatmentImage?.MobileImage;
-      
+
       if (desktopImg) {
         const desktopUrl = getStrapiMedia(desktopImg);
         if (desktopUrl) {
@@ -527,7 +530,7 @@ export function mapOurPurposeData(strapiData) {
           };
         }
       }
-      
+
       if (mobileImg) {
         const mobileUrl = getStrapiMedia(mobileImg);
         if (mobileUrl) {
@@ -657,7 +660,7 @@ export async function getContactUs() {
     'populate[ContactInfoSection][populate][ContactCard][populate]=*',
     'populate[GlobalPresenceSection][populate][Image][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`contact-us?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -710,7 +713,7 @@ export function mapContactUsData(strapiData) {
       const sectionImage = section?.Image;
       const imageUrl = sectionImage ? getStrapiMedia(sectionImage) : null;
       const countryName = section?.CountryName || '';
-      
+
       // Convert markdown AddressDetail to addresses array
       // For now, we'll pass the markdown and let the component handle it
       const addressDetail = section?.AddressDetail || '';
@@ -770,7 +773,7 @@ export async function getCommunity() {
     'populate[LiveProgramSection][populate][Image][populate]=*',
     'populate[LiveProgramSection][populate][KeyHighlitesSection][populate][KeyHighlites][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`community?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -805,7 +808,7 @@ export function mapCommunityData(strapiData) {
   if (pageIntroSection) {
     const introImage = pageIntroSection?.Image;
     const imageUrl = introImage ? getStrapiMedia(introImage) : null;
-    
+
     pageIntroData = {
       image: imageUrl ? {
         url: imageUrl,
@@ -876,17 +879,17 @@ export function mapCommunityData(strapiData) {
 
   // Map TabSectionDetails
   const tabSectionDetails = data?.TabSectionDetails || [];
-  
+
   // Debug logging
   if (process.env.NODE_ENV === 'development') {
     console.log('mapCommunityData - tabSectionDetails:', tabSectionDetails);
   }
-  
+
   const tabs = tabSectionDetails
     .filter(tab => tab?.isActive !== false)
     .map((tab) => {
       const tabSectionData = tab?.TabSectionData;
-      
+
       // Debug logging for each tab
       if (process.env.NODE_ENV === 'development') {
         console.log(`mapCommunityData - Tab ${tab?.id || 'unknown'}:`, {
@@ -895,37 +898,37 @@ export function mapCommunityData(strapiData) {
           keyHighlites: tabSectionData?.KeyHighlites || tabSectionData?.keyHighlites
         });
       }
-      
+
       // Handle SectionHeading
       const sectionHeading = tabSectionData?.SectionHeading;
       let headingImage = null;
       let headingImageUrl = null;
-      
+
       if (sectionHeading) {
         // Handle both direct Image and nested data.attributes structure
-        headingImage = sectionHeading?.Image?.data?.attributes 
-          || sectionHeading?.Image?.data 
-          || sectionHeading?.Image 
-          || sectionHeading?.image?.data?.attributes 
+        headingImage = sectionHeading?.Image?.data?.attributes
+          || sectionHeading?.Image?.data
+          || sectionHeading?.Image
+          || sectionHeading?.image?.data?.attributes
           || sectionHeading?.image;
-        
+
         headingImageUrl = headingImage ? getStrapiMedia(headingImage) : null;
       }
 
       // Handle KeyHighlites (repeatable component)
       // The structure is: KeyHighlites is an array of objects, each containing a nested KeyHighlites array
       // Example: [{ id: 80, SectionTitle: "Key Highlights", KeyHighlites: [{ id: 458, Value: "910481", Description: "trees planted" }] }]
-      const keyHighlightsRaw = tabSectionData?.KeyHighlites 
-        || tabSectionData?.keyHighlites 
+      const keyHighlightsRaw = tabSectionData?.KeyHighlites
+        || tabSectionData?.keyHighlites
         || tabSectionData?.KeyHighlights
         || tabSectionData?.keyHighlights
         || [];
-      
+
       // Debug logging for key highlights
       if (process.env.NODE_ENV === 'development') {
         console.log(`mapCommunityData - Tab ${tab?.id} KeyHighlites raw:`, keyHighlightsRaw);
       }
-      
+
       // Extract the nested KeyHighlites array from the structure
       let keyHighlights = [];
       if (Array.isArray(keyHighlightsRaw) && keyHighlightsRaw.length > 0) {
@@ -938,7 +941,7 @@ export function mapCommunityData(strapiData) {
           keyHighlights = keyHighlightsRaw;
         }
       }
-      
+
       // Format number with commas
       const formatNumber = (num) => {
         // Handle null, undefined, or empty string
@@ -959,40 +962,40 @@ export function mapCommunityData(strapiData) {
         }
         return num.toString();
       };
-      
+
       const highlights = keyHighlights
         .filter((highlight) => {
           // Only include highlights that have a description (value can be null, which is valid)
           const description = highlight?.Description || highlight?.description;
           const hasDescription = description && description.trim() !== '';
-          
+
           if (process.env.NODE_ENV === 'development' && !hasDescription) {
             console.log('mapCommunityData - Filtered out highlight (no description):', highlight);
           }
-          
+
           return hasDescription;
         })
         .map((highlight) => {
           const rawValue = highlight?.Value ?? highlight?.value;
           const formattedValue = formatNumber(rawValue);
-          
+
           const mappedHighlight = {
             id: highlight?.id || Math.random(),
             icon: '/assets/community/key1.svg', // Use static icon (no Icon field in TabSectionData.KeyHighlites)
             value: formattedValue,
             description: highlight?.Description || highlight?.description || ''
           };
-          
+
           if (process.env.NODE_ENV === 'development') {
             console.log('mapCommunityData - Mapped highlight:', {
               raw: highlight,
               mapped: mappedHighlight
             });
           }
-          
+
           return mappedHighlight;
         });
-      
+
       if (process.env.NODE_ENV === 'development') {
         console.log(`mapCommunityData - Tab ${tab?.id} highlights (after mapping):`, highlights);
       }
@@ -1001,15 +1004,15 @@ export function mapCommunityData(strapiData) {
       const sectionData = tabSectionData?.SectionData || tabSectionData?.sectionData;
       let sectionImage = null;
       let sectionImageUrl = null;
-      
+
       if (sectionData) {
         // Handle both direct Image and nested data.attributes structure
-        sectionImage = sectionData?.Image?.data?.attributes 
-          || sectionData?.Image?.data 
-          || sectionData?.Image 
-          || sectionData?.image?.data?.attributes 
+        sectionImage = sectionData?.Image?.data?.attributes
+          || sectionData?.Image?.data
+          || sectionData?.Image
+          || sectionData?.image?.data?.attributes
           || sectionData?.image;
-        
+
         sectionImageUrl = sectionImage ? getStrapiMedia(sectionImage) : null;
       }
 
@@ -1022,7 +1025,7 @@ export function mapCommunityData(strapiData) {
         const headingParts = heading.trim().split(/\s+/);
         let author = '';
         let designation = '';
-        
+
         if (headingParts.length > 1) {
           // Last word is usually the designation
           designation = headingParts[headingParts.length - 1];
@@ -1030,7 +1033,7 @@ export function mapCommunityData(strapiData) {
         } else {
           author = heading;
         }
-        
+
         quoteData = {
           quote: sectionData?.Description || sectionData?.description || '',
           author: author,
@@ -1098,7 +1101,7 @@ export function mapCommunityData(strapiData) {
     });
 
     const sectionData = liveProgramSection?.SectionData;
-    
+
     liveProgramData = {
       heading: liveProgramSection?.Heading || '',
       subHeading: liveProgramSection?.SubHeading || '',
@@ -1166,7 +1169,7 @@ export async function getOurScience() {
     'populate[CoreSection][populate][ImageSvg][populate]=*',
     'populate[ContentSection][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`our-science?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -1226,11 +1229,11 @@ export function mapOurScienceData(strapiData) {
     const items = numbersCards.map((card) => {
       const svgImage = card?.SvgImage;
       const svgUrl = svgImage ? getStrapiMedia(svgImage) : null;
-      
+
       const value = card?.Value || '';
       const suffix = card?.Suffix || '';
       const fullValue = suffix ? `${value}${suffix}` : value;
-      
+
       return {
         value: fullValue,
         label: card?.Description || '',
@@ -1253,14 +1256,13 @@ export function mapOurScienceData(strapiData) {
   if (researchSection) {
     const researchImage = researchSection?.Image;
     const imageUrl = researchImage ? getStrapiMedia(researchImage) : null;
-    
+
     // Parse Description (Markdown) into paragraphs
     const description = researchSection?.Description || '';
-    const content = description ? description.split(/\n\n+/).filter(p => p.trim()) : [];
 
     researchData = {
       heading: researchSection?.Heading || '',
-      content: content,
+      content: description,
       image: {
         url: imageUrl || '/assets/images/our-sci/biotechnology-scientist-researching-laboratory-using-microscope-typing-pc-chemist-examining-virus-evolution-using-high-tech-scientific-research-vaccine-development-against-covid19-1 1.png',
         alt: researchImage?.alternativeText || researchImage?.caption || 'Research and Development'
@@ -1274,13 +1276,13 @@ export function mapOurScienceData(strapiData) {
   if (digitalSection) {
     const digitalImage = digitalSection?.Image;
     const imageUrl = digitalImage ? getStrapiMedia(digitalImage) : null;
-    
+
     // Parse Description (Markdown) for main description
     const description = digitalSection?.Description || '';
-    
+
     // Parse RightSideContent (Markdown) for section description
     const rightSideContent = digitalSection?.RightSideContent || '';
-    
+
     // Parse LeftSideContent for section heading (split into two lines if needed)
     const leftSideContent = digitalSection?.LeftSideContent || '';
     const headingLines = leftSideContent.split(/\n/).filter(l => l.trim());
@@ -1305,19 +1307,19 @@ export function mapOurScienceData(strapiData) {
   let paragraphData = null;
   if (paragraphSection) {
     // Handle field name variations (note: Strapi field is "ParagarphData" with typo)
-    const paragraphText = paragraphSection?.ParagarphData 
+    const paragraphText = paragraphSection?.ParagarphData
       || paragraphSection?.ParagraphData
       || paragraphSection?.paragraphData
       || paragraphSection?.content
       || paragraphSection?.text
       || '';
-    
+
     if (paragraphText) {
       paragraphData = {
         text: paragraphText
       };
     }
-    
+
     if (process.env.NODE_ENV === 'development') {
       console.log('mapOurScienceData - ParaGraphSection:', {
         raw: paragraphSection,
@@ -1336,7 +1338,7 @@ export function mapOurScienceData(strapiData) {
     const capabilities = coreSection.map((card) => {
       const svgImage = card?.ImageSvg;
       const svgUrl = svgImage ? getStrapiMedia(svgImage) : null;
-      
+
       return {
         title: card?.Title || '',
         description: card?.Description || '',
@@ -1355,20 +1357,20 @@ export function mapOurScienceData(strapiData) {
   let contentData = null;
   if (contentSection) {
     // Handle field name variations (note: Strapi field is "ParagarphData" with typo)
-    const paragraphText = contentSection?.ParagarphData 
+    const paragraphText = contentSection?.ParagarphData
       || contentSection?.ParagraphData
       || contentSection?.paragraphData
       || contentSection?.content
       || contentSection?.text
       || '';
-    
+
     if (paragraphText) {
       // Return as string content for ScienceArchitecture component
       contentData = {
         content: paragraphText
       };
     }
-    
+
     if (process.env.NODE_ENV === 'development') {
       console.log('mapOurScienceData - ContentSection:', {
         raw: contentSection,
@@ -1506,7 +1508,7 @@ export async function getOurManufacturingApproach() {
     'populate[GtoStructureSection][populate][GtoStructureSection][populate][GtoStructureCardData][populate][image][populate]=*',
     'populate[GtoStructureSection][populate][GtoStructureSection][populate][GtoStructureCardData][populate][cta][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`our-manufacturing-approach?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -1623,7 +1625,7 @@ export function mapOurManufacturingApproachData(strapiData) {
     const tabsArray = gtoStructureSection?.GtoStructureSection || gtoStructureSection?.gtoStructureSection || [];
     tabsData = tabsArray.map((tab, tabIndex) => {
       const tabName = tab?.TabName || tab?.tabName || '';
-      
+
       // Map GtoStructureCardData (repeatable GTOStructureCard)
       const cardsArray = tab?.GtoStructureCardData || tab?.gtoStructureCardData || [];
       const sections = cardsArray.map((card, cardIndex) => {
@@ -1701,7 +1703,7 @@ export async function getOurStory() {
     'populate[TimelineSection][populate]=*',
     'populate[MilestonesSection][populate]=*'
   ].join('&');
-  
+
   return fetchAPI(`our-story?${populateQuery}`, {
     next: { revalidate: 60 },
   });
@@ -1715,7 +1717,7 @@ export async function getOurStory() {
  */
 export function mapOurStoryData(strapiData) {
   const data = strapiData?.data || strapiData;
-  
+
   if (!data) {
     return {
       banner: null,

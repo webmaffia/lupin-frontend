@@ -84,10 +84,14 @@ export default function AwardsAndRecognitionClient({ initialData }) {
     images: {
       banner: {
         url: "/assets/inner-banner/awards-and-recognition.png",
-        alt: "Awards and Recognition - Lupin"
+        alt: "Awards and Recognition"
+      },
+      bannerMobile: {
+        url: "/assets/inner-banner/awards-and-recognition-mobile.png",
+        alt: "Awards and Recognition"
       },
       petal: {
-        url: "/assets/inner-banner/awards-and-recognition-mobile.png",
+        url: "/assets/inner-banner/petal-2.svg",
         alt: "Decorative petal"
       }
     }

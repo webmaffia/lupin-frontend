@@ -14,6 +14,14 @@ export default function EthicsComplianceIntro({ data }) {
   const introDetail = data?.introDetail || '';
   const detailDescription = data?.detailDescription || '';
 
+  const CustomParagraph = ({ children }) => {
+    return <p className="ethics-compliance-governance-content__pledge-text">{children}</p>;
+  }
+
+  const CustomParagraph2 = ({ children }) => {
+    return <p className="ethics-compliance-governance-content__text-paragraph">{children}</p>;
+  }
+
   return (
     <section className="ethics-compliance-governance-content">
       <div className="ethics-compliance-governance-content__container">
@@ -28,17 +36,18 @@ export default function EthicsComplianceIntro({ data }) {
           {/* Intro Detail Section (P.L.E.D.G.E. Box) */}
           {introDetail && (
             <div className="ethics-compliance-governance-content__pledge-box" data-node-id="2849:57">
-              <div className="ethics-compliance-governance-content__pledge-text" data-node-id="2849:58">
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
-                >
-                  {introDetail}
-                </ReactMarkdown>
-              </div>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  p: CustomParagraph,
+                }}
+              >
+                {introDetail}
+              </ReactMarkdown>
             </div>
           )}
-          
+
           {/* Detail Description Section (Text Content Box) */}
           {detailDescription && (
             <div className="ethics-compliance-governance-content__text-box" data-node-id="2849:9">
@@ -46,6 +55,9 @@ export default function EthicsComplianceIntro({ data }) {
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
+                  components={{
+                    p: CustomParagraph2,
+                  }}
                 >
                   {detailDescription}
                 </ReactMarkdown>
