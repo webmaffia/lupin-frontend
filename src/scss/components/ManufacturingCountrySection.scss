@@ -14,6 +14,7 @@
   background-position: 0 -10vw;
   background-size: 100% auto;
   padding: vw(60) 0;
+  padding-bottom: vw(192) !important;
   
   @include media('tablet') {
     padding: vw(50, 768) 0;
