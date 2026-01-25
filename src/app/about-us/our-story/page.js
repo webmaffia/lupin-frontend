@@ -2,7 +2,7 @@ import InnerBanner from '@/components/InnerBanner';
 import OurStoryAlternatingSection from '@/components/OurStoryAlternatingSection';
 import OurStoryDidYouKnow from '@/components/OurStoryDidYouKnow';
 import OurStorySection from '@/components/OurStorySection';
-import OurStoryYearSlider from '@/components/OurStoryYearSlider';
+import OurStoryVerticalSlider from '@/components/OurStoryVerticalSlider';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import '@/scss/pages/our-story.scss';
 
@@ -72,7 +72,7 @@ export default function OurStoryPage() {
       ))}
       <OurStoryDidYouKnow />
       <OurStorySection />
-      <OurStoryYearSlider />
+
     </>
   );
 }

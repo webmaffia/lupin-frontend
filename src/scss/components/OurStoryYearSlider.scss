@@ -9,13 +9,38 @@
   background-color: #08A03F;
   padding: vw(50) 0 vw(100);
   overflow: hidden;
+  min-height: vw(1000); // Ensure enough height for vertical slider
   
   @include media('tablet') {
     padding: vw(40, 768) 0 vw(80, 768);
+    min-height: vw(800, 768);
   }
   
   @include media('mobile') {
     padding: vw-mobile(30, 414) 0 vw-mobile(60, 414);
+    min-height: auto;
+  }
+
+  // Vertical Slider Wrapper - Left Side
+  &__vertical-wrapper {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: vw(900); // Increased width to accommodate "20" prefix + year digits
+    height: 100%;
+    z-index: 10; // Higher z-index to overlap slide container
+    overflow: visible; // Allow content to be visible
+    
+    @include media('tablet') {
+      width: vw(650, 768);
+    }
+    
+    @include media('mobile') {
+      position: relative;
+      width: 100%;
+      height: auto;
+      margin-bottom: vw-mobile(30, 414);
+    }
   }
 
   // Container
@@ -242,24 +267,6 @@
 
     &:hover {
       color: rgba(225, 225, 225, 0.8);
-    }
-  }
-
-  // Slide Container
-  &__slide-container {
-    width: 100%;
-    max-width: 1920px;
-    margin: vw(50) auto 0;
-    padding: 0 vw(100);
-    
-    @include media('tablet') {
-      margin-top: vw(40, 768);
-      padding: 0 vw(60, 768);
-    }
-    
-    @include media('mobile') {
-      margin-top: vw-mobile(30, 414);
-      padding: 0 vw-mobile(20, 414);
     }
   }
 }

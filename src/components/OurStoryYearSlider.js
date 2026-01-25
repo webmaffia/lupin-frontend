@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useRef, useState, useEffect } from 'react';
-import OurStoryMilestoneSlide from './OurStoryMilestoneSlide';
+import OurStoryVerticalYearSlider from './OurStoryVerticalYearSlider';
 import '@/scss/components/OurStoryYearSlider.scss';
 
 export default function OurStoryYearSlider() {
@@ -10,28 +10,6 @@ export default function OurStoryYearSlider() {
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
   const [activeYear, setActiveYear] = useState(2023);
-
-  // Milestones data for each year
-  const milestonesData = {
-    2023: [
-      "Acquisition of Five Brands from Menarini",
-      "Launch of the world's first fixed-dose triple combination drug, Vilfuro-G®, for COPD in India",
-      "Launch of Luforbec® 100/6 in Germany — Lupin's first inhalation product in that market",
-      "Acquisition of ONDERO® and ONDERO MET®",
-      "Launch of Spiriva (Tiotropium DPI) in the United States",
-      "Launch of DIFIZMA® DPI, a triple drug combination for uncontrolled asthma",
-      "Launch of Atharv Ability — a multi-disciplinary neuro-rehabilitation center in Mumbai",
-      "Launch of LYFE, Lupin Digital Health; for holistic cardiac care business",
-      "Acquisition of French company Medisol",
-      "Key milestone achieved for the Phase 1 MALT1 inhibitor program with AbbVie Inc."
-    ],
-    2022: [],
-    2021: [],
-    2020: [],
-    2019: [],
-    2018: [],
-    2017: []
-  };
 
   const checkScrollability = () => {
     if (!scrollContainerRef.current) return;
@@ -85,8 +63,8 @@ export default function OurStoryYearSlider() {
   };
 
   return (
-    <section className="our-story-year-slider" data-node-id="2888:555">
-      {/* Year Navigation */}
+    <>
+      {/* Year Navigation - Horizontal Slider (Before Section) */}
       <div className="our-story-year-slider__container">
         {/* Left Arrow Button */}
         <button
@@ -154,14 +132,17 @@ export default function OurStoryYearSlider() {
         </button>
       </div>
 
-      {/* Milestone Slide */}
-      <div className="our-story-year-slider__slide-container">
-        <OurStoryMilestoneSlide 
-          year={activeYear} 
-          milestones={milestonesData[activeYear] || []} 
+      <section className="our-story-year-slider" data-node-id="2888:555">
+        {/* Vertical Year Slider - Left Side */}
+      <div className="our-story-year-slider__vertical-wrapper">
+        <OurStoryVerticalYearSlider
+          years={years}
+          activeYear={activeYear}
+          onYearClick={handleYearClick}
         />
       </div>
-    </section>
+      </section>
+    </>
   );
 }
 
