@@ -42,11 +42,27 @@ export default async function LeaderDetailsPage({ params }) {
   let error = null;
 
   try {
-    const strapiData = await getLeaderBySlug(slug);
-    leaderData = mapLeaderDetailData(strapiData);
-    
-    if (!leaderData) {
-      error = 'Leader not found';
+    if (!slug) {
+      error = 'Slug is required';
+    } else {
+      const strapiData = await getLeaderBySlug(slug);
+      
+      // Debug logging in development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Leader detail page - slug:', slug);
+        console.log('Leader detail page - strapiData:', strapiData);
+      }
+      
+      leaderData = mapLeaderDetailData(strapiData);
+      
+      // Debug logging after mapping
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Leader detail page - mapped leaderData:', leaderData);
+      }
+      
+      if (!leaderData) {
+        error = 'Leader not found';
+      }
     }
   } catch (err) {
     console.error('Error fetching leader data from Strapi:', err);
@@ -74,22 +90,6 @@ export default async function LeaderDetailsPage({ params }) {
       }
     }
   };
-
-  // Default/fallback data if API fails
-  if (!leaderData && !error) {
-    leaderData = {
-      name: "Leader",
-      title: "",
-      image: {
-        url: "/assets/placeholder.png",
-        alt: "Leader"
-      },
-      biography: "",
-      education: [],
-      infoItems: [],
-      committeeMembership: ""
-    };
-  }
 
   // Show error state if leader not found
   if (error || !leaderData) {

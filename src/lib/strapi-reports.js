@@ -2997,16 +2997,6 @@ export async function getLeadership() {
  * @returns {Promise<Object>} Raw Strapi API response
  */
 export async function getLeaders() {
-  // Populate all nested components and media
-  // Following the structure:
-  // - LeaderName (Text), ProfileImage (Media), slug (UID), Designation (Text)
-  // - DetailDescription (Rich text Markdown), EducationDetail (Rich text Markdown)
-  // - Age (Text), Nationality (Text), Tenure (Text), Appointed (Date)
-  // - CommitteeMembership (Rich text Markdown), isActive (Boolean)
-  // - cta (Component with text, href), Pdf (Media), DisplayOrder (Text), PdfTitle (Text)
-  // - Committee boolean fields: strategy_committee, audit_committee, stakeholders_relationship_committee,
-  //   nomination_remuneration_committee, sustainability_csr_committee, risk_management_committee,
-  //   board_of_directors, management_team
   const populateQuery = [
     'populate=*',
     'filters[isActive][$eq]=true',
@@ -3029,11 +3019,12 @@ export async function getLeaderBySlug(slug) {
     return null;
   }
 
+  // URL encode the slug to handle special characters
+  const encodedSlug = encodeURIComponent(slug);
+  
   const populateQuery = [
-    'populate[ProfileImage][populate]=*',
-    'populate[cta][populate]=*',
-    'populate[Pdf][populate]=*',
-    `filters[slug][$eq]=${slug}`,
+    'populate=*',
+    `filters[slug][$eq]=${encodedSlug}`,
     'filters[isActive][$eq]=true'
   ].join('&');
   
@@ -3132,29 +3123,45 @@ export function mapLeadersData(leadersData) {
  */
 export function mapLeaderDetailData(leaderData) {
   // Handle Strapi v4 response structure (Collection Type - single item)
-  const leadersArray = leaderData?.data || (leaderData ? [leaderData] : []);
+  // Data can be in leaderData.data (array) or directly in leaderData (array or object)
+  let leadersArray = null;
   
-  if (!Array.isArray(leadersArray) || leadersArray.length === 0) {
+  if (leaderData?.data) {
+    // Standard Strapi v4 structure: { data: [...] }
+    leadersArray = Array.isArray(leaderData.data) ? leaderData.data : [leaderData.data];
+  } else if (Array.isArray(leaderData)) {
+    // Direct array
+    leadersArray = leaderData;
+  } else if (leaderData) {
+    // Single object
+    leadersArray = [leaderData];
+  }
+  
+  if (!leadersArray || leadersArray.length === 0) {
     return null;
   }
 
   const leader = leadersArray[0];
-  const leaderDataObj = leader?.attributes || leader;
+  // Data is directly on the leader object, not in attributes (based on actual API response)
+  const leaderDataObj = leader;
 
-  // Extract profile image
-  const profileImage = leaderDataObj?.ProfileImage?.data?.attributes || leaderDataObj?.ProfileImage || leader?.ProfileImage?.data?.attributes || leader?.ProfileImage;
+  // Extract profile image - handle both nested and flat structures
+  const profileImage = leaderDataObj?.ProfileImage?.data?.attributes 
+    || leaderDataObj?.ProfileImage 
+    || leader?.ProfileImage?.data?.attributes 
+    || leader?.ProfileImage;
   const imageUrl = profileImage ? getStrapiMedia(profileImage) : null;
 
-  // Extract basic info
-  const name = leaderDataObj?.LeaderName || leader?.LeaderName || leaderDataObj?.leaderName || leader?.leaderName || '';
-  const designation = leaderDataObj?.Designation || leader?.Designation || leaderDataObj?.designation || leader?.designation || '';
+  // Extract basic info using optional chaining
+  const name = leaderDataObj?.LeaderName || '';
+  const designation = leaderDataObj?.Designation || '';
   
   // Extract biography/description
-  const biography = leaderDataObj?.DetailDescription || leader?.DetailDescription || leaderDataObj?.detailDescription || leader?.detailDescription || '';
+  const biography = leaderDataObj?.DetailDescription || '';
 
   // Extract education (Rich text - Markdown, can be string or array)
   let education = [];
-  const educationData = leaderDataObj?.EducationDetail || leader?.EducationDetail || leaderDataObj?.educationDetail || leader?.educationDetail;
+  const educationData = leaderDataObj?.EducationDetail;
   if (educationData) {
     if (typeof educationData === 'string') {
       // Split by newlines if it's a string
@@ -3167,7 +3174,7 @@ export function mapLeaderDetailData(leaderData) {
   // Extract info items
   const infoItems = [];
   
-  const age = leaderDataObj?.Age || leader?.Age || leaderDataObj?.age || leader?.age;
+  const age = leaderDataObj?.Age;
   if (age) {
     infoItems.push({
       label: 'Age',
@@ -3175,7 +3182,7 @@ export function mapLeaderDetailData(leaderData) {
     });
   }
 
-  const nationality = leaderDataObj?.Nationality || leader?.Nationality || leaderDataObj?.nationality || leader?.nationality;
+  const nationality = leaderDataObj?.Nationality;
   if (nationality) {
     infoItems.push({
       label: 'Nationality',
@@ -3183,7 +3190,7 @@ export function mapLeaderDetailData(leaderData) {
     });
   }
 
-  const appointed = leaderDataObj?.Appointed || leader?.Appointed || leaderDataObj?.appointed || leader?.appointed;
+  const appointed = leaderDataObj?.Appointed;
   if (appointed) {
     try {
       const appointedDate = new Date(appointed).toLocaleDateString('en-US', {
@@ -3203,7 +3210,7 @@ export function mapLeaderDetailData(leaderData) {
     }
   }
 
-  const tenure = leaderDataObj?.Tenure || leader?.Tenure || leaderDataObj?.tenure || leader?.tenure;
+  const tenure = leaderDataObj?.Tenure;
   if (tenure) {
     infoItems.push({
       label: 'Tenure',
@@ -3212,11 +3219,19 @@ export function mapLeaderDetailData(leaderData) {
   }
 
   // Extract committee membership
-  const committeeMembership = leaderDataObj?.CommitteeMembership || leader?.CommitteeMembership || leaderDataObj?.committeeMembership || leader?.committeeMembership || '';
+  const committeeMembership = leaderDataObj?.CommitteeMembership || '';
 
-  // Extract PDF if available
-  const pdf = leaderDataObj?.Pdf?.data?.attributes || leaderDataObj?.Pdf || leader?.Pdf?.data?.attributes || leader?.Pdf;
+  // Extract PDF if available - handle both nested and flat structures
+  const pdf = leaderDataObj?.Pdf?.data?.attributes 
+    || leaderDataObj?.Pdf 
+    || leader?.Pdf?.data?.attributes 
+    || leader?.Pdf;
   const pdfUrl = pdf ? getStrapiMedia(pdf) : null;
+
+  // Extract PDF title from cta component if available, otherwise use PdfTitle field
+  const pdfTitle = leaderDataObj?.cta?.text 
+    || leaderDataObj?.PdfTitle 
+    || 'Download PDF';
 
   return {
     name: name,
@@ -3231,7 +3246,7 @@ export function mapLeaderDetailData(leaderData) {
     committeeMembership: committeeMembership,
     pdf: pdfUrl ? {
       url: pdfUrl,
-      title: leaderDataObj?.PdfTitle || leader?.PdfTitle || leaderDataObj?.pdfTitle || leader?.pdfTitle || 'Download PDF'
+      title: pdfTitle
     } : null
   };
 }
