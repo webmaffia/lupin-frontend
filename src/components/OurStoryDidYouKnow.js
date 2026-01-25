@@ -12,11 +12,11 @@ export default function OurStoryDidYouKnow() {
     },
     {
       title: "An auspicious beginning",
-      content: "Lupin was founded in 1968 on Gudi Padwa, an auspicious festival celebrated in parts of India. Dr. Gupta's wife, Manju Gupta, who is currently our chairperson, gave him the ₹5000 that helped him begin this journey."
+      content: "DBG founded Lupin in 1968 with the help of INR 5,000 borrowed from his wife, Manju Gupta, who is currently the chairperson."
     },
     {
       title: "Our first breakthrough",
-      content: "The Government of India entrusted Lupin with supplying iron and folic acid tablets for its mother and child healthcare program. This was our first major order and a foundation for our future."
+      content: "The Government of India entrusted Lupin with supplying iron and folic acid tablets for its mother and child healthcare program. This was Lupin’s first major order and a foundation for the future."
     },
     {
       title: "A team of two",

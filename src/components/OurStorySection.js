@@ -13,10 +13,11 @@ export default function OurStorySection() {
         </div>
         <div className="our-story-section__content" data-node-id="2888:554">
           <p className="our-story-section__paragraph">
-            From 1968, Lupin's journey has been defined by a belief that science can be a potent catalyst for change and transformation. What began as a small, determined venture grew step by step, milestone by milestone, into a global healthcare leader touching millions of lives.
+          From 1968, Lupin’s journey has been defined by a belief that science can be a potent catalyst for change and transformation. What began as a small, determined venture grew step by step, milestone by milestone, into a global healthcare leader touching millions of lives.
           </p>
           <p className="our-story-section__paragraph">
-            Below is a powerful and nostalgic tale reminding us of who we were yesterday and where we are today!
+          
+Below is a powerful and nostalgic tale reminding us of who we were yesterday and where we are today! 
           </p>
         </div>
       </div>
