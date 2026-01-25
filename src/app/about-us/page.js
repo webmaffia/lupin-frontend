@@ -103,7 +103,7 @@ export default async function AboutUsPage() {
 
               // Use Strapi data if available, otherwise use defaults
               // Follow the defaultFolds structure and use colors from defaultFolds
-              const foldsToRender = overviewSections;
+              const foldsToRender = overviewSections || [];
 
               return foldsToRender.map((fold, index) => {
                 const headingLines = fold.title.split(/\s+/).filter(word => word.trim());
@@ -145,34 +145,46 @@ export default async function AboutUsPage() {
                         >
                           {fold.description}
                         </ReactMarkdown>
-                        {fold.cta && fold.cta.href && fold.cta.href !== '#' && (
-                          <Link 
-                            href={fold.cta.href.startsWith('http') ? fold.cta.href : (fold.cta.href.startsWith('/') ? fold.cta.href : `/${fold.cta.href}`)} 
-                            className="about-us-content__fold-text-cta"
-                            target={fold.cta.href.startsWith('http') ? '_blank' : undefined}
-                            rel={fold.cta.href.startsWith('http') ? 'noopener noreferrer' : undefined}
-                          >
-                            <span className="about-us-content__fold-text-cta-text">
-                              {fold.cta.text || 'Read More'}
-                            </span>
-                            <svg
-                              className="about-us-content__fold-text-cta-icon"
-                              width="18"
-                              height="18"
-                              viewBox="0 0 18 18"
-                              fill="none"
-                              xmlns="http://www.w3.org/2000/svg"
+                        {fold.cta && fold.cta.href && fold.cta.href !== '#' && (() => {
+                          // Check if this CTA links to our-story - if so, don't render the link
+                          const ctaHref = fold.cta.href;
+                          const isOurStoryLink = ctaHref.includes('our-story') || ctaHref.includes('ourstory');
+                          
+                          // If it's our-story link, don't render the CTA button
+                          if (isOurStoryLink) {
+                            return null;
+                          }
+                          
+                          // Otherwise, render the link normally
+                          return (
+                            <Link 
+                              href={ctaHref.startsWith('http') ? ctaHref : (ctaHref.startsWith('/') ? ctaHref : `/${ctaHref}`)} 
+                              className="about-us-content__fold-text-cta"
+                              target={ctaHref.startsWith('http') ? '_blank' : undefined}
+                              rel={ctaHref.startsWith('http') ? 'noopener noreferrer' : undefined}
                             >
-                              <path
-                                d="M1 17L17 1M17 1H1M17 1V17"
-                                stroke="white"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </Link>
-                        )}
+                              <span className="about-us-content__fold-text-cta-text">
+                                {fold.cta.text || 'Read More'}
+                              </span>
+                              <svg
+                                className="about-us-content__fold-text-cta-icon"
+                                width="18"
+                                height="18"
+                                viewBox="0 0 18 18"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M1 17L17 1M17 1H1M17 1V17"
+                                  stroke="white"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </Link>
+                          );
+                        })()}
                       </div>
                     </div>
                   </section>
@@ -184,7 +196,8 @@ export default async function AboutUsPage() {
       </section>
 
       {/* Redirect Section */}
-      {redirectSection && redirectSection.href && redirectSection.href !== '#' && (
+      {/* Hide redirect section if it links to our-story (still working on it) */}
+      {redirectSection && redirectSection.href && redirectSection.href !== '#' && !redirectSection.href.includes('our-story') && !redirectSection.href.includes('ourstory') && (
         <section className="about-us-content__redirect">
           <div className="about-us-content__container">
             <Link 
