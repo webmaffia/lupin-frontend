@@ -4,6 +4,7 @@ import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import { getImageUrl } from '@/lib/image-proxy';
 
 /**
  * GTOTabs - Tabs component for Global Technical Operations
@@ -108,7 +109,7 @@ export default function GTOTabs({ tabs: propTabs = null, defaultActiveTab = null
                     {isImageFirst && section.image && (
                       <div className="global-technical-operations-tabs__manufacturing-image-wrapper">
                         <img
-                          src={section.image.url}
+                          src={getImageUrl(section.image.url) || section.image.url}
                           alt={section.image.alt || ''}
                           className="global-technical-operations-tabs__manufacturing-image"
                         />
@@ -158,7 +159,7 @@ export default function GTOTabs({ tabs: propTabs = null, defaultActiveTab = null
                     {!isImageFirst && section.image && (
                       <div className="global-technical-operations-tabs__manufacturing-image-wrapper">
                         <img
-                          src={section.image.url}
+                          src={getImageUrl(section.image.url) || section.image.url}
                           alt={section.image.alt || ''}
                           className="global-technical-operations-tabs__manufacturing-image"
                         />

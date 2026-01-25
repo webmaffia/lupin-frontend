@@ -7,6 +7,7 @@ import remarkBreaks from 'remark-breaks';
 import rehypeRaw from 'rehype-raw';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getAboutUs, mapAboutUsData } from '@/lib/strapi-pages';
+import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '@/scss/pages/about-us.scss';
 
 // Generate metadata for the About Us page
@@ -75,11 +76,12 @@ export default async function AboutUsPage() {
 
                 <div className="about-us-content__topfold-petals">
                   <Image
-                    src={pageIntroData?.image?.url || "/assets/about/petalsabout.svg"}
+                    src={getImageUrl(pageIntroData?.image?.url) || pageIntroData?.image?.url || "/assets/about/petalsabout.svg"}
                     alt={pageIntroData?.image?.alt || "Decorative petals"}
                     width={270}
                     height={388}
                     quality={100}
+                    unoptimized={isProxiedImage(pageIntroData?.image?.url)}
                   />
                 </div>
                 {pageIntroData?.description && (
@@ -111,22 +113,26 @@ export default async function AboutUsPage() {
                     <div className="about-us-content__fold-container">
                       <div className={`about-us-content__fold-image about-us-content__fold-image--${fold.imagePosition}`}>
                         <Image
-                          src={fold.image?.url || "/assets/about/image.png"}
+                          src={getImageUrl(fold.image?.url) || fold.image?.url || "/assets/about/image.png"}
                           alt={fold.image?.alt || "About Us"}
                           width={800}
                           height={623}
                           quality={100}
+                          unoptimized={isProxiedImage(fold.image?.url)}
                         />
                       </div>
-                      <div className={`about-us-content__fold-svg about-us-content__fold-svg--${fold.svgPosition}`}>
-                        <Image
-                          src={fold.icon.url}
-                          alt={fold.icon.alt || "Decorative SVG"}
-                          width={fold.svg === 'svg1' ? 251 : 531}
-                          height={fold.svg === 'svg1' ? 284 : 384}
-                          quality={100}
-                        />
-                      </div>
+                      {fold.icon && fold.icon.url && (
+                        <div className={`about-us-content__fold-svg about-us-content__fold-svg--${fold.svgPosition}`}>
+                          <Image
+                            src={getImageUrl(fold.icon.url) || fold.icon.url}
+                            alt={fold.icon.alt || "Decorative SVG"}
+                            width={fold.svg === 'svg1' ? 251 : 531}
+                            height={fold.svg === 'svg1' ? 284 : 384}
+                            quality={100}
+                            unoptimized={isProxiedImage(fold.icon.url)}
+                          />
+                        </div>
+                      )}
                       <h2 className="about-us-content__fold-heading">
                         {headingLines.map((word, wordIndex) => (
                           <span key={wordIndex}>{word.trim()}</span>
@@ -139,25 +145,34 @@ export default async function AboutUsPage() {
                         >
                           {fold.description}
                         </ReactMarkdown>
-                        <Link href={fold.cta.href || '#'} className="about-us-content__fold-text-cta">
-                          <span className="about-us-content__fold-text-cta-text">Read More</span>
-                          <svg
-                            className="about-us-content__fold-text-cta-icon"
-                            width="18"
-                            height="18"
-                            viewBox="0 0 18 18"
-                            fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
+                        {fold.cta && fold.cta.href && fold.cta.href !== '#' && (
+                          <Link 
+                            href={fold.cta.href.startsWith('http') ? fold.cta.href : (fold.cta.href.startsWith('/') ? fold.cta.href : `/${fold.cta.href}`)} 
+                            className="about-us-content__fold-text-cta"
+                            target={fold.cta.href.startsWith('http') ? '_blank' : undefined}
+                            rel={fold.cta.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                           >
-                            <path
-                              d="M1 17L17 1M17 1H1M17 1V17"
-                              stroke="white"
-                              strokeWidth="2"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                        </Link>
+                            <span className="about-us-content__fold-text-cta-text">
+                              {fold.cta.text || 'Read More'}
+                            </span>
+                            <svg
+                              className="about-us-content__fold-text-cta-icon"
+                              width="18"
+                              height="18"
+                              viewBox="0 0 18 18"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M1 17L17 1M17 1H1M17 1V17"
+                                stroke="white"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </Link>
+                        )}
                       </div>
                     </div>
                   </section>
@@ -167,6 +182,22 @@ export default async function AboutUsPage() {
           </div>
         </div>
       </section>
+
+      {/* Redirect Section */}
+      {redirectSection && redirectSection.href && redirectSection.href !== '#' && (
+        <section className="about-us-content__redirect">
+          <div className="about-us-content__container">
+            <Link 
+              href={redirectSection.href.startsWith('http') ? redirectSection.href : (redirectSection.href.startsWith('/') ? redirectSection.href : `/${redirectSection.href}`)}
+              className="about-us-content__redirect-link"
+              target={redirectSection.href.startsWith('http') ? '_blank' : undefined}
+              rel={redirectSection.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+            >
+              {redirectSection.text || 'View All'}
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

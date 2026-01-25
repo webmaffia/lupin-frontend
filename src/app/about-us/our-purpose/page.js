@@ -5,6 +5,7 @@ import PurposeVideo from '@/components/PurposeVideo';
 import Image from 'next/image';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import { getOurPurpose, mapOurPurposeData } from '@/lib/strapi-pages';
+import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '@/scss/components/Purpose.scss';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -116,17 +117,17 @@ export default async function PurposePage() {
               <div className="purpose-mountain__bg-wrapper">
                 <picture>
                   {treatmentSection.mobileImage?.url && (
-                    <source media="(max-width: 767px)" srcSet={treatmentSection.mobileImage.url} />
+                    <source media="(max-width: 767px)" srcSet={getImageUrl(treatmentSection.mobileImage.url) || treatmentSection.mobileImage.url} />
                   )}
                   {treatmentSection.desktopImage?.url ? (
                     <img
-                      src={treatmentSection.desktopImage.url}
+                      src={getImageUrl(treatmentSection.desktopImage.url) || treatmentSection.desktopImage.url}
                       alt={treatmentSection.desktopImage.alt || 'Treatment background'}
                       className="purpose-mountain__bg"
                     />
                   ) : treatmentSection.mobileImage?.url ? (
                     <img
-                      src={treatmentSection.mobileImage.url}
+                      src={getImageUrl(treatmentSection.mobileImage.url) || treatmentSection.mobileImage.url}
                       alt={treatmentSection.mobileImage.alt || 'Treatment background'}
                       className="purpose-mountain__bg"
                     />
@@ -198,10 +199,11 @@ export default async function PurposePage() {
                       {card.image?.url && (
                         <div className="purpose-commitments__card-media">
                           <Image
-                            src={card.image.url}
+                            src={getImageUrl(card.image.url) || card.image.url}
                             alt={card.image.alt || `${card.titleLine1} ${card.titleLine2}`}
                             fill
                             quality={100}
+                            unoptimized={isProxiedImage(card.image.url)}
                           />
                         </div>
                       )}
@@ -275,11 +277,12 @@ export default async function PurposePage() {
                       {index === 0 && card.image?.url && (
                         <div className="purpose-framework__circle-icon">
                           <Image
-                            src={card.image.url}
+                            src={getImageUrl(card.image.url) || card.image.url}
                             alt={card.image.alt || `${card.titleLine1} ${card.titleLine2}`}
                             width={200}
                             height={200}
                             quality={100}
+                            unoptimized={isProxiedImage(card.image.url)}
                           />
                         </div>
                       )}

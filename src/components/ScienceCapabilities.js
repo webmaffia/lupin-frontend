@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '../scss/components/ScienceCapabilities.scss';
 
 export default function ScienceCapabilities({ data }) {
@@ -39,11 +40,12 @@ export default function ScienceCapabilities({ data }) {
                 <>
                   <div className="science-capabilities__icon">
                     <Image
-                      src={capability.icon || capability.iconUrl || capability.image || "/assets/images/our-sci/icon22.svg"}
+                      src={getImageUrl(capability.icon || capability.iconUrl || capability.image) || capability.icon || capability.iconUrl || capability.image || "/assets/images/our-sci/icon22.svg"}
                       alt=""
                       width={114}
                       height={114}
                       quality={100}
+                      unoptimized={isProxiedImage(capability.icon || capability.iconUrl || capability.image)}
                     />
                   </div>
                   <h3 className="science-capabilities__title">
@@ -63,11 +65,12 @@ export default function ScienceCapabilities({ data }) {
                   </p>
                   <div className="science-capabilities__icon">
                     <Image
-                      src={capability.icon || capability.iconUrl || capability.image || "/assets/images/our-sci/icon22.svg"}
+                      src={getImageUrl(capability.icon || capability.iconUrl || capability.image) || capability.icon || capability.iconUrl || capability.image || "/assets/images/our-sci/icon22.svg"}
                       alt=""
                       width={114}
                       height={114}
                       quality={100}
+                      unoptimized={isProxiedImage(capability.icon || capability.iconUrl || capability.image)}
                     />
                   </div>
                 </>

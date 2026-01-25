@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import { getImageUrl, isProxiedImage } from '@/lib/image-proxy';
 import '@/scss/components/global/ProfileCard.scss';
 
 /**
@@ -59,12 +60,13 @@ export default function ProfileCard({
       {image && (
         <div className={`profile-card__image profile-card__image--${imagePosition}`}>
           <Image
-            src={image}
+            src={getImageUrl(image) || image}
             alt={name || 'Card image'}
             width={519}
             height={400}
             className="profile-card__image-img"
             quality={100}
+            unoptimized={isProxiedImage(image)}
           />
         </div>
       )}

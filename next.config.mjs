@@ -62,7 +62,12 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: '/leaders/:slug*',
+        source: '/about-us/leaderships',
+        destination: '/about-us/leadership',
+        permanent: true,
+      },
+      {
+        source: '/about-us/leaderships/:slug*',
         destination: '/about-us/leadership/:slug*',
         permanent: true,
       },
