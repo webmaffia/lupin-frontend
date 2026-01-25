@@ -13,6 +13,10 @@ export default function LivelihoodSection({ livelihoodData = null }) {
 
   const data = livelihoodData;
 
+    const CustomParagraph = ({ children }) => {
+    return <p className="community-livelihood__paragraph">{children}</p>;
+  }
+
   return (
     <section className="community-livelihood">
       <div className="community-livelihood__bg">
@@ -44,6 +48,9 @@ export default function LivelihoodSection({ livelihoodData = null }) {
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   rehypePlugins={[rehypeRaw]}
+                  components={{
+                    p: CustomParagraph,
+                  }}
                 >
                   {data.description}
                 </ReactMarkdown>

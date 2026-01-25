@@ -108,6 +108,10 @@ export default async function CommunityPage() {
     highlights: communityData.liveProgramSection.keyHighlights
   } : null;
 
+  const CustomParagraph = ({ children }) => {
+    return <p className="community-info__paragraph">{children}</p>;
+  }
+
   return (
     <div style={{ position: 'relative' }}>
       {communityData.banner && <InnerBanner data={communityData.banner} />}
@@ -122,6 +126,9 @@ export default async function CommunityPage() {
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     rehypePlugins={[rehypeRaw]}
+                    components={{
+                    p: CustomParagraph,
+                  }}
                   >
                     {communityData.pageIntroSection.content}
                   </ReactMarkdown>
