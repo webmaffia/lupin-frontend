@@ -139,7 +139,15 @@ const AgricultureTabContent = ({ contentData }) => {
 export default function LivelihoodTabs({ tabs = [] }) {
   // SVG icons for each tab
   const getTabIcon = (tabId) => {
-    switch (tabId) {
+    // Log for debugging
+    if (process.env.NODE_ENV === 'development') {
+      console.log('getTabIcon called with tabId:', tabId, 'type:', typeof tabId);
+    }
+    
+    // Convert to number if it's a string
+    const numericTabId = typeof tabId === 'string' ? parseInt(tabId, 10) : tabId;
+    
+    switch (numericTabId) {
       case 1:
         return (
           <svg width="209" height="209" viewBox="0 0 209 209" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -221,6 +229,12 @@ export default function LivelihoodTabs({ tabs = [] }) {
     return null;
   }
   
+  // Log for debugging
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Transformed tabs:', transformedTabs);
+    console.log('Tab IDs:', transformedTabs.map(t => ({ id: t.id, title: t.title })));
+  }
+  
   const tabsData = transformedTabs;
   const [activeTab, setActiveTab] = useState(tabsData[0]?.id || 1);
 
@@ -247,7 +261,14 @@ export default function LivelihoodTabs({ tabs = [] }) {
               <div className="livelihood-tabs__icon">
                 <div className="livelihood-tabs__icon-circle">
                   <div className="livelihood-tabs__icon-image">
-                    {getTabIcon(tab.id)}
+                    {(() => {
+                      // Use index-based icon mapping (1, 2, 3) instead of Strapi ID
+                      const iconIndex = tabsData.findIndex(t => t.id === tab.id) + 1;
+                      if (process.env.NODE_ENV === 'development') {
+                        console.log('Rendering icon for tab:', { tabId: tab.id, iconIndex, title: tab.title });
+                      }
+                      return getTabIcon(iconIndex);
+                    })()}
                   </div>
                 </div>
               </div>
