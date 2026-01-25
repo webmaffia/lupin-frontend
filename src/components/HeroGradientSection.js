@@ -14,11 +14,9 @@ export default function HeroGradientSection() {
             <p className="hero-gradient-section__paragraph">
               <span>Our Founder, </span>
               <strong>Dr. Desh Bandhu Gupta</strong>
-              <span>, aspired to build quality healthcare as a right for all. He believed that scientific excellence is imperative to expand access to affordable healthcare. This relentless drive to pursue </span>
+              <span>, aspired to build quality healthcare as a right for all. He believed that scientific excellence is imperative to expand access to affordable healthcare. This relentless drive to pursue  a single dream led to the formation of a company that would go on to impact several lives through affordable, accessible healthcare.</span>
             </p>
-            <p className="hero-gradient-section__paragraph">
-              a single dream led to the formation of a company that would go on to impact several lives through affordable, accessible healthcare.
-            </p>
+         
           </div>
         </div>
 
