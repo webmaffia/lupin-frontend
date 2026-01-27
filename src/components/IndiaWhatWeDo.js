@@ -1,6 +1,10 @@
 'use client';
 
 import '../scss/components/IndiaWhatWeDo.scss';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import remarkBreaks from 'remark-breaks';
+import rehypeRaw from 'rehype-raw';
 
 export default function IndiaWhatWeDo({ data }) {
   const defaultData = {
@@ -16,15 +20,17 @@ export default function IndiaWhatWeDo({ data }) {
   const heading = whatWeDoData?.heading || whatWeDoData?.title || defaultData.heading;
   const content = whatWeDoData?.content || whatWeDoData?.paragraphs || whatWeDoData?.text || defaultData.content;
 
-  // Process content to handle bold and underlined text
-  const processContent = (text) => {
-    if (!text) return '';
-    // Bold and underline "biosimilars segment"
-    let processed = text.replace(/\b(biosimilars segment)\b/gi, '<strong style="text-decoration: underline; text-decoration-thickness: 8%;">$1</strong>');
-    // Bold and underline "complex specialty drugs"
-    processed = processed.replace(/\b(complex specialty drugs)\b/gi, '<strong style="text-decoration: underline; text-decoration-thickness: 8%;">$1</strong>');
-    return processed;
-  };
+  // Convert array to string if needed, otherwise use directly
+  const markdownContent = Array.isArray(content) ? content.join('\n\n') : content;
+
+  const CustomParagraph = ({ children }) => {
+    return <p className="india-what-we-do__paragraph">{children}</p>;
+  }
+
+  // Don't render if no content
+  if (!markdownContent) {
+    return null;
+  }
 
   return (
     <section className="india-what-we-do" data-node-id="3067:3094">
@@ -33,22 +39,15 @@ export default function IndiaWhatWeDo({ data }) {
           {heading}
         </h2>
         <div className="india-what-we-do__content">
-          {Array.isArray(content) ? (
-            content.map((paragraph, index) => (
-              paragraph && paragraph.trim() ? (
-                <p 
-                  key={index} 
-                  className="india-what-we-do__paragraph"
-                  dangerouslySetInnerHTML={{ __html: processContent(paragraph) }}
-                />
-              ) : null
-            ))
-          ) : (
-            <p 
-              className="india-what-we-do__paragraph"
-              dangerouslySetInnerHTML={{ __html: processContent(content) }}
-            />
-          )}
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkBreaks]}
+            rehypePlugins={[rehypeRaw]}
+            components={{
+              p: CustomParagraph,
+            }}
+          >
+            {markdownContent}
+          </ReactMarkdown>
         </div>
       </div>
     </section>
