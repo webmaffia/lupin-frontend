@@ -98,7 +98,6 @@
     line-height: vw(80);
     color: #ffffff;
     margin: 0;
-    text-transform: capitalize;
     
     @include media('tablet') {
       font-size: vw(55, 768);
@@ -156,7 +155,6 @@
     line-height: vw(80);
     color: #ffffff;
     margin: 0;
-    text-transform: capitalize;
     white-space: nowrap;
     
     @include media('tablet') {

@@ -187,7 +187,6 @@
     line-height: vw(32);
     color: #08a03f;
     margin: 0 0 vw(15) 0;
-    text-transform: capitalize;
     
     @include media('tablet') {
       font-size: vw(22, 768);

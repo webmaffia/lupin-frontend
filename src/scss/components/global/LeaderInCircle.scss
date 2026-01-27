@@ -272,7 +272,6 @@
   &__name {
     font-family: $font-family-base;
     margin: 0 0 vw(0) 0;
-    text-transform: capitalize;
     transition: color $transition-base, font-weight $transition-base, font-size $transition-base;
     
     .leader-in-circle__info--special & {

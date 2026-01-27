@@ -80,7 +80,6 @@ width: 100%;
     font-weight: 700;
     font-size: vw(20);
     line-height: vw(37);
-    text-transform: capitalize;
     padding: vw(17) vw(28);
     border-radius: vw(16);
     cursor: pointer;
@@ -219,7 +218,6 @@ width: 100%;
     font-weight: 700;
     font-size: vw(18);
     line-height: 1.39; // 25px / 18px
-    text-transform: capitalize;
     text-align: center;
     
     &:nth-child(2) {
@@ -319,7 +317,6 @@ width: 100%;
     font-size: vw(18);
     line-height: vw(45);
     color: #000000;
-    text-transform: capitalize;
     
     // Match header column widths
     p {
@@ -455,7 +452,6 @@ width: 100%;
     line-height: vw(80);
     color: #08a03f;
     margin: 0;
-    text-transform: capitalize;
     white-space: nowrap;
     
     @include media('tablet') {
@@ -491,7 +487,6 @@ width: 100%;
     color: #126430;
     opacity: 0.8;
     margin: 0;
-    // text-transform: capitalize; // Removed to allow sentence case content
     width: vw(1311);
     max-width: 100%;
     
@@ -517,7 +512,6 @@ width: 100%;
     line-height: vw(36);
     color: #126430;
     opacity: 0.8;
-    text-transform: capitalize;
     
     @include media('tablet') {
       flex-direction: column;

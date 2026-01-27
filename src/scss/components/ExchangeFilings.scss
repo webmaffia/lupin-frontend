@@ -45,7 +45,6 @@
     color: #08a03f;
     margin: 0;
     text-align: center;
-    text-transform: capitalize;
     width: 100%;
     
     @include media('tablet') {
@@ -85,7 +84,6 @@
     font-weight: 700;
     font-size: vw(19.67);
     line-height: vw(37.456);
-    text-transform: capitalize;
     padding: vw(16.75) vw(27.917);
     border-radius: vw(16.392);
     cursor: pointer;

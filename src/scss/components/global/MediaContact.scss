@@ -89,7 +89,6 @@
     font-size: vw(65);
     line-height: vw(80);
     color: #08a240;
-    text-transform: capitalize;
     margin: 0;
     @include flex(column, flex-start, flex-start);
     gap: 0;
@@ -132,7 +131,6 @@
     line-height: vw(80);
     color: #1e1e1e;
     margin: 0;
-    text-transform: capitalize;
     
     @include media('mobile') {
       font-size: vw-mobile(24, 414);

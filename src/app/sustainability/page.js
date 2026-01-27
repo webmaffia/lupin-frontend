@@ -1,6 +1,14 @@
 import InnerBanner from '@/components/InnerBanner';
 import SustainabilityIntro from '@/components/sustainability/SustainabilityIntro';
 import OurPlanet from '@/components/sustainability/OurPlanet';
+import OurPeople from '@/components/sustainability/OurPeople';
+import OurPatients from '@/components/sustainability/OurPatients';
+import ESGRatingsSection from '@/components/sustainability/ESGRatingsSection';
+import ESGGovernanceSection from '@/components/sustainability/ESGGovernanceSection';
+import ESGInfographicSection from '@/components/sustainability/ESGInfographicSection';
+import SustainabilityCTASection from '@/components/sustainability/SustainabilityCTASection';
+import GlobalFrameworksSection from '@/components/sustainability/GlobalFrameworksSection';
+import LookingAheadSection from '@/components/sustainability/LookingAheadSection';
 import { generateMetadata as generateSEOMetadata } from '@/lib/seo';
 import '@/scss/pages/sustainability.scss';
 
@@ -41,6 +49,14 @@ export default function SustainabilityPage() {
       
       <SustainabilityIntro />
       <OurPlanet />
+      <OurPeople />
+      <OurPatients />
+      <ESGRatingsSection />
+      <ESGGovernanceSection />
+      <ESGInfographicSection />
+      <SustainabilityCTASection />
+      <GlobalFrameworksSection />
+      <LookingAheadSection />
     </div>
   );
 }

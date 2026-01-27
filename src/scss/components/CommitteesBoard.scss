@@ -99,7 +99,6 @@
     margin: 0;
     text-align: center;
     width: 100%;
-    text-transform: capitalize;
     
     @include media('tablet') {
       font-size: vw(50, 768);
@@ -394,7 +393,6 @@
   &__member-name {
     font-family: $font-family-base;
     margin: 0 0 vw(0) 0;
-    text-transform: capitalize;
     transition: color $transition-base, font-weight $transition-base, font-size $transition-base;
     
     .committees-board__member-info--special & {

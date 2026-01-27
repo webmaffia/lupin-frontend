@@ -63,7 +63,6 @@
     font-size: vw(19.67);
     line-height: vw(37.456);
     color: #1E1E1E;
-    text-transform: capitalize;
     
     @include media('tablet') {
       padding: vw(14, 768) vw(24, 768);
@@ -82,7 +81,6 @@
     
     &::placeholder {
       color: #535353;
-      text-transform: capitalize;
     }
     
     &:focus {
@@ -205,7 +203,6 @@
     font-size: vw(19.67);
     line-height: vw(37.456);
     color: #ffffff;
-    text-transform: capitalize;
     white-space: nowrap;
     
     @include media('tablet') {

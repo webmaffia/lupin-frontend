@@ -294,6 +294,20 @@ export default function OurPlanet() {
 
   return (
     <section className="our-planet" data-node-id="2939:6076" ref={sectionRef}>
+      {/* Background Image with Picture Tag */}
+      <div className="our-planet__bg">
+        <picture>
+          <source 
+            media="(max-width: 768px)" 
+            srcSet="/assets/sustainability/bg2-mobile.png" 
+          />
+          <img
+            src="/assets/sustainability/bg2.png"
+            alt="Our Planet background"
+            className="our-planet__bg-image"
+          />
+        </picture>
+      </div>
       {/* ESG Framework Banner */}
       <div className="our-planet__esg-banner" data-node-id="2939:6031">
         <div className="our-planet__esg-content" data-node-id="2939:6029">

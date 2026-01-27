@@ -94,7 +94,6 @@
     font-size: vw(80);
     line-height: vw(100.977);
     color: #ffffff;
-    text-transform: capitalize;
     margin: 0;
     width: 100%;
     display: flex;
@@ -144,10 +143,6 @@
     width: 100%;
     height: auto;
     text-shadow: 0px vw(4) vw(1.9) rgba(0, 0, 0, 0.17);
-    
-    .capitalize {
-      text-transform: capitalize;
-    }
     
     @include media('tablet') {
       width: 100%;
@@ -700,7 +695,6 @@
     font-size: vw(50);
     line-height: vw(100.977);
     color: #ffffff;
-    text-transform: capitalize;
     text-align: center;
     
     @include media('tablet') {

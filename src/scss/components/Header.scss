@@ -110,7 +110,6 @@
     font-size: vw(21);
     line-height: vw(50);
     letter-spacing: vw(1.05);
-    text-transform: capitalize;
     color: rgba(255, 255, 255, 0.8);
     white-space: nowrap;
     transition: color $transition-fast, opacity $transition-fast;
@@ -200,7 +199,6 @@
     font-size: vw(16);
     line-height: vw(50);
     letter-spacing: vw(0.8);
-    text-transform: capitalize;
     color: #ffffff;
     white-space: nowrap;
     transition: color $transition-fast;
@@ -220,7 +218,6 @@
     font-size: vw(16);
     line-height: vw(50);
     letter-spacing: vw(0.8);
-    text-transform: capitalize;
     color: #ffffff;
     white-space: nowrap;
     transition: color $transition-fast;
@@ -363,7 +360,6 @@
     font-size: vw(20);
     line-height: 1.5;
     letter-spacing: vw(1);
-    text-transform: capitalize;
     color: rgba(255, 255, 255, 0.8);
     white-space: nowrap;
     

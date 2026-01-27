@@ -208,7 +208,6 @@
     font-size: vw(36);
     line-height: 1.59;
     color: #ffffff;
-    text-transform: capitalize;
     z-index: 1;
     margin-right: vw(-110);
     
@@ -242,7 +241,6 @@
     font-size: vw(36);
     line-height: 1.59;
     color: #08a03f;
-    text-transform: capitalize;
     z-index: 1;
     
     @include media('tablet') {
