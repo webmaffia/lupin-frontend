@@ -2009,11 +2009,15 @@ export function mapImpactSectionData(strapiData) {
     const suffix = metric?.Suffix || '';
     const displayNumber = suffix ? `${formattedValue}${suffix}` : formattedValue;
 
+    // Extract icon from Strapi
+    const icon = metric?.Icon;
+    const iconUrl = icon ? getStrapiMedia(icon) : null;
+
     return {
       id: metric?.id || Math.random(),
       number: displayNumber,
       description: metric?.Description || '',
-      icon: '/assets/community/key1.svg' // Keep static icon for now
+      icon: iconUrl || '/assets/community/key1.svg' // Fallback to static icon if no icon from Strapi
     };
   });
 

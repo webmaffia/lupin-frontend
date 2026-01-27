@@ -50,7 +50,7 @@ export default function ImpactAtGlance({ impactData = null }) {
                   key={metric?.id || index} 
                   className={`impact-at-glance__metric ${positionClass}`}
                 >
-                  <div className="impact-at-glance__icon-wrapper">
+                  <div className="impact-at-glance__icon-wrapper Test">
                     <Image
                       src={metric?.icon || '/assets/community/key1.svg'}
                       alt="Impact icon"
@@ -61,7 +61,7 @@ export default function ImpactAtGlance({ impactData = null }) {
                   </div>
                   <div className="impact-at-glance__text-wrapper">
                     {metric?.number && (
-                      <div className="impact-at-glance__number">{metric.number}</div>
+                      <div className="impact-at-glance__number">{metric.number}{metric.Suffix}</div>
                     )}
                     {metric?.description && (
                       <p className="impact-at-glance__description">{metric.description}</p>

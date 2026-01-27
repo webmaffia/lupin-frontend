@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Image from 'next/image';
+import axios from 'axios';
+import countryList from 'react-select-country-list';
 import '../scss/components/ContactUsForm.scss';
 
 export default function ContactUsForm() {
@@ -9,12 +11,15 @@ export default function ContactUsForm() {
     name: '',
     organization: '',
     email: '',
-    telNo: '',
+    phone: '',
     country: '',
     subject: '',
-    query: '',
+    message: '',
     agreeToTerms: false
   });
+
+  // Get country options from react-select-country-list
+  const countryOptions = useMemo(() => countryList().getData(), []);
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,8 +62,8 @@ export default function ContactUsForm() {
       newErrors.subject = 'Subject is required';
     }
 
-    if (!formData.query.trim()) {
-      newErrors.query = 'Query is required';
+    if (!formData.message.trim()) {
+      newErrors.message = 'Message is required';
     }
 
     if (!formData.agreeToTerms) {
@@ -78,11 +83,38 @@ export default function ContactUsForm() {
 
     setIsSubmitting(true);
     
-    // Simulate form submission
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Form submitted:', formData);
+      // Get Strapi base URL
+      const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || 'http://localhost:1380';
+      const apiUrl = `${strapiUrl}/api/enquiry-leads`;
+
+      // Map form data to Strapi field names
+      const payload = {
+        data: {
+          Name: formData.name,
+          Organization: formData.organization,
+          Email: formData.email,
+          Phone: formData.phone || null,
+          Country: formData.country || null,
+          Subject: formData.subject,
+          Message: formData.message
+        }
+      };
+
+      // Prepare headers
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+
+      // Add authorization token if available
+      if (process.env.NEXT_PUBLIC_STRAPI_API_TOKEN) {
+        headers['Authorization'] = `Bearer ${process.env.NEXT_PUBLIC_STRAPI_API_TOKEN}`;
+      }
+
+      // Submit to Strapi API
+      const response = await axios.post(apiUrl, payload, { headers });
+
+      console.log('Form submitted successfully:', response.data);
       alert('Thank you for your message. We will get back to you soon!');
       
       // Reset form
@@ -90,16 +122,19 @@ export default function ContactUsForm() {
         name: '',
         organization: '',
         email: '',
-        telNo: '',
+        phone: '',
         country: '',
         subject: '',
-        query: '',
+        message: '',
         agreeToTerms: false
       });
       setErrors({});
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('There was an error submitting your form. Please try again.');
+      const errorMessage = error.response?.data?.error?.message || 
+                          error.message || 
+                          'There was an error submitting your form. Please try again.';
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -179,10 +214,10 @@ export default function ContactUsForm() {
             <div className="contact-us-form__field-wrapper">
               <input
                 type="tel"
-                name="telNo"
-                value={formData.telNo}
+                name="phone"
+                value={formData.phone}
                 onChange={handleChange}
-                placeholder="Tel No"
+                placeholder="Phone"
                 className="contact-us-form__input"
                 data-node-id="2947:6296"
               />
@@ -191,15 +226,20 @@ export default function ContactUsForm() {
 
           <div className="contact-us-form__row">
             <div className="contact-us-form__field-wrapper">
-              <input
-                type="text"
+              <select
                 name="country"
                 value={formData.country}
                 onChange={handleChange}
-                placeholder="Country"
-                className="contact-us-form__input"
+                className="contact-us-form__select"
                 data-node-id="2947:6298"
-              />
+              >
+                <option value="">Select Country</option>
+                {countryOptions.map((option) => (
+                  <option key={option.value} value={option.label}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="contact-us-form__field-wrapper">
@@ -226,16 +266,16 @@ export default function ContactUsForm() {
           <div className="contact-us-form__row contact-us-form__row--full">
             <div className="contact-us-form__field-wrapper">
               <textarea
-                name="query"
-                value={formData.query}
+                name="message"
+                value={formData.message}
                 onChange={handleChange}
                 placeholder="Post your query *"
                 rows={8}
-                className={`contact-us-form__textarea ${errors.query ? 'contact-us-form__textarea--error' : ''}`}
+                className={`contact-us-form__textarea ${errors.message ? 'contact-us-form__textarea--error' : ''}`}
                 data-node-id="2947:6302"
               />
-              {errors.query && (
-                <span className="contact-us-form__error">{errors.query}</span>
+              {errors.message && (
+                <span className="contact-us-form__error">{errors.message}</span>
               )}
             </div>
           </div>
