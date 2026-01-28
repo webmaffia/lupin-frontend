@@ -143,12 +143,16 @@
 
 /* Section 2: Catalyzing Hope Into Healing */
 .purpose-story {
-	background: #00a859;
+	background: #00a859 url('/assets/images/purpose/bg.webp') no-repeat center center;
+	background-size: cover;
+	position: relative;
 	padding: 4.17vw 0;
 
 	.container-para {
 		background: transparent;
-		padding-left: 3.5vw;
+		padding-left: 5.5vw;
+		position: relative;
+		z-index: 1;
 	}
 
 	&__content {
@@ -162,6 +166,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1.56vw;
+		// margin-left: 5vw;
 	}
 
 	&__title {
