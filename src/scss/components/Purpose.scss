@@ -448,6 +448,7 @@
 		font-weight: 700;
 		line-height: 1.2;
 		margin-bottom: 0.6vw;
+		width: 131%;
 	}
 
 	&__card-title-word {
@@ -554,7 +555,7 @@
 
 	&__circles {
 		display: grid;
-		grid-template-columns: 0.5fr repeat(3, 1fr);
+		grid-template-columns: repeat(4, 1fr);
 		gap: 2.08vw;
 		position: relative;
 		align-items: center;
@@ -569,6 +570,9 @@
 		justify-content: center;
 		text-align: center;
 		aspect-ratio: 1;
+		overflow: hidden;
+		transition: background-color 0.3s ease, color 0.3s ease, transform 0.8s ease;
+		cursor: pointer;
 
 		&--white {
 			background: #fff;
@@ -579,11 +583,41 @@
 			background: #1FA44F;
 			min-height: 18.75vw;
 		}
-	}
 
-	&__circle:first-child {
-		min-height: 25vw;
-		padding: 3.5vw;
+		// Hover state: circle grows, title/text move up so icon fits inside, turns white, icon appears
+		&--green:hover {
+			background: #fff;
+			transform: scale(1.06);
+			z-index: 1;
+			position: relative;
+
+			.purpose-framework__circle-title {
+				color: #0A963C;
+				transform: translateY(-3.5vw);
+			}
+
+			.purpose-framework__circle-title-word {
+				border-bottom-color: #0A963C;
+			}
+
+			.purpose-framework__circle-text {
+				color: #0A963C;
+				opacity: 0.8;
+				transform: translateY(-3.5vw);
+			}
+
+			.purpose-framework__circle-icon {
+				opacity: 1;
+				visibility: visible;
+				margin-top: 0.5vw;
+			}
+
+			.purpose-framework__circle-icon img {
+				width: 7.5vw;
+				max-width: 100%;
+				filter: brightness(0) saturate(100%) invert(28%) sepia(95%) saturate(1200%) hue-rotate(120deg) brightness(0.6);
+			}
+		}
 	}
 
 	&__circle-title {
@@ -591,21 +625,14 @@
 		font-weight: 700;
 		line-height: 1.2;
 		margin: 0 0 0.52vw 0;
+		margin-top: 6vw;
+		transition: color 0.3s ease, transform 0.3s ease;
 	}
 
 	&__circle-title-word {
 		display: inline-block;
 		padding-bottom: -0.48vw;
 		border-bottom: 0.1vw solid;
-	}
-
-	&__circle:first-child &__circle-title {
-		font-size: 1.88vw;
-	}
-
-	&__circle:first-child &__circle-title-word {
-		// padding-bottom: 0.65vw;
-		border-bottom-width: -0.87vw;
 	}
 
 	&__circle--white &__circle-title {
@@ -628,10 +655,7 @@
 		font-size: 0.94vw;
 		line-height: 1.6;
 		margin: 0 0 1.04vw 0;
-	}
-
-	&__circle:first-child &__circle-text {
-		font-size: 1.15vw;
+		transition: color 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
 	}
 
 	&__circle--white &__circle-text {
@@ -645,19 +669,25 @@
 	}
 
 	&__circle-icon {
-		// margin-top: 3.52vw;
+		// margin-top: 1.04vw;
+		opacity: 0;
+		visibility: hidden;
+		transition: opacity 0.3s ease, visibility 0.3s ease;
 
 		img {
-			// width: 3.13vw;
 			height: auto;
 			display: block;
+			transition: filter 0.3s ease;
 		}
 	}
 
-	&__circle:first-child &__circle-icon {
-		img {
-			width: 11vw;
-		}
+	// Icon base size (hidden by default; smaller size on hover so it stays inside circle)
+	&__circle--green &__circle-icon img {
+		width: 7.5vw;
+	}
+
+	&__circle--green:hover &__circle-icon img {
+		filter: brightness(0) saturate(100%) invert(28%) sepia(95%) saturate(1200%) hue-rotate(120deg) brightness(0.6); // Dark green icon
 	}
 
 	@include media('mobile') {
@@ -689,9 +719,40 @@
 			min-height: auto;
 		}
 
-		&__circle:first-child {
-			min-height: auto;
-			padding: vw-mobile(25);
+		&__circle--green &__circle-icon img {
+			width: vw-mobile(40);
+		}
+
+		// On mobile: always show desktop hover effect (white bg, icon, dark green text, title up)
+		&__circle--green {
+			background: #fff;
+			transform: scale(1.04);
+			z-index: 0;
+			position: relative;
+
+			.purpose-framework__circle-title {
+				color: #0A963C;
+				transform: translateY(vw-mobile(-25));
+			}
+
+			.purpose-framework__circle-title-word {
+				border-bottom-color: #0A963C;
+			}
+
+			.purpose-framework__circle-text {
+				color: #0A963C;
+				opacity: 0.8;
+				transform: translateY(vw-mobile(-25));
+			}
+
+			.purpose-framework__circle-icon {
+				opacity: 1;
+				visibility: visible;
+			}
+
+			.purpose-framework__circle-icon img {
+				filter: brightness(0) saturate(100%) invert(28%) sepia(95%) saturate(1200%) hue-rotate(120deg) brightness(0.6);
+			}
 		}
 
 		&__circle-title {
@@ -703,41 +764,20 @@
 			border-bottom: vw-mobile(1) solid;
 		}
 
-		&__circle:first-child &__circle-title {
-			font-size: vw-mobile(18);
-		}
-
-		&__circle:first-child &__circle-title-word {
-			// padding-bottom: vw-mobile(8);
-			border-bottom-width: vw-mobile(1.5);
-		}
-
 		&__circle--white &__circle-title-word {
 			border-bottom-color: #0A963C;
 		}
 
-		&__circle--green &__circle-title-word {
-			border-bottom-color: #fff;
-		}
+		// Green circles on mobile use hover look (dark green), so no white underline override
 
 		&__circle-text {
 			font-size: vw-mobile(11);
 			margin-bottom: vw-mobile(10);
 		}
 
-		&__circle:first-child &__circle-text {
-			font-size: vw-mobile(12);
-		}
-
 		&__circle-icon {
 			img {
 				width: vw-mobile(30);
-			}
-		}
-
-		&__circle:first-child &__circle-icon {
-			img {
-				width: vw-mobile(40);
 			}
 		}
 	}

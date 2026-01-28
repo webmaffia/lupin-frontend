@@ -251,40 +251,44 @@ export default async function PurposePage() {
               </div>
               {guidedFrameworkSection.cards && guidedFrameworkSection.cards.length > 0 && (
                 <div className="purpose-framework__circles">
-                  {guidedFrameworkSection.cards.map((card, index) => (
-                    <div
-                      key={card.id}
-                      className={`purpose-framework__circle ${index === 0 ? 'purpose-framework__circle--white' : 'purpose-framework__circle--green'}`}
-                    >
-                      <h3 className="purpose-framework__circle-title">
-                        {card.titleLine1 && (
-                          <span className="purpose-framework__circle-title-word">{card.titleLine1}</span>
+                  {guidedFrameworkSection.cards.map((card, index) => {
+                    // Get the first card's image for all circles
+                    const firstCardImage = guidedFrameworkSection.cards[0]?.image;
+                    return (
+                      <div
+                        key={card.id}
+                        className="purpose-framework__circle purpose-framework__circle--green"
+                      >
+                        <h3 className="purpose-framework__circle-title">
+                          {card.titleLine1 && (
+                            <span className="purpose-framework__circle-title-word">{card.titleLine1}</span>
+                          )}
+                          {card.titleLine2 && (
+                            <>
+                              <br />
+                              {card.titleLine2}
+                            </>
+                          )}
+                        </h3>
+                        {card.description && (
+                          <p className="purpose-framework__circle-text">
+                            {card.description}
+                          </p>
                         )}
-                        {card.titleLine2 && (
-                          <>
-                            <br />
-                            {card.titleLine2}
-                          </>
+                        {firstCardImage?.url && (
+                          <div className="purpose-framework__circle-icon">
+                            <Image
+                              src={firstCardImage.url}
+                              alt={firstCardImage.alt || `${card.titleLine1} ${card.titleLine2}`}
+                              width={200}
+                              height={200}
+                              quality={100}
+                            />
+                          </div>
                         )}
-                      </h3>
-                      {card.description && (
-                        <p className="purpose-framework__circle-text">
-                          {card.description}
-                        </p>
-                      )}
-                      {index === 0 && card.image?.url && (
-                        <div className="purpose-framework__circle-icon">
-                          <Image
-                            src={card.image.url}
-                            alt={card.image.alt || `${card.titleLine1} ${card.titleLine2}`}
-                            width={200}
-                            height={200}
-                            quality={100}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
