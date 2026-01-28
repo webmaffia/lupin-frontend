@@ -16,10 +16,10 @@ export default function LookingAheadSection() {
           <picture>
             <source 
               media="(max-width: 768px)" 
-              srcSet="/assets/images/sustainability/looking-ahead-mobile.png" 
+              srcSet="/assets/sustainability/bottom.png" 
             />
             <img
-              src="/assets/images/sustainability/2a1a02f537582b0e91074720181131714b1c5115.png"
+              src="/assets/sustainability/bottom.png"
               alt="Looking ahead - Earth and nature"
               className="looking-ahead__image"
             />

@@ -62,25 +62,21 @@
     }
 
     &:hover {
+      background: #08a03f;
       transform: translateY(-2px);
       box-shadow: 0 vw(4) vw(12) rgba(0, 0, 0, 0.1);
 
-      @include media('mobile') {
-        transform: none;
-        box-shadow: none;
-      }
-    }
-
-    // Primary card (green background)
-    &--primary {
-      background: #08a03f;
-      
       .sustainability-cta__card-text {
         color: #ffffff;
       }
 
       .sustainability-cta__icon-img {
         filter: brightness(0) invert(1);
+      }
+
+      @include media('mobile') {
+        transform: none;
+        box-shadow: none;
       }
     }
   }

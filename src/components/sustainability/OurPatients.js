@@ -114,7 +114,7 @@ export default function OurPatients() {
                     <p className="our-patients__initiative-status-value">{initiative.status}</p>
                     <div className="our-patients__initiative-chart-icon">
                       <Image 
-                        src="/assets/images/sustainability/00c413fdbe5adad85cefb57317b947646b074692.svg" 
+                        src="/assets/sustainability/icon1.svg" 
                         alt="Chart icon" 
                         width={50}
                         height={50}
@@ -155,7 +155,7 @@ export default function OurPatients() {
                       <div className={`our-patients__initiative-icon our-patients__initiative-icon--${initiative.iconType}-1`}>
                         {initiative.iconType === 'education' ? (
                           <Image 
-                            src="/assets/images/sustainability/06e9166f00eed5722f6ec1d84721ba6957405e7f.svg" 
+                            src="/assets/sustainability/icon2.svg" 
                             alt="Heart icon" 
                             width={50}
                             height={50}
@@ -163,7 +163,7 @@ export default function OurPatients() {
                           />
                         ) : (
                           <Image 
-                            src="/assets/images/sustainability/25ee3987c84065596a15935b2704338e2e1930a6.svg" 
+                            src="/assets/sustainability/icon4.svg" 
                             alt="Lungs icon" 
                             width={50}
                             height={50}
@@ -181,7 +181,7 @@ export default function OurPatients() {
                         <div className={`our-patients__initiative-icon our-patients__initiative-icon--${initiative.iconType}-2`}>
                           {initiative.iconType === 'education' ? (
                             <Image 
-                              src="/assets/images/sustainability/2f2695bf4f28759b31dee032d23658e5aede0d92.svg" 
+                              src="/assets/sustainability/icon3.svg" 
                               alt="Hand icon" 
                               width={50}
                               height={50}
@@ -189,7 +189,7 @@ export default function OurPatients() {
                             />
                           ) : (
                             <Image 
-                              src="/assets/images/sustainability/54406aaa872062088faf2c4896b80005cf420140.svg" 
+                              src="/assets/sustainability/icon5.svg" 
                               alt="Female symbol icon" 
                               width={50}
                               height={50}

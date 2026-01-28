@@ -1780,4 +1780,3 @@ export function mapOurStoryData(strapiData) {
     milestones
   };
 }
-

@@ -19,12 +19,12 @@ export default function InnerBanner({ data }) {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Financial documents and charts"
+        url: "/assets/sustainability/banner-desktop.png",
+        alt: "Sustainability banner"
       },
       bannerMobile: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
-        alt: "Financial documents and charts"
+        url: "/assets/sustainability/mobile-banner.png",
+        alt: "Sustainability banner"
       },
       petal: {
         url: "/assets/inner-banner/petal-2.svg",

@@ -3,6 +3,7 @@ import SustainabilityIntro from '@/components/sustainability/SustainabilityIntro
 import OurPlanet from '@/components/sustainability/OurPlanet';
 import OurPeople from '@/components/sustainability/OurPeople';
 import OurPatients from '@/components/sustainability/OurPatients';
+import ESGReportLink from '@/components/sustainability/ESGReportLink';
 import ESGRatingsSection from '@/components/sustainability/ESGRatingsSection';
 import ESGGovernanceSection from '@/components/sustainability/ESGGovernanceSection';
 import ESGInfographicSection from '@/components/sustainability/ESGInfographicSection';
@@ -29,11 +30,11 @@ export default function SustainabilityPage() {
     },
     images: {
       banner: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/sustainability/banner-desktop.png",
         alt: "Sustainability"
       },
       bannerMobile: {
-        url: "/assets/inner-banner/freepik-enhance-42835.jpg",
+        url: "/assets/sustainability/mobile-banner.png",
         alt: "Sustainability"
       },
       petal: {
@@ -51,6 +52,20 @@ export default function SustainabilityPage() {
       <OurPlanet />
       <OurPeople />
       <OurPatients />
+      <ESGReportLink />
+      <section className="sustainability-highlights-image">
+        <picture>
+          <source 
+            media="(max-width: 768px)" 
+            srcSet="/assets/images/sustainability/image.png" 
+          />
+          <img
+            src="/assets/images/sustainability/image.png"
+            alt="Our Major Highlights"
+            className="sustainability-highlights-image__img"
+          />
+        </picture>
+      </section>
       <ESGRatingsSection />
       <ESGGovernanceSection />
       <ESGInfographicSection />

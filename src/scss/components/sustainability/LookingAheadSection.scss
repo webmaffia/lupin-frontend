@@ -6,12 +6,9 @@
 .looking-ahead {
   position: relative;
   width: 100%;
-  padding: vw(100) 0;
+  padding-top: 0;
+  padding-bottom: 0;
   background: #f0f8f4; // Light green background
-
-  @include media('mobile') {
-    padding: vw-mobile(40, 414) 0;
-  }
 
   // Container
   &__container {
@@ -19,14 +16,18 @@
     width: vw(1920);
     max-width: 100%;
     margin: 0 auto;
-    padding: 0 vw(98);
+    padding: 0;
+    padding-left: vw(98);
+    padding-right: 0;
     display: flex;
     align-items: center;
-    gap: vw(161);
+    gap: vw(141);
 
     @include media('mobile') {
       flex-direction: column;
-      padding: 0 vw-mobile(20, 414);
+      padding: 0;
+      padding-left: vw-mobile(20, 414);
+      padding-right: 0;
       gap: vw-mobile(30, 414);
     }
   }
@@ -86,13 +87,18 @@
     flex: 1;
     width: 100%;
     height: vw(745);
-    max-width: vw(1320.433);
+    max-width: vw(783);
     overflow: hidden;
 
     @include media('mobile') {
       height: vw-mobile(400, 414);
       max-width: 100%;
       width: 100%;
+    }
+
+    picture {
+      height: 100%;
+      display: block;
     }
   }
 

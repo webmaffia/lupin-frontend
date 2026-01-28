@@ -6,11 +6,13 @@
 .esg-governance {
   position: relative;
   width: 100%;
-  padding: vw(100) 0;
+  padding-top: vw(100);
+  padding-bottom: 0;
   background: transparent;
 
   @include media('mobile') {
-    padding: vw-mobile(40, 414) 0;
+    padding-top: vw-mobile(40, 414);
+    padding-bottom: 0;
   }
 
   // Container
