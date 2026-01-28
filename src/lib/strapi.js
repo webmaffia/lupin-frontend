@@ -3547,27 +3547,16 @@ export function mapIndiaWhatWeDoData(strapiData) {
 
   const heading = whatWeDoSection.title || whatWeDoSection.heading || whatWeDoSection.Heading || '';
 
-  let content = [];
-  if (whatWeDoSection.description) {
-    // Split markdown-style text by double newlines
-    const description = typeof whatWeDoSection.description === 'string' ? whatWeDoSection.description : '';
-    content = description.split(/\n\n+/).filter(p => p.trim());
-  } else if (whatWeDoSection.content && Array.isArray(whatWeDoSection.content)) {
-    content = whatWeDoSection.content;
-  } else if (whatWeDoSection.paragraphs && Array.isArray(whatWeDoSection.paragraphs)) {
-    content = whatWeDoSection.paragraphs;
-  } else if (whatWeDoSection.text) {
-    // If it's a single string, split by paragraphs
-    content = typeof whatWeDoSection.text === 'string'
-      ? whatWeDoSection.text.split(/\n\n+/).filter(p => p.trim())
-      : [whatWeDoSection.text];
-  } else if (Array.isArray(whatWeDoSection)) {
-    content = whatWeDoSection;
-  }
+  // Get content directly from Strapi - prioritize description (Rich text field)
+  const content = whatWeDoSection.description || 
+                  whatWeDoSection.content || 
+                  whatWeDoSection.paragraphs || 
+                  whatWeDoSection.text || 
+                  null;
 
   return {
     heading: heading,
-    content: content.length > 0 ? content : []
+    content: content
   };
 }
 

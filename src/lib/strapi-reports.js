@@ -3077,6 +3077,14 @@ export function mapLeadersData(leadersData) {
       return;
     }
 
+    // Extract DisplayOrder for sorting
+    // DisplayOrder can be a string, number, or null
+    const displayOrder = leaderData?.DisplayOrder || leader?.DisplayOrder;
+    // Convert to number if it's a string, or use a large number if null/undefined
+    const orderValue = displayOrder !== null && displayOrder !== undefined 
+      ? (typeof displayOrder === 'string' ? parseInt(displayOrder, 10) || 9999 : displayOrder)
+      : 9999; // Use 9999 as fallback for null/undefined to put them at the end
+
     // Create leader object
     const leaderObj = {
       id: leader?.id || leader?.documentId || Math.random(),
@@ -3087,7 +3095,8 @@ export function mapLeadersData(leadersData) {
         alt: leaderName
       } : null,
       link: leaderLink,
-      slug: slug
+      slug: slug,
+      displayOrder: orderValue // Include displayOrder for sorting
     };
 
     // Check if leader is in board_of_directors or management_team
@@ -3107,6 +3116,20 @@ export function mapLeadersData(leadersData) {
       managementTeam.push(leaderObj);
     }
   });
+
+  // Sort both arrays by DisplayOrder (ascending)
+  // Leaders with null DisplayOrder will appear last (orderValue = 9999)
+  // If DisplayOrder is the same, sort by id as secondary sort
+  const sortByDisplayOrder = (a, b) => {
+    if (a.displayOrder !== b.displayOrder) {
+      return a.displayOrder - b.displayOrder;
+    }
+    // If DisplayOrder is the same, sort by id
+    return (a.id || 0) - (b.id || 0);
+  };
+
+  boardOfDirectors.sort(sortByDisplayOrder);
+  managementTeam.sort(sortByDisplayOrder);
 
   return {
     boardOfDirectors: boardOfDirectors,
