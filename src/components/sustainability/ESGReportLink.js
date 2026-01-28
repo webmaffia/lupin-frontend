@@ -6,7 +6,7 @@ export default function ESGReportLink() {
   return (
     <section className="esg-report-link">
       <div className="esg-report-link__container">
-        <Link href="#" className="esg-report-link__link">
+        <Link href="/investors/reports-filings" className="esg-report-link__link">
           <p className="esg-report-link__text">
             Find our complete ESG report here
           </p>
